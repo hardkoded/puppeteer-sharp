@@ -27,6 +27,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Cdp;
@@ -106,7 +107,7 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "DOM.scrollIntoViewIfNeeded is not supported");
+                Logger.ScrollIntoViewIfNeededNotSupported(ex);
                 await base.ScrollIntoViewAsync().ConfigureAwait(false);
             }
 

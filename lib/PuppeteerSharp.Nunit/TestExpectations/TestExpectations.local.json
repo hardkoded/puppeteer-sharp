@@ -145,5 +145,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Tests CDP binding handle ownership. WebDriver BiDi uses a separate exposed function implementation. Remove when upstream sync brings the official entry.",
+    "testIdPattern": "[binding.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
   }
 ]

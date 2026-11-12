@@ -1,5 +1,11 @@
 {
   "enabledPlugins": {
     "csharp-lsp@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "RemoteTrigger",
+      "mcp__claude-code-remote__add_repo"
+    ]
   }
 }

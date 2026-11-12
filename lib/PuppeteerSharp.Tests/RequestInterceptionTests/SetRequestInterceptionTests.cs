@@ -80,9 +80,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 await context.Response.WriteAsync("Hello World");
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Page.Request += async (_, e) =>
+            Page.Request += (_, e) =>
             {
-                await e.Request.ContinueAsync();
+                _ = e.Request.ContinueAsync();
             };
             await Page.SetRequestInterceptionAsync(true);
 
@@ -667,6 +667,85 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             // Delete frame to cause request to be canceled.
             _ = Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync<object>("frame => frame.remove()");
             await request.ContinueAsync();
+        }
+
+        // @see https://github.com/puppeteer/puppeteer/issues/15575
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should emit requestfailed for requests aborted right after they start")]
+        public async Task ShouldEmitRequestFailedForRequestsAbortedRightAfterTheyStart()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            var pending = new HashSet<IRequest>();
+            Page.Request += async (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    lock (pending)
+                    {
+                        pending.Add(e.Request);
+                    }
+                }
+
+                try
+                {
+                    await e.Request.ContinueAsync();
+                }
+                catch
+                {
+                }
+            };
+            Page.RequestFinished += (_, e) =>
+            {
+                lock (pending)
+                {
+                    pending.Remove(e.Request);
+                }
+            };
+            Page.RequestFailed += (_, e) =>
+            {
+                lock (pending)
+                {
+                    pending.Remove(e.Request);
+                }
+            };
+
+            // Chrome sometimes delivers Network.loadingFailed before
+            // Fetch.requestPaused for such requests. The order is racy, so the
+            // scenario is repeated to make it likely to show up at least once.
+            // The fetch is cross-origin (about:blank to the test server); with a
+            // same-origin fetch the abort usually wins before the request is paused.
+            for (var i = 0; i < 50; i++)
+            {
+                await Page.SetContentAsync($"<div>{i}</div>");
+                await Page.EvaluateFunctionAsync(
+                    @"async (url, abortSync) => {
+                        const controller = new AbortController();
+                        const promise = fetch(url, {signal: controller.signal});
+                        if (abortSync) {
+                            controller.abort();
+                        } else {
+                            setTimeout(() => {
+                                controller.abort();
+                            }, 0);
+                        }
+                        await promise.catch(() => {});
+                    }",
+                    $"{TestConstants.ServerUrl}/abort-{i}",
+                    i % 2 == 0);
+            }
+
+            // Give the remaining terminal events a chance to arrive.
+            try
+            {
+                await Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { IdleTime = 100, Timeout = 2000 });
+            }
+            catch
+            {
+            }
+
+            lock (pending)
+            {
+                Assert.That(pending.Select(request => request.Url), Is.Empty);
+            }
         }
 
         [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should throw if interception is not enabled")]

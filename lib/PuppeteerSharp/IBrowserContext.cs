@@ -11,6 +11,14 @@ namespace PuppeteerSharp
     public interface IBrowserContext : IDisposable, IAsyncDisposable
     {
         /// <summary>
+        /// Raised when JavaScript within any page or worker in the browser context calls one of the console API methods, e.g. <c>console.log</c> or <c>console.dir</c>.
+        /// Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via <c>Targets()</c>.
+        /// Service and shared workers are not attached automatically: their messages are only delivered after <c>WorkerAsync()</c> has been called for their target.
+        /// With WebDriver BiDi, service and shared worker console messages are not reported.
+        /// </summary>
+        event EventHandler<ConsoleEventArgs> Console;
+
+        /// <summary>
         /// Raised when the url of a target changes
         /// </summary>
         event EventHandler<TargetChangedArgs> TargetChanged;
@@ -24,6 +32,36 @@ namespace PuppeteerSharp
         /// Raised when a target is destroyed, for example when a page is closed
         /// </summary>
         event EventHandler<TargetChangedArgs> TargetDestroyed;
+
+        /// <summary>
+        /// Raised when a request issued by any page in the browser context is served from the memory cache.
+        /// </summary>
+        event EventHandler<RequestEventArgs> RequestServedFromCache;
+
+        /// <summary>
+        /// Raised when a response is received for a request issued by any page in the browser context.
+        /// Use <see cref="IResponse.Request"/> to access the originating request.
+        /// </summary>
+        event EventHandler<ResponseCreatedEventArgs> Response;
+
+        /// <summary>
+        /// Raised when a request issued by any page in the browser context fails, for example by timing out.
+        /// HTTP error responses, such as 404 or 503, complete with <see cref="RequestFinished"/> instead.
+        /// </summary>
+        event EventHandler<RequestEventArgs> RequestFailed;
+
+        /// <summary>
+        /// Raised when a request issued by any page in the browser context finishes successfully.
+        /// </summary>
+        event EventHandler<RequestEventArgs> RequestFinished;
+
+        /// <summary>
+        /// Raised when any page in the browser context issues a request. Contains an <see cref="IRequest"/> instance.
+        /// Use <see cref="IPage"/> or <see cref="IFrame"/> from the request to identify the originating context.
+        /// Events are only delivered for pages that have an <see cref="IPage"/> instance, for example one created via <see cref="PagesAsync"/>.
+        /// These listeners only observe requests. Do not call <c>Continue</c>, <c>Abort</c> or <c>Respond</c> from them. To intercept requests, use <see cref="IPage.SetRequestInterceptionAsync"/> with an <see cref="IPage.Request"/> listener.
+        /// </summary>
+        event EventHandler<RequestEventArgs> Request;
 
         /// <summary>
         /// Browser Context Id.

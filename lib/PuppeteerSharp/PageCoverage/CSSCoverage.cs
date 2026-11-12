@@ -123,7 +123,7 @@ namespace PuppeteerSharp.PageCoverage
             catch (Exception ex)
             {
                 var message = $"CSSCoverage failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
+                _logger.ErrorWithException(ex, message);
                 _client.Close(message);
             }
         }
@@ -146,7 +146,7 @@ namespace PuppeteerSharp.PageCoverage
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString());
+                _logger.ErrorMessage(ex.ToString());
             }
         }
 

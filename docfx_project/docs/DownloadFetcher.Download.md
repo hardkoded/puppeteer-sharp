@@ -7,7 +7,7 @@ You need to download an use an specific browser version.
 
 ## Solution
 
-Thank to [Google for testing](https://developer.chrome.com/blog/chrome-for-testing). Now finding and downloading a specific version of Chrome is easy.
+Thank to [Google for testing](https://developer.chrome.com/docs/automation-and-testing/chrome-for-testing). Now finding and downloading a specific version of Chrome is easy.
 
 You will find the available versions [here](https://googlechromelabs.github.io/chrome-for-testing/known-good-versions.json).
 Once you have the version you want, you can download it using the `BrowserFetcher` class.
@@ -53,4 +53,27 @@ await using (var browser = await Puppeteer.LaunchAsync(new()
 ```
 <sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/Browsers/Chrome/ChromeDataTests.cs#L24-L59' title='Snippet source file'>snippet source</a> | <a href='#snippet-customversions_example' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+```
+
+## Command line tool
+
+If you just need to download a browser without writing code, install the `PuppeteerSharp.Browsers` dotnet tool, the .NET counterpart of `@puppeteer/browsers`:
+
+```bash
+dotnet tool install --global PuppeteerSharp.Browsers
+
+# Download the latest Chrome for Testing binary of the Stable channel (Chrome Headless Shell is installed separately: chrome-headless-shell@stable).
+puppeteer-browsers install chrome@stable
+
+# Download a specific version.
+puppeteer-browsers install chrome@116.0.5793.0
+
+# Other browsers and tags.
+puppeteer-browsers install firefox@nightly
+
+# Use a custom cache directory.
+puppeteer-browsers install chrome@stable --path ./browsers
+
+puppeteer-browsers list
+puppeteer-browsers uninstall chrome@116.0.5793.0
 ```

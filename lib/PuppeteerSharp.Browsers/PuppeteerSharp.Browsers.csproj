@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14</LangVersion>
+    <Authors>Darío Kondratiuk</Authors>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>puppeteer-browsers</ToolCommandName>
+    <PackageId>PuppeteerSharp.Browsers</PackageId>
+    <Title>PuppeteerSharp.Browsers</Title>
+    <Description>Command line tool to install and manage the browsers used by PuppeteerSharp.</Description>
+    <PackageTags>headless,chrome,firefox,puppeteer,browsers</PackageTags>
+    <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <RollForward>Major</RollForward>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="MinVer" Version="6.0.0" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
+  </ItemGroup>
+</Project>

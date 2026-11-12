@@ -35,6 +35,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using PuppeteerSharp.Bidi.Core;
+using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
@@ -87,7 +88,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to destroy BiDi handles");
+            _logger.FailedToDestroyBidiHandles(ex);
         }
     }
 
@@ -103,7 +104,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to adopt handle");
+            _logger.FailedToAdoptHandle(e);
             throw;
         }
     }

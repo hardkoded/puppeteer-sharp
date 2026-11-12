@@ -45,6 +45,51 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             }
         }
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should report console messages from OOP iframes to the browser and context")]
+        public async Task ShouldReportConsoleMessagesFromOopIframesToTheBrowserAndContext()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var frame = await FrameUtils.AttachFrameAsync(
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html");
+
+            var browserMessageTask = new TaskCompletionSource<ConsoleMessage>();
+            var contextMessageTask = new TaskCompletionSource<ConsoleMessage>();
+            void BrowserHandler(object _, ConsoleEventArgs e)
+            {
+                if (e.Message.Text == "from-oopif")
+                {
+                    browserMessageTask.TrySetResult(e.Message);
+                }
+            }
+
+            void ContextHandler(object _, ConsoleEventArgs e)
+            {
+                if (e.Message.Text == "from-oopif")
+                {
+                    contextMessageTask.TrySetResult(e.Message);
+                }
+            }
+
+            Page.Browser.Console += BrowserHandler;
+            Page.BrowserContext.Console += ContextHandler;
+            try
+            {
+                await Task.WhenAll(
+                    browserMessageTask.Task,
+                    contextMessageTask.Task,
+                    frame.EvaluateFunctionAsync("() => console.log('from-oopif')"));
+
+                Assert.That(browserMessageTask.Task.Result, Is.SameAs(contextMessageTask.Task.Result));
+            }
+            finally
+            {
+                Page.Browser.Console -= BrowserHandler;
+                Page.BrowserContext.Console -= ContextHandler;
+            }
+        }
+
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should treat OOP iframes and normal iframes the same")]
         public async Task ShouldTreatOopIframesAndNormalIframesTheSame()
         {
@@ -204,6 +249,56 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(frame.Url, Does.Contain("/empty.html"));
             await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             Assert.That(frame.Url, Is.EqualTo(TestConstants.EmptyPage));
+        }
+
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should report requests from OOP iframes to the browser and context")]
+        public async Task ShouldReportRequestsFromOopIframesToTheBrowserAndContext()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var frame = await FrameUtils.AttachFrameAsync(
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
+            );
+
+            var url = TestConstants.CrossProcessHttpPrefix + "/one-style.css";
+            var browserTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var contextTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void OnBrowserRequest(object sender, RequestEventArgs e)
+            {
+                if (e.Request.Url == url)
+                {
+                    browserTcs.TrySetResult(e.Request);
+                }
+            }
+
+            void OnContextRequest(object sender, RequestEventArgs e)
+            {
+                if (e.Request.Url == url)
+                {
+                    contextTcs.TrySetResult(e.Request);
+                }
+            }
+
+            Browser.Request += OnBrowserRequest;
+            Context.Request += OnContextRequest;
+            try
+            {
+                await frame.EvaluateFunctionAsync("async (url) => { await fetch(url, {cache: 'no-store'}); }", url);
+
+                var browserRequest = await browserTcs.Task.WithTimeout();
+                var contextRequest = await contextTcs.Task.WithTimeout();
+
+                Assert.That(browserRequest, Is.SameAs(contextRequest));
+                Assert.That(browserRequest.Frame, Is.EqualTo(frame));
+                Assert.That(browserRequest.Page, Is.EqualTo(Page));
+            }
+            finally
+            {
+                Browser.Request -= OnBrowserRequest;
+                Context.Request -= OnContextRequest;
+            }
         }
 
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support evaluating in oop iframes")]
@@ -549,6 +644,42 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/empty.html"));
         }
 
+
+        [Test, PuppeteerTest("oopif.test", "OOPIF", "should continue intercepted requests from workers in OOPIFs")]
+        public async Task ShouldContinueInterceptedRequestsFromWorkersInOopifs()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.CrossProcessHttpPrefix + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
+
+            await Page.SetRequestInterceptionAsync(true);
+            var requests = new List<IRequest>();
+            Page.Request += (_, e) =>
+            {
+                requests.Add(e.Request);
+                _ = e.Request.ContinueAsync();
+            };
+
+            // Requests from a worker in an OOPIF are paused on the OOPIF session, so
+            // continuing them on any other session leaves the fetch hanging.
+            var url = TestConstants.CrossProcessHttpPrefix + "/empty.html";
+            var result = await worker.EvaluateFunctionAsync<string>(
+                @"async url => {
+                    try {
+                        await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(5000) });
+                        return 'ok';
+                    } catch {
+                        return 'error';
+                    }
+                }",
+                url);
+
+            Assert.That(result, Is.EqualTo("ok"));
+            var request = requests.Find(r => r.Url == url);
+            Assert.That(request?.Worker, Is.SameAs(worker));
+        }
 
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should expose events within OOPIFs")]
         public async Task OOPIFShouldExposeEventsWithinOOPIFs()

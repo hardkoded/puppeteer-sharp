@@ -160,6 +160,16 @@ internal class BidiWorkerRealm : BidiRealm
             return;
         }
 
+        var page = (BidiPage)_worker.Frame.Page;
+        var context = (BrowserContext)page.BrowserContext;
+        if (!_worker.HasConsoleListeners
+            && !page.HasConsoleListeners
+            && !context.HasConsoleListeners
+            && !context.Browser.HasConsoleListeners)
+        {
+            return;
+        }
+
         var handleArgs = args.Arguments?.Select(arg => (IJSHandle)CreateHandle(arg)).ToArray() ?? [];
 
         var logEntryText = args.Text;
@@ -169,7 +179,7 @@ internal class BidiWorkerRealm : BidiRealm
             {
                 if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
                 {
-                    return BidiDeserializer.Deserialize(jsHandle.RemoteValue);
+                    return BidiDeserializer.Deserialize(jsHandle.RemoteValue) ?? (jsHandle.RemoteValue.Type == RemoteValueType.Undefined ? "undefined" : "null");
                 }
 
                 if (arg is BidiJSHandle { RemoteValue.Type: RemoteValueType.Error } && !string.IsNullOrEmpty(logEntryText))
@@ -182,8 +192,10 @@ internal class BidiWorkerRealm : BidiRealm
 
         var location = GetStackTraceLocation(args.StackTrace);
         var stackTrace = GetStackTrace(args.StackTrace);
-        var consoleMessage = new ConsoleMessage(ConvertConsoleMessageLevel(args.Method), text, handleArgs, location, stackTrace);
-        _worker.OnConsole(new ConsoleEventArgs(consoleMessage));
+        var consoleMessage = new ConsoleMessage(ConvertConsoleMessageLevel(args.Method), text, handleArgs, location, stackTrace, worker: _worker);
+        var consoleEventArgs = new ConsoleEventArgs(consoleMessage);
+        _worker.OnConsole(consoleEventArgs);
+        page.OnConsole(consoleEventArgs);
     }
 }
 

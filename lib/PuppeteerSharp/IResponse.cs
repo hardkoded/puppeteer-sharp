@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -86,10 +87,32 @@ namespace PuppeteerSharp
         ResourceTiming Timing { get; }
 
         /// <summary>
+        /// Total number of bytes received for this request over the network.
+        /// </summary>
+        /// <remarks>
+        /// The value is updated when the response finishes loading. During the <c>Response</c> event, it only covers
+        /// the bytes received up to the response headers. To get the total encoded transfer size (headers + compressed
+        /// body), read it in a <c>RequestFinished</c> handler or after awaiting <see cref="IResponse.BufferAsync"/>.
+        /// If the request fails after the response is received, the value is not updated. If the browser does not
+        /// report a size, e.g. for <c>data:</c> or <c>file:</c> URLs, the value is <c>0</c>.
+        /// </remarks>
+        long EncodedDataLength { get; }
+
+        /// <summary>
         /// Returns a Task which resolves to a buffer with response body.
         /// </summary>
         /// <returns>A Task which resolves to a buffer with response body.</returns>
         ValueTask<byte[]> BufferAsync();
+
+        /// <summary>
+        /// Returns a Task which resolves to a stream of the response body, with chunks delivered as they arrive from the network.
+        /// </summary>
+        /// <remarks>
+        /// Call this from the <see cref="Page.Response"/> event to receive the body while it is still loading.
+        /// If the body has already finished loading, the stream contains the whole body as a single chunk.
+        /// </remarks>
+        /// <returns>A Task which resolves to a stream of the response body.</returns>
+        Task<Stream> StreamAsync();
 
         /// <summary>
         /// Returns a Task which resolves to a text representation of response body.

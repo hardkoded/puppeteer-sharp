@@ -15,13 +15,24 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments.</param>
         /// <param name="location">Message location.</param>
         /// <param name="stackTrace">Stack trace.</param>
-        public ConsoleMessage(ConsoleType type, string text, IList<IJSHandle> args, ConsoleMessageLocation location = null, IList<ConsoleMessageLocation> stackTrace = null)
+        /// <param name="frame">The frame that initiated the message, if it originated from a frame.</param>
+        /// <param name="worker">The worker that initiated the message, if it originated from a worker.</param>
+        public ConsoleMessage(
+            ConsoleType type,
+            string text,
+            IList<IJSHandle> args,
+            ConsoleMessageLocation location = null,
+            IList<ConsoleMessageLocation> stackTrace = null,
+            IFrame frame = null,
+            WebWorker worker = null)
         {
             Type = type;
             Text = text;
             Args = args;
             Location = location;
             StackTrace = stackTrace ?? [];
+            Frame = frame;
+            Worker = worker;
         }
 
         /// <summary>
@@ -51,5 +62,23 @@ namespace PuppeteerSharp
         /// Gets the stack trace.
         /// </summary>
         public IList<ConsoleMessageLocation> StackTrace { get; }
+
+        /// <summary>
+        /// Gets the <see cref="IPage"/> that the console message originated from, or <c>null</c> if the
+        /// message originated from a worker or outside of a frame context.
+        /// </summary>
+        public IPage Page => Frame?.Page;
+
+        /// <summary>
+        /// Gets the <see cref="IFrame"/> that initiated the console message, or <c>null</c> if the
+        /// message originated from a worker.
+        /// </summary>
+        public IFrame Frame { get; }
+
+        /// <summary>
+        /// Gets the <see cref="WebWorker"/> that initiated the console message, or <c>null</c> if the
+        /// message originated from a frame.
+        /// </summary>
+        public WebWorker Worker { get; }
     }
 }

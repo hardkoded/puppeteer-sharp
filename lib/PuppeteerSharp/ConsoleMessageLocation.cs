@@ -28,6 +28,11 @@ namespace PuppeteerSharp
         /// </summary>
         public string FunctionName { get; set; }
 
+        /// <summary>
+        /// Script identifier if known.
+        /// </summary>
+        public string ScriptId { get; set; }
+
         /// <summary>Overriding == operator for <see cref="ConsoleMessageLocation"/>.</summary>
         /// <param name="location1">the value to compare against <paramref name="location2" />.</param>
         /// <param name="location2">the value to compare against <paramref name="location1" />.</param>

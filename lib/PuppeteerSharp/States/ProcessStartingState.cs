@@ -9,6 +9,8 @@ namespace PuppeteerSharp.States
 {
     internal class ProcessStartingState(StateManager stateManager) : State(stateManager)
     {
+        private const int StderrDrainTimeoutMs = 2000;
+
         public string LineOutputExpression { get; set; } = "^DevTools listening on (ws:\\/\\/.*)";
 
         public override Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout)
@@ -59,8 +61,27 @@ namespace PuppeteerSharp.States
             }
 
             void OnProcessExitedWhileStarting(object sender, EventArgs e)
-                => p.StartCompletionSource.TrySetException(
-                    new ProcessException($"Failed to launch browser! {p.GetRecentLogs()}"));
+            {
+                // The Exited event can fire before the asynchronous stderr reader has delivered
+                // the browser's last lines, so drain it before building the error message.
+                // Otherwise the message would be empty and hide why the browser exited.
+                Task.Run(() =>
+                {
+                    var exitCode = "unknown";
+                    try
+                    {
+                        p.Process.WaitForExit(StderrDrainTimeoutMs);
+                        exitCode = p.Process.ExitCode.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    catch (Exception)
+                    {
+                        // The process might have been disposed already.
+                    }
+
+                    p.StartCompletionSource.TrySetException(
+                        new ProcessException($"Failed to launch browser! The browser process exited with code {exitCode}. {p.GetRecentLogs()}"));
+                });
+            }
 
             void OnProcessExited(object sender, EventArgs e) => StateManager.Exited.EnterFrom(p, StateManager.CurrentState);
 
@@ -80,6 +101,11 @@ namespace PuppeteerSharp.States
                 {
                     p.Process.Start();
 
+                    // Always begin reading stderr so ProcessSingleton / Missing X server
+                    // diagnostics are available, including when Pipe=true. Start reading
+                    // right away so output from a browser that exits quickly is not lost.
+                    p.Process.BeginErrorReadLine();
+
                     // Register after the browser process has started so a host-process
                     // exit can still remove the temporary profile synchronously when
                     // async cleanup cannot run (upstream #15441).
@@ -91,10 +117,6 @@ namespace PuppeteerSharp.States
                 }
 
                 await StateManager.Started.EnterFromAsync(p, this).ConfigureAwait(false);
-
-                // Always begin reading stderr so ProcessSingleton / Missing X server
-                // diagnostics are available, including when Pipe=true.
-                p.Process.BeginErrorReadLine();
 
                 if (usePipe)
                 {

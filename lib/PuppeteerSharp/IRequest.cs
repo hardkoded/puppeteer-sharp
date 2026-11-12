@@ -53,6 +53,18 @@ namespace PuppeteerSharp
         IFrame Frame { get; }
 
         /// <summary>
+        /// Gets the page that initiated the request, or null if navigating to error pages or the request is coming from a worker.
+        /// </summary>
+        /// <value>The page.</value>
+        IPage Page { get; }
+
+        /// <summary>
+        /// Gets the worker that initiated the request, or null if the request was not initiated by a worker.
+        /// </summary>
+        /// <value>The worker.</value>
+        WebWorker Worker { get; }
+
+        /// <summary>
         /// Gets whether this request is driving frame's navigation.
         /// </summary>
         bool IsNavigationRequest { get; }

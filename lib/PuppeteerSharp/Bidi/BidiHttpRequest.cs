@@ -84,7 +84,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     {
         get
         {
-            if (!CanBeIntercepted())
+            if (!CanBeIntercepted() && !IsInterceptResolutionHandled)
             {
                 return new InterceptResolutionState(InterceptResolutionAction.Disabled);
             }
@@ -97,6 +97,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     /// <inheritdoc/>
     public override bool IsInterceptResolutionHandled { get; protected set; }
+
+    /// <inheritdoc/>
+    /// <exception cref="NotSupportedException">Always thrown. Worker requests are not available in WebDriver BiDi.</exception>
+    public override WebWorker Worker => throw new NotSupportedException("Worker is not supported in WebDriver BiDi.");
 
     // TODO: I don't like having this static field at all. This will cause memory leaks for sure.
     // We need to move this to a place where we can control its lifecycle.
@@ -239,7 +243,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
         catch (Exception ex)
         {
-            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().LogError(ex, ex.ToString());
+            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().ErrorWithException(ex, ex.ToString());
             return null;
         }
     }
@@ -377,6 +381,20 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         };
     }
 
+    private static void HandleError(Exception ex)
+    {
+        // Match upstream's handleError: only header validation errors are surfaced.
+        // In certain cases, the protocol returns an error if the request was already
+        // canceled or the page was closed. We should tolerate these errors.
+        if (ex.Message.Contains("Invalid header") ||
+            ex.Message.Contains("Unsafe header") ||
+            ex.Message.Contains("Expected \"header\"") ||
+            ex.Message.Contains("invalid argument"))
+        {
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
+        }
+    }
+
     private Dictionary<string, string> GetMergedHeaders(Dictionary<string, string> overrideHeaders)
     {
         // Start with the merged headers (original + extra + user agent)
@@ -499,6 +517,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
             if (response.ContentType != null)
             {
+                // Like the CDP implementation, ContentType replaces a content-type
+                // passed in Headers instead of sending both.
+                responseHeaders.RemoveAll(header => header.Name == "content-type");
                 responseHeaders.Add(new Header("content-type", response.ContentType));
             }
 
@@ -517,26 +538,18 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 headers: responseHeaders.Count > 0 ? responseHeaders : null,
                 body: body).ConfigureAwait(false);
         }
+        catch (WebDriverBiDi.WebDriverBiDiConnectionException)
+        {
+            // Port-only: upstream lets this rejection surface as an unhandled promise rejection,
+            // which is benign in Node. In .NET it would crash the process from an async void
+            // event handler, so we tolerate responding to a request after the connection closed.
+            IsInterceptResolutionHandled = false;
+        }
         catch (Exception ex)
         {
             IsInterceptResolutionHandled = false;
             HandleError(ex);
         }
-    }
-
-    private void HandleError(Exception ex)
-    {
-        if (ex.Message.Contains("Invalid header") ||
-            ex.Message.Contains("Unsafe header") ||
-            ex.Message.Contains("Expected \"header\"") ||
-            ex.Message.Contains("invalid argument"))
-        {
-            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
-        }
-
-        // In certain cases, protocol will return error if the request was already canceled
-        // or the page was closed. We should tolerate these errors.
-        BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().LogDebug(ex, "Failed to resolve request interception");
     }
 
     private void Initialize()
@@ -621,6 +634,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             RequestEventEmitted = true;
             BidiPage.OnRequest(this);
+            var requestArgs = new RequestEventArgs(this);
+            ((BidiBrowserContext)BidiPage.BrowserContext).OnRequest(requestArgs);
+            BidiPage.BidiBrowser.OnRequest(requestArgs);
         }
 
         if (HasInternalHeaderOverwrite && CanBeIntercepted())
@@ -663,7 +679,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         catch (Exception ex)
         {
             // The request may have been canceled or the page closed before the challenge was answered.
-            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().LogDebug(ex, "Failed to continue with auth");
+            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().FailedToContinueWithAuth(ex);
         }
     }
 }
