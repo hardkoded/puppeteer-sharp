@@ -50,11 +50,12 @@ export default defineConfig({
             components: {
                 Footer: "./src/components/Footer.astro",
             },
+            routeMiddleware: "./src/route-middleware.ts",
             sidebar: [
                 ...guidesSidebar,
                 {
                     label: "API",
-                    collapsed: true,
+                    collapsed: false,
                     items: apiSidebar,
                 },
             ],

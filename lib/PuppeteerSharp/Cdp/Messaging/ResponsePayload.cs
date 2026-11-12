@@ -26,5 +26,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         public int RemotePort { get; set; }
 
         public ResourceTiming Timing { get; set; }
+
+        public long EncodedDataLength { get; set; }
     }
 }

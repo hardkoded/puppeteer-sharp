@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.PageCoverage
@@ -124,7 +125,7 @@ namespace PuppeteerSharp.PageCoverage
             catch (Exception ex)
             {
                 var message = $"JSCoverage failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
+                _logger.ErrorWithException(ex, message);
                 _client.Close(message);
             }
         }
@@ -148,7 +149,7 @@ namespace PuppeteerSharp.PageCoverage
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString());
+                _logger.ErrorMessage(ex.ToString());
             }
         }
 

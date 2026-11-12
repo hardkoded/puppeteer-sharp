@@ -26,7 +26,8 @@ namespace PuppeteerSharp
                     Object.assign(globalThis, {
                     [name](...args) {
                       // This is the Puppeteer binding.
-                      const callPuppeteer = globalThis[name];
+                      // Needs to be the same as CdpBindingPrefix.
+                      const callPuppeteer = globalThis[prefix + name];
                       callPuppeteer.args ??= new Map();
                       callPuppeteer.callbacks ??= new Map();
 
@@ -34,8 +35,7 @@ namespace PuppeteerSharp
                       callPuppeteer.lastSeq = seq;
                       callPuppeteer.args.set(seq, args);
 
-                      // Needs to be the same as CdpBindingPrefix.
-                      globalThis[prefix + name](
+                      callPuppeteer(
                         JSON.stringify({
                             type,
                             name,

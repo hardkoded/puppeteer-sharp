@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Helpers
             {
                 // Exceptions might happen in case of a page been navigated or closed.
                 // Swallow these since they are harmless and we don't leak anything in this case.
-                logger.LogWarning(ex.ToString());
+                logger.WarningMessage(ex.ToString());
             }
         }
 

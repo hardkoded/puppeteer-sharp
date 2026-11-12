@@ -149,11 +149,30 @@ namespace PuppeteerSharp.Tests.ClickTests
             {
                 // We might've scrolled to click a button - reset to (0, 0).
                 await Page.EvaluateFunctionAsync("() => window.scrollTo(0, 0)");
-                await Page.ClickAsync($"#btn{i}");
-            }
 
-            // It seems that the console event is coming a little bit late
-            await Task.Delay(500);
+                // The console event can arrive after the click resolves.
+                var expectedMessage = $"button #{i} clicked";
+                var consoleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                void OnConsole(object sender, ConsoleEventArgs e)
+                {
+                    if (e.Message.Text == expectedMessage)
+                    {
+                        consoleTcs.TrySetResult(true);
+                    }
+                }
+
+                Page.Console += OnConsole;
+                try
+                {
+                    await Task.WhenAll(
+                        consoleTcs.Task,
+                        Page.ClickAsync($"#btn{i}"));
+                }
+                finally
+                {
+                    Page.Console -= OnConsole;
+                }
+            }
 
             Assert.That(messages, Is.EqualTo(new List<string>
             {

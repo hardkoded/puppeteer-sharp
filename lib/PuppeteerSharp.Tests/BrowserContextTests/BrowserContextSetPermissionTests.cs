@@ -95,5 +95,22 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("prompt"));
             Assert.That(await GetPermissionAsync(Page, "midi"), Is.EqualTo("prompt"));
         }
+
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.setPermission", "should be reset by clearPermissionOverrides")]
+        public async Task ShouldBeResetByClearPermissionOverrides()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            await Context.SetPermissionAsync(
+                TestConstants.EmptyPage,
+                new PermissionEntry { Permission = new PermissionDescriptor { Name = "geolocation" }, State = PermissionState.Granted },
+                new PermissionEntry { Permission = new PermissionDescriptor { Name = "midi" }, State = PermissionState.Denied });
+            Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("granted"));
+            Assert.That(await GetPermissionAsync(Page, "midi"), Is.EqualTo("denied"));
+
+            await Context.ClearPermissionOverridesAsync();
+            Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("prompt"));
+            Assert.That(await GetPermissionAsync(Page, "midi"), Is.EqualTo("prompt"));
+        }
     }
 }

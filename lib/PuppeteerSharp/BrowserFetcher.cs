@@ -24,6 +24,7 @@ namespace PuppeteerSharp
 
         private readonly CustomFileDownloadAction _customFileDownload;
         private readonly ILogger<BrowserFetcher> _logger;
+        private readonly bool _skipChromeHeadlessShellDownload;
 
         /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher()
@@ -52,6 +53,7 @@ namespace PuppeteerSharp
             CacheDir = string.IsNullOrEmpty(options.Path) ? GetBrowsersLocation() : options.Path;
             Platform = options.Platform ?? GetCurrentPlatform();
             _customFileDownload = options.CustomFileDownload ?? DownloadFileUsingHttpClientTaskAsync;
+            _skipChromeHeadlessShellDownload = options.SkipChromeHeadlessShellDownload;
             _logger = loggerFactory?.CreateLogger<BrowserFetcher>();
         }
 
@@ -91,7 +93,7 @@ namespace PuppeteerSharp
             }
             catch (HttpRequestException ex)
             {
-                _logger?.LogError(ex, $"Failed to check download {Browser} for {Platform} from {BaseUrl}");
+                _logger?.FailedToCheckDownload(ex, Browser, Platform, BaseUrl);
                 return false;
             }
         }
@@ -130,7 +132,7 @@ namespace PuppeteerSharp
         {
             var installedBrowser = await DownloadAsync(Browser, buildId).ConfigureAwait(false);
 
-            if (Browser == SupportedBrowser.Chrome)
+            if (Browser == SupportedBrowser.Chrome && !_skipChromeHeadlessShellDownload)
             {
                 await DownloadAsync(SupportedBrowser.ChromeHeadlessShell, buildId).ConfigureAwait(false);
             }
@@ -292,7 +294,7 @@ namespace PuppeteerSharp
                 var fallbackUrl = await TryResolveFallbackDownloadUrlAsync(browser, buildId).ConfigureAwait(false);
                 if (fallbackUrl != null)
                 {
-                    _logger?.LogWarning("Failed to download from {Url}, falling back to dashboard URL: {FallbackUrl}", url, fallbackUrl);
+                    _logger?.FailedToDownloadFallingBack(url, fallbackUrl);
                     try
                     {
                         await _customFileDownload(fallbackUrl, archivePath).ConfigureAwait(false);
@@ -345,7 +347,7 @@ namespace PuppeteerSharp
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError(ex, "Failed to run setup.exe");
+                    _logger?.FailedToRunSetupExe(ex);
                     return false;
                 }
             }
@@ -428,7 +430,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Failed to unmount dmg");
+                _logger?.FailedToUnmountDmg(ex);
             }
         }
 
@@ -456,6 +458,16 @@ namespace PuppeteerSharp
                         BrowserTag.Dev => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Dev),
                         BrowserTag.Stable => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable),
                         _ => throw new PuppeteerException($"{tag} is not supported for {Browser}."),
+                    };
+                case SupportedBrowser.ChromeHeadlessShell:
+                    return tag switch
+                    {
+                        BrowserTag.Latest => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Canary),
+                        BrowserTag.Beta => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Beta),
+                        BrowserTag.Canary => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Canary),
+                        BrowserTag.Dev => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Dev),
+                        BrowserTag.Stable => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable),
+                        _ => throw new PuppeteerException($"{tag} is not available for {Browser}."),
                     };
                 case SupportedBrowser.Chromium:
                     return tag switch
@@ -544,7 +556,7 @@ namespace PuppeteerSharp
             try
             {
                 var dashboardUrl = $"https://googlechromelabs.github.io/chrome-for-testing/{buildId}.json";
-                _logger?.LogInformation("Trying to find download URL via {DashboardUrl}", dashboardUrl);
+                _logger?.TryingDashboardUrl(dashboardUrl);
 
                 var version = await JsonUtils.GetAsync<ChromeDashboardVersionResult>(dashboardUrl).ConfigureAwait(false);
                 var platform = Chrome.GetFolder(Platform, buildId);
@@ -557,7 +569,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                _logger?.LogWarning(ex, "Failed to resolve fallback download URL from dashboard");
+                _logger?.FailedToResolveFallbackUrl(ex);
             }
 
             return null;

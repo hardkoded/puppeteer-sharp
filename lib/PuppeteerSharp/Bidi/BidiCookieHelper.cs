@@ -187,7 +187,9 @@ internal static class BidiCookieHelper
         // addresses which is fine as it is for representation and does not
         // mean that cookies actually apply that way in the browser.
         // https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
-        return cookieDomain.StartsWith(".", StringComparison.Ordinal) && urlHostname.EndsWith(cookieDomain, StringComparison.Ordinal);
+        // A leading dot marks a domain cookie, which also applies to the domain
+        // itself, so `.example.com` matches both `example.com` and `a.example.com`.
+        return cookieDomain.StartsWith(".", StringComparison.Ordinal) && $".{urlHostname}".EndsWith(cookieDomain, StringComparison.Ordinal);
     }
 
     /// <summary>

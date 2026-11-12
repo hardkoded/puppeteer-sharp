@@ -150,7 +150,7 @@ public class BidiBrowser : Browser
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to send browser close command");
+                    _logger.FailedToSendBrowserCloseCommand(ex);
                 }
 
                 if (CloseCallback != null)
@@ -166,7 +166,7 @@ public class BidiBrowser : Browser
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to stop driver");
+                    _logger.FailedToStopDriver(ex);
                 }
 
                 Detach();
@@ -174,7 +174,7 @@ public class BidiBrowser : Browser
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to close browser");
+            _logger.FailedToCloseBrowser(ex);
         }
 
         OnClosed();
@@ -242,7 +242,7 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
     {
-        var userContext = await BrowserCore.CreateUserContextAsync().ConfigureAwait(false);
+        var userContext = await BrowserCore.CreateUserContextAsync(options?.DownloadBehavior).ConfigureAwait(false);
         return CreateBrowserContext(userContext);
     }
 
@@ -384,6 +384,25 @@ public class BidiBrowser : Browser
                 .ToArray();
         }
 
+        // Console entries replayed from the WebDriver BiDi log event buffer on
+        // `session.subscribe` arrive before any frame can listen to them.
+        // Collect them until the browser is initialized, so they can be re-emitted
+        // once the caller had a chance to add listeners.
+        var pendingConsoleEntries = new List<WebDriverBiDi.Log.EntryAddedEventArgs>();
+
+        void CollectConsoleEntry(object sender, WebDriverBiDi.Log.EntryAddedEventArgs entry)
+        {
+            if (entry.Type == "console")
+            {
+                lock (pendingConsoleEntries)
+                {
+                    pendingConsoleEntries.Add(entry);
+                }
+            }
+        }
+
+        session.LogEntryAdded += CollectConsoleEntry;
+
         await session.SubscribeAsync(modules).ConfigureAwait(false);
 
         // Add data collectors for request and response bodies.
@@ -406,6 +425,49 @@ public class BidiBrowser : Browser
 
         var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher, CloseCallback = closeCallback };
         browser.InitializeAsync();
+
+        // From here on frames receive console entries directly, so stop
+        // collecting them to avoid delivering them twice.
+        session.LogEntryAdded -= CollectConsoleEntry;
+
+        WebDriverBiDi.Log.EntryAddedEventArgs[] replayEntries;
+        lock (pendingConsoleEntries)
+        {
+            replayEntries = pendingConsoleEntries.ToArray();
+        }
+
+        if (options.DownloadBehavior != null)
+        {
+            try
+            {
+                await session.Browser.SetDownloadBehaviorAsync(options.DownloadBehavior, [Core.UserContext.DEFAULT]).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Do not leak the browser when the download policy cannot be applied.
+                await browser.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
+        }
+
+        if (replayEntries.Length > 0)
+        {
+            // Replay at the first async task so the caller's continuation after
+            // ConnectAsync has a chance to add listeners.
+            _ = Task.Run(() =>
+            {
+                if (!browser.IsConnected)
+                {
+                    return;
+                }
+
+                foreach (var entry in replayEntries)
+                {
+                    session.ReplayLogEntry(entry);
+                }
+            });
+        }
+
         return browser;
     }
 
