@@ -44,6 +44,7 @@ namespace PuppeteerSharp
         {
             var garbage = new List<Task>();
             var ownedHandles = new List<IJSHandle>();
+            var cdpName = BindingUtils.CdpBindingPrefix + Name;
 
             try
             {
@@ -54,7 +55,7 @@ namespace PuppeteerSharp
                         @"(name, seq) => {
                             return globalThis[name].args.get(seq);
                         }",
-                        Name,
+                        cdpName,
                         id).ConfigureAwait(false);
 
                     try
@@ -123,7 +124,7 @@ namespace PuppeteerSharp
                         callbacks.get(seq).resolve(result);
                         callbacks.delete(seq);
                     }",
-                    Name,
+                    cdpName,
                     id,
                     result).ConfigureAwait(false);
             }
@@ -145,7 +146,7 @@ namespace PuppeteerSharp
                         callbacks.get(seq).reject(error);
                         callbacks.delete(seq);
                     }",
-                        Name,
+                        cdpName,
                         id,
                         ex.Message,
                         ex.StackTrace).ConfigureAwait(false);
