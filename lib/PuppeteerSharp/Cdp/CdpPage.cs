@@ -1199,13 +1199,18 @@ public class CdpPage : Page
         }
 
         var handle = CreateExceptionHandle(details);
-        var exception = CdpRemoteException.Create(details, handle);
-        OnExceptionThrown(new RemoteExceptionEventArgs(exception));
-
-        // This is a no-op if a listener called Move() on the handle.
-        if (handle != null)
+        try
         {
-            _ = DisposeExceptionHandleAsync(handle);
+            var exception = CdpRemoteException.Create(details, handle);
+            OnExceptionThrown(new RemoteExceptionEventArgs(exception));
+        }
+        finally
+        {
+            // This is a no-op if a listener called Move() on the handle.
+            if (handle != null)
+            {
+                _ = DisposeExceptionHandleAsync(handle);
+            }
         }
     }
 

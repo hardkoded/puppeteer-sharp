@@ -8,22 +8,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsExceptionTests : PuppeteerPageBaseTest
     {
-        private Task<RemoteException> WaitForExceptionAsync(System.Func<RemoteException, bool> predicate = null)
-        {
-            var tcs = new TaskCompletionSource<RemoteException>(TaskCreationOptions.RunContinuationsAsynchronously);
-            void Handler(object sender, RemoteExceptionEventArgs e)
-            {
-                if (predicate == null || predicate(e.Exception))
-                {
-                    Page.ExceptionThrown -= Handler;
-                    tcs.TrySetResult(e.Exception);
-                }
-            }
-
-            Page.ExceptionThrown += Handler;
-            return tcs.Task;
-        }
-
         [Test, PuppeteerTest("page.spec", "Page Page.Events.Exception", "should fire")]
         public async Task ShouldFire()
         {
@@ -129,6 +113,22 @@ namespace PuppeteerSharp.Tests.PageTests
             var handle = await handleTcs.Task;
             Assert.That(handle, Is.Not.Null);
             Assert.That(handle.Disposed, Is.True);
+        }
+
+        private Task<RemoteException> WaitForExceptionAsync(System.Func<RemoteException, bool> predicate = null)
+        {
+            var tcs = new TaskCompletionSource<RemoteException>(TaskCreationOptions.RunContinuationsAsynchronously);
+            void Handler(object sender, RemoteExceptionEventArgs e)
+            {
+                if (predicate == null || predicate(e.Exception))
+                {
+                    Page.ExceptionThrown -= Handler;
+                    tcs.TrySetResult(e.Exception);
+                }
+            }
+
+            Page.ExceptionThrown += Handler;
+            return tcs.Task;
         }
     }
 }
