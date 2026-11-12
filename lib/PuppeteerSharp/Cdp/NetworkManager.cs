@@ -272,7 +272,7 @@ namespace PuppeteerSharp.Cdp
             catch (Exception ex)
             {
                 var message = $"NetworkManager failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
+                _logger.ErrorWithException(ex, message);
                 _ = ApplyToAllClientsAsync(client =>
                 {
                     (client as CDPSession)?.Close(message);
@@ -497,7 +497,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (PuppeteerException ex)
             {
-                _logger.LogError(ex.ToString());
+                _logger.ErrorMessage(ex.ToString());
             }
         }
 
@@ -514,7 +514,7 @@ namespace PuppeteerSharp.Cdp
                 }
                 catch (PuppeteerException ex)
                 {
-                    _logger.LogError(ex.ToString());
+                    _logger.ErrorMessage(ex.ToString());
                 }
             }
 
@@ -662,7 +662,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to FinalizeInterceptionsAsync");
+                _logger.FailedToFinalizeInterceptions(ex);
             }
 
             if (loadingFailed != null)
@@ -784,7 +784,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to replay request interception");
+                _logger.FailedToReplayRequestInterception(ex);
             }
         }
 

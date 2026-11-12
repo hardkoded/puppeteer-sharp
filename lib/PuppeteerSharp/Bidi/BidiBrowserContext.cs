@@ -92,7 +92,7 @@ public class BidiBrowserContext : BrowserContext
                         {
                             // Log the error but don't throw
                             ((BidiBrowser)Browser).LoggerFactory?.CreateLogger<BidiBrowserContext>()
-                                .LogDebug(t.Exception, "Failed to deny permission {Permission}", permission);
+                                .FailedToDenyPermission(t.Exception, permission);
                         }
                     },
                     TaskScheduler.Default);
@@ -171,7 +171,7 @@ public class BidiBrowserContext : BrowserContext
                         {
                             // Log the error but don't throw
                             ((BidiBrowser)Browser).LoggerFactory?.CreateLogger<BidiBrowserContext>()
-                                .LogDebug(t.Exception, "Failed to reset permission {Permission}", permission);
+                                .FailedToResetPermission(t.Exception, permission);
                         }
                     },
                     TaskScheduler.Default));
@@ -234,7 +234,7 @@ public class BidiBrowserContext : BrowserContext
             catch (Exception ex)
             {
                 // Tolerate not supporting browsingContext.setViewport. Only log it.
-                _logger?.LogDebug(ex, "Failed to set viewport");
+                _logger?.FailedToSetViewport(ex);
             }
         }
 
@@ -248,7 +248,7 @@ public class BidiBrowserContext : BrowserContext
             catch (Exception ex)
             {
                 // Tolerate not supporting browser.setClientWindowState. Only log it.
-                _logger?.LogDebug(ex, "Failed to set window bounds");
+                _logger?.FailedToSetWindowBounds(ex);
             }
         }
 
@@ -270,7 +270,7 @@ public class BidiBrowserContext : BrowserContext
         catch (Exception ex)
         {
             ((BidiBrowser)Browser).LoggerFactory?.CreateLogger<BidiBrowserContext>()
-                .LogDebug(ex, "Failed to close browser context");
+                .FailedToCloseBrowserContext(ex);
         }
 
         _targets.Clear();

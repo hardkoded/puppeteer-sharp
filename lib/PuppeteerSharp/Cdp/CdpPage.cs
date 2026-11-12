@@ -635,7 +635,7 @@ public class CdpPage : Page
 
         if (Client?.Detached ?? true)
         {
-            _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
+            _logger.ConnectionClosedPageClosed();
             return;
         }
 
@@ -665,10 +665,7 @@ public class CdpPage : Page
             await _closedFinishedTask.WithTimeout(
                 () =>
                 {
-                    _logger.LogWarning(
-                        "Timed out waiting for confirmation that target {TargetId} was closed. Target.closeTarget " +
-                        "was acknowledged but no Target.detachedFromTarget/targetDestroyed event followed within " +
-                        "{Timeout}ms; this can happen when the close races an in-flight navigation. Continuing.",
+                    _logger.TimedOutWaitingForTargetClose(
                         PrimaryTarget.TargetId,
                         PrimaryTargetClient.Connection.ProtocolTimeout);
                     return Task.CompletedTask;
@@ -999,7 +996,7 @@ public class CdpPage : Page
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process OOPIF message {MessageId}", e.MessageID);
+            _logger.FailedToProcessOopifMessage(ex, e.MessageID);
         }
     }
 
@@ -1048,7 +1045,7 @@ public class CdpPage : Page
         catch (Exception ex)
         {
             var message = $"Page failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-            _logger.LogError(ex, message);
+            _logger.ErrorWithException(ex, message);
             PrimaryTargetClient.Close(message);
         }
     }
@@ -1072,7 +1069,7 @@ public class CdpPage : Page
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to activate primary target");
+            _logger.FailedToActivatePrimaryTarget(ex);
         }
     }
 
@@ -1090,7 +1087,7 @@ public class CdpPage : Page
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to register speculative session");
+            _logger.FailedToRegisterSpeculativeSession(ex);
         }
     }
 
@@ -1115,7 +1112,7 @@ public class CdpPage : Page
 
         if (ctx == null)
         {
-            _logger.LogError($"ExecutionContext not found from message.");
+            _logger.ExecutionContextNotFound();
             return Task.CompletedTask;
         }
 
@@ -1316,7 +1313,7 @@ public class CdpPage : Page
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.ToString());
+                _logger.ErrorWithException(ex, ex.ToString());
             }
         }
 

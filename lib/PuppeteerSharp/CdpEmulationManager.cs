@@ -199,7 +199,7 @@ namespace PuppeteerSharp
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.ErrorMessage(ex.Message);
                 }
 
                 return;
@@ -228,7 +228,7 @@ namespace PuppeteerSharp
                     {
                         if (task.IsFaulted)
                         {
-                            _logger.LogError(task.Exception!.Message);
+                            _logger.ErrorMessage(task.Exception!.Message);
                         }
                     },
                     TaskScheduler.Default),

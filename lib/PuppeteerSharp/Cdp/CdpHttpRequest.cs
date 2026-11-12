@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Cdp.Messaging.Protocol.Network;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -234,7 +235,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.ToString());
+            _logger.ErrorWithException(ex, ex.ToString());
         }
 
         return null;
@@ -461,6 +462,6 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         // In certain cases, protocol will return error if the request was already canceled
         // or the page was closed. We should tolerate these errors.
-        _logger.LogError(ex.ToString());
+        _logger.ErrorMessage(ex.ToString());
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -152,7 +153,7 @@ namespace PuppeteerSharp
                 catch (Exception cleanupException)
                 {
                     var logger = context.Client.Connection.LoggerFactory.CreateLogger<Binding>();
-                    logger.LogError(cleanupException.ToString());
+                    logger.ErrorMessage(cleanupException.ToString());
                 }
             }
             finally

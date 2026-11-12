@@ -150,7 +150,7 @@ public class BidiBrowser : Browser
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to send browser close command");
+                    _logger.FailedToSendBrowserCloseCommand(ex);
                 }
 
                 if (CloseCallback != null)
@@ -166,7 +166,7 @@ public class BidiBrowser : Browser
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to stop driver");
+                    _logger.FailedToStopDriver(ex);
                 }
 
                 Detach();
@@ -174,7 +174,7 @@ public class BidiBrowser : Browser
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to close browser");
+            _logger.FailedToCloseBrowser(ex);
         }
 
         OnClosed();

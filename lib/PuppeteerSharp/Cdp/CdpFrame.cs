@@ -328,7 +328,7 @@ public class CdpFrame : Frame
                     {
                         if (task.IsFaulted)
                         {
-                            Logger.LogError(task.Exception?.ToString());
+                            Logger.ErrorMessage(task.Exception?.ToString());
                         }
                     },
                     TaskScheduler.Default)).ConfigureAwait(false);
@@ -354,7 +354,7 @@ public class CdpFrame : Frame
                     {
                         if (task.IsFaulted)
                         {
-                            Logger.LogError(task.Exception?.ToString());
+                            Logger.ErrorMessage(task.Exception?.ToString());
                         }
                     },
                     TaskScheduler.Default)).ConfigureAwait(false);
