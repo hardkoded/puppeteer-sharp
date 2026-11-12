@@ -61,12 +61,14 @@
   </PropertyGroup>
   <Target Name="DownloadMapperTab" BeforeTargets="PrepareForBuild" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) AND !Exists('$(MapperTabPath)') ">
     <PropertyGroup>
-      <_TarballUrl>https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballUrl>
-      <_TarballPath>$(IntermediateOutputPath)chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballPath>
-      <_ExtractDir>$(IntermediateOutputPath)chromium-bidi-extract</_ExtractDir>
+      <_DownloadDir>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'chromium-bidi-download'))</_DownloadDir>
+      <_TarballPath>$(_DownloadDir)/chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballPath>
+      <_ExtractDir>$(_DownloadDir)/chromium-bidi-extract</_ExtractDir>
+      <_RepositoryRoot>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..', '..'))</_RepositoryRoot>
     </PropertyGroup>
-    <MakeDir Directories="$(IntermediateOutputPath)" />
-    <DownloadFile SourceUrl="$(_TarballUrl)" DestinationFolder="$(IntermediateOutputPath)" DestinationFileName="chromium-bidi-$(ChromiumBidiVersion).tgz" SkipUnchangedFiles="true" />
+    <MakeDir Directories="$(_DownloadDir)" />
+    <Exec WorkingDirectory="$(_RepositoryRoot)"
+          Command="npm pack chromium-bidi@$(ChromiumBidiVersion) --ignore-scripts --pack-destination &quot;$(_DownloadDir)&quot;" />
     <!-- Extract to a TFM-specific temp dir to avoid parallel build races on Windows -->
     <MakeDir Directories="$(_ExtractDir)" />
     <Exec Command="tar -xzf &quot;$(_TarballPath)&quot; --strip-components=3 -C &quot;$(_ExtractDir)&quot; package/lib/iife/mapperTab.js" />
