@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(Page.Workers, Is.Empty);
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests")]
+        [Test, PuppeteerTest("worker.test", "Workers", "should report network requests")]
         public async Task ShouldReportNetworkRequests()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
