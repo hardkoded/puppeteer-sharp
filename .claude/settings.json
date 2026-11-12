@@ -1,5 +1,10 @@
 {
   "enabledPlugins": {
     "csharp-lsp@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "RemoteTrigger"
+    ]
   }
 }
