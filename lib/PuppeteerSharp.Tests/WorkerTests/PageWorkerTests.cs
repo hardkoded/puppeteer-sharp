@@ -29,8 +29,20 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Page.WorkerCreated += (_, _) => workerCreatedTcs.TrySetResult(true);
             Page.WorkerDestroyed += (_, _) => workerDestroyedTcs.TrySetResult(true);
 
+            // The worker realm can exist before the worker script runs. The page
+            // logs the messages that the worker posts after `workerFunction` is defined.
+            var workerFunctionLoggedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Page.Console += (_, e) =>
+            {
+                if (e.Message.Text.Contains("workerFunction"))
+                {
+                    workerFunctionLoggedTcs.TrySetResult(true);
+                }
+            };
+
             await Task.WhenAll(
                 workerCreatedTcs.Task,
+                workerFunctionLoggedTcs.Task,
                 Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
             var worker = Page.Workers[0];
             Assert.That(worker.Url, Does.Contain("worker.js"));
