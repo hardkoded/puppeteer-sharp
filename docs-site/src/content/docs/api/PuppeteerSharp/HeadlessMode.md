@@ -67,7 +67,7 @@ True = 0
 ```
 
 
-Launches the browser in the new headless mode &lt;a href="https://developer.chrome.com/articles/new-headless/"&gt;https://developer.chrome.com/articles/new-headless/&lt;/a&gt;.
+Launches the browser in the new headless mode &lt;a href="https://developer.chrome.com/docs/automation-and-testing/headless"&gt;https://developer.chrome.com/docs/automation-and-testing/headless&lt;/a&gt;.
 
 **Value:** [HeadlessMode](./)
 

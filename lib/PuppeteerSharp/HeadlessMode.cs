@@ -6,7 +6,7 @@ namespace PuppeteerSharp;
 public enum HeadlessMode
 {
     /// <summary>
-    /// Launches the browser in the new headless mode <see href="https://developer.chrome.com/articles/new-headless/"/>.
+    /// Launches the browser in the new headless mode <see href="https://developer.chrome.com/docs/automation-and-testing/headless"/>.
     /// </summary>
     True,
 
