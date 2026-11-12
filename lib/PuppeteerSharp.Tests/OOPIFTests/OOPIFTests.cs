@@ -645,7 +645,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should continue intercepted requests from workers in OOPIFs")]
+        [Test, PuppeteerTest("oopif.test", "OOPIF", "should continue intercepted requests from workers in OOPIFs")]
         public async Task ShouldContinueInterceptedRequestsFromWorkersInOopifs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

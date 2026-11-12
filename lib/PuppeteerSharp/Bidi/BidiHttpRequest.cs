@@ -84,7 +84,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     {
         get
         {
-            if (!CanBeIntercepted())
+            if (!CanBeIntercepted() && !IsInterceptResolutionHandled)
             {
                 return new InterceptResolutionState(InterceptResolutionAction.Disabled);
             }
@@ -522,6 +522,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
             if (response.ContentType != null)
             {
+                // Like the CDP implementation, ContentType replaces a content-type
+                // passed in Headers instead of sending both.
+                responseHeaders.RemoveAll(header => header.Name == "content-type");
                 responseHeaders.Add(new Header("content-type", response.ContentType));
             }
 

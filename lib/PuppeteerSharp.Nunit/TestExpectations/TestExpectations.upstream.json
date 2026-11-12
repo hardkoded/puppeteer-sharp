@@ -2580,38 +2580,6 @@
     "comment": "We can't connect to a browser started with pipe:true"
   },
   {
-    "testIdPattern": "[download.spec] Download Browser.createBrowserContext should download to configured location",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ],
-    "comment": "Firefox does not support download behavior."
-  },
-  {
-    "testIdPattern": "[download.spec] Download Browser.createBrowserContext should not download to location",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ],
-    "comment": "Firefox does not support download behavior."
-  },
-  {
     "testIdPattern": "[drag-and-drop.spec] Drag n' Drop should drag and drop",
     "platforms": [
       "darwin",
@@ -5019,7 +4987,7 @@
     "comment": "Firefox does not support web worker targets in Puppeteer, see [worker.spec] *"
   },
   {
-    "testIdPattern": "[worker.spec] Workers should report network requests*",
+    "testIdPattern": "[worker.test] Workers should report network requests*",
     "platforms": [
       "darwin",
       "linux",
@@ -5034,7 +5002,7 @@
     "comment": "BiDi does not support worker network requests yet"
   },
   {
-    "testIdPattern": "[network.spec] network Request.worker should return null for page navigation requests",
+    "testIdPattern": "[network.test] network Request.worker should return null for page navigation requests",
     "platforms": [
       "darwin",
       "linux",
@@ -5049,7 +5017,7 @@
     "comment": "BiDi does not support worker network requests yet"
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF should continue intercepted requests from workers in OOPIFs",
+    "testIdPattern": "[oopif.test] OOPIF should continue intercepted requests from workers in OOPIFs",
     "platforms": [
       "darwin",
       "linux",
@@ -5064,7 +5032,7 @@
     "comment": "BiDi does not support worker network requests yet"
   },
   {
-    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"request\") should report requests from dedicated workers",
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"request\") should report requests from dedicated workers",
     "platforms": [
       "darwin",
       "linux",
