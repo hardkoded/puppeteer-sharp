@@ -141,6 +141,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             return;
         }
 
+        HttpUtils.ValidateHeaders(payloadOverrides?.Headers);
+
         if (priority is null)
         {
             await ContinueInternalAsync(payloadOverrides).ConfigureAwait(false);
