@@ -17,16 +17,42 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(36));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work after deleting from globalThis")]
-        public async Task ShouldWorkAfterDeletingFromGlobalThis()
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work after deleting exposed function from globalThis")]
+        public async Task ShouldWorkAfterDeletingExposedFunctionFromGlobalThis()
         {
-            await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
-            var result = await Page.EvaluateFunctionAsync<int>(@"async () => {
-                const fn = globalThis.compute;
+            await Page.ExposeFunctionAsync<int, int, object, Task<string>>(
+                "compute",
+                async (a, b, element) =>
+                {
+                    if (a < 0)
+                    {
+                        throw new Exception("negative input");
+                    }
+
+                    var tag = element is IElementHandle handle
+                        ? await handle.EvaluateFunctionAsync<string>("el => el.nodeName")
+                        : string.Empty;
+                    return $"{a * b}:{tag}";
+                });
+            var result = await Page.EvaluateFunctionAsync<JsonElement>(@"async () => {
+                const compute = globalThis.compute;
                 delete globalThis.compute;
-                return await fn(9, 4);
+                const value = await compute(9, 4, document.body);
+                let errorMessage = '';
+                try {
+                    await compute(-1, 4, null);
+                } catch (error) {
+                    errorMessage = error.message;
+                }
+                return {
+                    existsOnWindow: 'compute' in globalThis,
+                    value,
+                    errorMessage,
+                };
             }");
-            Assert.That(result, Is.EqualTo(36));
+            Assert.That(result.GetProperty("existsOnWindow").GetBoolean(), Is.False);
+            Assert.That(result.GetProperty("value").GetString(), Is.EqualTo("36:BODY"));
+            Assert.That(result.GetProperty("errorMessage").GetString(), Is.EqualTo("negative input"));
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should throw exception in page context")]

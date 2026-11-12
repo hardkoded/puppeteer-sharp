@@ -18,7 +18,6 @@ namespace PuppeteerSharp
                     // Depending on the frame loading state either Runtime.evaluate or
                     // Page.addScriptToEvaluateOnNewDocument might succeed. Let's check that we
                     // don't re-wrap Puppeteer's binding.
-                    const registry = (globalThis[Symbol.for('puppeteer.bindings')] ??= new Map());
                     if (globalThis[name]) {
                       return;
                     }
@@ -27,13 +26,8 @@ namespace PuppeteerSharp
                     Object.assign(globalThis, {
                     [name](...args) {
                       // This is the Puppeteer binding.
-                      // State lives in a registry so the binding keeps working
-                      // after being deleted from globalThis.
-                      let callPuppeteer = registry.get(name);
-                      if (!callPuppeteer) {
-                        callPuppeteer = {};
-                        registry.set(name, callPuppeteer);
-                      }
+                      // Needs to be the same as CdpBindingPrefix.
+                      const callPuppeteer = globalThis[prefix + name];
                       callPuppeteer.args ??= new Map();
                       callPuppeteer.callbacks ??= new Map();
 
@@ -41,8 +35,7 @@ namespace PuppeteerSharp
                       callPuppeteer.lastSeq = seq;
                       callPuppeteer.args.set(seq, args);
 
-                      // Needs to be the same as CdpBindingPrefix.
-                      globalThis[prefix + name](
+                      callPuppeteer(
                         JSON.stringify({
                             type,
                             name,

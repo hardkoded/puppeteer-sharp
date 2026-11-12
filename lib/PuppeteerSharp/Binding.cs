@@ -44,6 +44,7 @@ namespace PuppeteerSharp
         {
             var garbage = new List<Task>();
             var ownedHandles = new List<IJSHandle>();
+            var cdpName = BindingUtils.CdpBindingPrefix + Name;
 
             try
             {
@@ -52,9 +53,9 @@ namespace PuppeteerSharp
                     // Getting non-trivial arguments.
                     var handles = await context.EvaluateFunctionHandleAsync(
                         @"(name, seq) => {
-                            return globalThis[Symbol.for('puppeteer.bindings')].get(name).args.get(seq);
+                            return globalThis[name].args.get(seq);
                         }",
-                        Name,
+                        cdpName,
                         id).ConfigureAwait(false);
 
                     try
@@ -119,11 +120,11 @@ namespace PuppeteerSharp
 
                 await context.EvaluateFunctionAsync(
                     @"(name, seq, result) => {
-                        const callbacks = globalThis[Symbol.for('puppeteer.bindings')].get(name).callbacks;
+                        const callbacks = globalThis[name].callbacks;
                         callbacks.get(seq).resolve(result);
                         callbacks.delete(seq);
                     }",
-                    Name,
+                    cdpName,
                     id,
                     result).ConfigureAwait(false);
             }
@@ -141,11 +142,11 @@ namespace PuppeteerSharp
                         @"(name, seq, message, stack) => {
                         const error = new Error(message);
                         error.stack = stack;
-                        const callbacks = globalThis[Symbol.for('puppeteer.bindings')].get(name).callbacks;
+                        const callbacks = globalThis[name].callbacks;
                         callbacks.get(seq).reject(error);
                         callbacks.delete(seq);
                     }",
-                        Name,
+                        cdpName,
                         id,
                         ex.Message,
                         ex.StackTrace).ConfigureAwait(false);
