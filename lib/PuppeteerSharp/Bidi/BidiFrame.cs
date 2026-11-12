@@ -181,7 +181,7 @@ public class BidiFrame : Frame
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
         // Setup load event listeners before setting content to avoid race conditions
-        var (waitForLoadTask, cleanupLoadListeners) = SetupLoadEventListeners(options);
+        var (waitForLoadTask, cleanupLoadListeners) = SetupLoadEventListeners(options, requireCommit: false);
         var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
 
         try
@@ -723,7 +723,7 @@ public class BidiFrame : Frame
     /// Sets up load event listeners early to avoid race conditions.
     /// Returns a task that completes when all load events fire, and a cleanup action.
     /// </summary>
-    private (Task WaitTask, Action Cleanup) SetupLoadEventListeners(NavigationOptions options)
+    private (Task WaitTask, Action Cleanup) SetupLoadEventListeners(NavigationOptions options, bool requireCommit = true)
     {
         var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
@@ -733,7 +733,8 @@ public class BidiFrame : Frame
 
         // Lifecycle events that arrive before the navigation commits belong to the
         // previous document (e.g. the error page of a failed navigation), so ignore them.
-        var committed = 0;
+        // Content set through document.write does not commit a navigation, so it skips the gate.
+        var committed = requireCommit ? 0 : 1;
         void OnNavigationCommitted(object sender, EventArgs args) => Interlocked.Exchange(ref committed, 1);
         BrowsingContext.NavigationCommitted += OnNavigationCommitted;
         cleanupActions.Add(() => BrowsingContext.NavigationCommitted -= OnNavigationCommitted);
