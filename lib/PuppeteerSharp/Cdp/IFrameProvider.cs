@@ -40,4 +40,11 @@ internal interface IFrameProvider
     /// <param name="frameId">The frame ID.</param>
     /// <returns>A <see cref="Task"/> that completes when the frame is retrieved.</returns>
     Task<CdpFrame> GetFrameAsync(string frameId);
+
+    /// <summary>
+    /// Gets the worker that owns the given session.
+    /// </summary>
+    /// <param name="client">The session of the worker.</param>
+    /// <returns>The worker, or null if the session does not belong to a worker of this page.</returns>
+    WebWorker Worker(CDPSession client);
 }

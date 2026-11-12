@@ -24,12 +24,13 @@ namespace PuppeteerSharp.Tests.PageTests
             });
             var geolocation = await Page.EvaluateFunctionAsync<GeolocationOption>(
                 @"() => new Promise(resolve => navigator.geolocation.getCurrentPosition(position => {
-                    resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
+                    resolve({latitude: position.coords.latitude, longitude: position.coords.longitude, accuracy: position.coords.accuracy});
                 }))");
             Assert.That(geolocation, Is.EqualTo(new GeolocationOption
             {
                 Latitude = 10,
-                Longitude = 10
+                Longitude = 10,
+                Accuracy = 0
             }));
         }
 

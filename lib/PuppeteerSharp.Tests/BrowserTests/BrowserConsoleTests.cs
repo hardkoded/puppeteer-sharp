@@ -26,7 +26,11 @@ namespace PuppeteerSharp.Tests.BrowserTests
                     messageTask.Task,
                     Page.EvaluateFunctionAsync("() => console.log('from-page')"));
 
-                Assert.That(messageTask.Task.Result.Type, Is.EqualTo(ConsoleType.Log));
+                var message = messageTask.Task.Result;
+                Assert.That(message.Type, Is.EqualTo(ConsoleType.Log));
+                Assert.That(message.Page, Is.SameAs(Page));
+                Assert.That(message.Frame, Is.SameAs(Page.MainFrame));
+                Assert.That(message.Worker, Is.Null);
             }
             finally
             {
@@ -57,7 +61,10 @@ namespace PuppeteerSharp.Tests.BrowserTests
                     messageTask.Task,
                     worker.EvaluateFunctionAsync("() => console.log('from-service-worker')"));
 
-                Assert.That(messageTask.Task.Result.Type, Is.EqualTo(ConsoleType.Log));
+                var message = messageTask.Task.Result;
+                Assert.That(message.Type, Is.EqualTo(ConsoleType.Log));
+                Assert.That(message.Worker, Is.SameAs(worker));
+                Assert.That(message.Page, Is.Null);
             }
             finally
             {
@@ -122,6 +129,11 @@ namespace PuppeteerSharp.Tests.BrowserTests
                 Assert.That(browserMessages, Has.Count.EqualTo(1));
                 Assert.That(pageMessages[0], Is.SameAs(browserMessages[0]));
                 Assert.That(contextMessages[0], Is.SameAs(browserMessages[0]));
+
+                var message = browserMessages[0];
+                Assert.That(message.Worker, Is.SameAs(workerCreated.Task.Result));
+                Assert.That(message.Page, Is.Null);
+                Assert.That(message.Frame, Is.Null);
             }
             finally
             {

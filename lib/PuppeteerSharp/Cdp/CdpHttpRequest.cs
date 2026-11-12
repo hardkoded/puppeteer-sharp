@@ -35,6 +35,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     internal CdpHttpRequest(
         CDPSession client,
         IFrame frame,
+        WebWorker worker,
         string interceptionId,
         bool allowInterception,
         RequestWillBeSentResponse data,
@@ -59,6 +60,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         HasPostData = data.Request.HasPostData ?? false;
 
         Frame = frame;
+        Worker = worker;
         RedirectChainList = redirectChain;
         Initiator = data.Initiator;
 
