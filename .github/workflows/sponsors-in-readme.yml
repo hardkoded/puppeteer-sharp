@@ -16,12 +16,22 @@ jobs:
           organization: true
           token: ${{ secrets.SPONSORS_README_ACTION_PERSONAL_ACCESS_TOKEN }}
           file: 'README.md'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Update sponsors and contributors for the website 🌐
+        run: node tools/github-ops/update-site-sponsors.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPONSORS_TOKEN: ${{ secrets.SPONSORS_README_ACTION_PERSONAL_ACCESS_TOKEN }}
+
       - name: Push PR
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: Update sponsors
-          title: "Update sponsors"
-          body: Update sponsors
+          commit-message: Update sponsors and contributors
+          title: "Update sponsors and contributors"
+          body: Refreshes the README sponsors and the data behind the website sponsors page.
           branch: sponsors
           base: ${{ inputs.target_branch }}
           delete-branch: true

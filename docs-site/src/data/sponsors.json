@@ -1,0 +1,43 @@
+{
+  "featured": [
+    {
+      "name": "SerpApi",
+      "login": "serpapi",
+      "url": "https://serpapi.com/?utm_source=puppeteersharp",
+      "blurb": "The world's leading provider of search data, pioneering APIs that turn search engine results into structured, developer-ready information."
+    },
+    {
+      "name": "IronPDF",
+      "login": "iron-software",
+      "url": "https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor",
+      "logo": "images/sponsors/iron-software.png",
+      "blurb": "A commercial C# .NET PDF library with Chrome rendering, PDF editing, digital signatures, and encryption."
+    },
+    {
+      "name": "JetBrains",
+      "login": "jetbrains",
+      "url": "https://www.jetbrains.com/?from=PuppeteerSharp",
+      "logo": "https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg",
+      "blurb": "Community ReSharper and Rider licenses for working on this project."
+    },
+    {
+      "name": "HTML/CSS to Image API",
+      "login": "htmlcsstoimage",
+      "url": "https://github.com/htmlcsstoimage",
+      "logo": "images/sponsors/htmlcsstoimage.png",
+      "blurb": "Generate images from HTML and CSS through an API."
+    }
+  ],
+  "github": [
+    {
+      "login": "tolgabalci",
+      "name": "Tolga Balci",
+      "url": "https://github.com/tolgabalci"
+    },
+    {
+      "login": "nogginbox",
+      "name": "Richard Garside",
+      "url": "https://github.com/nogginbox"
+    }
+  ]
+}
