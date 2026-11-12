@@ -9,6 +9,7 @@ namespace PuppeteerSharp.Cdp
     {
         private readonly ConcurrentDictionary<string, RequestWillBeSentResponse> _requestWillBeSentMap = new();
         private readonly ConcurrentDictionary<string, CDPSession> _requestWillBeSentClientMap = new();
+        private readonly ConcurrentDictionary<string, (LoadingFailedEventResponse Event, CDPSession Client)> _loadingFailedBeforeRequestMap = new();
         private readonly ConcurrentDictionary<string, FetchRequestPausedResponse> _requestPausedMap = new();
         private readonly ConcurrentDictionary<string, CDPSession> _requestPausedClientMap = new();
         private readonly ConcurrentDictionary<string, CdpHttpRequest> _httpRequestsMap = new();
@@ -24,6 +25,7 @@ namespace PuppeteerSharp.Cdp
         {
             _requestWillBeSentMap.TryRemove(requestId, out _);
             _requestWillBeSentClientMap.TryRemove(requestId, out _);
+            _loadingFailedBeforeRequestMap.TryRemove(requestId, out _);
             _requestPausedMap.TryRemove(requestId, out _);
             _requestPausedClientMap.TryRemove(requestId, out _);
             _requestWillBeSentExtraInfoMap.TryRemove(requestId, out _);
@@ -90,7 +92,22 @@ namespace PuppeteerSharp.Cdp
         {
             _requestWillBeSentMap.TryRemove(networkRequestId, out _);
             _requestWillBeSentClientMap.TryRemove(networkRequestId, out _);
+            _loadingFailedBeforeRequestMap.TryRemove(networkRequestId, out _);
         }
+
+        // With request interception enabled, Network.loadingFailed can arrive before
+        // the Fetch.requestPaused event that creates the request. The failure is kept
+        // with the stored requestWillBeSent event until then.
+        internal void StoreLoadingFailedBeforeRequest(string networkRequestId, LoadingFailedEventResponse e, CDPSession client)
+        {
+            if (_requestWillBeSentMap.ContainsKey(networkRequestId))
+            {
+                _loadingFailedBeforeRequestMap[networkRequestId] = (e, client);
+            }
+        }
+
+        internal (LoadingFailedEventResponse Event, CDPSession Client)? GetLoadingFailedBeforeRequest(string networkRequestId)
+            => _loadingFailedBeforeRequestMap.TryGetValue(networkRequestId, out var result) ? result : null;
 
         internal FetchRequestPausedResponse GetRequestPaused(string networkRequestId)
         {

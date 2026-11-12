@@ -289,6 +289,14 @@ namespace PuppeteerSharp.Cdp
             }
             else
             {
+                // The request is only created on Fetch.requestPaused when interception
+                // is enabled, which can arrive after Network.loadingFailed.
+                if (_userRequestInterceptionEnabled && _networkEventManager.GetRequest(e.RequestId) == null)
+                {
+                    _networkEventManager.StoreLoadingFailedBeforeRequest(e.RequestId, e, client);
+                    return;
+                }
+
                 EmitLoadingFailed(client, e);
             }
         }
@@ -571,6 +579,9 @@ namespace PuppeteerSharp.Cdp
                 request.UpdateHeaders(extraInfoForRequest.Headers);
             }
 
+            // With request interception enabled, Network.loadingFailed may have
+            // arrived before the Fetch.requestPaused that created this request.
+            var loadingFailed = _networkEventManager.GetLoadingFailedBeforeRequest(e.RequestId);
             _networkEventManager.StoreRequest(e.RequestId, request);
             _networkEventManager.ForgetRequestWillBeSent(e.RequestId);
 
@@ -583,6 +594,15 @@ namespace PuppeteerSharp.Cdp
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to FinalizeInterceptionsAsync");
+            }
+            finally
+            {
+                // Emit the failure once the interception handlers have run,
+                // using the session that reported it.
+                if (loadingFailed.HasValue)
+                {
+                    EmitLoadingFailed(loadingFailed.Value.Client, loadingFailed.Value.Event);
+                }
             }
         }
 
