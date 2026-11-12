@@ -114,7 +114,7 @@ namespace PuppeteerSharp.PageAccessibility
                 {
                     // Frames can get detached at any time resulting in errors.
                     var logger = _client.Connection?.LoggerFactory?.CreateLogger<Accessibility>();
-                    logger?.LogError(ex, "Error getting iframe accessibility snapshot");
+                    logger?.ErrorGettingIframeAccessibilitySnapshot(ex);
                 }
             }
 

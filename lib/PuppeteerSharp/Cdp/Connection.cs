@@ -179,7 +179,7 @@ namespace PuppeteerSharp.Cdp
         {
             if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogTrace("Send ► {Message}", Encoding.UTF8.GetString(message));
+                _logger.TraceSend(Encoding.UTF8.GetString(message));
             }
 
             return Transport.SendAsync(message);
@@ -303,7 +303,7 @@ namespace PuppeteerSharp.Cdp
             {
                 // We could just catch ObjectDisposedException but as this is an event listener
                 // we don't want to crash the whole process.
-                _logger.LogError(exception, $"Failed to process message {e.Message}");
+                _logger.FailedToProcessMessage(exception, Encoding.UTF8.GetString(e.Message));
             }
         }
 
@@ -320,13 +320,13 @@ namespace PuppeteerSharp.Cdp
                 }
                 catch (JsonException exc)
                 {
-                    _logger.LogError(exc, "Failed to deserialize response");
+                    _logger.FailedToDeserializeResponse(exc);
                     return;
                 }
 
                 if (_logger.IsEnabled(LogLevel.Trace))
                 {
-                    _logger.LogTrace("◀ Receive {Message}", Encoding.UTF8.GetString(response));
+                    _logger.TraceReceive(Encoding.UTF8.GetString(response));
                 }
 
                 ProcessIncomingMessage(obj);
@@ -334,7 +334,7 @@ namespace PuppeteerSharp.Cdp
             catch (Exception ex)
             {
                 var message = $"Connection failed to process {e.Message}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
+                _logger.ErrorWithException(ex, message);
                 Close(message);
             }
         }

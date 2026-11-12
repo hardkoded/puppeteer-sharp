@@ -70,7 +70,7 @@ public class CdpWebWorker : WebWorker
             {
                 if (task.IsFaulted)
                 {
-                    _logger.LogError(task.Exception!.Message);
+                    _logger.ErrorMessage(task.Exception!.Message);
                 }
             },
             TaskScheduler.Default);
@@ -80,7 +80,7 @@ public class CdpWebWorker : WebWorker
             {
                 if (task.IsFaulted)
                 {
-                    _logger.LogError(task.Exception!.Message);
+                    _logger.ErrorMessage(task.Exception!.Message);
                 }
             },
             TaskScheduler.Default);
@@ -200,7 +200,7 @@ public class CdpWebWorker : WebWorker
         catch (Exception ex)
         {
             var message = $"Worker failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-            _logger.LogError(ex, message);
+            _logger.ErrorWithException(ex, message);
             Client.Close(message);
         }
     }

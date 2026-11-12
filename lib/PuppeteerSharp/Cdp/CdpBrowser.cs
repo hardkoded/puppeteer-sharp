@@ -28,6 +28,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -671,7 +672,7 @@ public class CdpBrowser : Browser
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.Message);
+            _logger.ErrorWithException(ex, ex.Message);
         }
 
         OnClosed();
@@ -687,7 +688,7 @@ public class CdpBrowser : Browser
         catch (Exception ex)
         {
             var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
-            _logger.LogError(ex, message);
+            _logger.ErrorWithException(ex, message);
             Connection.Close(message);
         }
     }
@@ -731,7 +732,7 @@ public class CdpBrowser : Browser
         catch (Exception ex)
         {
             var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
-            _logger.LogError(ex, message);
+            _logger.ErrorWithException(ex, message);
             Connection.Close(message);
         }
     }
@@ -756,7 +757,7 @@ public class CdpBrowser : Browser
         catch (Exception ex)
         {
             var message = $"Browser failed to process Target Available. {ex.Message}. {ex.StackTrace}";
-            _logger.LogError(ex, message);
+            _logger.ErrorWithException(ex, message);
         }
     }
 }

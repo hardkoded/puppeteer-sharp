@@ -243,7 +243,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
         catch (Exception ex)
         {
-            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().LogError(ex, ex.ToString());
+            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().ErrorWithException(ex, ex.ToString());
             return null;
         }
     }
@@ -686,7 +686,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         catch (Exception ex)
         {
             // The request may have been canceled or the page closed before the challenge was answered.
-            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().LogDebug(ex, "Failed to continue with auth");
+            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().FailedToContinueWithAuth(ex);
         }
     }
 }
