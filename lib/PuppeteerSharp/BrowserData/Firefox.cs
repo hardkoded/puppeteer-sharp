@@ -59,7 +59,7 @@ namespace PuppeteerSharp.BrowserData
 
             if (_cachedBuildIds.TryGetValue(versionKey, out var build))
             {
-                return build;
+                return $"{channel.ToValueString()}_{build}";
             }
 
             var version = await JsonUtils

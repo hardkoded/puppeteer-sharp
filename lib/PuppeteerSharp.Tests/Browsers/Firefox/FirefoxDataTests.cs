@@ -13,6 +13,11 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
         {
             Assert.That(await BrowserData.Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly), Does.StartWith("nightly_"));
             Assert.That(await BrowserData.Firefox.ResolveBuildIdAsync(FirefoxChannel.Stable), Does.StartWith("stable_"));
+
+            // Second resolution is served from the cache and must keep the prefix.
+            Assert.That(await BrowserData.Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly), Does.StartWith("nightly_"));
+            Assert.That(await BrowserData.Firefox.ResolveBuildIdAsync(FirefoxChannel.Beta), Does.StartWith("beta_"));
+            Assert.That(await BrowserData.Firefox.ResolveBuildIdAsync(FirefoxChannel.DevEdition), Does.StartWith("devedition_"));
         }
 
         [Test, PuppeteerTest("firefox-data.spec", "Firefox", "should resolve URLs for Nightly")]
