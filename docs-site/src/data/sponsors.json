@@ -4,7 +4,8 @@
       "name": "SerpApi",
       "login": "serpapi",
       "url": "https://serpapi.com/?utm_source=puppeteersharp",
-      "blurb": "The world's leading provider of search data, pioneering APIs that turn search engine results into structured, developer-ready information."
+      "blurb": "The world's leading provider of search data, pioneering APIs that turn search engine results into structured, developer-ready information.",
+      "logo": "images/sponsors/serpapi-logo.svg"
     },
     {
       "name": "IronPDF",
@@ -17,7 +18,6 @@
       "name": "JetBrains",
       "login": "jetbrains",
       "url": "https://www.jetbrains.com/?from=PuppeteerSharp",
-      "logo": "https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg",
       "blurb": "Community ReSharper and Rider licenses for working on this project."
     },
     {

@@ -173,9 +173,15 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 ### Supporters
 
-<a href="https://serpapi.com/?utm_source=puppeteersharp">**SerpApi**</a> is the world's leading provider of search data, pioneering APIs that turn search engine results into structured, developer-ready information.
+<a href="https://serpapi.com/?utm_source=puppeteersharp">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs-site/public/images/sponsors/serpapi-wordmark-white.svg">
+    <img src="docs-site/public/images/sponsors/serpapi-wordmark-black.svg" alt="SerpApi logo." width="180" />
+  </picture>
+</a>
 
-<!-- TODO: add the official SerpApi logo from https://serpapi.com/media (SVG/PNG) above this line. -->
+SerpApi is the world's leading provider of search data, pioneering APIs that turn search engine results into structured, developer-ready information.
+
 
 PuppeteerSharp is sponsored by [IronPDF](https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor), a commercial C# .NET PDF library and HTML-to-PDF alternative with Chrome rendering, PDF editing, digital signatures, encryption, enterprise licensing, and 24/7 engineering support.
 
