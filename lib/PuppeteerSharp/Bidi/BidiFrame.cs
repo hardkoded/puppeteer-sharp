@@ -769,6 +769,13 @@ public class BidiFrame : Frame
     private Task WaitForNetworkIdleAsync(NavigationOptions options) =>
         WaitForNetworkIdleAsync(options, CancellationToken.None);
 
+    private void OnSameDocumentNavigation()
+    {
+        var page = (Page)Page;
+        page.OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+        page.OnFrameNavigatedSameDocument(new FrameEventArgs(this));
+    }
+
     private async Task WaitForNetworkIdleAsync(NavigationOptions options, CancellationToken cancellationToken)
     {
         var waitUntil = options?.WaitUntil ?? [WaitUntilNavigation.Load];
@@ -954,13 +961,18 @@ public class BidiFrame : Frame
         {
             if (args.Navigation.FragmentReceived)
             {
-                ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+                OnSameDocumentNavigation();
             }
 
             args.Navigation.Fragment += (o, eventArgs) =>
             {
-                ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+                OnSameDocumentNavigation();
             };
+        };
+
+        BrowsingContext.HistoryUpdated += (sender, args) =>
+        {
+            OnSameDocumentNavigation();
         };
 
         BrowsingContext.Load += (sender, args) =>
@@ -973,6 +985,7 @@ public class BidiFrame : Frame
             OnLoadingStarted();
             ((Page)Page).OnDOMContentLoaded();
             ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+            ((Page)Page).OnFrameNavigatedNewDocument(new FrameEventArgs(this));
         };
 
         BrowsingContext.UserPrompt += (sender, args) =>

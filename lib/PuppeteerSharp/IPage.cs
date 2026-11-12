@@ -84,6 +84,18 @@ namespace PuppeteerSharp
         event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
 
         /// <summary>
+        /// Raised when a frame navigates within the same document, for example to a different fragment or via the History API.
+        /// Emitted after <see cref="FrameNavigated"/>.
+        /// </summary>
+        event EventHandler<FrameEventArgs> FrameNavigatedSameDocument;
+
+        /// <summary>
+        /// Raised when a frame is navigated to a new document.
+        /// Emitted after <see cref="FrameNavigated"/>.
+        /// </summary>
+        event EventHandler<FrameEventArgs> FrameNavigatedNewDocument;
+
+        /// <summary>
         /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
         /// </summary>
         event EventHandler Load;

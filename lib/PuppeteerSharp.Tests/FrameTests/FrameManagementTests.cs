@@ -60,6 +60,98 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage + "#foo"));
         }
 
+        [Test, PuppeteerTest("frame.spec", "Frame specs Frame Management", "should send \"framenavigatednewdocument\" when navigating to a new document")]
+        public async Task ShouldSendFrameNavigatedNewDocumentWhenNavigatingToANewDocument()
+        {
+            var events = new List<string>();
+            var frames = new List<IFrame>();
+            Page.FrameNavigated += (_, _) => events.Add("framenavigated");
+            Page.FrameNavigatedSameDocument += (_, _) => events.Add("framenavigatedsamedocument");
+            Page.FrameNavigatedNewDocument += (_, e) =>
+            {
+                events.Add("framenavigatednewdocument");
+                frames.Add(e.Frame);
+            };
+
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(events, Is.EqualTo(new[] { "framenavigated", "framenavigatednewdocument" }));
+            Assert.That(frames, Has.Exactly(1).Items);
+            Assert.That(frames[0], Is.SameAs(Page.MainFrame));
+            Assert.That(frames[0].Url, Is.EqualTo(TestConstants.EmptyPage));
+        }
+
+        [Test, PuppeteerTest("frame.spec", "Frame specs Frame Management", "should send \"framenavigatedsamedocument\" when navigating on anchor URLs")]
+        public async Task ShouldSendFrameNavigatedSameDocumentWhenNavigatingOnAnchorURLs()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            var events = new List<string>();
+            var frames = new List<IFrame>();
+            var sameDocument = new TaskCompletionSource<bool>();
+            Page.FrameNavigated += (_, _) => events.Add("framenavigated");
+            Page.FrameNavigatedSameDocument += (_, e) =>
+            {
+                events.Add("framenavigatedsamedocument");
+                frames.Add(e.Frame);
+                sameDocument.TrySetResult(true);
+            };
+            Page.FrameNavigatedNewDocument += (_, _) => events.Add("framenavigatednewdocument");
+
+            await Task.WhenAll(
+                Page.GoToAsync(TestConstants.EmptyPage + "#foo"),
+                sameDocument.Task);
+            Assert.That(events, Is.EqualTo(new[] { "framenavigated", "framenavigatedsamedocument" }));
+            Assert.That(frames, Has.Exactly(1).Items);
+            Assert.That(frames[0], Is.SameAs(Page.MainFrame));
+            Assert.That(frames[0].Url, Is.EqualTo(TestConstants.EmptyPage + "#foo"));
+        }
+
+        [TestCase("pushState")]
+        [TestCase("replaceState")]
+        [PuppeteerTest("frame.spec", "Frame specs Frame Management", "should send \"framenavigatedsamedocument\" on history.pushState")]
+        public async Task ShouldSendFrameNavigatedSameDocumentOnHistoryApi(string method)
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            var events = new List<string>();
+            var frames = new List<IFrame>();
+            var sameDocument = new TaskCompletionSource<bool>();
+            Page.FrameNavigated += (_, _) => events.Add("framenavigated");
+            Page.FrameNavigatedSameDocument += (_, e) =>
+            {
+                events.Add("framenavigatedsamedocument");
+                frames.Add(e.Frame);
+                sameDocument.TrySetResult(true);
+            };
+            Page.FrameNavigatedNewDocument += (_, _) => events.Add("framenavigatednewdocument");
+
+            await Task.WhenAll(
+                sameDocument.Task,
+                Page.EvaluateFunctionAsync("m => history[m]({}, '', '/history-api.html')", method));
+            Assert.That(events, Is.EqualTo(new[] { "framenavigated", "framenavigatedsamedocument" }));
+            Assert.That(frames, Has.Exactly(1).Items);
+            Assert.That(frames[0], Is.SameAs(Page.MainFrame));
+            Assert.That(frames[0].Url, Is.EqualTo(TestConstants.ServerUrl + "/history-api.html"));
+        }
+
+        [Test, PuppeteerTest("frame.spec", "Frame specs Frame Management", "should send \"framenavigatednewdocument\" for child frames")]
+        public async Task ShouldSendFrameNavigatedNewDocumentForChildFrames()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var frame = await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+
+            var sameDocumentFrames = new List<IFrame>();
+            var newDocumentFrames = new List<IFrame>();
+            Page.FrameNavigatedSameDocument += (_, e) => sameDocumentFrames.Add(e.Frame);
+            Page.FrameNavigatedNewDocument += (_, e) => newDocumentFrames.Add(e.Frame);
+
+            await FrameUtils.NavigateFrameAsync(Page, "frame1", "./Assets/frame.html");
+            Assert.That(sameDocumentFrames, Is.Empty);
+            Assert.That(newDocumentFrames, Has.Exactly(1).Items);
+            Assert.That(newDocumentFrames[0], Is.SameAs(frame));
+            Assert.That(newDocumentFrames[0].Url, Does.Contain("/Assets/frame.html"));
+        }
+
         [Test, PuppeteerTest("frame.spec", "Frame specs Frame Management", "should support url fragment")]
         public async Task ShouldReturnUrlFragmentAsPartOfUrl()
         {
