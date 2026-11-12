@@ -84,7 +84,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     {
         get
         {
-            if (!CanBeIntercepted())
+            if (!CanBeIntercepted() && !IsInterceptResolutionHandled)
             {
                 return new InterceptResolutionState(InterceptResolutionAction.Disabled);
             }
@@ -97,6 +97,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     /// <inheritdoc/>
     public override bool IsInterceptResolutionHandled { get; protected set; }
+
+    /// <inheritdoc/>
+    /// <exception cref="NotSupportedException">Always thrown. Worker requests are not available in WebDriver BiDi.</exception>
+    public override WebWorker Worker => throw new NotSupportedException("Worker is not supported in WebDriver BiDi.");
 
     // TODO: I don't like having this static field at all. This will cause memory leaks for sure.
     // We need to move this to a place where we can control its lifecycle.
@@ -518,6 +522,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
             if (response.ContentType != null)
             {
+                // Like the CDP implementation, ContentType replaces a content-type
+                // passed in Headers instead of sending both.
+                responseHeaders.RemoveAll(header => header.Name == "content-type");
                 responseHeaders.Add(new Header("content-type", response.ContentType));
             }
 

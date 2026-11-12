@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
                 await Page.GoToAsync(TestConstants.EmptyPage);
                 var request = await requestTcs.Task.WithTimeout();
 
-                Assert.That(request.Frame.Page, Is.EqualTo(Page));
+                Assert.That(request.Page, Is.EqualTo(Page));
                 Assert.That(request.Frame, Is.EqualTo(Page.MainFrame));
             }
             finally
@@ -72,6 +72,40 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
+        [Test, PuppeteerTest("browser.test", "Browser specs Browser.on(\"request\")", "should report requests from dedicated workers")]
+        public async Task ShouldReportRequestsFromDedicatedWorkers()
+        {
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
+
+            var url = TestConstants.ServerUrl + "/one-style.css";
+            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void OnRequest(object sender, RequestEventArgs e)
+            {
+                if (e.Request.Url == url)
+                {
+                    requestTcs.TrySetResult(e.Request);
+                }
+            }
+
+            Browser.Request += OnRequest;
+            try
+            {
+                await worker.EvaluateFunctionAsync("url => fetch(url)", url);
+                var request = await requestTcs.Task.WithTimeout();
+
+                Assert.That(request.Worker, Is.SameAs(worker));
+                Assert.That(request.Page, Is.Null);
+            }
+            finally
+            {
+                Browser.Request -= OnRequest;
+            }
+        }
+
         [Test, PuppeteerTest("browser.spec", "Browser specs Browser.on(\"request\")", "should not interfere with request interception")]
         public async Task ShouldNotInterfereWithRequestInterception()
         {
@@ -95,7 +129,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
 
                 Assert.That(response.Ok, Is.True);
                 Assert.That(requests, Has.Exactly(1).Items);
-                Assert.That(requests[0].Frame.Page, Is.EqualTo(Page));
+                Assert.That(requests[0].Page, Is.EqualTo(Page));
                 Assert.That(requests[0].IsInterceptResolutionHandled, Is.True);
             }
             finally

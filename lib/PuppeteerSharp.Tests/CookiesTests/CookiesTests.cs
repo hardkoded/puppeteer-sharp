@@ -226,6 +226,20 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookies, Has.Exactly(1).Items);
         }
 
+        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from the domain itself if the domain field allows subdomains")]
+        public async Task ShouldGetCookiesFromTheDomainItselfIfTheDomainFieldAllowsSubdomains()
+        {
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Url = "https://base_domain.com",
+                Domain = ".base_domain.com",
+                Name = "doggo",
+                Value = "woofs",
+            });
+            var cookies = await Page.GetCookiesAsync("https://base_domain.com");
+            Assert.That(cookies, Has.Exactly(1).Items);
+        }
+
         [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should not get cookies from subdomain if the cookie is for top-level domain")]
         public async Task ShouldNotGetCookiesFromSubdomainIfTheCookieIsForTopLevelDomain()
         {

@@ -23,6 +23,7 @@ public class CdpHttpRequestTests
         var request = new CdpHttpRequest(
             client,
             frame,
+            null,
             "interceptionId",
             true,
             new RequestWillBeSentResponse
@@ -57,6 +58,7 @@ public class CdpHttpRequestTests
         var request = new CdpHttpRequest(
             client,
             frame,
+            null,
             "interceptionId",
             true,
             new RequestWillBeSentResponse

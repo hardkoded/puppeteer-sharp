@@ -72,6 +72,8 @@ namespace PuppeteerSharp.Cdp
             _clients[client] = subscriptions;
             client.MessageReceived += Client_MessageReceived;
             subscriptions.Defer(() => client.MessageReceived -= Client_MessageReceived);
+            client.Disconnected += Client_Disconnected;
+            subscriptions.Defer(() => client.Disconnected -= Client_Disconnected);
 
             try
             {
@@ -97,6 +99,27 @@ namespace PuppeteerSharp.Cdp
             }
 
             subscriptions.Dispose();
+
+            // Only dedicated workers leave requests pending when their session goes
+            // away. The worker is still known here: the session is closed before the
+            // page handles the target detaching.
+            if (_frameManager.Worker(client) == null)
+            {
+                return;
+            }
+
+            foreach (var requestId in _networkEventManager.RequestIdsForClient(client))
+            {
+                if (client.Connection?.IsClosed == true)
+                {
+                    _networkEventManager.ForgetRequest(requestId);
+                    _networkEventManager.Forget(requestId);
+                }
+                else
+                {
+                    AbortPendingWorkerRequest(requestId);
+                }
+            }
         }
 
         internal async Task AuthenticateAsync(Credentials credentials)
@@ -180,6 +203,35 @@ namespace PuppeteerSharp.Cdp
             => error is TargetClosedException ||
                error.Message.Contains("Not supported") ||
                error.Message.Contains("wasn't found");
+
+        private void Client_Disconnected(object sender, EventArgs e)
+        {
+            if (sender is CDPSession client)
+            {
+                RemoveClient(client);
+            }
+        }
+
+        /// <summary>
+        /// Chrome does not send Network.loadingFailed or Network.loadingFinished for requests that are
+        /// still pending when a dedicated worker is terminated. Fail them so that listeners observe the
+        /// end of the request and they no longer count as in flight.
+        /// </summary>
+        private void AbortPendingWorkerRequest(string requestId)
+        {
+            var request = _networkEventManager.GetRequest(requestId);
+            if (request == null)
+            {
+                // The request was never surfaced (e.g. still waiting for Fetch.requestPaused),
+                // so only drop the buffered events.
+                _networkEventManager.Forget(requestId);
+                return;
+            }
+
+            request.FailureText = "net::ERR_ABORTED";
+            ForgetRequest(request, true);
+            RequestFailed?.Invoke(this, new RequestEventArgs(request));
+        }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
@@ -303,7 +355,6 @@ namespace PuppeteerSharp.Cdp
 
             MaybeReassignRequestClient(client, request);
             request.FailureText = !string.IsNullOrEmpty(e.ErrorText) ? e.ErrorText : e.BlockedReason;
-            request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
             ForgetRequest(request, true);
 
@@ -334,7 +385,6 @@ namespace PuppeteerSharp.Cdp
 
             MaybeReassignRequestClient(client, request);
             request.Response?.SetEncodedDataLength(e.EncodedDataLength);
-            request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
             ForgetRequest(request, true);
             RequestFinished?.Invoke(this, new RequestEventArgs(request));
@@ -342,6 +392,12 @@ namespace PuppeteerSharp.Cdp
 
         private void ForgetRequest(CdpHttpRequest request, bool events)
         {
+            // Settle the body so the response content does not wait forever. Under certain
+            // conditions we never get the Network.responseReceived event from protocol
+            // (see https://crbug.com/883475), so the response can be missing. A body that was
+            // already settled (e.g. faulted for a redirect) keeps its value.
+            request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
+
             _networkEventManager.ForgetRequest(request.Id);
 
             if (request.InterceptionId != null)
@@ -501,6 +557,7 @@ namespace PuppeteerSharp.Cdp
             var request = new CdpHttpRequest(
                     client,
                     frame,
+                    _frameManager.Worker(client),
                     e.RequestId,
                     _userRequestInterceptionEnabled,
                     e,
@@ -557,6 +614,7 @@ namespace PuppeteerSharp.Cdp
             request = new CdpHttpRequest(
                 client,
                 frame,
+                _frameManager.Worker(client),
                 fetchRequestId,
                 _userRequestInterceptionEnabled,
                 e,

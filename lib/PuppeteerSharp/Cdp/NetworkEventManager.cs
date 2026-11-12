@@ -33,6 +33,42 @@ namespace PuppeteerSharp.Cdp
             _httpRequestsMap.TryRemove(requestId, out _);
         }
 
+        /// <summary>
+        /// Ids of the requests whose Network events come from <paramref name="client"/>, both the
+        /// ones already emitted and the ones still waiting for more events.
+        /// </summary>
+        /// <param name="client">The session.</param>
+        /// <returns>The request ids.</returns>
+        internal HashSet<string> RequestIdsForClient(CDPSession client)
+        {
+            var ids = new HashSet<string>();
+            foreach (var item in _httpRequestsMap)
+            {
+                if (item.Value.Client == client)
+                {
+                    ids.Add(item.Key);
+                }
+            }
+
+            foreach (var item in _requestWillBeSentClientMap)
+            {
+                if (item.Value == client)
+                {
+                    ids.Add(item.Key);
+                }
+            }
+
+            foreach (var item in _queuedRedirectInfoMap)
+            {
+                if (item.Value.ToArray().Any(info => info.Client == client))
+                {
+                    ids.Add(item.Key);
+                }
+            }
+
+            return ids;
+        }
+
         internal List<RequestWillBeSentExtraInfoResponse> RequestExtraInfo(string networkRequestId)
             => _requestWillBeSentExtraInfoMap.GetOrAdd(networkRequestId, static _ => new());
 
