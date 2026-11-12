@@ -10,11 +10,13 @@ namespace PuppeteerSharp
 {
     internal class Binding
     {
-        public Binding(string name, Delegate fn, string initSource)
+        public Binding(string name, Delegate fn, string initSource, bool ownsArguments = false, bool ownsResult = false)
         {
             Name = name;
             Function = fn;
             InitSource = initSource;
+            OwnsArguments = ownsArguments;
+            OwnsResult = ownsResult;
         }
 
         public string Name { get; }
@@ -23,6 +25,16 @@ namespace PuppeteerSharp
 
         public string InitSource { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether node arguments are disposed after the binding call finishes.
+        /// </summary>
+        public bool OwnsArguments { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether a returned handle is disposed after forwarding it to the page.
+        /// </summary>
+        public bool OwnsResult { get; }
+
         internal async Task RunAsync(
             ExecutionContext context,
             int id,
@@ -30,6 +42,7 @@ namespace PuppeteerSharp
             bool isTrivial)
         {
             var garbage = new List<Task>();
+            var ownedHandles = new List<IJSHandle>();
 
             try
             {
@@ -59,6 +72,13 @@ namespace PuppeteerSharp
                                 {
                                     case RemoteObjectSubtype.Node:
                                         args[index] = handle;
+
+                                        // Exposed functions can retain node arguments beyond this call.
+                                        if (OwnsArguments)
+                                        {
+                                            ownedHandles.Add(handle);
+                                        }
+
                                         break;
 
                                     default:
@@ -91,6 +111,11 @@ namespace PuppeteerSharp
                     }
                 }
 
+                if (OwnsResult && result is IJSHandle resultHandle)
+                {
+                    ownedHandles.Add(resultHandle);
+                }
+
                 await context.EvaluateFunctionAsync(
                     @"(name, seq, result) => {
                         const callbacks = globalThis[name].callbacks;
@@ -100,14 +125,6 @@ namespace PuppeteerSharp
                     Name,
                     id,
                     result).ConfigureAwait(false);
-
-                foreach (var arg in args)
-                {
-                    if (arg is JSHandle handle)
-                    {
-                        garbage.Add(handle.DisposeAsync().AsTask());
-                    }
-                }
             }
             catch (Exception ex)
             {
@@ -140,6 +157,11 @@ namespace PuppeteerSharp
             }
             finally
             {
+                foreach (var owned in ownedHandles)
+                {
+                    garbage.Add(owned.DisposeAsync().AsTask());
+                }
+
                 await Task.WhenAll(garbage).ConfigureAwait(false);
             }
         }
