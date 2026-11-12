@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Browsers
         }
 
         private static BrowserFetcher CreateFetcher(SupportedBrowser browser, CommonOptions options)
-            => new(new BrowserFetcherOptions { Browser = browser, Path = options.Path });
+            => new(new BrowserFetcherOptions { Browser = browser, Path = options.Path, Platform = options.Platform, Host = options.BaseUrl });
 
         private static async Task<int> InstallAsync(InstallOptions options)
         {
