@@ -66,6 +66,7 @@ public class CdpHttpResponseTests
         return new CdpHttpRequest(
             client,
             frame,
+            null,
             "interceptionId",
             true,
             new RequestWillBeSentResponse

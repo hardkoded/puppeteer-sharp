@@ -9,29 +9,6 @@ namespace PuppeteerSharp.Helpers;
 internal static class HttpUtils
 {
     /// <summary>
-    /// Validates that header names and values do not contain CR or LF characters,
-    /// which could be used for header injection.
-    /// </summary>
-    /// <param name="headers">The headers to validate.</param>
-    /// <exception cref="PuppeteerException">Thrown when a header name or value contains CRLF characters.</exception>
-    public static void ValidateHeaders(IEnumerable<KeyValuePair<string, string>> headers)
-    {
-        if (headers == null)
-        {
-            return;
-        }
-
-        foreach (var header in headers)
-        {
-            if (ContainsCrLf(header.Key) || ContainsCrLf(header.Value))
-            {
-                throw new PuppeteerException(
-                    $"Invalid header: CRLF characters are not allowed in header names or values (header: \"{header.Key}\").");
-            }
-        }
-    }
-
-    /// <summary>
     /// Normalizes HTTP header values by handling multiline values.
     /// Multiline header values are joined with commas according to
     /// <see href="https://www.rfc-editor.org/rfc/rfc9110.html#section-5.2">RFC 9110 Section 5.2</see>,
@@ -73,5 +50,25 @@ internal static class HttpUtils
         return builder.ToString();
     }
 
-    private static bool ContainsCrLf(string value) => value != null && value.IndexOfAny(['\r', '\n']) >= 0;
+    /// <summary>
+    /// Validates that header names and values do not contain CRLF characters.
+    /// </summary>
+    /// <param name="headers">The headers to validate.</param>
+    /// <exception cref="PuppeteerException">Thrown when a header name or value contains CR or LF.</exception>
+    public static void ValidateHeaders(IEnumerable<KeyValuePair<string, string>> headers)
+    {
+        if (headers == null)
+        {
+            return;
+        }
+
+        foreach (var header in headers)
+        {
+            if (header.Key.IndexOfAny(['\r', '\n']) != -1 || (header.Value?.IndexOfAny(['\r', '\n']) ?? -1) != -1)
+            {
+                throw new PuppeteerException(
+                    $"Invalid header: CRLF characters are not allowed in header names or values (header: \"{header.Key}\").");
+            }
+        }
+    }
 }

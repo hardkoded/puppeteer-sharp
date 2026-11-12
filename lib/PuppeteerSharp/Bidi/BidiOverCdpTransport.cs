@@ -29,6 +29,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Transport;
 using CdpConnection = PuppeteerSharp.Cdp.Connection;
 
@@ -92,7 +93,7 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send BiDi message via CDP");
+            _logger.FailedToSendBidiMessageViaCdp(ex);
         }
     }
 
@@ -175,7 +176,7 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
                 "Runtime.evaluate",
                 new { expression = $"window.runMapperInstance('{mapperTargetId}')", awaitPromise = true }).ConfigureAwait(false);
 
-            logger.LogDebug("BiDi-over-CDP mapper initialized for target {TargetId}", mapperTargetId);
+            logger.BidiMapperInitialized(mapperTargetId);
 
             return new BidiOverCdpTransport(cdpConnection, mapperSession, logger);
         }
@@ -221,13 +222,13 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
                 if (_logger.IsEnabled(LogLevel.Trace))
                 {
                     var payload = e.MessageData.GetProperty("payload").GetString();
-                    _logger.LogTrace("BiDi mapper debug: {Message}", payload);
+                    _logger.BidiMapperDebug(payload);
                 }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing mapper binding call");
+            _logger.ErrorProcessingMapperBindingCall(ex);
         }
     }
 

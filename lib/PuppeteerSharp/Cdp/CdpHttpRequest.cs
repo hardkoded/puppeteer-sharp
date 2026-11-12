@@ -36,6 +36,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     internal CdpHttpRequest(
         CDPSession client,
         IFrame frame,
+        WebWorker worker,
         string interceptionId,
         bool allowInterception,
         RequestWillBeSentResponse data,
@@ -60,6 +61,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         HasPostData = data.Request.HasPostData ?? false;
 
         Frame = frame;
+        Worker = worker;
         RedirectChainList = redirectChain;
         Initiator = data.Initiator;
 
@@ -116,12 +118,13 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     public override async Task ContinueAsync(Payload overrides = null, int? priority = null)
     {
         VerifyInterception();
-        HttpUtils.ValidateHeaders(overrides?.Headers);
 
         if (!CanBeIntercepted())
         {
             return;
         }
+
+        HttpUtils.ValidateHeaders(overrides?.Headers);
 
         if (priority is null)
         {
@@ -234,7 +237,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.ToString());
+            _logger.ErrorWithException(ex, ex.ToString());
         }
 
         return null;
@@ -295,7 +298,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
     /// <inheritdoc/>
     protected override bool CanBeIntercepted()
-        => !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase) && !FromMemoryCache;
+        => !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase) && !FromMemoryCache && !string.IsNullOrEmpty(InterceptionId);
 
     private static byte[] MergePostDataEntries(Messaging.Request request)
     {
@@ -461,6 +464,6 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         // In certain cases, protocol will return error if the request was already canceled
         // or the page was closed. We should tolerate these errors.
-        _logger.LogError(ex.ToString());
+        _logger.ErrorMessage(ex.ToString());
     }
 }

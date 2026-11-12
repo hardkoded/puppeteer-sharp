@@ -181,7 +181,7 @@ public class BidiFrame : Frame
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
         // Setup load event listeners before setting content to avoid race conditions
-        var (waitForLoadTask, cleanupLoadListeners) = SetupLoadEventListeners(options);
+        var (waitForLoadTask, cleanupLoadListeners) = SetupLoadEventListeners(options, requireCommit: false);
         var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
 
         try
@@ -723,7 +723,7 @@ public class BidiFrame : Frame
     /// Sets up load event listeners early to avoid race conditions.
     /// Returns a task that completes when all load events fire, and a cleanup action.
     /// </summary>
-    private (Task WaitTask, Action Cleanup) SetupLoadEventListeners(NavigationOptions options)
+    private (Task WaitTask, Action Cleanup) SetupLoadEventListeners(NavigationOptions options, bool requireCommit = true)
     {
         var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
@@ -731,10 +731,25 @@ public class BidiFrame : Frame
         List<Task> tasks = new();
         var cleanupActions = new List<Action>();
 
+        // Lifecycle events that arrive before the navigation commits belong to the
+        // previous document (e.g. the error page of a failed navigation), so ignore them.
+        // Content set through document.write does not commit a navigation, so it skips the gate.
+        var committed = requireCommit ? 0 : 1;
+        void OnNavigationCommitted(object sender, EventArgs args) => Interlocked.Exchange(ref committed, 1);
+        BrowsingContext.NavigationCommitted += OnNavigationCommitted;
+        cleanupActions.Add(() => BrowsingContext.NavigationCommitted -= OnNavigationCommitted);
+
         if (waitUntil.Contains(WaitUntilNavigation.Load))
         {
             var loadTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            void OnLoad(object sender, EventArgs args) => loadTcs.TrySetResult(true);
+            void OnLoad(object sender, EventArgs args)
+            {
+                if (Volatile.Read(ref committed) == 1)
+                {
+                    loadTcs.TrySetResult(true);
+                }
+            }
+
             BrowsingContext.Load += OnLoad;
             tasks.Add(loadTcs.Task);
             cleanupActions.Add(() => BrowsingContext.Load -= OnLoad);
@@ -743,7 +758,14 @@ public class BidiFrame : Frame
         if (waitUntil.Contains(WaitUntilNavigation.DOMContentLoaded))
         {
             var domContentLoadedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            void OnDomContentLoaded(object sender, EventArgs args) => domContentLoadedTcs.TrySetResult(true);
+            void OnDomContentLoaded(object sender, EventArgs args)
+            {
+                if (Volatile.Read(ref committed) == 1)
+                {
+                    domContentLoadedTcs.TrySetResult(true);
+                }
+            }
+
             BrowsingContext.DomContentLoaded += OnDomContentLoaded;
             tasks.Add(domContentLoadedTcs.Task);
             cleanupActions.Add(() => BrowsingContext.DomContentLoaded -= OnDomContentLoaded);
@@ -990,6 +1012,13 @@ public class BidiFrame : Frame
 
             if (args.Type == "console")
             {
+                // Chromium sets source.context of dedicated worker logs to the frame that created the worker,
+                // so they reach this handler. BidiWorkerRealm already emits them with the right worker and realm.
+                if (args.Source.RealmId != null && BidiPage.HasWorkerWithRealm(args.Source.RealmId))
+                {
+                    return;
+                }
+
                 var consoleArgs = args.Arguments;
                 var handleArgs = consoleArgs?.Select(arg => ((BidiFrameRealm)MainRealm).CreateHandle(arg)).ToArray() ?? [];
 
@@ -1001,7 +1030,7 @@ public class BidiFrame : Frame
                     {
                         if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
                         {
-                            return BidiDeserializer.Deserialize(jsHandle.RemoteValue);
+                            return BidiDeserializer.Deserialize(jsHandle.RemoteValue) ?? (jsHandle.RemoteValue.Type == RemoteValueType.Undefined ? "undefined" : "null");
                         }
 
                         if (arg is BidiJSHandle { RemoteValue.Type: RemoteValueType.Error } && !string.IsNullOrEmpty(logEntryText))
@@ -1020,7 +1049,8 @@ public class BidiFrame : Frame
                     text,
                     handleArgs,
                     location,
-                    stackTrace);
+                    stackTrace,
+                    frame: this);
 
                 BidiPage.OnConsole(new ConsoleEventArgs(consoleMessage));
             }

@@ -43,6 +43,8 @@ namespace PuppeteerSharp
             "TaskDuration",
             "JSHeapUsedSize",
             "JSHeapTotalSize",
+            "DomContentLoaded",
+            "NavigationStart",
         };
 
         private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();
@@ -222,6 +224,16 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; protected set; }
 
+        internal bool HasConsoleListeners => Console != null;
+
+        /// <summary>
+        /// Whether the console messages of this page are observed by anyone: the page, its browser context or its browser.
+        /// </summary>
+        internal bool HasAnyConsoleListeners
+            => HasConsoleListeners
+               || ((BrowserContext)BrowserContext).HasConsoleListeners
+               || ((Browser)Browser).HasConsoleListeners;
+
         internal Accessibility Accessibility { get; init; }
 
         internal Keyboard Keyboard { get; init; }
@@ -243,11 +255,6 @@ namespace PuppeteerSharp
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length > 0;
 
         internal bool HasErrorEventListeners => Error?.GetInvocationList().Length > 0;
-
-        /// <summary>
-        /// Whether the <see cref="Console"/> event has listeners.
-        /// </summary>
-        protected bool HasConsoleEventListeners => Console?.GetInvocationList().Length == 0;
 
         /// <summary>
         /// Browser.
@@ -1185,25 +1192,45 @@ namespace PuppeteerSharp
         /// Raises the <see cref="RequestFinished"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
+        internal void OnRequestFinished(RequestEventArgs e)
+        {
+            RequestFinished?.Invoke(this, e);
+            (BrowserContext as PuppeteerSharp.BrowserContext)?.OnRequestFinished(e);
+            Browser?.OnRequestFinished(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="RequestFailed"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        internal void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
+        internal void OnRequestFailed(RequestEventArgs e)
+        {
+            RequestFailed?.Invoke(this, e);
+            (BrowserContext as PuppeteerSharp.BrowserContext)?.OnRequestFailed(e);
+            Browser?.OnRequestFailed(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="RequestServedFromCache"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+        internal void OnRequestServedFromCache(RequestEventArgs e)
+        {
+            RequestServedFromCache?.Invoke(this, e);
+            (BrowserContext as PuppeteerSharp.BrowserContext)?.OnRequestServedFromCache(e);
+            Browser?.OnRequestServedFromCache(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="Response"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
+        internal void OnResponse(ResponseCreatedEventArgs e)
+        {
+            Response?.Invoke(this, e);
+            (BrowserContext as PuppeteerSharp.BrowserContext)?.OnResponse(e);
+            Browser?.OnResponse(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="Request"/> event.
@@ -1348,7 +1375,12 @@ namespace PuppeteerSharp
         /// Raises the <see cref="Console"/> event.
         /// </summary>
         /// <param name="e">Event args.</param>
-        protected void OnConsole(ConsoleEventArgs e) => Console?.Invoke(this, e);
+        protected void OnConsole(ConsoleEventArgs e)
+        {
+            Console?.Invoke(this, e);
+            ((BrowserContext)BrowserContext).OnConsole(e);
+            ((Browser)Browser).OnConsole(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="Metrics"/> event.

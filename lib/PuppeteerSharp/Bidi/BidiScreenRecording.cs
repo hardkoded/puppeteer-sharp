@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -47,12 +48,12 @@ internal sealed class BidiScreenRecording : ScreenRecording
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to stop screencast.");
+                Logger.FailedToStopScreencast(ex);
             }
 
             if (!string.IsNullOrEmpty(result?.Error))
             {
-                Logger.LogError("Failed to stop screencast: {Error}", result.Error);
+                Logger.FailedToStopScreencastWithError(result.Error);
             }
 
             var filePath = result?.Path ?? _path;
@@ -69,7 +70,7 @@ internal sealed class BidiScreenRecording : ScreenRecording
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex, "Failed to read screencast file.");
+                    Logger.FailedToReadScreencastFile(ex);
                 }
             }
         }

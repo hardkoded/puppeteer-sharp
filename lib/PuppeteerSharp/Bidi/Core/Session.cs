@@ -106,6 +106,12 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         await Driver.Session.SubscribeAsync(args).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Re-emits a log entry that was received before listeners were attached.
+    /// </summary>
+    /// <param name="entry">The log entry.</param>
+    internal void ReplayLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs entry) => LogEntryAdded?.Invoke(this, entry);
+
     internal virtual void OnEnded(SessionEndArgs e) => Ended?.Invoke(this, e);
 
     internal virtual void OnBrowsingContextContextCreated(BrowsingContextEventArgs e) => BrowsingContextContextCreated?.Invoke(this, e);

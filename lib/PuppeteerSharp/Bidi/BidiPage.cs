@@ -207,10 +207,11 @@ public class BidiPage : Page
     public override async Task EmulateTimezoneAsync(string timezoneId)
     {
         // CDP requires `GMT` prefix before timezone offset, while BiDi does not. Remove the
-        // `GMT` for interop between CDP and BiDi.
-        if (timezoneId?.StartsWith("GMT", StringComparison.Ordinal) == true)
+        // `GMT` for interop between CDP and BiDi. Keep plain `GMT`, which is a valid
+        // timezone ID on its own.
+        if (timezoneId != null)
         {
-            timezoneId = timezoneId.Substring(3);
+            timezoneId = System.Text.RegularExpressions.Regex.Replace(timezoneId, "^GMT(?=[+-])", string.Empty);
         }
 
         try
@@ -799,6 +800,8 @@ public class BidiPage : Page
     internal new void OnPageError(PageErrorEventArgs e) => base.OnPageError(e);
 
     internal new void OnConsole(ConsoleEventArgs e) => base.OnConsole(e);
+
+    internal bool HasWorkerWithRealm(string realmId) => _workers.ContainsKey(realmId);
 
     internal void OnWorkerCreated(BidiWebWorker worker)
     {

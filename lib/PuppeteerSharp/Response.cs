@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -55,6 +56,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public ResourceTiming Timing { get; protected init; }
 
+        /// <inheritdoc/>
+        public abstract long EncodedDataLength { get; }
+
         /// <inheritdoc cref="Request"/>
         protected TRequest Request { get; init; }
 
@@ -63,6 +67,9 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A Task which resolves to a buffer with response body.</returns>
         public abstract ValueTask<byte[]> BufferAsync();
+
+        /// <inheritdoc/>
+        public abstract Task<Stream> StreamAsync();
 
         /// <inheritdoc/>
         public async Task<string> TextAsync() => Encoding.UTF8.GetString(await BufferAsync().ConfigureAwait(false));

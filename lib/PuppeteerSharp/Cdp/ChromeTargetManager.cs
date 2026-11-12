@@ -460,7 +460,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "silentDetach failed.");
+                _logger.SilentDetachFailed(ex);
             }
         }
 
@@ -520,7 +520,7 @@ namespace PuppeteerSharp.Cdp
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to resume service worker.");
+                        _logger.FailedToResumeServiceWorker(ex);
                     }
 
                     await networkConditionsSetUp.ConfigureAwait(false);
@@ -619,7 +619,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to call setAutoAttach and runIfWaitingForDebugger");
+                _logger.FailedToSetAutoAttach(ex);
             }
         }
 
@@ -638,7 +638,7 @@ namespace PuppeteerSharp.Cdp
         private void HandleExceptionOnMessageReceived(string messageId, Exception ex)
         {
             var message = $"Browser failed to process {messageId}. {ex.Message}. {ex.StackTrace}";
-            _logger.LogError(ex, message);
+            _logger.ErrorWithException(ex, message);
             _connection.Close(message);
         }
 
@@ -712,7 +712,7 @@ namespace PuppeteerSharp.Cdp
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to fail blocked service worker request");
+                    _logger.FailedToFailBlockedServiceWorkerRequest(ex);
                 }
             }
 
@@ -736,7 +736,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to block service worker registration");
+                _logger.FailedToBlockServiceWorkerRegistration(ex);
             }
         }
 
@@ -775,7 +775,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to attach to service worker.");
+                _logger.FailedToAttachToServiceWorker(ex);
             }
         }
 
@@ -881,7 +881,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to setup network block list");
+                _logger.FailedToSetupNetworkBlockList(ex);
             }
         }
     }
