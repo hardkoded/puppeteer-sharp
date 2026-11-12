@@ -84,14 +84,19 @@ namespace PuppeteerSharp.QueryHandlers
 
             await foreach (var item in QueryAllAsync(element, selector).ConfigureAwait(false))
             {
-                // Push each element into the JS array
-                await elementHandle.Realm.EvaluateFunctionAsync(
-                    "(arr, elem) => arr.push(elem)",
-                    arrayHandle,
-                    item).ConfigureAwait(false);
-
-                // The array now holds the element; release the temporary handle.
-                await item.DisposeAsync().ConfigureAwait(false);
+                try
+                {
+                    // Push each element into the JS array
+                    await elementHandle.Realm.EvaluateFunctionAsync(
+                        "(arr, elem) => arr.push(elem)",
+                        arrayHandle,
+                        item).ConfigureAwait(false);
+                }
+                finally
+                {
+                    // The array now holds the element; release the temporary handle.
+                    await item.DisposeAsync().ConfigureAwait(false);
+                }
             }
 
             return arrayHandle;
