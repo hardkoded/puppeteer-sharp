@@ -32,6 +32,15 @@ namespace PuppeteerSharp
         public event EventHandler<ConsoleEventArgs> Console;
 
         /// <summary>
+        /// Fired when an uncaught exception happens within the worker. Contains a <see cref="RemoteException"/>.
+        /// </summary>
+        /// <remarks>
+        /// The <see cref="RemoteException.Handle"/> of the exception is disposed right after the event has been
+        /// dispatched. Call <see cref="IJSHandle.Move"/> on it synchronously inside the handler to keep it alive.
+        /// </remarks>
+        public event EventHandler<RemoteExceptionEventArgs> ExceptionThrown;
+
+        /// <summary>
         /// Gets the Worker URL.
         /// </summary>
         /// <value>Worker URL.</value>
@@ -47,7 +56,11 @@ namespace PuppeteerSharp
 
         internal abstract IsolatedWorld World { get; }
 
+<<<<<<< HEAD
         internal bool HasConsoleListeners => Console != null;
+=======
+        internal bool HasExceptionThrownListeners => ExceptionThrown != null;
+>>>>>>> 9583597 (feat: introduce RemoteException for CDP (Page.ExceptionThrown / WebWorker.ExceptionThrown))
 
         /// <summary>
         /// Executes a script in browser context.
@@ -135,6 +148,8 @@ namespace PuppeteerSharp
         public abstract Task CloseAsync();
 
         internal virtual Realm GetMainRealm() => World;
+
+        internal void OnExceptionThrown(RemoteExceptionEventArgs e) => ExceptionThrown?.Invoke(this, e);
 
         internal void OnConsole(ConsoleEventArgs e) => Console?.Invoke(this, e);
     }

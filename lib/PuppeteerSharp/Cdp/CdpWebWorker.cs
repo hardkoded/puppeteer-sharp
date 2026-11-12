@@ -37,6 +37,8 @@ public class CdpWebWorker : WebWorker
     private readonly ILogger _logger;
     private readonly Func<ConsoleType, IJSHandle[], StackTrace, Task> _consoleAPICalled;
     private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
+    private readonly Func<bool> _hasOwnerExceptionListeners;
+    private readonly Action<RemoteException> _forwardException;
     private readonly string _id;
     private readonly TargetType _targetType;
     private readonly TaskCompletionSource<bool> _workerScriptLoaded = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -47,8 +49,12 @@ public class CdpWebWorker : WebWorker
         string targetId,
         TargetType targetType,
         Func<ConsoleType, IJSHandle[], StackTrace, Task> consoleAPICalled,
-        Action<EvaluateExceptionResponseDetails> exceptionThrown) : base(url)
+        Action<EvaluateExceptionResponseDetails> exceptionThrown,
+        Func<bool> hasOwnerExceptionListeners = null,
+        Action<RemoteException> forwardException = null) : base(url)
     {
+        _hasOwnerExceptionListeners = hasOwnerExceptionListeners ?? (() => false);
+        _forwardException = forwardException ?? (_ => { });
         _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
         _id = targetId;
         Client = client;
@@ -205,7 +211,52 @@ public class CdpWebWorker : WebWorker
         }
     }
 
-    private void OnExceptionThrown(RuntimeExceptionThrownResponse e) => _exceptionThrown(e.ExceptionDetails);
+    private void OnExceptionThrown(RuntimeExceptionThrownResponse e)
+    {
+        var details = e.ExceptionDetails;
+        _exceptionThrown(details);
+
+        if (!HasExceptionThrownListeners && !_hasOwnerExceptionListeners())
+        {
+            // Nobody can use a handle, but the browser keeps the exception alive until it is released.
+            if (details.Exception != null)
+            {
+                _ = RemoteObjectHelper.ReleaseObjectAsync(Client, CdpRemoteException.ToRemoteObject(details.Exception), _logger);
+            }
+
+            return;
+        }
+
+        var handle = CreateExceptionHandle(details.Exception);
+        var exception = CdpRemoteException.Create(details, handle);
+
+        // Forward to the page first, then to the worker listeners.
+        _forwardException(exception);
+        OnExceptionThrown(new RemoteExceptionEventArgs(exception));
+
+        // This is a no-op if a listener called Move() on the handle.
+        if (handle != null)
+        {
+            _ = DisposeHandleAsync(handle);
+        }
+    }
+
+    private async Task DisposeHandleAsync(IJSHandle handle)
+    {
+        try
+        {
+            await handle.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to dispose the exception handle");
+        }
+    }
+
+    private IJSHandle CreateExceptionHandle(EvaluateExceptionResponseInfo info)
+        => string.IsNullOrEmpty(info?.ObjectId)
+            ? null
+            : new CdpJSHandle(World, CdpRemoteException.ToRemoteObject(info));
 
     private async Task OnConsoleAPICalledAsync(MessageEventArgs e)
     {
