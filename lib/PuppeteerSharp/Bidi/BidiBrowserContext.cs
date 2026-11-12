@@ -39,7 +39,7 @@ public class BidiBrowserContext : BrowserContext
 {
     private readonly ConcurrentDictionary<BrowsingContext, BidiPage> _pages = [];
     private readonly ConcurrentDictionary<BidiPage, BidiPageTargetInfo> _targets = new();
-    private readonly List<(string Origin, OverridePermission Permission)> _overrides = [];
+    private readonly List<(string Origin, string Permission)> _overrides = [];
     private readonly ILogger<BidiBrowserContext> _logger;
 
     private BidiBrowserContext(BidiBrowser browser, UserContext userContext, BidiBrowserContextOptions options)
@@ -80,7 +80,7 @@ public class BidiBrowserContext : BrowserContext
             var permissionName = GetPermissionName(permission);
 
             var task = UserContext.SetPermissionsAsync(origin, permissionName, state);
-            _overrides.Add((origin, permission));
+            _overrides.Add((origin, permissionName));
 
             // Denying some outdated permissions might fail, so we catch those errors
             if (!permissionsSet.Contains(permission))
@@ -112,7 +112,14 @@ public class BidiBrowserContext : BrowserContext
             throw new PuppeteerException("Origin (*) is not supported by WebDriver BiDi");
         }
 
-        await Task.WhenAll(permissions.Select(entry =>
+        if (permissions == null)
+        {
+            throw new ArgumentNullException(nameof(permissions));
+        }
+
+        // Validate all descriptors before sending any commands, so that an
+        // unsupported descriptor does not leave permissions partially applied.
+        foreach (var entry in permissions)
         {
             if (entry.Permission.AllowWithoutSanitization == true)
             {
@@ -129,6 +136,14 @@ public class BidiBrowserContext : BrowserContext
                 throw new PuppeteerException("userVisibleOnly is not supported by WebDriver BiDi");
             }
 
+            if (entry.Permission.Sysex == true)
+            {
+                throw new PuppeteerException("sysex is not supported by WebDriver BiDi");
+            }
+        }
+
+        await Task.WhenAll(permissions.Select(entry =>
+        {
             var state = entry.State switch
             {
                 PermissionState.Granted => BidiPermissionState.Granted,
@@ -137,6 +152,7 @@ public class BidiBrowserContext : BrowserContext
                 _ => throw new ArgumentOutOfRangeException(nameof(entry), entry.State, "Unknown permission state"),
             };
 
+            _overrides.Add((origin, entry.Permission.Name));
             return UserContext.SetPermissionsAsync(origin, entry.Permission.Name, state);
         })).ConfigureAwait(false);
     }
@@ -147,8 +163,7 @@ public class BidiBrowserContext : BrowserContext
         var tasks = new List<Task>();
         foreach (var (origin, permission) in _overrides.ToArray())
         {
-            var permissionName = GetPermissionName(permission);
-            tasks.Add(UserContext.SetPermissionsAsync(origin, permissionName, BidiPermissionState.Prompt)
+            tasks.Add(UserContext.SetPermissionsAsync(origin, permission, BidiPermissionState.Prompt)
                 .ContinueWith(
                     t =>
                     {
