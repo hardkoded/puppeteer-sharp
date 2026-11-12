@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 
 namespace PuppeteerSharp.Helpers;
@@ -7,6 +8,29 @@ namespace PuppeteerSharp.Helpers;
 /// </summary>
 internal static class HttpUtils
 {
+    /// <summary>
+    /// Validates that header names and values do not contain CR or LF characters,
+    /// which could be used for header injection.
+    /// </summary>
+    /// <param name="headers">The headers to validate.</param>
+    /// <exception cref="PuppeteerException">Thrown when a header name or value contains CRLF characters.</exception>
+    public static void ValidateHeaders(IEnumerable<KeyValuePair<string, string>> headers)
+    {
+        if (headers == null)
+        {
+            return;
+        }
+
+        foreach (var header in headers)
+        {
+            if (ContainsCrLf(header.Key) || ContainsCrLf(header.Value))
+            {
+                throw new PuppeteerException(
+                    $"Invalid header: CRLF characters are not allowed in header names or values (header: \"{header.Key}\").");
+            }
+        }
+    }
+
     /// <summary>
     /// Normalizes HTTP header values by handling multiline values.
     /// Multiline header values are joined with commas according to
@@ -48,4 +72,6 @@ internal static class HttpUtils
 
         return builder.ToString();
     }
+
+    private static bool ContainsCrLf(string value) => value != null && value.IndexOfAny(['\r', '\n']) >= 0;
 }

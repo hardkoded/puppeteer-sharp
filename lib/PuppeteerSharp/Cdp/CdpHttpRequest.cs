@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Cdp.Messaging.Protocol.Network;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -115,6 +116,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     public override async Task ContinueAsync(Payload overrides = null, int? priority = null)
     {
         VerifyInterception();
+        HttpUtils.ValidateHeaders(overrides?.Headers);
 
         if (!CanBeIntercepted())
         {

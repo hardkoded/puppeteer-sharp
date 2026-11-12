@@ -614,6 +614,7 @@ public class CdpPage : Page
             throw new ArgumentNullException(nameof(headers));
         }
 
+        HttpUtils.ValidateHeaders(headers);
         return FrameManager.NetworkManager.SetExtraHTTPHeadersAsync(headers);
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 
@@ -51,6 +52,29 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             Assert.That(
                 HttpUtils.NormalizeHeaderValue("set-cookie", header),
                 Is.EqualTo("a=b\n c=d"));
+        }
+
+        [Test]
+        public void ShouldThrowWhenHeaderNameContainsCrlf()
+        {
+            var headers = new Dictionary<string, string> { ["x-foo\r\nx-injected"] = "bar" };
+
+            Assert.That(() => HttpUtils.ValidateHeaders(headers), Throws.TypeOf<PuppeteerException>().With.Message.Contains("CRLF"));
+        }
+
+        [Test]
+        public void ShouldThrowWhenHeaderValueContainsCrlf()
+        {
+            var headers = new Dictionary<string, string> { ["x-foo"] = "bar\r\nx-injected: evil" };
+
+            Assert.That(() => HttpUtils.ValidateHeaders(headers), Throws.TypeOf<PuppeteerException>().With.Message.Contains("CRLF"));
+        }
+
+        [Test]
+        public void ShouldAcceptValidHeaders()
+        {
+            Assert.That(() => HttpUtils.ValidateHeaders(new Dictionary<string, string> { ["x-foo"] = "bar" }), Throws.Nothing);
+            Assert.That(() => HttpUtils.ValidateHeaders(null), Throws.Nothing);
         }
     }
 }

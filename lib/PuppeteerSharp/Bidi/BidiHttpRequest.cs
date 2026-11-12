@@ -131,6 +131,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
     {
         VerifyInterception();
+        HttpUtils.ValidateHeaders(payloadOverrides?.Headers);
 
         if (!CanBeIntercepted())
         {
