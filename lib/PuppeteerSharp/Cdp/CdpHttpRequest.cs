@@ -295,7 +295,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
     /// <inheritdoc/>
     protected override bool CanBeIntercepted()
-        => !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase) && !FromMemoryCache;
+        => !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase) && !FromMemoryCache && !string.IsNullOrEmpty(InterceptionId);
 
     private static byte[] MergePostDataEntries(Messaging.Request request)
     {

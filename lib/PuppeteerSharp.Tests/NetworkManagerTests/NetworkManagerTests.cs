@@ -24,6 +24,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     private const string RestartFrameId = "84AC261A351B86932B775B76D1DD79F8";
     private const string WorkerUrl = "http://localhost:8907/empty.html";
     private const string WorkerNetworkId = "3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F51";
+    private const string InternalRedirectNetworkId = "LOADERID";
+    private const string InternalRedirectFrameId = "FRAMEID";
+    private const string Hop1Url = "https://example.com/start";
+    private const string Hop2Url = "http://sub.example.com/page";
+    private const string Hop3Url = "https://sub.example.com/page";
 
     // There are some missing calls in this function, but this is enough.
     [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should process extra info on multiple redirects")]
@@ -1233,6 +1238,126 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(failed, Is.Empty);
     }
 
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should emit requestfailed when Network.loadingFailed arrives before Fetch.requestPaused (github.com/puppeteer/puppeteer/issues/15575)")]
+    public async Task ShouldEmitRequestFailedWhenNetworkLoadingFailedArrivesBeforeFetchRequestPaused()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var session = new RecordingCdpSession();
+        var manager = CreateNetworkManager(loggerFactory);
+        await manager.AddClientAsync(session);
+        await manager.SetRequestInterceptionAsync(true);
+
+        var events = new List<string>();
+        var requests = new List<IRequest>();
+        manager.Request += (_, e) =>
+        {
+            requests.Add(e.Request);
+            ((IInterceptableRequest)e.Request).EnqueueInterceptionAction(async request =>
+            {
+                events.Add("request handler");
+                await request.ContinueAsync();
+            });
+        };
+        var failedRequests = new List<IRequest>();
+        manager.RequestFailed += (_, e) =>
+        {
+            events.Add("requestfailed");
+            failedRequests.Add(e.Request);
+        };
+        manager.RequestFinished += (_, _) => events.Add("requestfinished");
+
+        const string url = "http://127.0.0.1:1337/arbitrary-endpoint";
+        session.Emit("Network.requestWillBeSent", new RequestWillBeSentResponse
+        {
+            RequestId = "58462.1",
+            LoaderId = string.Empty,
+            Request = new Request { Url = url, Method = HttpMethod.Get, Headers = [] },
+            Initiator = new Initiator { Type = InitiatorType.Script },
+            RedirectHasExtraInfo = false,
+            Type = ResourceType.Fetch,
+            FrameId = "frame-1",
+        });
+        session.Emit("Network.loadingFailed", new LoadingFailedEventResponse
+        {
+            RequestId = "58462.1",
+            ErrorText = "net::ERR_ABORTED",
+        });
+
+        Assert.That(requests, Is.Empty);
+        Assert.That(failedRequests, Is.Empty);
+
+        session.Emit("Fetch.requestPaused", new FetchRequestPausedResponse
+        {
+            RequestId = "interception-job-1.0",
+            Request = new Request { Url = url, Method = HttpMethod.Get, Headers = [] },
+            FrameId = "frame-1",
+            ResourceType = ResourceType.Fetch,
+            NetworkId = "58462.1",
+        });
+
+        Assert.That(requests, Has.Count.EqualTo(1));
+        await WaitForAsync(() => failedRequests.Count > 0);
+
+        Assert.That(events, Is.EqualTo(new[] { "request handler", "requestfailed" }));
+        Assert.That(failedRequests[0], Is.SameAs(requests[0]));
+        Assert.That(failedRequests[0].FailureText, Is.EqualTo("net::ERR_ABORTED"));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)", "should handle an internal redirect that is not paused by Fetch.requestPaused (pauseFirst=false)")]
+    public Task ShouldHandleAnInternalRedirectThatIsNotPausedByFetchRequestPausedPauseFirstFalse()
+        => HandleInternalUnpausedRedirectAsync(false);
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)", "should handle an internal redirect that is not paused by Fetch.requestPaused (pauseFirst=true)")]
+    public Task ShouldHandleAnInternalRedirectThatIsNotPausedByFetchRequestPausedPauseFirstTrue()
+        => HandleInternalUnpausedRedirectAsync(true);
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)", "should handle delayed responseReceivedExtraInfo across an unpaused internal redirect")]
+    public async Task ShouldHandleDelayedResponseReceivedExtraInfoAcrossAnUnpausedInternalRedirect()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var (session, requests, responses, continued) = await SetupInternalRedirectAsync(loggerFactory);
+
+        // Hop 1: https://example.com/start -> 301 to http://sub.example.com/page
+        session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop1Url));
+        session.Emit("Fetch.requestPaused", InternalRedirectPaused("interception-job-1.0", Hop1Url));
+
+        // Hop 2 arrives BEFORE Hop 1's responseReceivedExtraInfo
+        session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop2Url, InternalRedirectResponse(Hop1Url, HttpStatusCode.MovedPermanently, "Moved Permanently", Hop2Url), true));
+
+        // Hop 3's requestWillBeSent also arrives BEFORE Hop 1's
+        // responseReceivedExtraInfo, queueing Hop 2 in the queued redirect info while
+        // storing Hop 3 in the requestWillBeSent map.
+        session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop3Url, InternalRedirectResponse(Hop2Url, HttpStatusCode.TemporaryRedirect, "Temporary Redirect", Hop3Url)));
+
+        // Now Hop 1's delayed responseReceivedExtraInfo arrives, replaying Hop 2.
+        session.Emit("Network.responseReceivedExtraInfo", new ResponseReceivedExtraInfoResponse
+        {
+            RequestId = InternalRedirectNetworkId,
+            Headers = new Dictionary<string, string> { ["location"] = Hop2Url },
+            StatusCode = HttpStatusCode.MovedPermanently,
+        });
+
+        // Hop 3's Fetch.requestPaused arrives and must still find Hop 3's stored
+        // requestWillBeSent.
+        session.Emit("Fetch.requestPaused", InternalRedirectPaused("interception-job-2.0", Hop3Url));
+
+        session.Emit("Network.responseReceivedExtraInfo", new ResponseReceivedExtraInfoResponse
+        {
+            RequestId = InternalRedirectNetworkId,
+            Headers = new Dictionary<string, string> { ["content-type"] = "text/html" },
+            StatusCode = HttpStatusCode.OK,
+        });
+        session.Emit("Network.responseReceived", InternalRedirectFinalResponse());
+        session.Emit("Network.loadingFinished", new LoadingFinishedEventResponse { RequestId = InternalRedirectNetworkId, EncodedDataLength = 100 });
+
+        await WaitForAsync(() => requests.Count == 3);
+        await Task.WhenAll(continued);
+
+        Assert.That(requests.Select(r => r.Url), Is.EqualTo(new[] { Hop1Url, Hop2Url, Hop3Url }));
+        Assert.That(responses.Select(r => (int)r.Status), Is.EqualTo(new[] { 301, 307, 200 }));
+        Assert.That(requests[2].RedirectChain, Is.EqualTo(new[] { requests[0], requests[1] }));
+    }
+
     private static async Task<(NetworkManager Manager, RecordingCdpSession PageSession, RecordingCdpSession WorkerSession, List<IRequest> Requests, List<IRequest> Failed)>
         SetupWorkerNetworkManagerAsync(ILoggerFactory loggerFactory, bool interception)
     {
@@ -1260,6 +1385,145 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         manager.RequestFailed += (_, e) => failed.Add(e.Request);
         return (manager, pageSession, workerSession, requests, failed);
     }
+
+    private static async Task WaitForAsync(Func<bool> condition)
+    {
+        for (var i = 0; i < 100 && !condition(); i++)
+        {
+            await Task.Delay(50);
+        }
+
+        Assert.That(condition(), Is.True);
+    }
+
+    private static async Task HandleInternalUnpausedRedirectAsync(bool pauseFirst)
+    {
+        using var loggerFactory = new LoggerFactory();
+        var (session, requests, responses, continued) = await SetupInternalRedirectAsync(loggerFactory);
+
+        // Hop 1: https://example.com/start -> 301 to http://sub.example.com/page
+        session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop1Url));
+        session.Emit("Fetch.requestPaused", InternalRedirectPaused("interception-job-1.0", Hop1Url));
+        session.Emit("Network.requestWillBeSentExtraInfo", new RequestWillBeSentExtraInfoResponse
+        {
+            RequestId = InternalRedirectNetworkId,
+            Headers = [],
+        });
+        session.Emit("Network.responseReceivedExtraInfo", new ResponseReceivedExtraInfoResponse
+        {
+            RequestId = InternalRedirectNetworkId,
+            Headers = new Dictionary<string, string> { ["location"] = Hop2Url },
+            StatusCode = HttpStatusCode.MovedPermanently,
+        });
+
+        // Hop 2: http://sub.example.com/page (internally upgraded via 307
+        // without Fetch.requestPaused)
+        session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop2Url, InternalRedirectResponse(Hop1Url, HttpStatusCode.MovedPermanently, "Moved Permanently", Hop2Url), true));
+
+        // Hop 3: https://sub.example.com/page (paused by Fetch.requestPaused)
+        void EmitHop3Paused() => session.Emit("Fetch.requestPaused", InternalRedirectPaused("interception-job-2.0", Hop3Url));
+        void EmitHop3WillBeSent() => session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop3Url, InternalRedirectResponse(Hop2Url, HttpStatusCode.TemporaryRedirect, "Temporary Redirect", Hop3Url)));
+
+        if (pauseFirst)
+        {
+            EmitHop3Paused();
+            EmitHop3WillBeSent();
+        }
+        else
+        {
+            EmitHop3WillBeSent();
+            EmitHop3Paused();
+        }
+
+        session.Emit("Network.requestWillBeSentExtraInfo", new RequestWillBeSentExtraInfoResponse
+        {
+            RequestId = InternalRedirectNetworkId,
+            Headers = [],
+        });
+        session.Emit("Network.responseReceivedExtraInfo", new ResponseReceivedExtraInfoResponse
+        {
+            RequestId = InternalRedirectNetworkId,
+            Headers = new Dictionary<string, string> { ["content-type"] = "text/html" },
+            StatusCode = HttpStatusCode.OK,
+        });
+        session.Emit("Network.responseReceived", InternalRedirectFinalResponse());
+        session.Emit("Network.loadingFinished", new LoadingFinishedEventResponse { RequestId = InternalRedirectNetworkId, EncodedDataLength = 100 });
+
+        await WaitForAsync(() => requests.Count == 3);
+        await Task.WhenAll(continued);
+
+        Assert.That(requests.Select(r => r.Url), Is.EqualTo(new[] { Hop1Url, Hop2Url, Hop3Url }));
+        Assert.That(responses.Select(r => (int)r.Status), Is.EqualTo(new[] { 301, 307, 200 }));
+        Assert.That(requests[2].RedirectChain, Is.EqualTo(new[] { requests[0], requests[1] }));
+        Assert.That(
+            session.Sent
+                .Where(c => c.Method == "Fetch.continueRequest")
+                .Select(c => ((FetchContinueRequestRequest)c.Args).RequestId),
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
+    }
+
+    private static async Task<(RecordingCdpSession Session, List<IRequest> Requests, List<IResponse> Responses, List<Task> Continued)> SetupInternalRedirectAsync(ILoggerFactory loggerFactory)
+    {
+        var session = new RecordingCdpSession();
+        var manager = CreateNetworkManager(loggerFactory);
+        await manager.AddClientAsync(session);
+        await manager.SetRequestInterceptionAsync(true);
+
+        var requests = new List<IRequest>();
+        var responses = new List<IResponse>();
+        var continued = new List<Task>();
+        manager.Request += (_, e) =>
+        {
+            requests.Add(e.Request);
+            continued.Add(e.Request.ContinueAsync());
+        };
+        manager.Response += (_, e) => responses.Add(e.Response);
+        return (session, requests, responses, continued);
+    }
+
+    private static RequestWillBeSentResponse InternalRedirectWillBeSent(string url, ResponsePayload redirectResponse = null, bool redirectHasExtraInfo = false)
+        => new()
+        {
+            RequestId = InternalRedirectNetworkId,
+            LoaderId = InternalRedirectNetworkId,
+            Request = new Request { Url = url, Method = HttpMethod.Get, Headers = [] },
+            RedirectResponse = redirectResponse,
+            Initiator = new Initiator { Type = InitiatorType.Other },
+            RedirectHasExtraInfo = redirectHasExtraInfo,
+            Type = ResourceType.Document,
+            FrameId = InternalRedirectFrameId,
+        };
+
+    private static FetchRequestPausedResponse InternalRedirectPaused(string requestId, string url) => new()
+    {
+        RequestId = requestId,
+        Request = new Request { Url = url, Method = HttpMethod.Get, Headers = [] },
+        FrameId = InternalRedirectFrameId,
+        ResourceType = ResourceType.Document,
+        NetworkId = InternalRedirectNetworkId,
+    };
+
+    private static ResponsePayload InternalRedirectResponse(string url, HttpStatusCode status, string statusText, string location)
+        => new()
+        {
+            Url = url,
+            Status = status,
+            StatusText = statusText,
+            Headers = new Dictionary<string, string> { ["location"] = location },
+        };
+
+    private static ResponseReceivedResponse InternalRedirectFinalResponse() => new()
+    {
+        RequestId = InternalRedirectNetworkId,
+        HasExtraInfo = true,
+        Response = new ResponsePayload
+        {
+            Url = Hop3Url,
+            Status = HttpStatusCode.OK,
+            StatusText = "OK",
+            Headers = [],
+        },
+    };
 
     private static RequestWillBeSentResponse WorkerRequestWillBeSent(string url, ResponsePayload redirectResponse = null)
         => new()

@@ -350,6 +350,16 @@ namespace PuppeteerSharp.Cdp
             var request = _networkEventManager.GetRequest(e.RequestId);
             if (request == null)
             {
+                // With request interception enabled, the request is only created on
+                // Fetch.requestPaused, which can arrive after Network.loadingFailed.
+                // Keep the failure until then so that `requestfailed` is still emitted.
+                if (_userRequestInterceptionEnabled)
+                {
+                    _networkEventManager.StoreLoadingFailedBeforeRequest(e.RequestId, e, client);
+                }
+
+                // For certain requestIds we never receive requestWillBeSent event.
+                // @see https://crbug.com/750469
                 return;
             }
 
@@ -514,9 +524,8 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            var requestWillBeSentEvent = _networkEventManager.GetRequestWillBeSent(e.NetworkId);
-            var networkClient = _networkEventManager.GetRequestWillBeSentClient(e.NetworkId);
-            if (requestWillBeSentEvent == null)
+            var requestWillBeSent = _networkEventManager.GetStoredRequestWillBeSent(e.NetworkId);
+            if (requestWillBeSent == null)
             {
                 // Chrome may restart a request and send a second Fetch.requestPaused
                 // for a request we already emitted (crbug.com/1196004). Repoint
@@ -532,12 +541,15 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
+            var requestWillBeSentEvent = requestWillBeSent.Event;
+            var networkClient = requestWillBeSent.Client;
+
             // Redirect requests have the same `requestId`. Wait for the redirect's
             // own Network.requestWillBeSent.
             if (requestWillBeSentEvent.Request.Url != e.Request.Url ||
                 requestWillBeSentEvent.Request.Method != e.Request.Method)
             {
-                _networkEventManager.ForgetRequestWillBeSent(e.NetworkId);
+                await OnRequestAsync(networkClient, requestWillBeSentEvent, null).ConfigureAwait(false);
                 _networkEventManager.StoreRequestPaused(e.NetworkId, e, client);
                 return;
             }
@@ -570,6 +582,16 @@ namespace PuppeteerSharp.Cdp
 
         private async Task OnRequestAsync(CDPSession client, RequestWillBeSentResponse e, string fetchRequestId, CDPSession fetchClient = null)
         {
+            // With request interception enabled, Network.loadingFailed may have
+            // arrived before the Fetch.requestPaused that created this request.
+            var storedRequestWillBeSent = _networkEventManager.GetStoredRequestWillBeSent(e.RequestId);
+            StoredLoadingFailed loadingFailed = null;
+            if (storedRequestWillBeSent?.Event == e)
+            {
+                loadingFailed = storedRequestWillBeSent.LoadingFailed;
+                _networkEventManager.ForgetRequestWillBeSent(e.RequestId);
+            }
+
             CdpHttpRequest request;
             var redirectChain = new List<IRequest>();
             if (e.RedirectResponse != null)
@@ -631,7 +653,6 @@ namespace PuppeteerSharp.Cdp
             }
 
             _networkEventManager.StoreRequest(e.RequestId, request);
-            _networkEventManager.ForgetRequestWillBeSent(e.RequestId);
 
             Request?.Invoke(this, new RequestEventArgs(request));
 
@@ -642,6 +663,13 @@ namespace PuppeteerSharp.Cdp
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to FinalizeInterceptionsAsync");
+            }
+
+            if (loadingFailed != null)
+            {
+                // Emit the failure once the request's interception handlers have run,
+                // using the session that reported it.
+                EmitLoadingFailed(loadingFailed.Client, loadingFailed.Event);
             }
         }
 
@@ -685,6 +713,12 @@ namespace PuppeteerSharp.Cdp
             // Request interception doesn't happen for data URLs with Network Service.
             if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
+                var previousRequestWillBeSent = _networkEventManager.GetStoredRequestWillBeSent(e.RequestId);
+                if (previousRequestWillBeSent != null && e.RedirectResponse != null)
+                {
+                    await OnRequestAsync(previousRequestWillBeSent.Client, previousRequestWillBeSent.Event, null).ConfigureAwait(false);
+                }
+
                 _networkEventManager.StoreRequestWillBeSent(e.RequestId, e, client);
 
                 var requestPausedEvent = _networkEventManager.GetRequestPaused(e.RequestId);
