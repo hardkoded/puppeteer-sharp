@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
@@ -194,6 +195,82 @@ namespace PuppeteerSharp.Tests.WorkerTests
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript, throw new Error('this is my error');`)");
             var errorLog = await errorTcs.Task;
             Assert.That(errorLog, Does.Contain("this is my error"));
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should emit exception events on the worker and the page")]
+        public async Task ShouldEmitExceptionEventsOnTheWorkerAndThePage()
+        {
+            var worker = await CreateWorkerAsync();
+            var workerTcs = new TaskCompletionSource<RemoteException>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var pageTcs = new TaskCompletionSource<RemoteException>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.ExceptionThrown += (_, e) => workerTcs.TrySetResult(e.Exception);
+            Page.ExceptionThrown += (_, e) => pageTcs.TrySetResult(e.Exception);
+
+            await worker.EvaluateFunctionAsync("() => { setTimeout(() => { throw new Error('worker error'); }); }");
+
+            var workerException = await workerTcs.Task.WithTimeout();
+            var pageException = await pageTcs.Task.WithTimeout();
+            Assert.That(workerException, Is.SameAs(pageException));
+            Assert.That(workerException.Text, Does.Contain("worker error"));
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should report each worker exception on the page exactly once")]
+        public async Task ShouldReportEachWorkerExceptionOnThePageExactlyOnce()
+        {
+            var worker = await CreateWorkerAsync();
+            var exceptions = new List<string>();
+            var pageErrors = new List<string>();
+            var barrier = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Page.ExceptionThrown += (_, e) =>
+            {
+                lock (exceptions)
+                {
+                    exceptions.Add(e.Exception.Text);
+                }
+
+                if (e.Exception.Text.Contains("second"))
+                {
+                    barrier.TrySetResult(true);
+                }
+            };
+            Page.PageError += (_, e) =>
+            {
+                lock (pageErrors)
+                {
+                    pageErrors.Add(e.Message);
+                }
+            };
+
+            await worker.EvaluateFunctionAsync(@"() => {
+                setTimeout(() => { throw new Error('first'); });
+                setTimeout(() => { throw new Error('second'); });
+            }");
+            await barrier.Task.WithTimeout();
+
+            Assert.That(exceptions.Where(t => t.Contains("first")).Count(), Is.EqualTo(1));
+            Assert.That(pageErrors.Where(m => m.Contains("first")).Count(), Is.EqualTo(1));
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should expose the remote exception via a moved handle")]
+        public async Task ShouldExposeTheRemoteExceptionViaAMovedHandle()
+        {
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await Page.EvaluateFunctionAsync(@"() => {
+                globalThis.worker = new Worker(`data:text/javascript,self.onmessage = () => {
+                    const error = new Error('custom');
+                    error.code = 'E_WORKER';
+                    throw error;
+                };`);
+            }");
+            var worker = await workerCreatedTcs.Task;
+
+            var handleTcs = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.ExceptionThrown += (_, e) => handleTcs.TrySetResult(e.Exception.Handle.Move());
+            await Page.EvaluateFunctionAsync("() => globalThis.worker.postMessage(null)");
+
+            await using var handle = await handleTcs.Task.WithTimeout();
+            Assert.That(await handle.EvaluateFunctionAsync<string>("error => error.code"), Is.EqualTo("E_WORKER"));
         }
 
         [Test, PuppeteerTest("worker.spec", "Workers", "should work with console logs")]

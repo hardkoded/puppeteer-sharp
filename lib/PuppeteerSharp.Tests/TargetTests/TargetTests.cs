@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.TargetTests
@@ -128,6 +130,26 @@ namespace PuppeteerSharp.Tests.TargetTests
             var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker);
             var worker = await target.WorkerAsync();
             Assert.That(await worker.EvaluateFunctionAsync<string>("() => self.toString()"), Is.EqualTo("[object ServiceWorkerGlobalScope]"));
+        }
+
+        [Test, PuppeteerTest("target.spec", "Target", "should emit exceptions on a service worker but not on the page")]
+        public async Task ShouldEmitExceptionsOnAServiceWorkerButNotOnThePage()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
+            var target = await Context.WaitForTargetAsync(
+                t => t.Type == TargetType.ServiceWorker,
+                new WaitForOptions(3_000));
+            var worker = await target.WorkerAsync();
+            var pageExceptions = new List<RemoteException>();
+            Page.ExceptionThrown += (_, e) => pageExceptions.Add(e.Exception);
+            var tcs = new TaskCompletionSource<RemoteException>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.ExceptionThrown += (_, e) => tcs.TrySetResult(e.Exception);
+
+            await worker.EvaluateFunctionAsync("() => { setTimeout(() => { throw new Error('service worker error'); }); }");
+
+            var exception = await tcs.Task.WithTimeout();
+            Assert.That(exception.Text, Does.Contain("service worker error"));
+            Assert.That(pageExceptions, Is.Empty);
         }
 
         [Test, PuppeteerTest("target.spec", "Target", "should close a service worker")]
