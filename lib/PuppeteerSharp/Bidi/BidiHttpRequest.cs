@@ -555,9 +555,18 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             // event handler, so we tolerate responding to a request after the connection closed.
             IsInterceptResolutionHandled = false;
         }
-        catch
+        catch (Exception ex)
         {
             IsInterceptResolutionHandled = false;
+
+            // Port-only (pre-existing): a request can become stale between the interception
+            // check and the protocol call; tolerate those protocol errors.
+            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
+                (bidiEx.Message.Contains("Invalid request id") ||
+                 bidiEx.Message.Contains("no such request")))
+            {
+                return;
+            }
 
             throw;
         }
