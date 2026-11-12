@@ -73,6 +73,28 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
         /// <summary>
+        /// Raised when a request issued by any page in the browser is served from the memory cache.
+        /// </summary>
+        event EventHandler<RequestEventArgs> RequestServedFromCache;
+
+        /// <summary>
+        /// Raised when a response is received for a request issued by any page in the browser.
+        /// Use <see cref="IResponse.Request"/> to access the originating request.
+        /// </summary>
+        event EventHandler<ResponseCreatedEventArgs> Response;
+
+        /// <summary>
+        /// Raised when a request issued by any page in the browser fails, for example by timing out.
+        /// HTTP error responses, such as 404 or 503, complete with <see cref="RequestFinished"/> instead.
+        /// </summary>
+        event EventHandler<RequestEventArgs> RequestFailed;
+
+        /// <summary>
+        /// Raised when a request issued by any page in the browser finishes successfully.
+        /// </summary>
+        event EventHandler<RequestEventArgs> RequestFinished;
+
+        /// <summary>
         /// Raised when any page in the browser issues a request. Contains an <see cref="IRequest"/> instance.
         /// Use <see cref="IPage"/> or <see cref="IFrame"/> from the request to identify the originating context.
         /// Events are only delivered for pages that have an <see cref="IPage"/> instance, for example one created via <see cref="PagesAsync"/>.

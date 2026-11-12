@@ -44,6 +44,18 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
+        /// <inheritdoc cref="IBrowser.RequestServedFromCache"/>
+        public event EventHandler<RequestEventArgs> RequestServedFromCache;
+
+        /// <inheritdoc cref="IBrowser.Response"/>
+        public event EventHandler<ResponseCreatedEventArgs> Response;
+
+        /// <inheritdoc cref="IBrowser.RequestFailed"/>
+        public event EventHandler<RequestEventArgs> RequestFailed;
+
+        /// <inheritdoc cref="IBrowser.RequestFinished"/>
+        public event EventHandler<RequestEventArgs> RequestFinished;
+
         /// <inheritdoc/>
         public event EventHandler<RequestEventArgs> Request;
 
@@ -286,6 +298,30 @@ namespace PuppeteerSharp
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
+
+        /// <summary>
+        /// Emits <see cref="RequestServedFromCache"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+
+        /// <summary>
+        /// Emits <see cref="Response"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
+
+        /// <summary>
+        /// Emits <see cref="RequestFailed"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
+
+        /// <summary>
+        /// Emits <see cref="RequestFinished"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
 
         /// <summary>
         /// Emits <see cref="Console"/> event.
