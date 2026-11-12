@@ -228,16 +228,21 @@ public class CdpWebWorker : WebWorker
         }
 
         var handle = CreateExceptionHandle(details.Exception);
-        var exception = CdpRemoteException.Create(details, handle);
-
-        // Forward to the page first, then to the worker listeners.
-        _forwardException(exception);
-        OnExceptionThrown(new RemoteExceptionEventArgs(exception));
-
-        // This is a no-op if a listener called Move() on the handle.
-        if (handle != null)
+        try
         {
-            _ = DisposeHandleAsync(handle);
+            var exception = CdpRemoteException.Create(details, handle);
+
+            // Forward to the page first, then to the worker listeners.
+            _forwardException(exception);
+            OnExceptionThrown(new RemoteExceptionEventArgs(exception));
+        }
+        finally
+        {
+            // This is a no-op if a listener called Move() on the handle.
+            if (handle != null)
+            {
+                _ = DisposeHandleAsync(handle);
+            }
         }
     }
 
