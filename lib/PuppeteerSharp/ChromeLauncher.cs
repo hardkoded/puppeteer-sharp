@@ -105,7 +105,6 @@ namespace PuppeteerSharp
                 "--disable-component-extensions-with-background-pages",
                 "--disable-default-apps",
                 "--disable-dev-shm-usage",
-                "--disable-field-trial-config",
                 "--disable-hang-monitor",
                 "--disable-infobars",
                 "--disable-ipc-flooding-protection",
