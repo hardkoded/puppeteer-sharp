@@ -18,7 +18,8 @@
       "name": "JetBrains",
       "login": "jetbrains",
       "url": "https://www.jetbrains.com/?from=PuppeteerSharp",
-      "blurb": "Community ReSharper and Rider licenses for working on this project."
+      "blurb": "Community ReSharper and Rider licenses for working on this project.",
+      "logo": "images/sponsors/jetbrains.svg"
     },
     {
       "name": "HTML/CSS to Image API",
