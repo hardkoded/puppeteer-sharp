@@ -383,6 +383,39 @@ namespace PuppeteerSharp.Tests.KeyboardTests
                 Is.EqualTo("Keyup: Control ControlLeft []"));
         }
 
+        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send the Enter code for Enter")]
+        public async Task ShouldSendTheEnterCodeForEnter()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.EvaluateFunctionAsync(@"() =>
+            {
+                window.codes = [];
+                window.addEventListener('keydown', event => {
+                    window.codes.push(`${event.code} ${event.location}`);
+                }, true);
+            }");
+            var textarea = await Page.QuerySelectorAsync("textarea");
+
+            await textarea.PressAsync("Enter");
+            await textarea.TypeAsync("\n");
+            await textarea.PressAsync("NumpadEnter");
+            var codes = await Page.EvaluateFunctionAsync<string[]>("() => window.codes");
+            Assert.That(codes[0], Is.EqualTo("Enter 0"));
+            Assert.That(codes[1], Is.EqualTo("Enter 0"));
+            Assert.That(codes[2], Does.StartWith("NumpadEnter "));
+        }
+
+        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should press the Space key")]
+        public async Task ShouldPressTheSpaceKey()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            var textarea = await Page.QuerySelectorAsync("textarea");
+            await textarea.PressAsync("Space");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"),
+                Is.EqualTo(" "));
+        }
+
         [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should press the meta key")]
         public async Task ShouldPressTheMetaKey()
         {
