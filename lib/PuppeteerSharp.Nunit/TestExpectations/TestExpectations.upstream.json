@@ -1705,6 +1705,98 @@
     "comment": "With BiDi we get only text and not a serializable value for console messages"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Exception should dispose the handle after dispatch if not moved",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "WebDriver BiDi log entries carry no remote reference to the thrown value, so RemoteException.handle() is undefined."
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.Exception should expose the remote exception via a moved handle",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "WebDriver BiDi log entries carry no remote reference to the thrown value, so RemoteException.handle() is undefined."
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.Exception should report the name and text as rendered by the browser",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "WebDriver BiDi log entries do not report the name of the exception, so RemoteException.name() is null."
+  },
+  {
+    "testIdPattern": "[worker.spec] Workers should expose the remote exception via a moved handle",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "WebDriver BiDi log entries carry no remote reference to the thrown value, so RemoteException.handle() is undefined."
+  },
+  {
+    "testIdPattern": "[target.spec] Target should emit exceptions on a service worker but not on the page",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "chrome",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Not supported in WebDriver BiDi. Puppeteer creates BiDi worker targets only for dedicated workers, so no 'service_worker' target appears."
+  },
+  {
+    "testIdPattern": "[target.spec] Target should emit exceptions on a service worker but not on the page",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Not supported in WebDriver BiDi. Puppeteer creates BiDi worker targets only for dedicated workers, so no 'service_worker' target appears."
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.newPage should create a background page",
     "platforms": [
       "darwin",

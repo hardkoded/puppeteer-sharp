@@ -155,12 +155,23 @@ internal class BidiWorkerRealm : BidiRealm
 
     private void OnLog(object sender, WebDriverBiDi.Log.EntryAddedEventArgs args)
     {
+        var page = (BidiPage)_worker.Frame.Page;
+        if (args.Type == "javascript")
+        {
+            var exception = new RemoteExceptionEventArgs(BidiRemoteException.Create(args.Text, args.StackTrace));
+            _worker.OnExceptionThrown(exception);
+
+            // Match CDP: exceptions in dedicated workers are also reported on the page that owns the worker.
+            page.OnPageError(BidiRemoteException.CreatePageError(args.Text, args.StackTrace));
+            page.OnExceptionThrown(exception);
+            return;
+        }
+
         if (args.Type != "console")
         {
             return;
         }
 
-        var page = (BidiPage)_worker.Frame.Page;
         var context = (BrowserContext)page.BrowserContext;
         if (!_worker.HasConsoleListeners
             && !page.HasConsoleListeners

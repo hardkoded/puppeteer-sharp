@@ -799,6 +799,8 @@ public class BidiPage : Page
 
     internal new void OnPageError(PageErrorEventArgs e) => base.OnPageError(e);
 
+    internal new void OnExceptionThrown(RemoteExceptionEventArgs e) => base.OnExceptionThrown(e);
+
     internal new void OnConsole(ConsoleEventArgs e) => base.OnConsole(e);
 
     internal bool HasWorkerWithRealm(string realmId) => _workers.ContainsKey(realmId);
