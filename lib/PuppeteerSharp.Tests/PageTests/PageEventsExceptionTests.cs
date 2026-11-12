@@ -8,6 +8,15 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsExceptionTests : PuppeteerPageBaseTest
     {
+        [SetUp]
+        public void RequireCdp()
+        {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("RemoteException is only implemented for CDP.");
+            }
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.Events.Exception", "should fire")]
         public async Task ShouldFire()
         {
