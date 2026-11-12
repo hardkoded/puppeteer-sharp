@@ -68,6 +68,14 @@ namespace PuppeteerSharp
         public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
 
         /// <summary>
+        /// Gets or sets the download behavior applied to the default browser context.
+        /// </summary>
+        /// <remarks>
+        /// Currently only applied when using WebDriver BiDi.
+        /// </remarks>
+        public DownloadBehavior DownloadBehavior { get; set; }
+
+        /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.
         /// </summary>
         public TransportFactory TransportFactory { get; set; }

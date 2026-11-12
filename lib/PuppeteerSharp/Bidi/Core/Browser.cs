@@ -97,10 +97,52 @@ internal sealed class Browser(Session session) : IDisposable
         Session?.Dispose();
     }
 
-    public async Task<UserContext> CreateUserContextAsync()
+    public async Task<UserContext> CreateUserContextAsync(DownloadBehavior downloadBehavior = null)
     {
         var result = await Session.Driver.Browser.CreateUserContextAsync(new CreateUserContextCommandParameters()).ConfigureAwait(false);
+        if (downloadBehavior != null)
+        {
+            await SetDownloadBehaviorAsync(downloadBehavior, [result.UserContextId]).ConfigureAwait(false);
+        }
+
         return CreateUserContext(result.UserContextId);
+    }
+
+    /// <summary>
+    /// Sets the download behavior for the given user contexts. If no user contexts are provided, the behavior is applied globally.
+    /// </summary>
+    /// <param name="downloadBehavior">The download behavior.</param>
+    /// <param name="userContexts">The user contexts.</param>
+    /// <returns>A task that completes when the behavior is set.</returns>
+    public async Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior, string[] userContexts = null)
+    {
+        var parameters = new WebDriverBiDi.Browser.SetDownloadBehaviorCommandParameters();
+
+        switch (downloadBehavior.Policy)
+        {
+            case DownloadPolicy.AllowAndName:
+                throw new NotSupportedException("`allowAndName` is not supported in WebDriver BiDi");
+            case DownloadPolicy.Allow:
+                if (downloadBehavior.DownloadPath == null)
+                {
+                    throw new NotSupportedException("`downloadPath` is required in `allow` download behavior");
+                }
+
+                parameters.DownloadBehavior = new WebDriverBiDi.Browser.DownloadBehaviorAllowed(downloadBehavior.DownloadPath);
+                break;
+            case DownloadPolicy.Deny:
+                parameters.DownloadBehavior = new WebDriverBiDi.Browser.DownloadBehaviorDenied();
+                break;
+            default:
+                return;
+        }
+
+        if (userContexts != null)
+        {
+            parameters.UserContexts.AddRange(userContexts);
+        }
+
+        await Session.Driver.Browser.SetDownloadBehaviorAsync(parameters).ConfigureAwait(false);
     }
 
     public async Task RemoveInterceptAsync(string intercept)

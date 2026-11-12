@@ -2535,38 +2535,6 @@
     "comment": "We can't connect to a browser started with pipe:true"
   },
   {
-    "testIdPattern": "[download.spec] Download Browser.createBrowserContext should download to configured location",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ],
-    "comment": "Firefox does not support download behavior."
-  },
-  {
-    "testIdPattern": "[download.spec] Download Browser.createBrowserContext should not download to location",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ],
-    "comment": "Firefox does not support download behavior."
-  },
-  {
     "testIdPattern": "[drag-and-drop.spec] Drag n' Drop should drag and drop",
     "platforms": [
       "darwin",
