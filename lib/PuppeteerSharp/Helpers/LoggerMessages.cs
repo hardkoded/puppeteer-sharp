@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Helpers
         internal static partial void FailedToReplayRequestInterception(this ILogger logger, Exception exception);
 
         [LoggerMessage(Level = LogLevel.Debug, Message = "Failed to reset permission {Permission}")]
-        internal static partial void FailedToResetPermission(this ILogger logger, Exception exception, OverridePermission permission);
+        internal static partial void FailedToResetPermission(this ILogger logger, Exception exception, string permission);
 
         [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to resolve fallback download URL from dashboard")]
         internal static partial void FailedToResolveFallbackUrl(this ILogger logger, Exception exception);

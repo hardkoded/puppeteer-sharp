@@ -303,7 +303,7 @@ namespace PuppeteerSharp.Cdp
             {
                 // We could just catch ObjectDisposedException but as this is an event listener
                 // we don't want to crash the whole process.
-                _logger.FailedToProcessMessage(exception, Encoding.UTF8.GetString(e.Message));
+                _logger.FailedToProcessMessage(exception, $"{e.Message.Length} bytes");
             }
         }
 
