@@ -205,8 +205,9 @@ public class BidiPage : Page
     public override async Task EmulateTimezoneAsync(string timezoneId)
     {
         // CDP requires `GMT` prefix before timezone offset, while BiDi does not. Remove the
-        // `GMT` for interop between CDP and BiDi.
-        if (timezoneId?.StartsWith("GMT", StringComparison.Ordinal) == true)
+        // `GMT` for interop between CDP and BiDi. A plain `GMT` ID is a valid timezone on its own
+        // and must be kept.
+        if (timezoneId?.StartsWith("GMT", StringComparison.Ordinal) == true && timezoneId.Length > 3)
         {
             timezoneId = timezoneId.Substring(3);
         }
