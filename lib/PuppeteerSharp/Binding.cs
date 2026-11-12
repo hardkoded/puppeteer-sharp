@@ -52,7 +52,7 @@ namespace PuppeteerSharp
                     // Getting non-trivial arguments.
                     var handles = await context.EvaluateFunctionHandleAsync(
                         @"(name, seq) => {
-                            return globalThis[name].args.get(seq);
+                            return globalThis[Symbol.for('puppeteer.bindings')].get(name).args.get(seq);
                         }",
                         Name,
                         id).ConfigureAwait(false);
@@ -119,7 +119,7 @@ namespace PuppeteerSharp
 
                 await context.EvaluateFunctionAsync(
                     @"(name, seq, result) => {
-                        const callbacks = globalThis[name].callbacks;
+                        const callbacks = globalThis[Symbol.for('puppeteer.bindings')].get(name).callbacks;
                         callbacks.get(seq).resolve(result);
                         callbacks.delete(seq);
                     }",
@@ -141,7 +141,7 @@ namespace PuppeteerSharp
                         @"(name, seq, message, stack) => {
                         const error = new Error(message);
                         error.stack = stack;
-                        const callbacks = globalThis[name].callbacks;
+                        const callbacks = globalThis[Symbol.for('puppeteer.bindings')].get(name).callbacks;
                         callbacks.get(seq).reject(error);
                         callbacks.delete(seq);
                     }",

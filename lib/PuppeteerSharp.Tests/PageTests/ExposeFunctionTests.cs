@@ -17,6 +17,18 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(36));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work after deleting from globalThis")]
+        public async Task ShouldWorkAfterDeletingFromGlobalThis()
+        {
+            await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
+            var result = await Page.EvaluateFunctionAsync<int>(@"async () => {
+                const fn = globalThis.compute;
+                delete globalThis.compute;
+                return await fn(9, 4);
+            }");
+            Assert.That(result, Is.EqualTo(36));
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should throw exception in page context")]
         public async Task ShouldThrowExceptionInPageContext()
         {
