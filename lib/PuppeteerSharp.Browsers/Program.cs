@@ -31,11 +31,19 @@ namespace PuppeteerSharp.Browsers
         }
 
         private static BrowserFetcher CreateFetcher(SupportedBrowser browser, CommonOptions options)
-            => new(new BrowserFetcherOptions { Browser = browser, Path = options.Path, Platform = options.Platform, Host = options.BaseUrl });
+            => new(new BrowserFetcherOptions { Browser = browser, Path = options.Path, Platform = options.Platform })
+            {
+                BaseUrl = options.BaseUrl,
+            };
 
         private static async Task<int> InstallAsync(InstallOptions options)
         {
             var spec = BrowserSpec.Parse(options.Browser);
+            if (spec.Browser == SupportedBrowser.ChromeHeadlessShell && spec.TryGetTag(out _))
+            {
+                throw new ArgumentException("Tags are not supported for chrome-headless-shell. Use an explicit build id, or install chrome@<tag>, which also installs the headless shell.");
+            }
+
             var fetcher = CreateFetcher(spec.Browser, options);
             var installed = spec.Version == null
                 ? await fetcher.DownloadAsync().ConfigureAwait(false)
