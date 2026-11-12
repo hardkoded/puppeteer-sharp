@@ -32,5 +32,18 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
             var disabledFeatures = disableFeaturesFlag.Split('=')[1].Split(',');
             Assert.That(disabledFeatures, Does.Not.Contain("Translate"));
         }
+
+        [Test, PuppeteerTest("ChromeLauncher.test.ts", "ChromeLauncher", "does not mutate options.args")]
+        public void DoesNotMutateOptionsArgs()
+        {
+            var original = new[] { "--enable-features=Foo", "--disable-features=Bar", "--no-sandbox" };
+            var options = new LaunchOptions { Args = (string[])original.Clone() };
+
+            var args = ChromeLauncher.GetDefaultArgs(options);
+
+            Assert.That(options.Args, Is.EqualTo(original));
+            Assert.That(args.Count(a => a.StartsWith("--enable-features=", System.StringComparison.Ordinal)), Is.EqualTo(1));
+            Assert.That(args.Count(a => a.StartsWith("--disable-features=", System.StringComparison.Ordinal)), Is.EqualTo(1));
+        }
     }
 }

@@ -54,7 +54,7 @@ namespace PuppeteerSharp
             var userEnabledFeatures = GetFeatures("--enable-features", options.Args);
             if (args != null && userEnabledFeatures.Length > 0)
             {
-                args = RemoveMatchingFlags(options.Args, "--enable-features");
+                args = RemoveMatchingFlags(args, "--enable-features");
             }
 
             // Merge default enabled features with user-provided ones, if any.
@@ -69,7 +69,7 @@ namespace PuppeteerSharp
             var userDisabledFeatures = GetFeatures("--disable-features", options.Args);
             if (args is not null && userDisabledFeatures.Length > 0)
             {
-                args = RemoveMatchingFlags(options.Args, "--disable-features");
+                args = RemoveMatchingFlags(args, "--disable-features");
             }
 
             // Merge default disabled features with user-provided ones, if any.
