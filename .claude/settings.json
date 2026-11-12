@@ -4,7 +4,8 @@
   },
   "permissions": {
     "allow": [
-      "RemoteTrigger"
+      "RemoteTrigger",
+      "mcp__claude-code-remote__add_repo"
     ]
   }
 }
