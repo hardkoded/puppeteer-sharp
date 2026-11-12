@@ -17,9 +17,11 @@ public class InterventionHeadersTests : PuppeteerPageBaseTest
         "));
         Server.SetRedirect("/intervention.js", "/redirect.js");
 
+        var redirectRequested = false;
         string interventionHeader = null;
         Server.SetRoute("/redirect.js", context =>
         {
+            redirectRequested = true;
             interventionHeader = context.Request.Headers["intervention"];
             return context.Response.WriteAsync("console.log(1);");
         });
@@ -29,7 +31,17 @@ public class InterventionHeadersTests : PuppeteerPageBaseTest
 
         await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
 
-        Assert.That(interventionHeader, Does.Contain("feature/5718547946799104"));
+        // The intercepted document.write() script must still reach the server.
+        Assert.That(redirectRequested, Is.True);
+
+        // Chrome 157+ no longer attaches the `Intervention` request header
+        // (https://crrev.com/c/8504605). Older versions still do; check for the
+        // feature URL substring rather than https://www.chromestatus.com to make it
+        // work with Edgium.
+        if (!string.IsNullOrEmpty(interventionHeader))
+        {
+            Assert.That(interventionHeader, Does.Contain("feature/5718547946799104"));
+        }
     }
 }
 
