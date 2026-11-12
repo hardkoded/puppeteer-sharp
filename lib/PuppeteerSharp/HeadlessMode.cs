@@ -16,7 +16,7 @@ public enum HeadlessMode
     False,
 
     /// <summary>
-    /// Launches the browser in the old headless mode <see href="https://developer.chrome.com/blog/chrome-headless-shell"/>.
+    /// Launches the browser in the old headless mode <see href="https://developer.chrome.com/docs/automation-and-testing/headless-chrome-shell"/>.
     /// </summary>
     Shell,
 }

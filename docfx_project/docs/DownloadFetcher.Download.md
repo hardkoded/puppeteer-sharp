@@ -7,7 +7,7 @@ You need to download an use an specific browser version.
 
 ## Solution
 
-Thank to [Google for testing](https://developer.chrome.com/blog/chrome-for-testing). Now finding and downloading a specific version of Chrome is easy.
+Thank to [Google for testing](https://developer.chrome.com/docs/automation-and-testing/chrome-for-testing). Now finding and downloading a specific version of Chrome is easy.
 
 You will find the available versions [here](https://googlechromelabs.github.io/chrome-for-testing/known-good-versions.json).
 Once you have the version you want, you can download it using the `BrowserFetcher` class.
