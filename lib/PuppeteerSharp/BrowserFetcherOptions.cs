@@ -38,6 +38,12 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the default or a custom download delegate.
         /// </summary>
+        /// <remarks>
+        /// The default download uses <see cref="System.Net.Http.HttpClient"/>, which trusts the certificates of the operating system.
+        /// If browser downloads must trust custom certificates (for example behind a corporate proxy), install the certificate
+        /// in the system store (on Linux you can also point the SSL_CERT_FILE or SSL_CERT_DIR environment variables to it),
+        /// or provide a delegate here that downloads the file with an <see cref="System.Net.Http.HttpClient"/> configured with your certificates.
+        /// </remarks>
         public CustomFileDownloadAction CustomFileDownload { get; set; }
     }
 }

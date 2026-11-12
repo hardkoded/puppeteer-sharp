@@ -903,6 +903,7 @@ namespace PuppeteerSharp
         /// <returns>A Task which resolves after the PDF is generated.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless.
+        /// The media type emulated with <see cref="EmulateMediaTypeAsync(MediaType)"/> persists on the page, so call it with <see cref="MediaType.Screen"/> before generating the PDF to use screen styles.
         /// </remarks>
         Task PdfAsync(string file);
 
@@ -914,6 +915,7 @@ namespace PuppeteerSharp
         /// <returns>A Task which resolves after the PDF is generated.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless.
+        /// The media type emulated with <see cref="EmulateMediaTypeAsync(MediaType)"/> persists on the page, so call it with <see cref="MediaType.Screen"/> before generating the PDF to use screen styles.
         /// </remarks>
         Task PdfAsync(string file, PdfOptions options);
 
@@ -923,6 +925,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless.
+        /// The media type emulated with <see cref="EmulateMediaTypeAsync(MediaType)"/> persists on the page, so call it with <see cref="MediaType.Screen"/> before generating the PDF to use screen styles.
         /// </remarks>
         Task<byte[]> PdfDataAsync();
 
@@ -933,6 +936,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless.
+        /// The media type emulated with <see cref="EmulateMediaTypeAsync(MediaType)"/> persists on the page, so call it with <see cref="MediaType.Screen"/> before generating the PDF to use screen styles.
         /// </remarks>
         Task<byte[]> PdfDataAsync(PdfOptions options);
 
@@ -942,6 +946,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the PDF data.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless.
+        /// The media type emulated with <see cref="EmulateMediaTypeAsync(MediaType)"/> persists on the page, so call it with <see cref="MediaType.Screen"/> before generating the PDF to use screen styles.
         /// </remarks>
         Task<Stream> PdfStreamAsync();
 
@@ -952,6 +957,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the PDF data.</returns>
         /// <remarks>
         /// Generating a pdf is currently only supported in Chrome headless.
+        /// The media type emulated with <see cref="EmulateMediaTypeAsync(MediaType)"/> persists on the page, so call it with <see cref="MediaType.Screen"/> before generating the PDF to use screen styles.
         /// </remarks>
         Task<Stream> PdfStreamAsync(PdfOptions options);
 
