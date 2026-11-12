@@ -84,7 +84,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     {
         get
         {
-            if (!CanBeIntercepted())
+            if (!CanBeIntercepted() && !IsInterceptResolutionHandled)
             {
                 return new InterceptResolutionState(InterceptResolutionAction.Disabled);
             }

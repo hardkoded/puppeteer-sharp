@@ -35,6 +35,7 @@ internal class Request : IDisposable
     private readonly BrowsingContext _browsingContext;
     private readonly BeforeRequestSentEventArgs _eventArgs;
     private string _error;
+    private bool _isBlocked;
     private IList<ReadOnlyHeader> _headers;
     private Request _redirect;
     private WebDriverBiDi.Network.ResponseData _response;
@@ -45,6 +46,7 @@ internal class Request : IDisposable
     {
         _browsingContext = browsingContext;
         _eventArgs = args;
+        _isBlocked = args.IsBlocked;
         _headers = args.Request.Headers;
         Timings = args.Request.Timings;
     }
@@ -89,7 +91,7 @@ internal class Request : IDisposable
 
     public bool HasError => _error != null;
 
-    public bool IsBlocked => _eventArgs.IsBlocked;
+    public bool IsBlocked => _isBlocked;
 
     public string ErrorText => _error;
 
@@ -257,7 +259,13 @@ internal class Request : IDisposable
 
         Session.NetworkAuthRequired += (_, args) =>
         {
-            if (args.BrowsingContextId != _browsingContext.Id || args.Request.RequestId != Id || !args.IsBlocked)
+            if (args.BrowsingContextId != _browsingContext.Id || args.Request.RequestId != Id)
+            {
+                return;
+            }
+
+            _isBlocked = args.IsBlocked;
+            if (!args.IsBlocked)
             {
                 return;
             }
@@ -272,6 +280,7 @@ internal class Request : IDisposable
                 return;
             }
 
+            _isBlocked = args.IsBlocked;
             _error = args.ErrorText;
             _headers = args.Request.Headers;
             Timings = args.Request.Timings;
@@ -288,6 +297,7 @@ internal class Request : IDisposable
                 return;
             }
 
+            _isBlocked = args.IsBlocked;
             _response = args.Response;
             _headers = args.Request.Headers;
             Timings = args.Request.Timings;
@@ -303,6 +313,7 @@ internal class Request : IDisposable
                 return;
             }
 
+            _isBlocked = args.IsBlocked;
             _response = args.Response;
             _headers = args.Request.Headers;
             Timings = args.Request.Timings;
