@@ -408,7 +408,16 @@ public class BidiBrowser : Browser
         browser.InitializeAsync();
         if (options.DownloadBehavior != null)
         {
-            await session.Browser.SetDownloadBehaviorAsync(options.DownloadBehavior, [Core.UserContext.DEFAULT]).ConfigureAwait(false);
+            try
+            {
+                await session.Browser.SetDownloadBehaviorAsync(options.DownloadBehavior, [Core.UserContext.DEFAULT]).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Do not leak the browser when the download policy cannot be applied.
+                await browser.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
         }
 
         return browser;

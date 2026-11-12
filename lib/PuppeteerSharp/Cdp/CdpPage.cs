@@ -619,6 +619,7 @@ public class CdpPage : Page
             throw new ArgumentNullException(nameof(headers));
         }
 
+        HttpUtils.ValidateHeaders(headers);
         return FrameManager.NetworkManager.SetExtraHTTPHeadersAsync(headers);
     }
 
@@ -1146,9 +1147,16 @@ public class CdpPage : Page
                 return handle.RemoteObject.Description.Split('\n')[0];
             }
 
+            if (handle.RemoteObject.Subtype == RemoteObjectSubtype.Null)
+            {
+                return "null";
+            }
+
             return handle.RemoteObject.ObjectId != null || handle.RemoteObject.Type == RemoteObjectType.Object
                 ? i.ToString()
-                : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
+                : handle.RemoteObject.Type == RemoteObjectType.Undefined
+                    ? "undefined"
+                    : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
         });
         var location = new ConsoleMessageLocation();
         var stackTraceLocations = new List<ConsoleMessageLocation>();

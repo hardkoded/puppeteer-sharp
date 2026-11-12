@@ -251,7 +251,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser network events", "should report responses from dedicated workers")]
+        [Test, PuppeteerTest("browser.test", "Browser specs Browser network events", "should report responses from dedicated workers")]
         public async Task ShouldReportResponsesFromDedicatedWorkers()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>(TaskCreationOptions.RunContinuationsAsynchronously);

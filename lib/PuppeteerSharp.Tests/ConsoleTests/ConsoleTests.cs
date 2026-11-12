@@ -37,6 +37,24 @@ namespace PuppeteerSharp.Tests.ConsoleTests
             Assert.That(await fooProperty.JsonValueAsync<string>(), Is.EqualTo("bar"));
         }
 
+        [Test, PuppeteerTest("console.spec", "console", "should include null and undefined in text()")]
+        public async Task ShouldIncludeNullAndUndefinedInText()
+        {
+            var messageTask = new TaskCompletionSource<ConsoleMessage>();
+
+            Page.Console += (_, e) => messageTask.TrySetResult(e.Message);
+
+            await Task.WhenAll(
+                messageTask.Task,
+                Page.EvaluateFunctionAsync(@"() => {
+                    return console.log('hello', null, undefined);
+                }"));
+
+            var message = await messageTask.Task;
+            Assert.That(message.Text, Is.EqualTo("hello null undefined"));
+            Assert.That(message.Args.Count, Is.EqualTo(3));
+        }
+
         [Test, PuppeteerTest("console.spec", "console", "should work for Error instances")]
         public async Task ShouldWorkForErrorInstances()
         {

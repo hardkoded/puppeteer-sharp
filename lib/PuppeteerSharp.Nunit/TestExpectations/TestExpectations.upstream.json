@@ -4972,7 +4972,7 @@
     "comment": "Firefox does not support web worker targets in Puppeteer, see [worker.spec] *"
   },
   {
-    "testIdPattern": "[worker.spec] Workers should report network requests*",
+    "testIdPattern": "[worker.test] Workers should report network requests*",
     "platforms": [
       "darwin",
       "linux",
@@ -4987,7 +4987,7 @@
     "comment": "BiDi does not support worker network requests yet"
   },
   {
-    "testIdPattern": "[network.spec] network Request.worker should return null for page navigation requests",
+    "testIdPattern": "[network.test] network Request.worker should return null for page navigation requests",
     "platforms": [
       "darwin",
       "linux",
@@ -5002,7 +5002,7 @@
     "comment": "BiDi does not support worker network requests yet"
   },
   {
-    "testIdPattern": "[oopif.spec] OOPIF should continue intercepted requests from workers in OOPIFs",
+    "testIdPattern": "[oopif.test] OOPIF should continue intercepted requests from workers in OOPIFs",
     "platforms": [
       "darwin",
       "linux",
@@ -5017,7 +5017,7 @@
     "comment": "BiDi does not support worker network requests yet"
   },
   {
-    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"request\") should report requests from dedicated workers",
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"request\") should report requests from dedicated workers",
     "platforms": [
       "darwin",
       "linux",
@@ -5032,7 +5032,7 @@
     "comment": "BiDi does not support worker network requests yet"
   },
   {
-    "testIdPattern": "[browser.spec] Browser specs Browser network events should report responses from dedicated workers",
+    "testIdPattern": "[browser.test] Browser specs Browser network events should report responses from dedicated workers",
     "platforms": [
       "darwin",
       "linux",
