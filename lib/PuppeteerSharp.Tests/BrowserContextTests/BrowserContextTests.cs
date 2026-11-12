@@ -34,6 +34,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 messageTask.Task,
                 page.EvaluateFunctionAsync("() => console.log('from-own-context')"));
 
+            Assert.That(messageTask.Task.Result.Page, Is.SameAs(page));
             Assert.That(messages, Is.EqualTo(new[] { "from-own-context" }));
         }
 
@@ -305,7 +306,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 await page.GoToAsync(TestConstants.EmptyPage);
                 var request = await requestTcs.Task.WithTimeout();
 
-                Assert.That(request.Frame.Page, Is.EqualTo(page));
+                Assert.That(request.Page, Is.EqualTo(page));
                 Assert.That(requests.Select(r => r.Url).ToArray(), Is.EqualTo(new[] { TestConstants.EmptyPage }));
             }
             finally

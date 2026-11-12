@@ -5005,5 +5005,65 @@
       "SKIP"
     ],
     "comment": "Firefox does not support web worker targets in Puppeteer, see [worker.spec] *"
+  },
+  {
+    "testIdPattern": "[worker.test] Workers should report network requests*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
+    "testIdPattern": "[network.test] network Request.worker should return null for page navigation requests",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
+    "testIdPattern": "[oopif.test] OOPIF should continue intercepted requests from workers in OOPIFs",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"request\") should report requests from dedicated workers",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support worker network requests yet"
   }
 ]

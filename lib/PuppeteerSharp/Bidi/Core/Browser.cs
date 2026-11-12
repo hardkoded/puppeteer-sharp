@@ -100,12 +100,30 @@ internal sealed class Browser(Session session) : IDisposable
     public async Task<UserContext> CreateUserContextAsync(DownloadBehavior downloadBehavior = null)
     {
         var result = await Session.Driver.Browser.CreateUserContextAsync(new CreateUserContextCommandParameters()).ConfigureAwait(false);
+        var userContext = CreateUserContext(result.UserContextId);
         if (downloadBehavior != null)
         {
-            await SetDownloadBehaviorAsync(downloadBehavior, [result.UserContextId]).ConfigureAwait(false);
+            try
+            {
+                await SetDownloadBehaviorAsync(downloadBehavior, [result.UserContextId]).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Do not leak the user context when the download policy cannot be applied.
+                try
+                {
+                    await userContext.RemoveAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Preserve the original failure.
+                }
+
+                throw;
+            }
         }
 
-        return CreateUserContext(result.UserContextId);
+        return userContext;
     }
 
     /// <summary>

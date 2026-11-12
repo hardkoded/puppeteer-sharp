@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 
 namespace PuppeteerSharp.Helpers;
@@ -47,5 +48,27 @@ internal static class HttpUtils
         }
 
         return builder.ToString();
+    }
+
+    /// <summary>
+    /// Validates that header names and values do not contain CRLF characters.
+    /// </summary>
+    /// <param name="headers">The headers to validate.</param>
+    /// <exception cref="PuppeteerException">Thrown when a header name or value contains CR or LF.</exception>
+    public static void ValidateHeaders(IEnumerable<KeyValuePair<string, string>> headers)
+    {
+        if (headers == null)
+        {
+            return;
+        }
+
+        foreach (var header in headers)
+        {
+            if (header.Key.IndexOfAny(['\r', '\n']) != -1 || (header.Value?.IndexOfAny(['\r', '\n']) ?? -1) != -1)
+            {
+                throw new PuppeteerException(
+                    $"Invalid header: CRLF characters are not allowed in header names or values (header: \"{header.Key}\").");
+            }
+        }
     }
 }

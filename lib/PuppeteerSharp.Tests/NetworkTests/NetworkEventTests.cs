@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
@@ -250,6 +251,54 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var redirectChain = response.Request.RedirectChain;
             Assert.That(redirectChain, Has.Exactly(1).Items);
             Assert.That(redirectChain[0].Url, Does.Contain("/foo.html"));
+        }
+
+        [Test, PuppeteerTest("network.spec", "network Network Events", "should treat a redirect status without a Location header as a final response")]
+        public async Task ShouldTreatARedirectStatusWithoutALocationHeaderAsAFinalResponse()
+        {
+            var events = new List<string>();
+            Page.Request += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    events.Add($"{e.Request.Method} {e.Request.Url}");
+                }
+            };
+            Page.Response += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Response.Request))
+                {
+                    events.Add($"{(int)e.Response.Status} {e.Response.Url}");
+                }
+            };
+            Page.RequestFinished += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    events.Add($"DONE {e.Request.Url}");
+                }
+            };
+            Page.RequestFailed += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    events.Add($"FAIL {e.Request.Url}");
+                }
+            };
+            Server.SetRoute("/no-location.html", context =>
+            {
+                context.Response.StatusCode = 302;
+                return context.Response.WriteAsync("final response");
+            });
+            var url = TestConstants.ServerUrl + "/no-location.html";
+            var response = await Page.GoToAsync(url);
+            Assert.That(events.ToArray(), Is.EqualTo(new[] {
+                $"GET {url}",
+                $"302 {url}",
+                $"DONE {url}"
+            }));
+            Assert.That(response.Status, Is.EqualTo(System.Net.HttpStatusCode.Found));
+            Assert.That(response.Request.RedirectChain, Is.Empty);
         }
 
         [Test, PuppeteerTest("network.spec", "network Response.remoteAddress", "should support redirects")]

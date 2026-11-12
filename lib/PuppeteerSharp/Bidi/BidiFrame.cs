@@ -1029,7 +1029,7 @@ public class BidiFrame : Frame
                     {
                         if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
                         {
-                            return BidiDeserializer.Deserialize(jsHandle.RemoteValue);
+                            return BidiDeserializer.Deserialize(jsHandle.RemoteValue) ?? (jsHandle.RemoteValue.Type == RemoteValueType.Undefined ? "undefined" : "null");
                         }
 
                         if (arg is BidiJSHandle { RemoteValue.Type: RemoteValueType.Error } && !string.IsNullOrEmpty(logEntryText))
@@ -1048,7 +1048,8 @@ public class BidiFrame : Frame
                     text,
                     handleArgs,
                     location,
-                    stackTrace);
+                    stackTrace,
+                    frame: this);
 
                 BidiPage.OnConsole(new ConsoleEventArgs(consoleMessage));
             }

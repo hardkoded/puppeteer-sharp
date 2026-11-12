@@ -32,8 +32,13 @@ namespace PuppeteerSharp.Bidi.Core;
 
 internal class Request : IDisposable
 {
+    // Redirect statuses as defined by the Fetch standard.
+    // See https://fetch.spec.whatwg.org/#redirect-status
+    private static readonly HashSet<int> RedirectStatuses = [301, 302, 303, 307, 308];
+
     private readonly BrowsingContext _browsingContext;
     private readonly BeforeRequestSentEventArgs _eventArgs;
+    private bool _isBlocked;
     private string _error;
     private IList<ReadOnlyHeader> _headers;
     private Request _redirect;
@@ -45,6 +50,7 @@ internal class Request : IDisposable
     {
         _browsingContext = browsingContext;
         _eventArgs = args;
+        _isBlocked = args.IsBlocked;
         _headers = args.Request.Headers;
         Timings = args.Request.Timings;
     }
@@ -89,7 +95,7 @@ internal class Request : IDisposable
 
     public bool HasError => _error != null;
 
-    public bool IsBlocked => _eventArgs.IsBlocked;
+    public bool IsBlocked => _isBlocked;
 
     public string ErrorText => _error;
 
@@ -257,7 +263,15 @@ internal class Request : IDisposable
 
         Session.NetworkAuthRequired += (_, args) =>
         {
-            if (args.BrowsingContextId != _browsingContext.Id || args.Request.RequestId != Id || !args.IsBlocked)
+            if (args.BrowsingContextId != _browsingContext.Id || args.Request.RequestId != Id)
+            {
+                return;
+            }
+
+            _isBlocked = args.IsBlocked;
+
+            // Don't try to authenticate for events that are not blocked
+            if (!args.IsBlocked)
             {
                 return;
             }
@@ -273,6 +287,7 @@ internal class Request : IDisposable
             }
 
             _error = args.ErrorText;
+            _isBlocked = args.IsBlocked;
             _headers = args.Request.Headers;
             Timings = args.Request.Timings;
             OnError(_error);
@@ -289,6 +304,7 @@ internal class Request : IDisposable
             }
 
             _response = args.Response;
+            _isBlocked = args.IsBlocked;
             _headers = args.Request.Headers;
             Timings = args.Request.Timings;
             OnResponseStarted(new ResponseEventArgs(_response));
@@ -304,12 +320,17 @@ internal class Request : IDisposable
             }
 
             _response = args.Response;
+            _isBlocked = args.IsBlocked;
             _headers = args.Request.Headers;
             Timings = args.Request.Timings;
             OnSuccess(new ResponseEventArgs(_response));
 
-            // In case this is a redirect.
-            if (_response.Status is >= 300 and < 400)
+            // A redirect continues as a new beforeRequestSent event with the next
+            // redirect count, so the request is kept until then. A redirect status
+            // without a Location header is a final response, and any other status,
+            // including 304 Not Modified, completes the request.
+            if (RedirectStatuses.Contains((int)_response.Status) &&
+                _response.Headers.Any(header => header.Name.Equals("location", StringComparison.OrdinalIgnoreCase)))
             {
                 return;
             }
