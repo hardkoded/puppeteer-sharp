@@ -62,7 +62,7 @@ If you just need to download a browser without writing code, install the `Puppet
 ```bash
 dotnet tool install --global PuppeteerSharp.Browsers
 
-# Download the latest Chrome for Testing binary of the Stable channel.
+# Download the latest Chrome for Testing binary of the Stable channel (Chrome Headless Shell is installed separately: chrome-headless-shell@stable).
 puppeteer-browsers install chrome@stable
 
 # Download a specific version.

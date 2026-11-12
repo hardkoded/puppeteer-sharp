@@ -24,6 +24,7 @@ namespace PuppeteerSharp
 
         private readonly CustomFileDownloadAction _customFileDownload;
         private readonly ILogger<BrowserFetcher> _logger;
+        private readonly bool _skipChromeHeadlessShellDownload;
 
         /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher()
@@ -52,6 +53,7 @@ namespace PuppeteerSharp
             CacheDir = string.IsNullOrEmpty(options.Path) ? GetBrowsersLocation() : options.Path;
             Platform = options.Platform ?? GetCurrentPlatform();
             _customFileDownload = options.CustomFileDownload ?? DownloadFileUsingHttpClientTaskAsync;
+            _skipChromeHeadlessShellDownload = options.SkipChromeHeadlessShellDownload;
             _logger = loggerFactory?.CreateLogger<BrowserFetcher>();
         }
 
@@ -130,7 +132,7 @@ namespace PuppeteerSharp
         {
             var installedBrowser = await DownloadAsync(Browser, buildId).ConfigureAwait(false);
 
-            if (Browser == SupportedBrowser.Chrome)
+            if (Browser == SupportedBrowser.Chrome && !_skipChromeHeadlessShellDownload)
             {
                 await DownloadAsync(SupportedBrowser.ChromeHeadlessShell, buildId).ConfigureAwait(false);
             }
@@ -456,6 +458,16 @@ namespace PuppeteerSharp
                         BrowserTag.Dev => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Dev),
                         BrowserTag.Stable => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable),
                         _ => throw new PuppeteerException($"{tag} is not supported for {Browser}."),
+                    };
+                case SupportedBrowser.ChromeHeadlessShell:
+                    return tag switch
+                    {
+                        BrowserTag.Latest => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Canary),
+                        BrowserTag.Beta => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Beta),
+                        BrowserTag.Canary => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Canary),
+                        BrowserTag.Dev => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Dev),
+                        BrowserTag.Stable => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable),
+                        _ => throw new PuppeteerException($"{tag} is not available for {Browser}."),
                     };
                 case SupportedBrowser.Chromium:
                     return tag switch

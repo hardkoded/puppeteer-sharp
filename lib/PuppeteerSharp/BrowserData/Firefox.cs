@@ -72,7 +72,7 @@ namespace PuppeteerSharp.BrowserData
             }
 
             _cachedBuildIds[versionKey] = buildId;
-            return buildId;
+            return $"{channel.ToValueString()}_{buildId}";
         }
 
         internal static string RelativeExecutablePath(Platform platform, string buildId)
