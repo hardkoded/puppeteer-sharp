@@ -1239,7 +1239,7 @@ public class CdpPage : Page
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to dispose the exception handle");
+            _logger.ErrorDisposingExceptionHandle(ex);
         }
     }
 

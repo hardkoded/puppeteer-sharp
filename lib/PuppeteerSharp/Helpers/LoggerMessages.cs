@@ -23,6 +23,9 @@ namespace PuppeteerSharp.Helpers
         [LoggerMessage(Level = LogLevel.Error, Message = "Error getting iframe accessibility snapshot")]
         internal static partial void ErrorGettingIframeAccessibilitySnapshot(this ILogger logger, Exception exception);
 
+        [LoggerMessage(Level = LogLevel.Error, Message = "Failed to dispose the exception handle")]
+        internal static partial void ErrorDisposingExceptionHandle(this ILogger logger, Exception exception);
+
         [LoggerMessage(Level = LogLevel.Error, Message = "{Message}")]
         internal static partial void ErrorMessage(this ILogger logger, string message);
 

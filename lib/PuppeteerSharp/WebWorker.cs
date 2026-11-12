@@ -56,11 +56,9 @@ namespace PuppeteerSharp
 
         internal abstract IsolatedWorld World { get; }
 
-<<<<<<< HEAD
         internal bool HasConsoleListeners => Console != null;
-=======
+
         internal bool HasExceptionThrownListeners => ExceptionThrown != null;
->>>>>>> 9583597 (feat: introduce RemoteException for CDP (Page.ExceptionThrown / WebWorker.ExceptionThrown))
 
         /// <summary>
         /// Executes a script in browser context.
