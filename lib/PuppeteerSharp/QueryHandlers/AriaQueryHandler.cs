@@ -66,7 +66,10 @@ namespace PuppeteerSharp.QueryHandlers
         internal override async Task<IElementHandle> QueryOneAsync(IElementHandle element, string selector)
         {
             var enumerator = QueryAllAsync(element, selector).GetAsyncEnumerator();
-            return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : default;
+            await using (enumerator.ConfigureAwait(false))
+            {
+                return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : default;
+            }
         }
 
         internal async Task<IJSHandle> QueryAllAsJSArrayAsync(IElementHandle element, string selector)
@@ -86,6 +89,9 @@ namespace PuppeteerSharp.QueryHandlers
                     "(arr, elem) => arr.push(elem)",
                     arrayHandle,
                     item).ConfigureAwait(false);
+
+                // The array now holds the element; release the temporary handle.
+                await item.DisposeAsync().ConfigureAwait(false);
             }
 
             return arrayHandle;
