@@ -430,17 +430,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         catch (Exception ex)
         {
             IsInterceptResolutionHandled = false;
-
-            // Only swallow specific protocol errors that are safe to ignore.
-            // Match upstream's handleError behavior.
-            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
-                (bidiEx.Message.Contains("Invalid request id") ||
-                 bidiEx.Message.Contains("no such request")))
-            {
-                return;
-            }
-
-            throw;
+            HandleError(ex);
         }
     }
 
@@ -455,16 +445,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         catch (Exception ex)
         {
             IsInterceptResolutionHandled = false;
-
-            // Only swallow specific protocol errors that are safe to ignore.
-            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
-                (bidiEx.Message.Contains("Invalid request id") ||
-                 bidiEx.Message.Contains("no such request")))
-            {
-                return;
-            }
-
-            throw;
+            HandleError(ex);
         }
     }
 
@@ -539,17 +520,23 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         catch (Exception ex)
         {
             IsInterceptResolutionHandled = false;
-
-            // Only swallow specific protocol errors that are safe to ignore.
-            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
-                (bidiEx.Message.Contains("Invalid request id") ||
-                 bidiEx.Message.Contains("no such request")))
-            {
-                return;
-            }
-
-            throw;
+            HandleError(ex);
         }
+    }
+
+    private void HandleError(Exception ex)
+    {
+        if (ex.Message.Contains("Invalid header") ||
+            ex.Message.Contains("Unsafe header") ||
+            ex.Message.Contains("Expected \"header\"") ||
+            ex.Message.Contains("invalid argument"))
+        {
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
+        }
+
+        // In certain cases, protocol will return error if the request was already canceled
+        // or the page was closed. We should tolerate these errors.
+        BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().LogDebug(ex, "Failed to resolve request interception");
     }
 
     private void Initialize()
