@@ -80,9 +80,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 await context.Response.WriteAsync("Hello World");
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Page.Request += async (_, e) =>
+            Page.Request += (_, e) =>
             {
-                await e.Request.ContinueAsync();
+                _ = e.Request.ContinueAsync();
             };
             await Page.SetRequestInterceptionAsync(true);
 

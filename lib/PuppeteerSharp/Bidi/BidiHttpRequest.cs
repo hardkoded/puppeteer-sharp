@@ -381,6 +381,20 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         };
     }
 
+    private static void HandleError(Exception ex)
+    {
+        // Match upstream's handleError: only header validation errors are surfaced.
+        // In certain cases, the protocol returns an error if the request was already
+        // canceled or the page was closed. We should tolerate these errors.
+        if (ex.Message.Contains("Invalid header") ||
+            ex.Message.Contains("Unsafe header") ||
+            ex.Message.Contains("Expected \"header\"") ||
+            ex.Message.Contains("invalid argument"))
+        {
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
+        }
+    }
+
     private Dictionary<string, string> GetMergedHeaders(Dictionary<string, string> overrideHeaders)
     {
         // Start with the merged headers (original + extra + user agent)
@@ -435,16 +449,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             IsInterceptResolutionHandled = false;
 
-            // Only swallow specific protocol errors that are safe to ignore.
-            // Match upstream's handleError behavior.
-            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
-                (bidiEx.Message.Contains("Invalid request id") ||
-                 bidiEx.Message.Contains("no such request")))
-            {
-                return;
-            }
-
-            throw;
+            HandleError(ex);
         }
     }
 
@@ -543,11 +548,19 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 headers: responseHeaders.Count > 0 ? responseHeaders : null,
                 body: body).ConfigureAwait(false);
         }
+        catch (WebDriverBiDi.WebDriverBiDiConnectionException)
+        {
+            // Port-only: upstream lets this rejection surface as an unhandled promise rejection,
+            // which is benign in Node. In .NET it would crash the process from an async void
+            // event handler, so we tolerate responding to a request after the connection closed.
+            IsInterceptResolutionHandled = false;
+        }
         catch (Exception ex)
         {
             IsInterceptResolutionHandled = false;
 
-            // Only swallow specific protocol errors that are safe to ignore.
+            // Port-only (pre-existing): a request can become stale between the interception
+            // check and the protocol call; tolerate those protocol errors.
             if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
                 (bidiEx.Message.Contains("Invalid request id") ||
                  bidiEx.Message.Contains("no such request")))
