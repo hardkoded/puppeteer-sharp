@@ -384,7 +384,31 @@ public class BidiBrowser : Browser
                 .ToArray();
         }
 
-        await session.SubscribeAsync(modules).ConfigureAwait(false);
+        // Console entries replayed from the BiDi log buffer on subscribe arrive before any
+        // browsing context can listen to them. Collect them until the browser is initialized.
+        var pendingConsoleEntries = new List<WebDriverBiDi.Log.EntryAddedEventArgs>();
+        void CollectConsoleEntry(object sender, WebDriverBiDi.Log.EntryAddedEventArgs args)
+        {
+            if (args.Type == "console")
+            {
+                lock (pendingConsoleEntries)
+                {
+                    pendingConsoleEntries.Add(args);
+                }
+            }
+        }
+
+        session.LogEntryAdded += CollectConsoleEntry;
+
+        try
+        {
+            await session.SubscribeAsync(modules).ConfigureAwait(false);
+        }
+        catch
+        {
+            session.LogEntryAdded -= CollectConsoleEntry;
+            throw;
+        }
 
         // Add data collectors for request and response bodies.
         // This enables network.getData to return response/request bodies.
@@ -406,6 +430,34 @@ public class BidiBrowser : Browser
 
         var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher, CloseCallback = closeCallback };
         browser.InitializeAsync();
+
+        // From here on browsing contexts receive console entries directly.
+        session.LogEntryAdded -= CollectConsoleEntry;
+
+        List<WebDriverBiDi.Log.EntryAddedEventArgs> replay;
+        lock (pendingConsoleEntries)
+        {
+            replay = [.. pendingConsoleEntries];
+        }
+
+        if (replay.Count > 0)
+        {
+            // Deliver them asynchronously so callers can register listeners after connecting.
+            _ = Task.Run(async () =>
+            {
+                await Task.Yield();
+                if (!browser.IsConnected)
+                {
+                    return;
+                }
+
+                foreach (var entry in replay)
+                {
+                    session.ReplayLogEntry(entry);
+                }
+            });
+        }
+
         return browser;
     }
 

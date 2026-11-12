@@ -110,6 +110,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     internal virtual void OnBrowsingContextContextCreated(BrowsingContextEventArgs e) => BrowsingContextContextCreated?.Invoke(this, e);
 
+    internal void ReplayLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs entry) => OnLogEntryAdded(entry);
+
     private async Task InitializeAsync()
     {
         Browser = await Browser.From(this).ConfigureAwait(false);
