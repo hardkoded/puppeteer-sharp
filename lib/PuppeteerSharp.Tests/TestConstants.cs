@@ -61,6 +61,9 @@ namespace PuppeteerSharp.Tests
             Timeout = 0,
             Pipe = PuppeteerTestAttribute.IsPipe,
             Protocol = PuppeteerTestAttribute.IsCdp ? ProtocolType.Cdp : ProtocolType.WebdriverBiDi,
+
+            // TODO(crbug.com/579030694): Remove once OrganizerPanel stops eagerly loading WebUI.
+            Args = IsChrome ? new[] { "--disable-features=OrganizerPanel" } : null,
 #if NETCOREAPP
             EnqueueTransportMessages = false
 #else
