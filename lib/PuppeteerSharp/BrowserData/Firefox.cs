@@ -59,7 +59,7 @@ namespace PuppeteerSharp.BrowserData
 
             if (_cachedBuildIds.TryGetValue(versionKey, out var build))
             {
-                return build;
+                return $"{channel.ToValueString()}_{build}";
             }
 
             var version = await JsonUtils
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.BrowserData
             }
 
             _cachedBuildIds[versionKey] = buildId;
-            return buildId;
+            return $"{channel.ToValueString()}_{buildId}";
         }
 
         internal static string RelativeExecutablePath(Platform platform, string buildId)
