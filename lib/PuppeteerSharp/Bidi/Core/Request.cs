@@ -32,6 +32,8 @@ namespace PuppeteerSharp.Bidi.Core;
 
 internal class Request : IDisposable
 {
+    private static readonly HashSet<ulong> RedirectStatuses = [301, 302, 303, 307, 308];
+
     private readonly BrowsingContext _browsingContext;
     private readonly BeforeRequestSentEventArgs _eventArgs;
     private string _error;
@@ -308,8 +310,12 @@ internal class Request : IDisposable
             Timings = args.Request.Timings;
             OnSuccess(new ResponseEventArgs(_response));
 
-            // In case this is a redirect.
-            if (_response.Status is >= 300 and < 400)
+            // A redirect continues as a new network.beforeRequestSent event with
+            // the next redirect count, so the request is kept until then. A
+            // redirect status without a Location header is a final response,
+            // and any other status, including 304 Not Modified, completes the request.
+            if (RedirectStatuses.Contains(_response.Status) &&
+                _response.Headers.Any(header => header.Name.Equals("location", StringComparison.OrdinalIgnoreCase)))
             {
                 return;
             }
