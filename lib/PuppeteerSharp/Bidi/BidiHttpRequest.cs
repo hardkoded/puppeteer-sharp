@@ -141,6 +141,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             return;
         }
 
+        HttpUtils.ValidateHeaders(payloadOverrides?.Headers);
+
         if (priority is null)
         {
             await ContinueInternalAsync(payloadOverrides).ConfigureAwait(false);
@@ -448,7 +450,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         catch (Exception ex)
         {
             IsInterceptResolutionHandled = false;
-
             HandleError(ex);
         }
     }
@@ -464,84 +465,75 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         catch (Exception ex)
         {
             IsInterceptResolutionHandled = false;
-
-            // Only swallow specific protocol errors that are safe to ignore.
-            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
-                (bidiEx.Message.Contains("Invalid request id") ||
-                 bidiEx.Message.Contains("no such request")))
-            {
-                return;
-            }
-
-            throw;
+            HandleError(ex);
         }
     }
 
     private async Task RespondInternalAsync(ResponseData response)
     {
+        var responseHeaders = new List<Header>();
+
+        if (response.Headers != null)
+        {
+            foreach (var keyValuePair in response.Headers)
+            {
+                if (keyValuePair.Value == null)
+                {
+                    continue;
+                }
+
+                if (keyValuePair.Value is ICollection values)
+                {
+                    foreach (var val in values)
+                    {
+                        responseHeaders.Add(new Header(keyValuePair.Key.ToLowerInvariant(), val.ToString()));
+                    }
+                }
+                else
+                {
+                    responseHeaders.Add(new Header(keyValuePair.Key.ToLowerInvariant(), keyValuePair.Value.ToString()));
+                }
+            }
+        }
+
+        // Check if the content-length header exists
+        var hasContentLength = false;
+        foreach (var header in responseHeaders)
+        {
+            if (header.Name.Equals("content-length", StringComparison.OrdinalIgnoreCase))
+            {
+                hasContentLength = true;
+                break;
+            }
+        }
+
+        // Add content-length if not present and we have body data
+        if (!hasContentLength && response.BodyData is { Length: > 0 })
+        {
+            responseHeaders.Add(new Header("content-length", response.BodyData.Length.ToString(CultureInfo.InvariantCulture)));
+        }
+
+        if (response.ContentType != null)
+        {
+            // Like the CDP implementation, ContentType replaces a content-type
+            // passed in Headers instead of sending both.
+            responseHeaders.RemoveAll(header => header.Name == "content-type");
+            responseHeaders.Add(new Header("content-type", response.ContentType));
+        }
+
+        var statusCode = response.Status != null ? (int)response.Status : 200;
+        var reasonPhrase = GetReasonPhrase(statusCode);
+
+        BytesValue body = null;
+        if (response.BodyData != null)
+        {
+            body = BytesValue.FromByteArray(response.BodyData);
+        }
+
         IsInterceptResolutionHandled = true;
 
         try
         {
-            var responseHeaders = new List<Header>();
-
-            if (response.Headers != null)
-            {
-                foreach (var keyValuePair in response.Headers)
-                {
-                    if (keyValuePair.Value == null)
-                    {
-                        continue;
-                    }
-
-                    if (keyValuePair.Value is ICollection values)
-                    {
-                        foreach (var val in values)
-                        {
-                            responseHeaders.Add(new Header(keyValuePair.Key.ToLowerInvariant(), val.ToString()));
-                        }
-                    }
-                    else
-                    {
-                        responseHeaders.Add(new Header(keyValuePair.Key.ToLowerInvariant(), keyValuePair.Value.ToString()));
-                    }
-                }
-            }
-
-            // Check if the content-length header exists
-            var hasContentLength = false;
-            foreach (var header in responseHeaders)
-            {
-                if (header.Name.Equals("content-length", StringComparison.OrdinalIgnoreCase))
-                {
-                    hasContentLength = true;
-                    break;
-                }
-            }
-
-            // Add content-length if not present and we have body data
-            if (!hasContentLength && response.BodyData is { Length: > 0 })
-            {
-                responseHeaders.Add(new Header("content-length", response.BodyData.Length.ToString(CultureInfo.InvariantCulture)));
-            }
-
-            if (response.ContentType != null)
-            {
-                // Like the CDP implementation, ContentType replaces a content-type
-                // passed in Headers instead of sending both.
-                responseHeaders.RemoveAll(header => header.Name == "content-type");
-                responseHeaders.Add(new Header("content-type", response.ContentType));
-            }
-
-            var statusCode = response.Status != null ? (int)response.Status : 200;
-            var reasonPhrase = GetReasonPhrase(statusCode);
-
-            BytesValue body = null;
-            if (response.BodyData != null)
-            {
-                body = BytesValue.FromByteArray(response.BodyData);
-            }
-
             await _request.ProvideResponseAsync(
                 statusCode: (uint)statusCode,
                 reasonPhrase: reasonPhrase,
@@ -558,17 +550,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         catch (Exception ex)
         {
             IsInterceptResolutionHandled = false;
-
-            // Port-only (pre-existing): a request can become stale between the interception
-            // check and the protocol call; tolerate those protocol errors.
-            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
-                (bidiEx.Message.Contains("Invalid request id") ||
-                 bidiEx.Message.Contains("no such request")))
-            {
-                return;
-            }
-
-            throw;
+            HandleError(ex);
         }
     }
 

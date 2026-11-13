@@ -124,6 +124,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
             return;
         }
 
+        HttpUtils.ValidateHeaders(overrides?.Headers);
+
         if (priority is null)
         {
             await ContinueInternalAsync(overrides).ConfigureAwait(false);

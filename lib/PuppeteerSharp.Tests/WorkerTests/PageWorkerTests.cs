@@ -200,6 +200,11 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Test, PuppeteerTest("worker.spec", "Workers", "should emit exception events on the worker and the page")]
         public async Task ShouldEmitExceptionEventsOnTheWorkerAndThePage()
         {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("RemoteException is only implemented for CDP.");
+            }
+
             var worker = await CreateWorkerAsync();
             var workerTcs = new TaskCompletionSource<RemoteException>(TaskCreationOptions.RunContinuationsAsynchronously);
             var pageTcs = new TaskCompletionSource<RemoteException>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -217,6 +222,11 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Test, PuppeteerTest("worker.spec", "Workers", "should report each worker exception on the page exactly once")]
         public async Task ShouldReportEachWorkerExceptionOnThePageExactlyOnce()
         {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("RemoteException is only implemented for CDP.");
+            }
+
             var worker = await CreateWorkerAsync();
             var exceptions = new List<string>();
             var pageErrors = new List<string>();
@@ -254,6 +264,11 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Test, PuppeteerTest("worker.spec", "Workers", "should expose the remote exception via a moved handle")]
         public async Task ShouldExposeTheRemoteExceptionViaAMovedHandle()
         {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("RemoteException is only implemented for CDP.");
+            }
+
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>(TaskCreationOptions.RunContinuationsAsynchronously);
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
             await Page.EvaluateFunctionAsync(@"() => {

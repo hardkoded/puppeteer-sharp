@@ -135,6 +135,11 @@ namespace PuppeteerSharp.Tests.TargetTests
         [Test, PuppeteerTest("target.spec", "Target", "should emit exceptions on a service worker but not on the page")]
         public async Task ShouldEmitExceptionsOnAServiceWorkerButNotOnThePage()
         {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("RemoteException is only implemented for CDP.");
+            }
+
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
             var target = await Context.WaitForTargetAsync(
                 t => t.Type == TargetType.ServiceWorker,
