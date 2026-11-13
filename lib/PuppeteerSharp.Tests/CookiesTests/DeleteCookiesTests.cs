@@ -213,5 +213,32 @@ namespace PuppeteerSharp.Tests.CookiesTests
             });
             Assert.That(await Page.GetCookiesAsync(), Is.Empty);
         }
+
+        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should delete cookie from the page partition if the page uses the default port")]
+        public async Task ShouldDeleteCookieFromThePagePartitionIfThePageUsesTheDefaultPort()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = System.Net.HttpStatusCode.OK,
+                    ContentType = "text/html",
+                    Body = "<!DOCTYPE html>",
+                });
+            };
+            await Page.GoToAsync("https://example.com/");
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Url = "https://example.com/",
+                Name = "partitionCookie",
+                Value = "partition",
+                Secure = true,
+                PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.com" },
+            });
+            Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
+            await Page.DeleteCookieAsync(new CookieParam { Name = "partitionCookie" });
+            Assert.That(await Page.GetCookiesAsync(), Is.Empty);
+        }
     }
 }
