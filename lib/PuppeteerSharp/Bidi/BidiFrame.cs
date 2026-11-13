@@ -338,6 +338,10 @@ public class BidiFrame : Frame
                     historyUpdatedTcs.TrySetResult(true);
                 }
 
+                // Handlers released in the finally block, so cancellation also unsubscribes them
+                // (upstream: rxjs raceWith unsubscribes the losing branches).
+                var cleanups = new List<Action>();
+
                 BrowsingContext.Navigation += OnNavigation;
                 BrowsingContext.HistoryUpdated += OnHistoryUpdated;
 
@@ -384,8 +388,7 @@ public class BidiFrame : Frame
                         void OnClosed(object sender, ClosedEventArgs args) => tcs.TrySetResult(true);
                         frame.BrowsingContext.Closed += OnClosed;
 
-                        // Clean up handler when task completes
-                        tcs.Task.ContinueWith(_ => frame.BrowsingContext.Closed -= OnClosed, TaskScheduler.Default);
+                        cleanups.Add(() => frame.BrowsingContext.Closed -= OnClosed);
                         return tcs.Task;
                     }).ToList();
 
@@ -401,18 +404,18 @@ public class BidiFrame : Frame
                         void OnFragment(object sender, NavigationEventArgs args) => fragmentTcs.TrySetResult(true);
                         navigation.Fragment += OnFragment;
                         waitForFragmentTask = fragmentTcs.Task;
-                        _ = waitForFragmentTask.ContinueWith(_ => navigation.Fragment -= OnFragment, TaskScheduler.Default);
+                        cleanups.Add(() => navigation.Fragment -= OnFragment);
                     }
 
                     var failedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                     navigation.Failed += OnFailed;
                     var waitForFailedTask = failedTcs.Task;
-                    _ = waitForFailedTask.ContinueWith(_ => navigation.Failed -= OnFailed, TaskScheduler.Default);
+                    cleanups.Add(() => navigation.Failed -= OnFailed);
 
                     var abortedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                     navigation.Aborted += OnAborted;
                     var waitForAbortedTask = abortedTcs.Task;
-                    _ = waitForAbortedTask.ContinueWith(_ => navigation.Aborted -= OnAborted, TaskScheduler.Default);
+                    cleanups.Add(() => navigation.Aborted -= OnAborted);
 
                     // Create a task that waits for load, then child frames to detach
                     var waitForLoadAndChildFramesTask = Task.Run(
@@ -475,6 +478,11 @@ public class BidiFrame : Frame
                 {
                     BrowsingContext.Navigation -= OnNavigation;
                     BrowsingContext.HistoryUpdated -= OnHistoryUpdated;
+
+                    foreach (var cleanup in cleanups)
+                    {
+                        cleanup();
+                    }
                 }
             }
 
