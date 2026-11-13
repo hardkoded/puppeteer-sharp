@@ -72,6 +72,37 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(id, Is.EqualTo("b"));
         }
 
+        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should query light DOM and slotted text of shadow hosts")]
+        public async Task ShouldQueryLightDomAndSlottedTextOfShadowHosts()
+        {
+            await Page.SetContentAsync(@"
+                <main><h1>Cart</h1><my-button>Checkout</my-button></main>
+                <div id=""wrap""
+                  ><my-list><li>One</li><li>Two</li></my-list></div
+                >
+            ");
+
+            await Page.EvaluateFunctionAsync(@"() => {
+                for (const h of document.querySelectorAll('my-button')) {
+                    h.attachShadow({mode: 'open'}).innerHTML =
+                        '<button><slot></slot></button>';
+                }
+                for (const h of document.querySelectorAll('my-list')) {
+                    h.attachShadow({mode: 'open'}).innerHTML = '<ul><slot></slot></ul>';
+                }
+            }");
+
+            const string tagNames = "els => els.map(e => e.tagName.toLowerCase())";
+            var checkout = await Page.QuerySelectorAllHandleAsync("::-p-text(Checkout)");
+            Assert.That(await checkout.EvaluateFunctionAsync<string[]>(tagNames), Is.EqualTo(new[] { "my-button" }));
+
+            var two = await Page.QuerySelectorAllHandleAsync("::-p-text(Two)");
+            Assert.That(await two.EvaluateFunctionAsync<string[]>(tagNames), Is.EqualTo(new[] { "li" }));
+
+            var one = await Page.QuerySelectorAllHandleAsync("#wrap ::-p-text(One)");
+            Assert.That(await one.EvaluateFunctionAsync<string[]>(tagNames), Is.EqualTo(new[] { "li" }));
+        }
+
         [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work ARIA selectors")]
         public async Task ShouldWorkAriaSelectors()
         {
