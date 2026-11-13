@@ -267,6 +267,11 @@ public class BidiFrame : Frame
         {
             throw;
         }
+        catch (OperationCanceledException) when (options?.CancellationToken?.IsCancellationRequested == true)
+        {
+            // Caller cancellation surfaces as cancellation, not as a navigation error
+            throw;
+        }
         catch (PuppeteerException ex) when (ex.Message == "Navigating frame was detached")
         {
             // Convert frame detachment to NavigationException for GoToAsync
@@ -574,6 +579,8 @@ public class BidiFrame : Frame
         }
         finally
         {
+            // Release the inner waits (and their handlers) when we leave early, e.g. on frame detachment.
+            linkedCts.Cancel();
             timeoutRegistration?.Dispose();
             BrowsingContext.Closed -= OnFrameDetached;
             cleanupLoadListeners();
