@@ -114,6 +114,8 @@ Browser, page, frame, element, network, and launch APIs.
 | [RecordOptions](/api/PuppeteerSharp/RecordOptions/) | Options for RecordAsync(RecordOptions). |
 | [ReloadOptions](/api/PuppeteerSharp/ReloadOptions/) | Options for ReloadAsync(ReloadOptions). |
 | [RemoteAddress](/api/PuppeteerSharp/RemoteAddress/) | Remote server address. |
+| [RemoteException](/api/PuppeteerSharp/RemoteException/) | A protocol-agnostic description of an uncaught exception thrown in a page or worker. Dispatched via the ExceptionThrown and ExceptionThrown events. |
+| [RemoteExceptionEventArgs](/api/PuppeteerSharp/RemoteExceptionEventArgs/) | Event arguments for uncaught exceptions thrown in a page or worker. |
 | [Request&lt;TResponse&gt;](/api/PuppeteerSharp/Request-1/) | Supports all classes in the .NET class hierarchy and provides low-level services to derived classes. This is the ultimate base class of all .NET classes; it is the root of the type hierarchy. |
 | [RequestEventArgs](/api/PuppeteerSharp/RequestEventArgs/) | Arguments used by IPage events. |
 | [ResourceTiming](/api/PuppeteerSharp/ResourceTiming/) | Resource timing information as returned by the DevTools Network domain. |

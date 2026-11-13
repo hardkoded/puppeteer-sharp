@@ -56,7 +56,7 @@ The CDP session client the WebWorker belongs to.
 
 **Value:** [ICDPSession](/api/PuppeteerSharp/ICDPSession/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L43)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L52)
 
 <a id="PuppeteerSharp_WebWorker_Url_"></a>
 <a id="PuppeteerSharp_WebWorker_Url"></a>
@@ -73,7 +73,7 @@ Gets the Worker URL.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — Worker URL.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L47)
 
 ## Events
 
@@ -93,6 +93,25 @@ Fired when the worker calls a console API method.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L32)
 
+<a id="PuppeteerSharp_WebWorker_ExceptionThrown"></a>
+
+### ExceptionThrown
+
+
+```csharp
+public event EventHandler<RemoteExceptionEventArgs> ExceptionThrown
+```
+
+
+Fired when an uncaught exception happens within the worker. Contains a [RemoteException](/api/PuppeteerSharp/RemoteException/).
+
+**Value:** [EventHandler&lt;RemoteExceptionEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
+
+The [Handle](/api/PuppeteerSharp/RemoteException/#PuppeteerSharp_RemoteException_Handle) of the exception is disposed right after the event has been
+dispatched. Call [Move()](/api/PuppeteerSharp/IJSHandle/#PuppeteerSharp_IJSHandle_Move) on it synchronously inside the handler to keep it alive.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L41)
+
 ## Methods
 
 <a id="PuppeteerSharp_WebWorker_CloseAsync_"></a>
@@ -110,7 +129,7 @@ Closes the worker.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that completes when the worker is closed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L133)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L146)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionAsync__1_System_String_"></a>
@@ -141,7 +160,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L60)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L73)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionHandleAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionHandleAsync_System_String_"></a>
@@ -166,7 +185,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L99)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L112)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateFunctionAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_EvaluateFunctionAsync_System_String_System_Object___"></a>
@@ -193,7 +212,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L73)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L86)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateFunctionAsync__1_System_String_System_Object___"></a>
 
@@ -225,7 +244,7 @@ Executes a function in the context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L87)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L100)
 
 <a id="PuppeteerSharp_WebWorker_WaitForFunctionAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___"></a>
@@ -251,4 +270,4 @@ evaluated in the worker's context.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of the truthy value returned by the function.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L110)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L123)
