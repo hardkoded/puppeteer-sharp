@@ -70,6 +70,8 @@ internal class BrowsingContext : IDisposable
 
     public event EventHandler HistoryUpdated;
 
+    public event EventHandler NavigationCommitted;
+
     public event EventHandler<UserPromptEventArgs> UserPrompt;
 
     public event EventHandler<FileDialogOpenedEventArgs> FileDialogOpened;
@@ -413,6 +415,16 @@ internal class BrowsingContext : IDisposable
             OnHistoryUpdated();
         };
 
+        Session.BrowsingContextNavigationCommitted += (_, args) =>
+        {
+            if (args.BrowsingContextId != Id)
+            {
+                return;
+            }
+
+            OnNavigationCommitted();
+        };
+
         Session.NetworkBeforeRequestSent += (_, args) =>
         {
             if (args.BrowsingContextId != Id)
@@ -473,6 +485,8 @@ internal class BrowsingContext : IDisposable
     private void OnLoad() => Load?.Invoke(this, EventArgs.Empty);
 
     private void OnDomContentLoaded() => DomContentLoaded?.Invoke(this, EventArgs.Empty);
+
+    private void OnNavigationCommitted() => NavigationCommitted?.Invoke(this, EventArgs.Empty);
 
     private void OnHistoryUpdated() => HistoryUpdated?.Invoke(this, EventArgs.Empty);
 

@@ -70,7 +70,7 @@ public class CdpWebWorker : WebWorker
             {
                 if (task.IsFaulted)
                 {
-                    _logger.LogError(task.Exception!.Message);
+                    _logger.ErrorMessage(task.Exception!.Message);
                 }
             },
             TaskScheduler.Default);
@@ -80,7 +80,7 @@ public class CdpWebWorker : WebWorker
             {
                 if (task.IsFaulted)
                 {
-                    _logger.LogError(task.Exception!.Message);
+                    _logger.ErrorMessage(task.Exception!.Message);
                 }
             },
             TaskScheduler.Default);
@@ -200,7 +200,7 @@ public class CdpWebWorker : WebWorker
         catch (Exception ex)
         {
             var message = $"Worker failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-            _logger.LogError(ex, message);
+            _logger.ErrorWithException(ex, message);
             Client.Close(message);
         }
     }
@@ -237,13 +237,14 @@ public class CdpWebWorker : WebWorker
                     LineNumber = callFrame.LineNumber,
                     ColumnNumber = callFrame.ColumnNumber,
                     FunctionName = callFrame.FunctionName,
+                    ScriptId = callFrame.ScriptId,
                 });
             }
 
             location = stackTraceLocations[0];
         }
 
-        var consoleMessage = new ConsoleMessage(consoleData.Type, string.Join(" ", tokens), handles, location, stackTraceLocations);
+        var consoleMessage = new ConsoleMessage(consoleData.Type, string.Join(" ", tokens), handles, location, stackTraceLocations, worker: this);
         OnConsole(new ConsoleEventArgs(consoleMessage));
 
         await _consoleAPICalled(consoleData.Type, handles, consoleData.StackTrace).ConfigureAwait(false);

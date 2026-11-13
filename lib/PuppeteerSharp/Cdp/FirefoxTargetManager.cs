@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Cdp
             catch (Exception ex)
             {
                 var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
+                _logger.ErrorWithException(ex, message);
                 _connection.Close(message);
             }
         }

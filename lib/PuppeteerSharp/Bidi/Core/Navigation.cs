@@ -23,6 +23,7 @@
 #if !CDP_ONLY
 
 using System;
+using System.Collections.Generic;
 using WebDriverBiDi.BrowsingContext;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -30,6 +31,7 @@ namespace PuppeteerSharp.Bidi.Core;
 internal class Navigation
 {
     private readonly BrowsingContext _browsingContext;
+    private readonly HashSet<string> _committedNavigations = [];
     private Navigation _navigation;
 
     private Navigation(BrowsingContext browsingContext)
@@ -102,7 +104,7 @@ internal class Navigation
 
         Session.BrowsingContextDomContentLoaded += OnSessionPageLoaded;
         Session.BrowsingContextLoad += OnSessionPageLoaded;
-        Session.BrowsingContextNavigationCommitted += OnSessionPageLoaded;
+        Session.BrowsingContextNavigationCommitted += OnSessionNavigationCommitted;
 
         Session.BrowsingContextFragmentNavigated += (sender, args) => HandleNavigation(args, () => OnFragment(new NavigationEventArgs(args.Url)));
         Session.BrowsingContextNavigationFailed += (sender, args) => HandleNavigation(args, () => OnFailed(new NavigationEventArgs(args.Url)));
@@ -134,9 +136,40 @@ internal class Navigation
 
     private void OnAborted(NavigationEventArgs args) => Aborted?.Invoke(this, args);
 
+    private void OnSessionNavigationCommitted(object sender, WebDriverBiDi.BrowsingContext.NavigationEventArgs e)
+    {
+        if (e.BrowsingContextId != _browsingContext.Id || e.NavigationId == null)
+        {
+            return;
+        }
+
+        // Record the commit even if it does not match this navigation. A
+        // nested navigation can commit and then finish this navigation.
+        lock (_committedNavigations)
+        {
+            _committedNavigations.Add(e.NavigationId);
+        }
+
+        if (!Matches(e.NavigationId))
+        {
+            return;
+        }
+
+        Dispose();
+    }
+
     private void OnSessionPageLoaded(object sender, WebDriverBiDi.BrowsingContext.NavigationEventArgs e)
     {
-        if (e.BrowsingContextId != _browsingContext.Id || e.NavigationId == null || !Matches(e.NavigationId))
+        bool committed;
+        lock (_committedNavigations)
+        {
+            committed = e.NavigationId != null && _committedNavigations.Contains(e.NavigationId);
+        }
+
+        // Lifecycle events that come before the commit are from the
+        // previous document. Browsers can report them with the ID of the
+        // new navigation (e.g. the error page of a failed navigation).
+        if (e.BrowsingContextId != _browsingContext.Id || e.NavigationId == null || !committed || !Matches(e.NavigationId))
         {
             return;
         }

@@ -275,7 +275,7 @@ dotnet_diagnostic.CA1819.severity = suggestion
 dotnet_diagnostic.CA1815.severity = suggestion
 # CA1848: Use the LoggerMessage delegates
 # TODO: REMOVE
-dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1848.severity = error
 # internal sealed
 dotnet_diagnostic.CA1852.severity = error
 # CA1859: Use concrete types when possible for improved performance
@@ -288,7 +288,7 @@ dotnet_diagnostic.CA1862.severity = none
 dotnet_diagnostic.CA2227.severity = suggestion
 # CA2254: Template should be a static expression
 # TODO: REMOVE
-dotnet_diagnostic.CA2254.severity = none
+dotnet_diagnostic.CA2254.severity = error
 # Avoid using cref tags with a prefix
 dotnet_diagnostic.CA1200.severity = suggestion
 # Marshaling for P/Invoke

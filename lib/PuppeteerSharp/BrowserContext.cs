@@ -14,6 +14,9 @@ namespace PuppeteerSharp
         private int _screenshotOperationsCount;
 
         /// <inheritdoc/>
+        public event EventHandler<ConsoleEventArgs> Console;
+
+        /// <inheritdoc/>
         public event EventHandler<TargetChangedArgs> TargetChanged;
 
         /// <inheritdoc/>
@@ -21,6 +24,21 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public event EventHandler<TargetChangedArgs> TargetDestroyed;
+
+        /// <inheritdoc cref="IBrowserContext.RequestServedFromCache"/>
+        public event EventHandler<RequestEventArgs> RequestServedFromCache;
+
+        /// <inheritdoc cref="IBrowserContext.Response"/>
+        public event EventHandler<ResponseCreatedEventArgs> Response;
+
+        /// <inheritdoc cref="IBrowserContext.RequestFailed"/>
+        public event EventHandler<RequestEventArgs> RequestFailed;
+
+        /// <inheritdoc cref="IBrowserContext.RequestFinished"/>
+        public event EventHandler<RequestEventArgs> RequestFinished;
+
+        /// <inheritdoc/>
+        public event EventHandler<RequestEventArgs> Request;
 
         /// <inheritdoc/>
         public string Id { get; protected init; }
@@ -33,6 +51,8 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         IBrowser IBrowserContext.Browser => Browser;
+
+        internal bool HasConsoleListeners => Console != null;
 
         /// <inheritdoc/>
         public abstract ITarget[] Targets();
@@ -191,11 +211,23 @@ namespace PuppeteerSharp
             return await mutex.AcquireAsync().ConfigureAwait(false);
         }
 
+        internal void OnConsole(ConsoleEventArgs args) => Console?.Invoke(this, args);
+
         internal void OnTargetCreated(TargetChangedArgs args) => TargetCreated?.Invoke(this, args);
 
         internal void OnTargetDestroyed(TargetChangedArgs args) => TargetDestroyed?.Invoke(this, args);
 
         internal void OnTargetChanged(TargetChangedArgs args) => TargetChanged?.Invoke(this, args);
+
+        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+
+        internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
+
+        internal void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
+
+        internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
+
+        internal void OnRequest(RequestEventArgs args) => Request?.Invoke(this, args);
 
         /// <summary>
         /// Closes the browser context. All the targets that belong to the browser context will be closed.

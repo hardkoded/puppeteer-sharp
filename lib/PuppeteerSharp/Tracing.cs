@@ -119,7 +119,7 @@ namespace PuppeteerSharp
                 catch (Exception ex)
                 {
                     var message = $"Tracing failed to process the tracing complete. {ex.Message}. {ex.StackTrace}";
-                    _logger.LogError(ex, message);
+                    _logger.ErrorWithException(ex, message);
                     _client.MessageReceived -= EventHandler;
                     taskWrapper.TrySetException(ex);
                     _client.Close(message);

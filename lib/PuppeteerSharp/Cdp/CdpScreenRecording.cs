@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Cdp
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex, "Failed to stop screen recording.");
+                    Logger.FailedToStopScreenRecording(ex);
                 }
 
                 await ProtocolStreamReader.ReadProtocolStreamBytesAsync(

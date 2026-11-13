@@ -152,7 +152,7 @@ namespace PuppeteerSharp
                         return;
                     }
 
-                    _logger.LogError(ex.ToString());
+                    _logger.ErrorMessage(ex.ToString());
                 }
             }).ConfigureAwait(false);
         }
@@ -314,7 +314,7 @@ namespace PuppeteerSharp
             catch (Exception ex)
             {
                 var message = $"IsolatedWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
+                _logger.ErrorWithException(ex, message);
                 Client.Close(message);
             }
         }
@@ -354,7 +354,7 @@ namespace PuppeteerSharp
                     return;
                 }
 
-                _logger.LogError(ex.ToString());
+                _logger.ErrorMessage(ex.ToString());
             }
         }
     }
