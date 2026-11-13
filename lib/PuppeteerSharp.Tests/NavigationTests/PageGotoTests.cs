@@ -620,10 +620,11 @@ namespace PuppeteerSharp.Tests.NavigationTests
             // Hang for request to the empty.html
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
             using var cts = new CancellationTokenSource();
+            var requestTask = Server.WaitForRequest("/empty.html");
             var navigation = Page.GoToAsync(
                 TestConstants.EmptyPage,
                 new NavigationOptions { CancellationToken = cts.Token });
-            await Server.WaitForRequest("/empty.html");
+            await requestTask;
 
             cts.Cancel();
             Assert.CatchAsync<OperationCanceledException>(() => navigation);

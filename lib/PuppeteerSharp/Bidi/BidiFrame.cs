@@ -267,6 +267,10 @@ public class BidiFrame : Frame
         {
             throw;
         }
+        catch (OperationCanceledException) when (options?.CancellationToken.HasValue == true && options.CancellationToken.Value.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (PuppeteerException ex) when (ex.Message == "Navigating frame was detached")
         {
             // Convert frame detachment to NavigationException for GoToAsync
@@ -545,6 +549,12 @@ public class BidiFrame : Frame
             }
 
             await Task.WhenAny(tasksToRace).ConfigureAwait(false);
+
+            // A caller cancel must surface as cancellation, not as a navigation timeout.
+            if (options?.CancellationToken.HasValue == true)
+            {
+                options.CancellationToken.Value.ThrowIfCancellationRequested();
+            }
 
             // Check if frame was detached or timeout occurred - re-throw the exception if so
             if (frameDetachedTcs.Task.IsCompleted)
