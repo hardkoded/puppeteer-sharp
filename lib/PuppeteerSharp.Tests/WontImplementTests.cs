@@ -61,6 +61,10 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should not allow setting debuggingPort and pipe")]
         // AbortSignal is a JS concept; C# uses CancellationToken which is not yet wired into LaunchAsync
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should support the AbortSignal")]
+        // fromAbortSignal is an rxjs Observable helper over AbortSignal. C# uses CancellationToken, whose registration already runs at once when the token is cancelled (see #3763)
+        [PuppeteerTest("util.test", "util fromAbortSignal", "errors immediately if the signal is already aborted")]
+        [PuppeteerTest("util.test", "util fromAbortSignal", "errors if the signal is aborted after subscribing")]
+        [PuppeteerTest("util.test", "util fromAbortSignal", "does not emit while the signal is not aborted")]
         public void TheseTestWontBeImplemented()
         {
         }
