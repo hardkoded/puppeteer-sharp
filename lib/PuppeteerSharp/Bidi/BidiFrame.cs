@@ -188,17 +188,37 @@ public class BidiFrame : Frame
         try
         {
             // Set the frame content using JavaScript, similar to CDP implementation
-            await EvaluateFunctionAsync(
+            var evaluateTask = EvaluateFunctionAsync(
                 @"html => {
                     document.open();
                     document.write(html);
                     document.close();
                 }",
-                html).ConfigureAwait(false);
+                html);
 
-            await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
+            if (options?.CancellationToken is { } evaluateCancellationToken)
+            {
+                var evaluateCancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                using var evaluateRegistration = evaluateCancellationToken.Register(() => evaluateCancellationTcs.TrySetCanceled(evaluateCancellationToken));
+                await Task.WhenAny(evaluateTask, evaluateCancellationTcs.Task).ConfigureAwait(false);
+                evaluateCancellationToken.ThrowIfCancellationRequested();
+            }
+
+            await evaluateTask.ConfigureAwait(false);
+
+            var waitTask = Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
                 timeout,
-                t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+                t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"));
+
+            if (options?.CancellationToken is { } cancellationToken)
+            {
+                var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                using var registration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+                await Task.WhenAny(waitTask, cancellationTcs.Task).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            await waitTask.ConfigureAwait(false);
         }
         finally
         {
