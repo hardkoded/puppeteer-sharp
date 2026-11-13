@@ -51,6 +51,12 @@ namespace PuppeteerSharp
             _args = args ?? [];
             _root = root;
 
+            if (cancellationToken.IsCancellationRequested)
+            {
+                _ = TerminateAsync(new OperationCanceledException("WaitTask has been cancelled.", cancellationToken));
+                return;
+            }
+
             _realm.TaskManager.Add(this);
 
             if (cancellationToken != default)

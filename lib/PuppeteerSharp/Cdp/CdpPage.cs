@@ -525,6 +525,7 @@ public class CdpPage : Page
     public override async Task<IResponse> ReloadAsync(ReloadOptions options)
     {
         Debug.Assert(options != null, nameof(options) + " != null");
+        options.CancellationToken?.ThrowIfCancellationRequested();
         var navigationTask = WaitForNavigationAsync(options with { IgnoreSameDocumentNavigation = true });
 
         await Task.WhenAll(
@@ -1431,6 +1432,7 @@ public class CdpPage : Page
 
     private async Task<IResponse> GoAsync(int delta, NavigationOptions options)
     {
+        options?.CancellationToken?.ThrowIfCancellationRequested();
         var history = await PrimaryTargetClient
             .SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
 

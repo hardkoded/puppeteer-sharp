@@ -275,6 +275,8 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IResponse> ReloadAsync(ReloadOptions options)
     {
+        options?.CancellationToken?.ThrowIfCancellationRequested();
+
         // Clear the events trackers on navigation to allow fresh events
         ClearEventTrackers();
 
@@ -1206,6 +1208,7 @@ public class BidiPage : Page
 
     private async Task<IResponse> GoAsync(int delta, NavigationOptions options)
     {
+        options?.CancellationToken?.ThrowIfCancellationRequested();
         var waitForNavigationTask = WaitForNavigationAsync(options);
         var navigationTask = BidiMainFrame.BrowsingContext.TraverseHistoryAsync(delta);
 

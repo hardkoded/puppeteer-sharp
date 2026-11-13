@@ -22,6 +22,7 @@ namespace PuppeteerSharp.Cdp
         private readonly TaskCompletionSource<bool> _lifecycleTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> _terminationTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly CancellationTokenSource _terminationCancellationToken = new();
+        private readonly CancellationTokenRegistration _cancellationRegistration;
         private readonly string _initialLoaderId;
         private IRequest _navigationRequest;
         private bool _hasSameDocumentNavigation;
@@ -32,7 +33,8 @@ namespace PuppeteerSharp.Cdp
             NetworkManager networkManager,
             CdpFrame frame,
             WaitUntilNavigation[] waitUntil,
-            int timeout)
+            int timeout,
+            CancellationToken cancellationToken = default)
         {
             _expectedLifecycle = (waitUntil ?? _defaultWaitUntil).Select(w =>
             {
@@ -46,6 +48,19 @@ namespace PuppeteerSharp.Cdp
             _timeout = timeout;
             _initialLoaderId = frame.LoaderId;
             _hasSameDocumentNavigation = false;
+
+            if (cancellationToken.CanBeCanceled)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    _terminationTaskWrapper.TrySetCanceled(cancellationToken);
+                }
+                else
+                {
+                    _cancellationRegistration = cancellationToken.Register(
+                        () => _terminationTaskWrapper.TrySetCanceled(cancellationToken));
+                }
+            }
 
             frame.FrameManager.LifecycleEvent += FrameManager_LifecycleEvent;
             frame.FrameNavigatedWithinDocument += NavigatedWithinDocument;
@@ -91,6 +106,7 @@ namespace PuppeteerSharp.Cdp
             _networkManager.Request -= OnRequest;
             _networkManager.Response -= OnResponse;
             _networkManager.RequestFailed -= OnRequestFailed;
+            _cancellationRegistration.Dispose();
             _terminationCancellationToken.Cancel();
             _terminationCancellationToken.Dispose();
         }

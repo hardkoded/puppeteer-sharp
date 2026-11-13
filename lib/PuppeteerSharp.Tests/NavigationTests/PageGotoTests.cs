@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
@@ -590,6 +591,27 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(referer1, Is.Null);
             // Make sure subresources do not inherit referer.
             Assert.That(referer2, Is.EqualTo(TestConstants.ServerUrl + "/grid.html"));
+        }
+
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should not navigate when the signal is already aborted")]
+        public async Task ShouldNotNavigateWhenTheSignalIsAlreadyAborted()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var requested = false;
+            Server.SetRoute("/title.html", _ =>
+            {
+                requested = true;
+                return Task.CompletedTask;
+            });
+            using var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            Assert.ThrowsAsync<OperationCanceledException>(() => Page.GoToAsync(
+                TestConstants.ServerUrl + "/title.html",
+                new NavigationOptions { CancellationToken = cts.Token }));
+            await Task.Delay(200);
+            Assert.That(requested, Is.False);
+            Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
     }
 }

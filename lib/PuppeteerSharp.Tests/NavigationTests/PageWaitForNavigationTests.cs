@@ -183,5 +183,15 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             Assert.That(caughtException, Is.Not.Null);
         }
+
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should reject at once when the signal is already aborted")]
+        public void ShouldRejectAtOnceWhenTheSignalIsAlreadyAborted()
+        {
+            using var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            Assert.ThrowsAsync<OperationCanceledException>(() => Page.WaitForNavigationAsync(
+                new NavigationOptions { CancellationToken = cts.Token }));
+        }
     }
 }
