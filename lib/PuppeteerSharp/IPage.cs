@@ -104,6 +104,16 @@ namespace PuppeteerSharp
         event EventHandler<PageErrorEventArgs> PageError;
 
         /// <summary>
+        /// Raised when an uncaught exception happens within the page or one of its dedicated workers.
+        /// Contains a <see cref="RemoteException"/>. This is the successor of <see cref="PageError"/>.
+        /// </summary>
+        /// <remarks>
+        /// The <see cref="RemoteException.Handle"/> of the exception is disposed right after the event has been
+        /// dispatched. Call <see cref="IJSHandle.Move"/> on it synchronously inside the handler to keep it alive.
+        /// </remarks>
+        event EventHandler<RemoteExceptionEventArgs> ExceptionThrown;
+
+        /// <summary>
         /// Raised when the page opens a new tab or window.
         /// </summary>
         event EventHandler<PopupEventArgs> Popup;

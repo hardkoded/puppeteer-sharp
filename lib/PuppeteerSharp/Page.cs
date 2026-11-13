@@ -116,6 +116,9 @@ namespace PuppeteerSharp
         public event EventHandler<PageErrorEventArgs> PageError;
 
         /// <inheritdoc/>
+        public event EventHandler<RemoteExceptionEventArgs> ExceptionThrown;
+
+        /// <inheritdoc/>
         public event EventHandler<WorkerEventArgs> WorkerCreated;
 
         /// <inheritdoc/>
@@ -251,6 +254,8 @@ namespace PuppeteerSharp
         internal string TabId { get; set; } = string.Empty;
 
         internal bool IsDragging { get; set; }
+
+        internal bool HasExceptionThrownListeners => ExceptionThrown != null;
 
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length > 0;
 
@@ -1393,6 +1398,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="e">Event args.</param>
         protected void OnPageError(PageErrorEventArgs e) => PageError?.Invoke(this, e);
+
+        /// <summary>
+        /// Raises the <see cref="ExceptionThrown"/> event.
+        /// </summary>
+        /// <param name="e">Event args.</param>
+        protected void OnExceptionThrown(RemoteExceptionEventArgs e) => ExceptionThrown?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="Error"/> event.

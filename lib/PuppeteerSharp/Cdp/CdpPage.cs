@@ -962,7 +962,9 @@ public class CdpPage : Page
                 session.Target.TargetId,
                 session.Target.TargetInfo.Type,
                 (type, values, stackTrace) => AddConsoleMessageAsync(type, values, stackTrace, Client, worker: worker),
-                HandleException);
+                HandleException,
+                () => HasExceptionThrownListeners,
+                exception => OnExceptionThrown(new RemoteExceptionEventArgs(exception)));
             _workers[session.Id] = worker;
             _ = FrameManager.NetworkManager.AddClientAsync(session);
             OnWorkerCreated(worker);
@@ -1020,7 +1022,9 @@ public class CdpPage : Page
                     OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>().ExceptionDetails);
+                    var exceptionDetails = e.MessageData.ToObject<RuntimeExceptionThrownResponse>().ExceptionDetails;
+                    HandleException(exceptionDetails);
+                    HandleMainTargetException(exceptionDetails);
                     break;
                 case "Inspector.targetCrashed":
                     OnTargetCrashed();
@@ -1180,6 +1184,69 @@ public class CdpPage : Page
 
     private void EmitMetrics(PerformanceMetricsResponse metrics)
         => OnMetrics(new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
+
+    private void HandleMainTargetException(EvaluateExceptionResponseDetails details)
+    {
+        if (!HasExceptionThrownListeners)
+        {
+            // Nobody can use a handle, but the browser keeps the exception alive until it is released.
+            if (details.Exception != null)
+            {
+                _ = RemoteObjectHelper.ReleaseObjectAsync(PrimaryTargetClient, CdpRemoteException.ToRemoteObject(details.Exception), _logger);
+            }
+
+            return;
+        }
+
+        var handle = CreateExceptionHandle(details);
+        try
+        {
+            var exception = CdpRemoteException.Create(details, handle);
+            OnExceptionThrown(new RemoteExceptionEventArgs(exception));
+        }
+        finally
+        {
+            // This is a no-op if a listener called Move() on the handle.
+            if (handle != null)
+            {
+                _ = DisposeExceptionHandleAsync(handle);
+            }
+        }
+    }
+
+    private IJSHandle CreateExceptionHandle(EvaluateExceptionResponseDetails details)
+    {
+        if (string.IsNullOrEmpty(details.Exception?.ObjectId))
+        {
+            return null;
+        }
+
+        var remoteObject = CdpRemoteException.ToRemoteObject(details.Exception);
+        var context = details.ExecutionContextId.HasValue
+            ? FrameManager.GetExecutionContextById(details.ExecutionContextId.Value, PrimaryTargetClient)
+            : null;
+
+        if (context != null)
+        {
+            return context.CreateJSHandle(remoteObject);
+        }
+
+        // We cannot bind the handle to a realm, but the remote object must still be released to avoid leaking it.
+        _ = RemoteObjectHelper.ReleaseObjectAsync(PrimaryTargetClient, remoteObject, _logger);
+        return null;
+    }
+
+    private async Task DisposeExceptionHandleAsync(IJSHandle handle)
+    {
+        try
+        {
+            await handle.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.ErrorDisposingExceptionHandle(ex);
+        }
+    }
 
     private void HandleException(EvaluateExceptionResponseDetails exceptionDetails)
     {
