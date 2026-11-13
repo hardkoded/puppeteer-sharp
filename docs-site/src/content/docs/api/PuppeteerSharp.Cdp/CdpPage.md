@@ -44,7 +44,7 @@ Browser.
 
 **Value:** [Browser](/api/PuppeteerSharp/Browser/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L141)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L146)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_BrowserContext_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_BrowserContext"></a>
@@ -61,7 +61,7 @@ Get the browser context that the page belongs to.
 
 **Value:** [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L132)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L137)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_Client_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_Client"></a>
@@ -78,7 +78,7 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 
 **Value:** [CDPSession](/api/PuppeteerSharp/CDPSession/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L117)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L122)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_Frames_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_Frames"></a>
@@ -95,7 +95,7 @@ Gets all frames attached to the page.
 
 **Value:** `IFrame\[\]` — An array of all frames attached to the page.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L126)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L131)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_IsJavaScriptEnabled_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_IsJavaScriptEnabled"></a>
@@ -112,7 +112,7 @@ If the page has JavaScript enabled.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L135)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L140)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_MainFrame_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_MainFrame"></a>
@@ -131,7 +131,7 @@ Gets page's main frame.
 
 Page is guaranteed to have a main frame which persists during navigations.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L123)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L128)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_Target_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_Target"></a>
@@ -148,7 +148,7 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 
 **Value:** [Target](/api/PuppeteerSharp/Target/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L120)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L125)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_WebMcp_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_WebMcp"></a>
@@ -173,7 +173,7 @@ Only supported with CDP protocol.
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | Thrown when not supported by the current browser/protocol. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L138)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L143)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_Workers_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_Workers"></a>
@@ -190,7 +190,7 @@ Gets all workers in the page.
 
 **Value:** `WebWorker\[\]`
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L129)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L134)
 
 ## Methods
 
@@ -217,7 +217,7 @@ Provide credentials for http authentication &lt;a href="https://developer.mozill
 
 To disable authentication, pass `null`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L621)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L627)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_BringToFrontAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_BringToFrontAsync"></a>
@@ -234,7 +234,7 @@ Brings page to front (activates tab).
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message has been sent to Chromium.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L536)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L541)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_CaptureHeapSnapshotAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_CaptureHeapSnapshotAsync_PuppeteerSharp_HeapSnapshotOptions_"></a>
@@ -257,7 +257,7 @@ Captures a snapshot of the JavaScript heap and writes it to a file.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task which resolves after the heap snapshot is captured and written to disk.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L310)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L315)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_CloseAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_CloseAsync_PuppeteerSharp_PageCloseOptions_"></a>
@@ -280,7 +280,7 @@ Closes the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L625)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L631)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_CreateScreenRecording_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_CreateScreenRecording_PuppeteerSharp_RecordOptions_"></a>
@@ -303,7 +303,7 @@ Creates a protocol-specific screen recording instance.
 
 **Returns:** [ScreenRecording](/api/PuppeteerSharp/ScreenRecording/) — A screen recording instance.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L911)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L917)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_DeleteCookieAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_DeleteCookieAsync_PuppeteerSharp_CookieParam___"></a>
@@ -326,7 +326,7 @@ Deletes cookies from the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L261)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L266)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateCPUThrottlingAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateCPUThrottlingAsync_System_Nullable_System_Decimal__"></a>
@@ -349,7 +349,7 @@ Enables CPU throttling to emulate slow CPUs.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message has been sent to the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L558)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L563)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateFocusedPageAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateFocusedPageAsync_System_Boolean_"></a>
@@ -372,7 +372,7 @@ Emulates focus state of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message has been sent to the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L562)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L567)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateIdleStateAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateIdleStateAsync_PuppeteerSharp_EmulateIdleOverrides_"></a>
@@ -407,7 +407,7 @@ await page.EmulateIdleStateAsync(new EmulateIdleOverrides() {IsUserActive = true
 await page.EmulateIdleStateAsync();
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L554)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L559)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateLocaleAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateLocaleAsync_System_String_"></a>
@@ -430,7 +430,7 @@ Emulates the locale of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the locale has been set.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L547)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L552)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateMediaFeaturesAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateMediaFeaturesAsync_System_Collections_Generic_IEnumerable_PuppeteerSharp_MediaFeatureValue__"></a>
@@ -485,7 +485,7 @@ await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme:
 // → false
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L438)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L443)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateMediaTypeAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateMediaTypeAsync_PuppeteerSharp_Media_MediaType_"></a>
@@ -527,7 +527,7 @@ await page.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
 // → true
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L434)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L439)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateNetworkConditionsAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateNetworkConditionsAsync_PuppeteerSharp_NetworkConditions_"></a>
@@ -552,7 +552,7 @@ Emulates network conditions.
 
 **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L499)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L504)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateTimezoneAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateTimezoneAsync_System_String_"></a>
@@ -575,7 +575,7 @@ Changes the timezone of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The viewport task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L543)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L548)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateVisionDeficiencyAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EmulateVisionDeficiencyAsync_PuppeteerSharp_VisionDeficiency_"></a>
@@ -603,7 +603,7 @@ Simulates the given vision deficiency on the page.
 await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Achromatopsia);
 await Page.ScreenshotAsync("Achromatopsia.png").
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L539)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L544)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EvaluateExpressionOnNewDocumentAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EvaluateExpressionOnNewDocumentAsync_System_String_"></a>
@@ -639,7 +639,7 @@ An example of overriding the navigator.languages property before the page loads:
 await page.EvaluateExpressionOnNewDocumentAsync("window.__example = true;");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L383)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L388)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_EvaluateFunctionOnNewDocumentAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_EvaluateFunctionOnNewDocumentAsync_System_String_System_Object___"></a>
@@ -676,7 +676,7 @@ An example of overriding the navigator.languages property before the page loads:
 await page.EvaluateFunctionOnNewDocumentAsync("() => window.__example = true");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L349)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L354)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_ExposeFunctionAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_ExposeFunctionAsync_System_String_System_Delegate_"></a>
@@ -700,7 +700,7 @@ Internal add exposed functions.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that completes when the function has been added.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L749)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L755)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_ExtensionRealms_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_ExtensionRealms"></a>
@@ -718,7 +718,7 @@ Shortcut for `MainFrame.ExtensionRealms()`.
 
 **Returns:** [IReadOnlyList&lt;Realm&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1) — A list of [Realm](/api/PuppeteerSharp/Realm/) instances representing extension execution contexts.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L675)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L678)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_GetCookiesAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_GetCookiesAsync_System_String___"></a>
@@ -744,7 +744,7 @@ Returns the page's cookies.
 If no URLs are specified, this method returns cookies for the current page URL.
 If URLs are specified, only cookies for those URLs are returned.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L189)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L194)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_GoBackAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_GoBackAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -768,7 +768,7 @@ Navigate to the previous page in history.
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task that resolves to the main resource response. In case of multiple redirects,
     the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L566)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L571)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_GoForwardAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_GoForwardAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -792,7 +792,7 @@ Navigate to the next page in history.
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task that resolves to the main resource response. In case of multiple redirects,
     the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L569)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L574)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_HasDevToolsAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_HasDevToolsAsync"></a>
@@ -810,7 +810,7 @@ Use [OpenDevToolsAsync()](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_OpenDe
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with true if DevTools is attached.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L181)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L186)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_MetricsAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_MetricsAsync"></a>
@@ -829,7 +829,7 @@ Returns metrics.
 
 All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L302)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L307)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_OpenDevToolsAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_OpenDevToolsAsync"></a>
@@ -847,7 +847,7 @@ This method is only available in Chrome.
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with the DevTools page.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L167)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L172)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_PdfInternalAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_PdfInternalAsync_System_IO_Stream_PuppeteerSharp_PdfOptions_"></a>
@@ -871,7 +871,7 @@ PDF implementation.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — PDF data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L769)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L775)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_PerformScreenshotAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_PerformScreenshotAsync_PuppeteerSharp_ScreenshotType_PuppeteerSharp_ScreenshotOptions_"></a>
@@ -895,7 +895,7 @@ Screenshot implementation.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The screenshot as a base64 string.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L850)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L856)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_QueryObjectsAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_QueryObjectsAsync_PuppeteerSharp_IJSHandle_"></a>
@@ -919,7 +919,7 @@ Shortcut for `page.MainFrame.GetExecutionContextAsync().QueryObjectsAsync(protot
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task which resolves to a handle to an array of objects with this prototype.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L389)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L394)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_ReloadAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_ReloadAsync_PuppeteerSharp_ReloadOptions_"></a>
@@ -942,7 +942,7 @@ Reloads the page.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L518)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L523)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_RemoveExposedFunctionAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_RemoveExposedFunctionAsync_System_String_"></a>
@@ -965,7 +965,7 @@ Removes a previously added function via `Action)`.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L239)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L244)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_RemoveScriptToEvaluateOnNewDocumentAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_RemoveScriptToEvaluateOnNewDocumentAsync_System_String_"></a>
@@ -988,7 +988,7 @@ Removes script that injected into page by [EvaluateExpressionOnNewDocumentAsync(
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the script is removed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L358)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L363)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_ResizeAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_ResizeAsync_System_Int32_System_Int32_"></a>
@@ -1014,7 +1014,7 @@ Resizes the browser window of this page so that the content area (excluding brow
 
 This is an experimental API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L454)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L459)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetBurstModeOffAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetBurstModeOffAsync"></a>
@@ -1031,7 +1031,7 @@ Resets the background color and Viewport after taking Screenshots using BurstMod
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The burst mode off.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L598)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L603)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetBypassCSPAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetBypassCSPAsync_System_Boolean_"></a>
@@ -1057,7 +1057,7 @@ Toggles bypassing page's Content-Security-Policy.
 CSP bypassing happens at the moment of CSP initialization rather then evaluation.
 Usually this means that [SetBypassCSPAsync(bool)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_SetBypassCSPAsync_System_Boolean_) should be called before navigating to the domain.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L429)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L434)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetBypassServiceWorkerAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetBypassServiceWorkerAsync_System_Boolean_"></a>
@@ -1080,7 +1080,7 @@ Toggles ignoring of service worker for each request.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message is sent to the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L362)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L367)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetCacheEnabledAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetCacheEnabledAsync_System_Boolean_"></a>
@@ -1103,7 +1103,7 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L503)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L508)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetCookieAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetCookieAsync_PuppeteerSharp_CookieParam___"></a>
@@ -1126,7 +1126,7 @@ Clears all of the current cookies and then sets the cookies for the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L203)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L208)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetDragInterceptionAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetDragInterceptionAsync_System_Boolean_"></a>
@@ -1153,7 +1153,7 @@ Activating drag interception enables the `Input.drag`,
 methods This provides the capability to capture drag events emitted
 on the page, which can then be used to simulate drag-and-drop.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L158)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L163)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetExtraHttpHeadersAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetExtraHttpHeadersAsync_System_Collections_Generic_Dictionary_System_String_System_String__"></a>
@@ -1176,7 +1176,7 @@ Sets extra HTTP headers that will be sent with every request the page initiates.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L610)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L615)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetGeolocationAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetGeolocationAsync_PuppeteerSharp_GeolocationOption_"></a>
@@ -1201,7 +1201,7 @@ Sets the page's geolocation.
 
 Consider using `OverridePermission%7d)` to grant permissions for the page to read its geolocation.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L154)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L159)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetJavaScriptEnabledAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetJavaScriptEnabledAsync_System_Boolean_"></a>
@@ -1224,7 +1224,7 @@ Enables/Disables Javascript on the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L425)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L430)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetOfflineModeAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetOfflineModeAsync_System_Boolean_"></a>
@@ -1247,7 +1247,7 @@ Set offline mode for the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Result task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L422)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L427)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetRequestInterceptionAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetRequestInterceptionAsync_System_Boolean_"></a>
@@ -1271,7 +1271,7 @@ Activating request interception enables `AbortAsync`,
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The request interception task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L418)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L423)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetUserAgentAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetUserAgentAsync_PuppeteerSharp_SetUserAgentOptions_"></a>
@@ -1294,7 +1294,7 @@ Sets the user agent, user agent metadata, and platform.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L511)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L516)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetUserAgentAsync_System_String_PuppeteerSharp_UserAgentMetadata_"></a>
 
@@ -1317,7 +1317,7 @@ Sets the user agent to be used in this page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L507)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L512)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_SetViewportAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_SetViewportAsync_PuppeteerSharp_ViewPortOptions_"></a>
@@ -1355,7 +1355,7 @@ using(var page = await browser.NewPageAsync())
     await page.goto('https://www.example.com');
 }
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L442)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L447)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_TabInfoAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_TabInfoAsync"></a>
@@ -1374,7 +1374,7 @@ Returns information about the browser tab of this page. The result is a snapshot
 
 This is an experimental API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L478)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L483)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_TriggerExtensionActionAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_TriggerExtensionActionAsync_PuppeteerSharp_Extension_"></a>
@@ -1397,7 +1397,7 @@ Triggers an extension action for the given extension.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the extension action has been triggered.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L372)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L377)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_WaitForFileChooserAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_WaitForFileChooserAsync_PuppeteerSharp_WaitForOptions_"></a>
@@ -1441,7 +1441,7 @@ await waitTask.Result.AcceptAsync('/tmp/myfile.pdf');
 
 This must be called *before* the file chooser is launched. It will not return a currently active file chooser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L572)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L577)
 
 <a id="PuppeteerSharp_Cdp_CdpPage_WindowIdAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPage_WindowIdAsync"></a>
@@ -1460,4 +1460,4 @@ Returns the page's window ID.
 
 This is an experimental API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L469)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPage.cs#L474)

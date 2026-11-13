@@ -9,7 +9,8 @@ namespace PuppeteerSharp
     /// <remarks>
     /// Unlike the <see cref="IPage.PageError"/> event, <see cref="RemoteException"/> does not
     /// reconstruct an error value. When the protocol supports it (CDP), it exposes the live remote
-    /// exception value through <see cref="Handle"/>.
+    /// exception value through <see cref="Handle"/>. Each call frame of <see cref="StackTrace"/> is reported as a
+    /// <see cref="ConsoleMessageLocation"/> (URL, line number and column number).
     /// </remarks>
     public class RemoteException
     {

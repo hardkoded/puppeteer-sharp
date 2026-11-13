@@ -80,6 +80,29 @@ Gets whether the intercept resolution has already been handled.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L99)
 
+<a id="PuppeteerSharp_Bidi_BidiHttpRequest_Worker_"></a>
+<a id="PuppeteerSharp_Bidi_BidiHttpRequest_Worker"></a>
+
+### Worker
+
+
+```csharp
+public override WebWorker Worker { get; }
+```
+
+
+Gets the worker that initiated the request, or null if the request was not initiated by a worker.
+
+**Value:** [WebWorker](/api/PuppeteerSharp/WebWorker/) — The worker.
+
+**Exceptions**
+
+| Type | Condition |
+| --- | --- |
+| [NotSupportedException](https://learn.microsoft.com/dotnet/api/system.notsupportedexception) | Always thrown. Worker requests are not available in WebDriver BiDi. |
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L103)
+
 ## Methods
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_AbortAsync_"></a>
@@ -105,7 +128,7 @@ Exception is immediately thrown if the request interception is not enabled.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L207)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L213)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_CanBeIntercepted_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_CanBeIntercepted"></a>
@@ -122,7 +145,7 @@ Determines whether this request can be intercepted.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the request can be intercepted; otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L330)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L336)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContentAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContentAsync"></a>
@@ -139,7 +162,7 @@ Fetches the unmodified POST data bytes for the request from the browser.
 
 **Returns:** [Task&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's raw POST data, or `null` when there is none or fetching it fails.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L234)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L240)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContinueAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContinueAsync_PuppeteerSharp_Payload_System_Nullable_System_Int32__"></a>
@@ -164,7 +187,7 @@ If the URL is set it won't perform a redirect. The request will be silently forw
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L131)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L135)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_FetchPostDataAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_FetchPostDataAsync"></a>
@@ -181,7 +204,7 @@ Fetches the POST data for the request from the browser.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's POST data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L231)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L237)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_RespondAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_RespondAsync_PuppeteerSharp_ResponseData_System_Nullable_System_Int32__"></a>
@@ -205,7 +228,7 @@ Fulfills request with given response. To use this, request interception should b
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L167)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L173)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_VerifyInterception_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_VerifyInterception"></a>
@@ -226,4 +249,4 @@ Verifies that request interception is enabled and the request has not been handl
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | Thrown when interception is not enabled or request is already handled. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L316)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L322)

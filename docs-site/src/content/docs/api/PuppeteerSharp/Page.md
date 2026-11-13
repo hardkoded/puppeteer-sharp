@@ -64,7 +64,7 @@ Browser.
 
 **Value:** [Browser](/api/PuppeteerSharp/Browser/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L255)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L267)
 
 <a id="PuppeteerSharp_Page_BrowserContext_"></a>
 <a id="PuppeteerSharp_Page_BrowserContext"></a>
@@ -81,7 +81,7 @@ Get the browser context that the page belongs to.
 
 **Value:** [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L202)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L207)
 
 <a id="PuppeteerSharp_Page_Client_"></a>
 <a id="PuppeteerSharp_Page_Client"></a>
@@ -98,7 +98,7 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 
 **Value:** [CDPSession](/api/PuppeteerSharp/CDPSession/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L132)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L137)
 
 <a id="PuppeteerSharp_Page_DefaultNavigationTimeout_"></a>
 <a id="PuppeteerSharp_Page_DefaultNavigationTimeout"></a>
@@ -122,7 +122,7 @@ This setting will change the default maximum time for the following methods:
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L135)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L140)
 
 <a id="PuppeteerSharp_Page_DefaultTimeout_"></a>
 <a id="PuppeteerSharp_Page_DefaultTimeout"></a>
@@ -150,7 +150,7 @@ This setting will change the default maximum times for the following methods:
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L142)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L147)
 
 <a id="PuppeteerSharp_Page_Frames_"></a>
 <a id="PuppeteerSharp_Page_Frames"></a>
@@ -167,24 +167,7 @@ Gets all frames attached to the page.
 
 **Value:** `IFrame\[\]` — An array of all frames attached to the page.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L152)
-
-<a id="PuppeteerSharp_Page_HasConsoleEventListeners_"></a>
-<a id="PuppeteerSharp_Page_HasConsoleEventListeners"></a>
-
-### HasConsoleEventListeners
-
-
-```csharp
-protected bool HasConsoleEventListeners { get; }
-```
-
-
-Whether the [Console](#PuppeteerSharp_Page_Console) event has listeners.
-
-**Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L250)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L157)
 
 <a id="PuppeteerSharp_Page_IsClosed_"></a>
 <a id="PuppeteerSharp_Page_IsClosed"></a>
@@ -201,7 +184,7 @@ Get an indication that the page has been closed.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L207)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L212)
 
 <a id="PuppeteerSharp_Page_IsDragInterceptionEnabled_"></a>
 <a id="PuppeteerSharp_Page_IsDragInterceptionEnabled"></a>
@@ -218,7 +201,7 @@ public bool IsDragInterceptionEnabled { get; protected set; }
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L223)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L228)
 
 <a id="PuppeteerSharp_Page_IsJavaScriptEnabled_"></a>
 <a id="PuppeteerSharp_Page_IsJavaScriptEnabled"></a>
@@ -235,7 +218,7 @@ If the page has JavaScript enabled.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L215)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L220)
 
 <a id="PuppeteerSharp_Page_IsServiceWorkerBypassed_"></a>
 <a id="PuppeteerSharp_Page_IsServiceWorkerBypassed"></a>
@@ -252,7 +235,7 @@ public bool IsServiceWorkerBypassed { get; protected set; }
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L166)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L171)
 
 <a id="PuppeteerSharp_Page_MainFrame_"></a>
 <a id="PuppeteerSharp_Page_MainFrame"></a>
@@ -271,7 +254,7 @@ Gets page's main frame.
 
 Page is guaranteed to have a main frame which persists during navigations.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L149)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L154)
 
 <a id="PuppeteerSharp_Page_ScreenshotBurstModeOn_"></a>
 <a id="PuppeteerSharp_Page_ScreenshotBurstModeOn"></a>
@@ -288,7 +271,7 @@ Whether burst mode is on.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L260)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L272)
 
 <a id="PuppeteerSharp_Page_ScreenshotBurstModeOptions_"></a>
 <a id="PuppeteerSharp_Page_ScreenshotBurstModeOptions"></a>
@@ -305,7 +288,7 @@ Screenshot burst mode options.
 
 **Value:** [ScreenshotOptions](/api/PuppeteerSharp/ScreenshotOptions/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L265)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L277)
 
 <a id="PuppeteerSharp_Page_Target_"></a>
 <a id="PuppeteerSharp_Page_Target"></a>
@@ -322,7 +305,7 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 
 **Value:** [Target](/api/PuppeteerSharp/Target/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L175)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L180)
 
 <a id="PuppeteerSharp_Page_TimeoutSettings_"></a>
 <a id="PuppeteerSharp_Page_TimeoutSettings"></a>
@@ -339,7 +322,7 @@ Timeout settings.
 
 **Value:** [TimeoutSettings](/api/PuppeteerSharp/TimeoutSettings/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L220)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L225)
 
 <a id="PuppeteerSharp_Page_Url_"></a>
 <a id="PuppeteerSharp_Page_Url"></a>
@@ -356,7 +339,7 @@ Shortcut for `page.MainFrame.Url`.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L169)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L174)
 
 <a id="PuppeteerSharp_Page_Viewport_"></a>
 <a id="PuppeteerSharp_Page_Viewport"></a>
@@ -373,7 +356,7 @@ Gets this page's viewport.
 
 **Value:** [ViewPortOptions](/api/PuppeteerSharp/ViewPortOptions/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L196)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L201)
 
 <a id="PuppeteerSharp_Page_WebMcp_"></a>
 <a id="PuppeteerSharp_Page_WebMcp"></a>
@@ -398,7 +381,7 @@ Only supported with CDP protocol.
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | Thrown when not supported by the current browser/protocol. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L163)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L168)
 
 <a id="PuppeteerSharp_Page_Workers_"></a>
 <a id="PuppeteerSharp_Page_Workers"></a>
@@ -415,7 +398,7 @@ Gets all workers in the page.
 
 **Value:** `WebWorker\[\]`
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L155)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L160)
 
 ## Events
 
@@ -433,7 +416,7 @@ Raised when the page closes.
 
 **Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L123)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L128)
 
 <a id="PuppeteerSharp_Page_Console"></a>
 
@@ -465,7 +448,7 @@ page.Console += (sender, e) =>
 }
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L84)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L86)
 
 <a id="PuppeteerSharp_Page_DOMContentLoaded"></a>
 
@@ -481,7 +464,7 @@ Raised when the JavaScript `DOMContentLoaded` &lt;a href="https://developer.mozi
 
 **Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L81)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L83)
 
 <a id="PuppeteerSharp_Page_Dialog"></a>
 
@@ -497,7 +480,7 @@ Raised when a JavaScript dialog appears, such as `alert`, `prompt`, `confirm` or
 
 **Value:** [EventHandler&lt;DialogEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L78)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L80)
 
 <a id="PuppeteerSharp_Page_Error"></a>
 
@@ -513,7 +496,27 @@ Raised when the page crashes
 
 **Value:** [EventHandler&lt;ErrorEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L72)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L74)
+
+<a id="PuppeteerSharp_Page_ExceptionThrown"></a>
+
+### ExceptionThrown
+
+
+```csharp
+public event EventHandler<RemoteExceptionEventArgs> ExceptionThrown
+```
+
+
+Raised when an uncaught exception happens within the page or one of its dedicated workers.
+Contains a [RemoteException](/api/PuppeteerSharp/RemoteException/). This is the successor of [PageError](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_PageError).
+
+**Value:** [EventHandler&lt;RemoteExceptionEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
+
+The [Handle](/api/PuppeteerSharp/RemoteException/#PuppeteerSharp_RemoteException_Handle) of the exception is disposed right after the event has been
+dispatched. Call [Move()](/api/PuppeteerSharp/IJSHandle/#PuppeteerSharp_IJSHandle_Move) on it synchronously inside the handler to keep it alive.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L119)
 
 <a id="PuppeteerSharp_Page_FrameAttached"></a>
 
@@ -529,7 +532,7 @@ Raised when a frame is attached.
 
 **Value:** [EventHandler&lt;FrameEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L87)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L89)
 
 <a id="PuppeteerSharp_Page_FrameDetached"></a>
 
@@ -545,7 +548,7 @@ Raised when a frame is detached.
 
 **Value:** [EventHandler&lt;FrameEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L90)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L92)
 
 <a id="PuppeteerSharp_Page_FrameNavigated"></a>
 
@@ -561,7 +564,7 @@ Raised when a frame is navigated to a new url.
 
 **Value:** [EventHandler&lt;FrameNavigatedEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L93)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L95)
 
 <a id="PuppeteerSharp_Page_Issue"></a>
 
@@ -577,7 +580,7 @@ Raised when a DevTools issue is reported.
 
 **Value:** [EventHandler&lt;IssueEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L111)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L113)
 
 <a id="PuppeteerSharp_Page_Load"></a>
 
@@ -593,7 +596,7 @@ Raised when the JavaScript `load` &lt;a href="https://developer.mozilla.org/en-U
 
 **Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L69)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L71)
 
 <a id="PuppeteerSharp_Page_Metrics"></a>
 
@@ -609,7 +612,7 @@ Raised when the JavaScript code makes a call to `console.timeStamp`. For the lis
 
 **Value:** [EventHandler&lt;MetricEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L75)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L77)
 
 <a id="PuppeteerSharp_Page_PageError"></a>
 
@@ -625,7 +628,10 @@ Raised when an uncaught exception happens within the page.
 
 **Value:** [EventHandler&lt;PageErrorEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L114)
+Prefer [ExceptionThrown](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_ExceptionThrown), which exposes the exception as a [RemoteException](/api/PuppeteerSharp/RemoteException/)
+(text, name, stack trace, location and a live handle to the thrown value) instead of a reconstructed error.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L116)
 
 <a id="PuppeteerSharp_Page_Popup"></a>
 
@@ -641,7 +647,7 @@ Raised when the page opens a new tab or window.
 
 **Value:** [EventHandler&lt;PopupEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L126)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L131)
 
 <a id="PuppeteerSharp_Page_Request"></a>
 
@@ -658,7 +664,7 @@ In order to intercept and mutate requests, see [SetRequestInterceptionAsync(bool
 
 **Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L99)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L101)
 
 <a id="PuppeteerSharp_Page_RequestFailed"></a>
 
@@ -674,7 +680,7 @@ Raised when a request fails, for example by timing out.
 
 **Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L105)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L107)
 
 <a id="PuppeteerSharp_Page_RequestFinished"></a>
 
@@ -690,7 +696,7 @@ Raised when a request finishes successfully.
 
 **Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L102)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L104)
 
 <a id="PuppeteerSharp_Page_RequestServedFromCache"></a>
 
@@ -706,7 +712,7 @@ Raised when a request ended up loading from cache.
 
 **Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L108)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L110)
 
 <a id="PuppeteerSharp_Page_Response"></a>
 
@@ -743,7 +749,7 @@ await Task.WhenAll(
 Console.WriteLine(await tcs.Task);
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L96)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L98)
 
 <a id="PuppeteerSharp_Page_WorkerCreated"></a>
 
@@ -759,7 +765,7 @@ Emitted when a dedicated WebWorker (&lt;a href="https://developer.mozilla.org/en
 
 **Value:** [EventHandler&lt;WorkerEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L117)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L122)
 
 <a id="PuppeteerSharp_Page_WorkerDestroyed"></a>
 
@@ -775,7 +781,7 @@ Emitted when a dedicated WebWorker (&lt;a href="https://developer.mozilla.org/en
 
 **Value:** [EventHandler&lt;WorkerEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L120)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L125)
 
 ## Methods
 
@@ -800,7 +806,7 @@ The interception is resolved to the highest-priority resolution.
 | --- | --- | --- |
 | `interceptionTask` | [Func&lt;IRequest, Task&gt;](https://learn.microsoft.com/dotnet/api/system.func-2) | Interception task. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1126)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1138)
 
 <a id="PuppeteerSharp_Page_AddScriptTagAsync_"></a>
 <a id="PuppeteerSharp_Page_AddScriptTagAsync_PuppeteerSharp_AddTagOptions_"></a>
@@ -825,7 +831,7 @@ Adds a `<script>` tag into the page with the desired url or content.
 
 Shortcut for `page.MainFrame.AddScriptTagAsync(options)`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L359)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L371)
 
 <a id="PuppeteerSharp_Page_AddScriptTagAsync_System_String_"></a>
 
@@ -849,7 +855,7 @@ Adds a `<script>` tag into the page with the desired url or content.
 
 Shortcut for `page.MainFrame.AddScriptTagAsync(new AddTagOptions { Url = url })`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L363)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L375)
 
 <a id="PuppeteerSharp_Page_AddStyleTagAsync_"></a>
 <a id="PuppeteerSharp_Page_AddStyleTagAsync_PuppeteerSharp_AddTagOptions_"></a>
@@ -874,7 +880,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<l
 
 Shortcut for `page.MainFrame.AddStyleTagAsync(options)`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L367)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L379)
 
 <a id="PuppeteerSharp_Page_AddStyleTagAsync_System_String_"></a>
 
@@ -898,7 +904,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<l
 
 Shortcut for `page.MainFrame.AddStyleTagAsync(new AddTagOptions { Url = url })`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L371)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L383)
 
 <a id="PuppeteerSharp_Page_AuthenticateAsync_"></a>
 <a id="PuppeteerSharp_Page_AuthenticateAsync_PuppeteerSharp_Credentials_"></a>
@@ -923,7 +929,7 @@ Provide credentials for http authentication &lt;a href="https://developer.mozill
 
 To disable authentication, pass `null`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L882)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L894)
 
 <a id="PuppeteerSharp_Page_BringToFrontAsync_"></a>
 <a id="PuppeteerSharp_Page_BringToFrontAsync"></a>
@@ -940,7 +946,7 @@ Brings page to front (activates tab).
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message has been sent to Chromium.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1082)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1094)
 
 <a id="PuppeteerSharp_Page_CaptureHeapSnapshotAsync_"></a>
 <a id="PuppeteerSharp_Page_CaptureHeapSnapshotAsync_PuppeteerSharp_HeapSnapshotOptions_"></a>
@@ -963,7 +969,7 @@ Captures a snapshot of the JavaScript heap and writes it to a file.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task which resolves after the heap snapshot is captured and written to disk.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L277)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L289)
 
 <a id="PuppeteerSharp_Page_ClickAsync_"></a>
 <a id="PuppeteerSharp_Page_ClickAsync_System_String_PuppeteerSharp_Input_ClickOptions_"></a>
@@ -993,7 +999,7 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L843)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L855)
 
 <a id="PuppeteerSharp_Page_CloseAsync_"></a>
 <a id="PuppeteerSharp_Page_CloseAsync_PuppeteerSharp_PageCloseOptions_"></a>
@@ -1016,7 +1022,7 @@ Closes the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L831)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L843)
 
 <a id="PuppeteerSharp_Page_CreateCDPSessionAsync_"></a>
 <a id="PuppeteerSharp_Page_CreateCDPSessionAsync"></a>
@@ -1033,7 +1039,7 @@ Creates a Chrome Devtools Protocol session attached to the page.
 
 **Returns:** [Task&lt;ICDPSession&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that returns a [ICDPSession](/api/PuppeteerSharp/ICDPSession/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1134)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1146)
 
 <a id="PuppeteerSharp_Page_CreateScreenRecording_"></a>
 <a id="PuppeteerSharp_Page_CreateScreenRecording_PuppeteerSharp_RecordOptions_"></a>
@@ -1056,7 +1062,7 @@ Creates a protocol-specific screen recording instance.
 
 **Returns:** [ScreenRecording](/api/PuppeteerSharp/ScreenRecording/) — A screen recording instance.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1400)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1443)
 
 <a id="PuppeteerSharp_Page_DeleteCookieAsync_"></a>
 <a id="PuppeteerSharp_Page_DeleteCookieAsync_PuppeteerSharp_CookieParam___"></a>
@@ -1079,7 +1085,7 @@ Deletes cookies from the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L356)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L368)
 
 <a id="PuppeteerSharp_Page_Dispose_"></a>
 <a id="PuppeteerSharp_Page_Dispose"></a>
@@ -1094,7 +1100,7 @@ public void Dispose()
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1103)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1115)
 
 <a id="PuppeteerSharp_Page_Dispose_System_Boolean_"></a>
 
@@ -1114,7 +1120,7 @@ Dispose resources.
 | --- | --- | --- |
 | `disposing` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Indicates whether disposal was initiated by [Dispose()](#PuppeteerSharp_Page_Dispose) operation. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1323)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1355)
 
 <a id="PuppeteerSharp_Page_DisposeAsync_"></a>
 <a id="PuppeteerSharp_Page_DisposeAsync"></a>
@@ -1132,7 +1138,7 @@ resetting unmanaged resources asynchronously.
 
 **Returns:** [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) — A task that represents the asynchronous dispose operation.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1110)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1122)
 
 <a id="PuppeteerSharp_Page_EmulateAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateAsync_PuppeteerSharp_Mobile_DeviceDescriptor_"></a>
@@ -1170,7 +1176,7 @@ using(var page = await browser.NewPageAsync())
     await page.goto('https://www.google.com');
 }
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L502)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L514)
 
 <a id="PuppeteerSharp_Page_EmulateCPUThrottlingAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateCPUThrottlingAsync_System_Nullable_System_Decimal__"></a>
@@ -1193,7 +1199,7 @@ Enables CPU throttling to emulate slow CPUs.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message has been sent to the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1097)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1109)
 
 <a id="PuppeteerSharp_Page_EmulateFocusedPageAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateFocusedPageAsync_System_Boolean_"></a>
@@ -1216,7 +1222,7 @@ Emulates focus state of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message has been sent to the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1100)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1112)
 
 <a id="PuppeteerSharp_Page_EmulateIdleStateAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateIdleStateAsync_PuppeteerSharp_EmulateIdleOverrides_"></a>
@@ -1251,7 +1257,7 @@ await page.EmulateIdleStateAsync(new EmulateIdleOverrides() {IsUserActive = true
 await page.EmulateIdleStateAsync();
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1094)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1106)
 
 <a id="PuppeteerSharp_Page_EmulateLocaleAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateLocaleAsync_System_String_"></a>
@@ -1274,7 +1280,7 @@ Emulates the locale of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the locale has been set.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1091)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1103)
 
 <a id="PuppeteerSharp_Page_EmulateMediaFeaturesAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateMediaFeaturesAsync_System_Collections_Generic_IEnumerable_PuppeteerSharp_MediaFeatureValue__"></a>
@@ -1329,7 +1335,7 @@ await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme:
 // → false
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L496)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L508)
 
 <a id="PuppeteerSharp_Page_EmulateMediaTypeAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateMediaTypeAsync_PuppeteerSharp_Media_MediaType_"></a>
@@ -1371,7 +1377,7 @@ await page.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
 // → true
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L493)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L505)
 
 <a id="PuppeteerSharp_Page_EmulateNetworkConditionsAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateNetworkConditionsAsync_PuppeteerSharp_NetworkConditions_"></a>
@@ -1396,7 +1402,7 @@ Emulates network conditions.
 
 **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L347)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L359)
 
 <a id="PuppeteerSharp_Page_EmulateTimezoneAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateTimezoneAsync_System_String_"></a>
@@ -1419,7 +1425,7 @@ Changes the timezone of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The viewport task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1088)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1100)
 
 <a id="PuppeteerSharp_Page_EmulateVisionDeficiencyAsync_"></a>
 <a id="PuppeteerSharp_Page_EmulateVisionDeficiencyAsync_PuppeteerSharp_VisionDeficiency_"></a>
@@ -1447,7 +1453,7 @@ Simulates the given vision deficiency on the page.
 await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Achromatopsia);
 await Page.ScreenshotAsync("Achromatopsia.png").
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1085)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1097)
 
 <a id="PuppeteerSharp_Page_EvaluateExpressionAsync_"></a>
 <a id="PuppeteerSharp_Page_EvaluateExpressionAsync_System_String_"></a>
@@ -1490,7 +1496,7 @@ var hyperlinkInfo = await page.EvaluateExpressionAsync(@"
 Console.WriteLine(hyperlinkInfo.ToString()); // Displays JSON array of hyperlinkInfo objects
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L857)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L869)
 
 <a id="PuppeteerSharp_Page_EvaluateExpressionAsync__1_System_String_"></a>
 
@@ -1520,7 +1526,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L861)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L873)
 
 <a id="PuppeteerSharp_Page_EvaluateExpressionHandleAsync_"></a>
 <a id="PuppeteerSharp_Page_EvaluateExpressionHandleAsync_System_String_"></a>
@@ -1545,7 +1551,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L319)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L331)
 
 <a id="PuppeteerSharp_Page_EvaluateExpressionOnNewDocumentAsync_"></a>
 <a id="PuppeteerSharp_Page_EvaluateExpressionOnNewDocumentAsync_System_String_"></a>
@@ -1581,7 +1587,7 @@ An example of overriding the navigator.languages property before the page loads:
 await page.EvaluateExpressionOnNewDocumentAsync("window.__example = true;");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L335)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L347)
 
 <a id="PuppeteerSharp_Page_EvaluateFunctionAsync_"></a>
 <a id="PuppeteerSharp_Page_EvaluateFunctionAsync_System_String_System_Object___"></a>
@@ -1608,7 +1614,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L865)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L877)
 
 <a id="PuppeteerSharp_Page_EvaluateFunctionAsync__1_System_String_System_Object___"></a>
 
@@ -1640,7 +1646,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L869)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L881)
 
 <a id="PuppeteerSharp_Page_EvaluateFunctionHandleAsync_"></a>
 <a id="PuppeteerSharp_Page_EvaluateFunctionHandleAsync_System_String_System_Object___"></a>
@@ -1667,7 +1673,7 @@ Executes a script in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L323)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L335)
 
 <a id="PuppeteerSharp_Page_EvaluateFunctionOnNewDocumentAsync_"></a>
 <a id="PuppeteerSharp_Page_EvaluateFunctionOnNewDocumentAsync_System_String_System_Object___"></a>
@@ -1704,7 +1710,7 @@ An example of overriding the navigator.languages property before the page loads:
 await page.EvaluateFunctionOnNewDocumentAsync("() => window.__example = true");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L327)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L339)
 
 <a id="PuppeteerSharp_Page_ExposeFunctionAsync_"></a>
 <a id="PuppeteerSharp_Page_ExposeFunctionAsync_System_String_System_Action_"></a>
@@ -1732,7 +1738,7 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
 Functions installed via `Action)` survive navigations.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L375)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L387)
 
 <a id="PuppeteerSharp_Page_ExposeFunctionAsync_System_String_System_Delegate_"></a>
 
@@ -1755,7 +1761,7 @@ Internal add exposed functions.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that completes when the function has been added.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1393)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1436)
 
 <a id="PuppeteerSharp_Page_ExposeFunctionAsync__1_System_String_System_Func___0__"></a>
 
@@ -1788,7 +1794,7 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
 Functions installed via `Func%7b%60%600%7d)` survive navigations.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L379)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L391)
 
 <a id="PuppeteerSharp_Page_ExposeFunctionAsync__2_System_String_System_Func___0___1__"></a>
 
@@ -1822,7 +1828,7 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
 Functions installed via `Func%7b%60%600%2c%60%601%7d)` survive navigations.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L383)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L395)
 
 <a id="PuppeteerSharp_Page_ExposeFunctionAsync__3_System_String_System_Func___0___1___2__"></a>
 
@@ -1857,7 +1863,7 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
 Functions installed via `Func%7b%60%600%2c%60%601%2c%60%602%7d)` survive navigations.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L387)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L399)
 
 <a id="PuppeteerSharp_Page_ExposeFunctionAsync__4_System_String_System_Func___0___1___2___3__"></a>
 
@@ -1893,7 +1899,7 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
 Functions installed via `Func%7b%60%600%2c%60%601%2c%60%602%2c%60%603%7d)` survive navigations.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L391)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L403)
 
 <a id="PuppeteerSharp_Page_ExposeFunctionAsync__5_System_String_System_Func___0___1___2___3___4__"></a>
 
@@ -1930,7 +1936,7 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
 Functions installed via `Func%7b%60%600%2c%60%601%2c%60%602%2c%60%603%2c%60%604%7d)` survive navigations.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L395)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L407)
 
 <a id="PuppeteerSharp_Page_ExtensionRealms_"></a>
 <a id="PuppeteerSharp_Page_ExtensionRealms"></a>
@@ -1948,7 +1954,7 @@ Shortcut for `MainFrame.ExtensionRealms()`.
 
 **Returns:** [IReadOnlyList&lt;Realm&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1) — A list of [Realm](/api/PuppeteerSharp/Realm/) instances representing extension execution contexts.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1147)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1159)
 
 <a id="PuppeteerSharp_Page_FocusAsync_"></a>
 <a id="PuppeteerSharp_Page_FocusAsync_System_String_"></a>
@@ -1977,7 +1983,7 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt; and f
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L850)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L862)
 
 <a id="PuppeteerSharp_Page_GetContentAsync_"></a>
 <a id="PuppeteerSharp_Page_GetContentAsync_PuppeteerSharp_GetContentOptions_"></a>
@@ -2000,7 +2006,7 @@ Gets the full HTML contents of the page, including the doctype.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the HTML content.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L404)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L416)
 
 <a id="PuppeteerSharp_Page_GetCookiesAsync_"></a>
 <a id="PuppeteerSharp_Page_GetCookiesAsync_System_String___"></a>
@@ -2026,7 +2032,7 @@ Returns the page's cookies.
 If no URLs are specified, this method returns cookies for the current page URL.
 If URLs are specified, only cookies for those URLs are returned.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L350)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L362)
 
 <a id="PuppeteerSharp_Page_GetTitleAsync_"></a>
 <a id="PuppeteerSharp_Page_GetTitleAsync"></a>
@@ -2043,7 +2049,7 @@ Returns page's title.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — page's title.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L828)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L840)
 
 <a id="PuppeteerSharp_Page_GoBackAsync_"></a>
 <a id="PuppeteerSharp_Page_GoBackAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -2067,7 +2073,7 @@ Navigate to the previous page in history.
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task that resolves to the main resource response. In case of multiple redirects,
     the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1073)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1085)
 
 <a id="PuppeteerSharp_Page_GoForwardAsync_"></a>
 <a id="PuppeteerSharp_Page_GoForwardAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -2091,7 +2097,7 @@ Navigate to the next page in history.
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task that resolves to the main resource response. In case of multiple redirects,
     the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1076)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1088)
 
 <a id="PuppeteerSharp_Page_GoToAsync_"></a>
 <a id="PuppeteerSharp_Page_GoToAsync_System_String_PuppeteerSharp_NavigationOptions_"></a>
@@ -2132,7 +2138,7 @@ The only exceptions are navigation to `about:blank` or navigation to the same UR
 
 Shortcut for. `WaitUntilNavigation%5b%5d)`
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L418)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L430)
 
 <a id="PuppeteerSharp_Page_GoToAsync_System_String_PuppeteerSharp_WaitUntilNavigation_"></a>
 
@@ -2155,7 +2161,7 @@ Navigates to an url.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L426)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L438)
 
 <a id="PuppeteerSharp_Page_GoToAsync_System_String_System_Nullable_System_Int32__PuppeteerSharp_WaitUntilNavigation___"></a>
 
@@ -2179,7 +2185,7 @@ Navigates to an url.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L422)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L434)
 
 <a id="PuppeteerSharp_Page_HasDevToolsAsync_"></a>
 <a id="PuppeteerSharp_Page_HasDevToolsAsync"></a>
@@ -2197,7 +2203,7 @@ Use [OpenDevToolsAsync()](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_OpenDe
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with true if DevTools is attached.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L837)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L849)
 
 <a id="PuppeteerSharp_Page_HoverAsync_"></a>
 <a id="PuppeteerSharp_Page_HoverAsync_System_String_"></a>
@@ -2226,7 +2232,7 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L847)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L859)
 
 <a id="PuppeteerSharp_Page_Locator_"></a>
 <a id="PuppeteerSharp_Page_Locator_System_String_"></a>
@@ -2250,7 +2256,7 @@ details and supported actions.
 
 **Returns:** [Locator](/api/PuppeteerSharp.Locators/Locator/) — A locator for the provided selector.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L912)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L924)
 
 <a id="PuppeteerSharp_Page_LocatorFunction_"></a>
 <a id="PuppeteerSharp_Page_LocatorFunction_System_String_"></a>
@@ -2274,7 +2280,7 @@ details and supported actions.
 
 **Returns:** [Locator](/api/PuppeteerSharp.Locators/Locator/) — A locator for the provided function.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L916)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L928)
 
 <a id="PuppeteerSharp_Page_MetricsAsync_"></a>
 <a id="PuppeteerSharp_Page_MetricsAsync"></a>
@@ -2293,7 +2299,7 @@ Returns metrics.
 
 All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L274)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L286)
 
 <a id="PuppeteerSharp_Page_OnClose_"></a>
 <a id="PuppeteerSharp_Page_OnClose"></a>
@@ -2308,7 +2314,7 @@ protected void OnClose()
 
 Raises the [Close](#PuppeteerSharp_Page_Close) event.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1345)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1377)
 
 <a id="PuppeteerSharp_Page_OnConsole_"></a>
 <a id="PuppeteerSharp_Page_OnConsole_PuppeteerSharp_ConsoleEventArgs_"></a>
@@ -2329,7 +2335,7 @@ Raises the [Console](#PuppeteerSharp_Page_Console) event.
 | --- | --- | --- |
 | `e` | [ConsoleEventArgs](/api/PuppeteerSharp/ConsoleEventArgs/) | Event args. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1351)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1383)
 
 <a id="PuppeteerSharp_Page_OnError_"></a>
 <a id="PuppeteerSharp_Page_OnError_PuppeteerSharp_ErrorEventArgs_"></a>
@@ -2350,7 +2356,28 @@ Raises the [Error](#PuppeteerSharp_Page_Error) event.
 | --- | --- | --- |
 | `e` | [ErrorEventArgs](/api/PuppeteerSharp/ErrorEventArgs/) | Event args. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1369)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1412)
+
+<a id="PuppeteerSharp_Page_OnExceptionThrown_"></a>
+<a id="PuppeteerSharp_Page_OnExceptionThrown_PuppeteerSharp_RemoteExceptionEventArgs_"></a>
+
+### OnExceptionThrown(RemoteExceptionEventArgs)
+
+
+```csharp
+protected void OnExceptionThrown(RemoteExceptionEventArgs e)
+```
+
+
+Raises the [ExceptionThrown](#PuppeteerSharp_Page_ExceptionThrown) event.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `e` | [RemoteExceptionEventArgs](/api/PuppeteerSharp/RemoteExceptionEventArgs/) | Event args. |
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1406)
 
 <a id="PuppeteerSharp_Page_OnMetrics_"></a>
 <a id="PuppeteerSharp_Page_OnMetrics_PuppeteerSharp_MetricEventArgs_"></a>
@@ -2371,7 +2398,7 @@ Raises the [Metrics](#PuppeteerSharp_Page_Metrics) event.
 | --- | --- | --- |
 | `e` | [MetricEventArgs](/api/PuppeteerSharp/MetricEventArgs/) | Event args. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1357)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1394)
 
 <a id="PuppeteerSharp_Page_OnPageError_"></a>
 <a id="PuppeteerSharp_Page_OnPageError_PuppeteerSharp_PageErrorEventArgs_"></a>
@@ -2392,7 +2419,7 @@ Raises the [PageError](#PuppeteerSharp_Page_PageError) event.
 | --- | --- | --- |
 | `e` | [PageErrorEventArgs](/api/PuppeteerSharp/PageErrorEventArgs/) | Event args. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1363)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1400)
 
 <a id="PuppeteerSharp_Page_OnWorkerCreated_"></a>
 <a id="PuppeteerSharp_Page_OnWorkerCreated_PuppeteerSharp_WebWorker_"></a>
@@ -2413,7 +2440,7 @@ Raises the [WorkerCreated](#PuppeteerSharp_Page_WorkerCreated) event.
 | --- | --- | --- |
 | `worker` | [WebWorker](/api/PuppeteerSharp/WebWorker/) | Worker. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1340)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1372)
 
 <a id="PuppeteerSharp_Page_OnWorkerDestroyed_"></a>
 <a id="PuppeteerSharp_Page_OnWorkerDestroyed_PuppeteerSharp_WebWorker_"></a>
@@ -2434,7 +2461,7 @@ Raises the [WorkerDestroyed](#PuppeteerSharp_Page_WorkerDestroyed) event.
 | --- | --- | --- |
 | `worker` | [WebWorker](/api/PuppeteerSharp/WebWorker/) | Worker. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1334)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1366)
 
 <a id="PuppeteerSharp_Page_OpenDevToolsAsync_"></a>
 <a id="PuppeteerSharp_Page_OpenDevToolsAsync"></a>
@@ -2452,7 +2479,7 @@ This method is only available in Chrome.
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with the DevTools page.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L834)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L846)
 
 <a id="PuppeteerSharp_Page_PdfAsync_"></a>
 <a id="PuppeteerSharp_Page_PdfAsync_System_String_"></a>
@@ -2477,7 +2504,7 @@ generates a pdf of the page with [Print](/api/PuppeteerSharp.Media/MediaType/#Pu
 
 Generating a pdf is currently only supported in Chrome headless.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L430)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L442)
 
 <a id="PuppeteerSharp_Page_PdfAsync_System_String_PuppeteerSharp_PdfOptions_"></a>
 
@@ -2502,7 +2529,7 @@ generates a pdf of the page with [Print](/api/PuppeteerSharp.Media/MediaType/#Pu
 
 Generating a pdf is currently only supported in Chrome headless.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L433)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L445)
 
 <a id="PuppeteerSharp_Page_PdfDataAsync_"></a>
 <a id="PuppeteerSharp_Page_PdfDataAsync"></a>
@@ -2521,7 +2548,7 @@ Generates a pdf of the page with [Print](/api/PuppeteerSharp.Media/MediaType/#Pu
 
 Generating a pdf is currently only supported in Chrome headless.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L468)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L480)
 
 <a id="PuppeteerSharp_Page_PdfDataAsync_PuppeteerSharp_PdfOptions_"></a>
 
@@ -2545,7 +2572,7 @@ Generates a pdf of the page with [Print](/api/PuppeteerSharp.Media/MediaType/#Pu
 
 Generating a pdf is currently only supported in Chrome headless.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L471)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L483)
 
 <a id="PuppeteerSharp_Page_PdfInternalAsync_"></a>
 <a id="PuppeteerSharp_Page_PdfInternalAsync_System_IO_Stream_PuppeteerSharp_PdfOptions_"></a>
@@ -2569,7 +2596,7 @@ PDF implementation.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — PDF data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1377)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1420)
 
 <a id="PuppeteerSharp_Page_PdfStreamAsync_"></a>
 <a id="PuppeteerSharp_Page_PdfStreamAsync"></a>
@@ -2588,7 +2615,7 @@ generates a pdf of the page with [Print](/api/PuppeteerSharp.Media/MediaType/#Pu
 
 Generating a pdf is currently only supported in Chrome headless.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L450)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L462)
 
 <a id="PuppeteerSharp_Page_PdfStreamAsync_PuppeteerSharp_PdfOptions_"></a>
 
@@ -2612,7 +2639,7 @@ Generates a pdf of the page with [Print](/api/PuppeteerSharp.Media/MediaType/#Pu
 
 Generating a pdf is currently only supported in Chrome headless.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L453)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L465)
 
 <a id="PuppeteerSharp_Page_PerformScreenshotAsync_"></a>
 <a id="PuppeteerSharp_Page_PerformScreenshotAsync_PuppeteerSharp_ScreenshotType_PuppeteerSharp_ScreenshotOptions_"></a>
@@ -2636,7 +2663,7 @@ Screenshot implementation.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The screenshot as a base64 string.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1385)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1428)
 
 <a id="PuppeteerSharp_Page_QueryObjectsAsync_"></a>
 <a id="PuppeteerSharp_Page_QueryObjectsAsync_PuppeteerSharp_IJSHandle_"></a>
@@ -2660,7 +2687,7 @@ Shortcut for `page.MainFrame.GetExecutionContextAsync().QueryObjectsAsync(protot
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task which resolves to a handle to an array of objects with this prototype.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L338)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L350)
 
 <a id="PuppeteerSharp_Page_QuerySelectorAllAsync_"></a>
 <a id="PuppeteerSharp_Page_QuerySelectorAllAsync_System_String_"></a>
@@ -2683,7 +2710,7 @@ Runs `document.querySelectorAll` within the page. If no elements match the selec
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to ElementHandles pointing to the frame elements.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L288)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L300)
 
 <a id="PuppeteerSharp_Page_QuerySelectorAllAsync_System_String_PuppeteerSharp_QueryOptions_"></a>
 
@@ -2706,7 +2733,7 @@ Runs `document.querySelectorAll` within the page. If no elements match the selec
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to ElementHandles pointing to the frame elements.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L292)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L304)
 
 <a id="PuppeteerSharp_Page_QuerySelectorAllHandleAsync_"></a>
 <a id="PuppeteerSharp_Page_QuerySelectorAllHandleAsync_System_String_"></a>
@@ -2729,7 +2756,7 @@ A utility function to be used with `Object%5b%5d)`.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of `document.querySelectorAll` result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L296)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L308)
 
 <a id="PuppeteerSharp_Page_QuerySelectorAsync_"></a>
 <a id="PuppeteerSharp_Page_QuerySelectorAsync_System_String_"></a>
@@ -2754,7 +2781,7 @@ The method runs `document.querySelector` within the page. If no element matches 
 
 Shortcut for `page.MainFrame.QuerySelectorAsync(selector)`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L284)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L296)
 
 <a id="PuppeteerSharp_Page_RecordAsync_"></a>
 <a id="PuppeteerSharp_Page_RecordAsync_PuppeteerSharp_RecordOptions_"></a>
@@ -2781,7 +2808,7 @@ Records this [IPage](/api/PuppeteerSharp/IPage/) using the Chrome DevTools Proto
 
 Outputs mp4 video stream.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L523)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L535)
 
 <a id="PuppeteerSharp_Page_ReloadAsync_"></a>
 <a id="PuppeteerSharp_Page_ReloadAsync_PuppeteerSharp_ReloadOptions_"></a>
@@ -2804,7 +2831,7 @@ Reloads the page.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L885)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L897)
 
 <a id="PuppeteerSharp_Page_ReloadAsync_System_Nullable_System_Int32__PuppeteerSharp_WaitUntilNavigation___"></a>
 
@@ -2827,7 +2854,7 @@ Reloads the page.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L888)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L900)
 
 <a id="PuppeteerSharp_Page_RemoveExposedFunctionAsync_"></a>
 <a id="PuppeteerSharp_Page_RemoveExposedFunctionAsync_System_String_"></a>
@@ -2850,7 +2877,7 @@ Removes a previously added function via `Action)`.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L401)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L413)
 
 <a id="PuppeteerSharp_Page_RemoveRequestInterceptor_"></a>
 <a id="PuppeteerSharp_Page_RemoveRequestInterceptor_System_Func_PuppeteerSharp_IRequest_System_Threading_Tasks_Task__"></a>
@@ -2871,7 +2898,7 @@ Removes a previously added request interceptor.
 | --- | --- | --- |
 | `interceptionTask` | [Func&lt;IRequest, Task&gt;](https://learn.microsoft.com/dotnet/api/system.func-2) | Interception task. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1130)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1142)
 
 <a id="PuppeteerSharp_Page_RemoveScriptToEvaluateOnNewDocumentAsync_"></a>
 <a id="PuppeteerSharp_Page_RemoveScriptToEvaluateOnNewDocumentAsync_System_String_"></a>
@@ -2894,7 +2921,7 @@ Removes script that injected into page by [EvaluateExpressionOnNewDocumentAsync(
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the script is removed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L332)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L344)
 
 <a id="PuppeteerSharp_Page_ResizeAsync_"></a>
 <a id="PuppeteerSharp_Page_ResizeAsync_System_Int32_System_Int32_"></a>
@@ -2920,7 +2947,7 @@ Resizes the browser window of this page so that the content area (excluding brow
 
 This is an experimental API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L310)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L322)
 
 <a id="PuppeteerSharp_Page_ScreencastAsync_"></a>
 <a id="PuppeteerSharp_Page_ScreencastAsync_PuppeteerSharp_ScreencastOptions_"></a>
@@ -2952,7 +2979,7 @@ This API is obsolete.
 By default, all recordings will be WebM format using the VP9 video codec, with a frame rate of 30 FPS.
 You must have ffmpeg installed on your system.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L587)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L599)
 
 <a id="PuppeteerSharp_Page_ScreenshotAsync_"></a>
 <a id="PuppeteerSharp_Page_ScreenshotAsync_System_String_"></a>
@@ -2975,7 +3002,7 @@ Captures a screenshot of this [IPage](/api/PuppeteerSharp/IPage/).
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The screenshot task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L667)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L679)
 
 <a id="PuppeteerSharp_Page_ScreenshotAsync_System_String_PuppeteerSharp_ScreenshotOptions_"></a>
 
@@ -2998,7 +3025,7 @@ Takes a screenshot of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The screenshot task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L670)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L682)
 
 <a id="PuppeteerSharp_Page_ScreenshotBase64Async_"></a>
 <a id="PuppeteerSharp_Page_ScreenshotBase64Async"></a>
@@ -3015,7 +3042,7 @@ Takes a screenshot of the page.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [string](https://learn.microsoft.com/dotnet/api/system.string) containing the image data as base64.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L701)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L713)
 
 <a id="PuppeteerSharp_Page_ScreenshotBase64Async_PuppeteerSharp_ScreenshotOptions_"></a>
 
@@ -3037,7 +3064,7 @@ Takes a screenshot of the page.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [string](https://learn.microsoft.com/dotnet/api/system.string) containing the image data as base64.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L704)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L716)
 
 <a id="PuppeteerSharp_Page_ScreenshotDataAsync_"></a>
 <a id="PuppeteerSharp_Page_ScreenshotDataAsync"></a>
@@ -3054,7 +3081,7 @@ Takes a screenshot of the page.
 
 **Returns:** [Task&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [byte](https://learn.microsoft.com/dotnet/api/system.byte)[] containing the image data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L821)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L833)
 
 <a id="PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_"></a>
 
@@ -3076,7 +3103,7 @@ Takes a screenshot of the page.
 
 **Returns:** [Task&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [byte](https://learn.microsoft.com/dotnet/api/system.byte)[] containing the image data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L824)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L836)
 
 <a id="PuppeteerSharp_Page_ScreenshotStreamAsync_"></a>
 <a id="PuppeteerSharp_Page_ScreenshotStreamAsync"></a>
@@ -3093,7 +3120,7 @@ Takes a screenshot of the page.
 
 **Returns:** [Task&lt;Stream&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [Stream](https://learn.microsoft.com/dotnet/api/system.io.stream) containing the image data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L694)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L706)
 
 <a id="PuppeteerSharp_Page_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_"></a>
 
@@ -3115,7 +3142,7 @@ Takes a screenshot of the page.
 
 **Returns:** [Task&lt;Stream&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [Stream](https://learn.microsoft.com/dotnet/api/system.io.stream) containing the image data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L697)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L709)
 
 <a id="PuppeteerSharp_Page_SelectAsync_"></a>
 <a id="PuppeteerSharp_Page_SelectAsync_System_String_System_String___"></a>
@@ -3146,7 +3173,7 @@ If there's no &lt;select&gt; element matching selector, the method throws an err
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L892)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L904)
 
 <a id="PuppeteerSharp_Page_SetBurstModeOffAsync_"></a>
 <a id="PuppeteerSharp_Page_SetBurstModeOffAsync"></a>
@@ -3163,7 +3190,7 @@ Resets the background color and Viewport after taking Screenshots using BurstMod
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The burst mode off.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1079)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1091)
 
 <a id="PuppeteerSharp_Page_SetBypassCSPAsync_"></a>
 <a id="PuppeteerSharp_Page_SetBypassCSPAsync_System_Boolean_"></a>
@@ -3189,7 +3216,7 @@ Toggles bypassing page's Content-Security-Policy.
 CSP bypassing happens at the moment of CSP initialization rather then evaluation.
 Usually this means that [SetBypassCSPAsync(bool)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_SetBypassCSPAsync_System_Boolean_) should be called before navigating to the domain.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L490)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L502)
 
 <a id="PuppeteerSharp_Page_SetBypassServiceWorkerAsync_"></a>
 <a id="PuppeteerSharp_Page_SetBypassServiceWorkerAsync_System_Boolean_"></a>
@@ -3212,7 +3239,7 @@ Toggles ignoring of service worker for each request.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message is sent to the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1137)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1149)
 
 <a id="PuppeteerSharp_Page_SetCacheEnabledAsync_"></a>
 <a id="PuppeteerSharp_Page_SetCacheEnabledAsync_System_Boolean_"></a>
@@ -3235,7 +3262,7 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L840)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L852)
 
 <a id="PuppeteerSharp_Page_SetContentAsync_"></a>
 <a id="PuppeteerSharp_Page_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_"></a>
@@ -3264,7 +3291,7 @@ Sets the HTML markup to the page.
 This API is obsolete.
 :::
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L407)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L419)
 
 <a id="PuppeteerSharp_Page_SetContentAsync_System_String_PuppeteerSharp_SetContentOptions_"></a>
 
@@ -3287,7 +3314,7 @@ Sets the HTML markup to the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L414)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L426)
 
 <a id="PuppeteerSharp_Page_SetCookieAsync_"></a>
 <a id="PuppeteerSharp_Page_SetCookieAsync_PuppeteerSharp_CookieParam___"></a>
@@ -3310,7 +3337,7 @@ Clears all of the current cookies and then sets the cookies for the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L353)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L365)
 
 <a id="PuppeteerSharp_Page_SetDragInterceptionAsync_"></a>
 <a id="PuppeteerSharp_Page_SetDragInterceptionAsync_System_Boolean_"></a>
@@ -3337,7 +3364,7 @@ Activating drag interception enables the `Input.drag`,
 methods This provides the capability to capture drag events emitted
 on the page, which can then be used to simulate drag-and-drop.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L271)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L283)
 
 <a id="PuppeteerSharp_Page_SetExtraHttpHeadersAsync_"></a>
 <a id="PuppeteerSharp_Page_SetExtraHttpHeadersAsync_System_Collections_Generic_Dictionary_System_String_System_String__"></a>
@@ -3360,7 +3387,7 @@ Sets extra HTTP headers that will be sent with every request the page initiates.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L879)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L891)
 
 <a id="PuppeteerSharp_Page_SetGeolocationAsync_"></a>
 <a id="PuppeteerSharp_Page_SetGeolocationAsync_PuppeteerSharp_GeolocationOption_"></a>
@@ -3385,7 +3412,7 @@ Sets the page's geolocation.
 
 Consider using `OverridePermission%7d)` to grant permissions for the page to read its geolocation.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L268)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L280)
 
 <a id="PuppeteerSharp_Page_SetJavaScriptEnabledAsync_"></a>
 <a id="PuppeteerSharp_Page_SetJavaScriptEnabledAsync_System_Boolean_"></a>
@@ -3408,7 +3435,7 @@ Enables/Disables Javascript on the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L487)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L499)
 
 <a id="PuppeteerSharp_Page_SetOfflineModeAsync_"></a>
 <a id="PuppeteerSharp_Page_SetOfflineModeAsync_System_Boolean_"></a>
@@ -3431,7 +3458,7 @@ Set offline mode for the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Result task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L344)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L356)
 
 <a id="PuppeteerSharp_Page_SetRequestInterceptionAsync_"></a>
 <a id="PuppeteerSharp_Page_SetRequestInterceptionAsync_System_Boolean_"></a>
@@ -3455,7 +3482,7 @@ Activating request interception enables `AbortAsync`,
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The request interception task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L341)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L353)
 
 <a id="PuppeteerSharp_Page_SetUserAgentAsync_"></a>
 <a id="PuppeteerSharp_Page_SetUserAgentAsync_PuppeteerSharp_SetUserAgentOptions_"></a>
@@ -3478,7 +3505,7 @@ Sets the user agent, user agent metadata, and platform.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L876)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L888)
 
 <a id="PuppeteerSharp_Page_SetUserAgentAsync_System_String_PuppeteerSharp_UserAgentMetadata_"></a>
 
@@ -3501,7 +3528,7 @@ Sets the user agent to be used in this page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L873)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L885)
 
 <a id="PuppeteerSharp_Page_SetViewportAsync_"></a>
 <a id="PuppeteerSharp_Page_SetViewportAsync_PuppeteerSharp_ViewPortOptions_"></a>
@@ -3539,7 +3566,7 @@ using(var page = await browser.NewPageAsync())
     await page.goto('https://www.example.com');
 }
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L499)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L511)
 
 <a id="PuppeteerSharp_Page_TabInfoAsync_"></a>
 <a id="PuppeteerSharp_Page_TabInfoAsync"></a>
@@ -3558,7 +3585,7 @@ Returns information about the browser tab of this page. The result is a snapshot
 
 This is an experimental API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L316)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L328)
 
 <a id="PuppeteerSharp_Page_TapAsync_"></a>
 <a id="PuppeteerSharp_Page_TapAsync_System_String_"></a>
@@ -3587,7 +3614,7 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L280)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L292)
 
 <a id="PuppeteerSharp_Page_TriggerExtensionActionAsync_"></a>
 <a id="PuppeteerSharp_Page_TriggerExtensionActionAsync_PuppeteerSharp_Extension_"></a>
@@ -3610,7 +3637,7 @@ Triggers an extension action for the given extension.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the extension action has been triggered.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1140)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1152)
 
 <a id="PuppeteerSharp_Page_TypeAsync_"></a>
 <a id="PuppeteerSharp_Page_TypeAsync_System_String_System_String_PuppeteerSharp_Input_TypeOptions_"></a>
@@ -3650,7 +3677,7 @@ await page.TypeAsync("#mytextarea", "Hello"); // Types instantly
 await page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L853)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L865)
 
 <a id="PuppeteerSharp_Page_WaitForDevicePromptAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForDevicePromptAsync_PuppeteerSharp_WaitForOptions_"></a>
@@ -3685,7 +3712,7 @@ currently active device prompt.
 
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L305)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L317)
 
 <a id="PuppeteerSharp_Page_WaitForExpressionAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForExpressionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_"></a>
@@ -3709,7 +3736,7 @@ Waits for an expression to be evaluated to a truthy value.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves when the `script` returns a truthy value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L904)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L916)
 
 <a id="PuppeteerSharp_Page_WaitForFileChooserAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForFileChooserAsync_PuppeteerSharp_WaitForOptions_"></a>
@@ -3753,7 +3780,7 @@ await waitTask.Result.AcceptAsync('/tmp/myfile.pdf');
 
 This must be called *before* the file chooser is launched. It will not return a currently active file chooser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1070)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1082)
 
 <a id="PuppeteerSharp_Page_WaitForFrameAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForFrameAsync_System_Func_PuppeteerSharp_IFrame_System_Boolean__PuppeteerSharp_WaitForOptions_"></a>
@@ -3783,7 +3810,7 @@ Waits for a frame.
 var frame = await page.WaitForFrameAsync(frame => frame.Name == "Test");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L999)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1011)
 
 <a id="PuppeteerSharp_Page_WaitForFrameAsync_System_String_PuppeteerSharp_WaitForOptions_"></a>
 
@@ -3812,7 +3839,7 @@ Waits for a frame.
 var frame = await page.WaitForFrameAsync(frame => frame.Name == "Test");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L995)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1007)
 
 <a id="PuppeteerSharp_Page_WaitForFunctionAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___"></a>
@@ -3837,7 +3864,7 @@ Waits for a function to be evaluated to a truthy value.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves when the `script` returns a truthy value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L896)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L908)
 
 <a id="PuppeteerSharp_Page_WaitForFunctionAsync_System_String_System_Object___"></a>
 
@@ -3860,7 +3887,7 @@ Waits for a function to be evaluated to a truthy value.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves when the `script` returns a truthy value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L900)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L912)
 
 <a id="PuppeteerSharp_Page_WaitForNavigationAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -3896,7 +3923,7 @@ await page.ClickAsync("a.my-link");
 await navigationTask;
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L926)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L938)
 
 <a id="PuppeteerSharp_Page_WaitForNetworkIdleAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForNetworkIdleAsync_PuppeteerSharp_WaitForNetworkIdleOptions_"></a>
@@ -3926,7 +3953,7 @@ page.EvaluateFunctionAsync("() => fetch('some-url')");
 await page.WaitForNetworkIdle(); // The Task resolves after fetch above finishes
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L930)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L942)
 
 <a id="PuppeteerSharp_Page_WaitForRequestAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForRequestAsync_System_Func_PuppeteerSharp_IRequest_System_Boolean__PuppeteerSharp_WaitForOptions_"></a>
@@ -3957,7 +3984,7 @@ var request = await page.WaitForRequestAsync(request => request.Url === "http://
 return request.Url;
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L968)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L980)
 
 <a id="PuppeteerSharp_Page_WaitForRequestAsync_System_String_PuppeteerSharp_WaitForOptions_"></a>
 
@@ -3987,7 +4014,7 @@ var firstRequest = await page.WaitForRequestAsync("http://example.com/resource")
 return firstRequest.Url;
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L964)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L976)
 
 <a id="PuppeteerSharp_Page_WaitForResponseAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForResponseAsync_System_Func_PuppeteerSharp_IResponse_System_Boolean__PuppeteerSharp_WaitForOptions_"></a>
@@ -4018,7 +4045,7 @@ var response = await page.WaitForResponseAsync(response => response.Url === "htt
 return response.Url;
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1037)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1049)
 
 <a id="PuppeteerSharp_Page_WaitForResponseAsync_System_Func_PuppeteerSharp_IResponse_System_Threading_Tasks_Task_System_Boolean___PuppeteerSharp_WaitForOptions_"></a>
 
@@ -4048,7 +4075,7 @@ var response = await page.WaitForResponseAsync(response => response.Url === "htt
 return response.Url;
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1041)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1053)
 
 <a id="PuppeteerSharp_Page_WaitForResponseAsync_System_String_PuppeteerSharp_WaitForOptions_"></a>
 
@@ -4078,7 +4105,7 @@ var firstResponse = await page.WaitForResponseAsync("http://example.com/resource
 return firstResponse.Url;
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1033)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L1045)
 
 <a id="PuppeteerSharp_Page_WaitForSelectorAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_"></a>
@@ -4103,7 +4130,7 @@ Waits for a selector to be added to the DOM.
 **Returns:** [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves when element specified by selector string is added to DOM.
     Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L908)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L920)
 
 <a id="PuppeteerSharp_Page_WaitForXPathAsync_"></a>
 <a id="PuppeteerSharp_Page_WaitForXPathAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_"></a>
@@ -4145,7 +4172,7 @@ foreach (var current in new[] { "https://example.com", "https://google.com", "ht
 await browser.CloseAsync();
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L921)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L933)
 
 <a id="PuppeteerSharp_Page_WindowIdAsync_"></a>
 <a id="PuppeteerSharp_Page_WindowIdAsync"></a>
@@ -4164,7 +4191,7 @@ Returns the page's window ID.
 
 This is an experimental API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L313)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L325)
 
 <a id="PuppeteerSharp_Page_XPathAsync_"></a>
 <a id="PuppeteerSharp_Page_XPathAsync_System_String_"></a>
@@ -4189,4 +4216,4 @@ Evaluates the XPath expression.
 
 Shortcut for `page.MainFrame.XPathAsync(expression)`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L301)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L313)

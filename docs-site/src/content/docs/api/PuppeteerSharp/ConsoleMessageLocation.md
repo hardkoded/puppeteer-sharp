@@ -80,6 +80,23 @@ public int? LineNumber { get; set; }
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L19)
 
+<a id="PuppeteerSharp_ConsoleMessageLocation_ScriptId_"></a>
+<a id="PuppeteerSharp_ConsoleMessageLocation_ScriptId"></a>
+
+### ScriptId
+
+
+```csharp
+public string ScriptId { get; set; }
+```
+
+
+Script identifier if known.
+
+**Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L34)
+
 <a id="PuppeteerSharp_ConsoleMessageLocation_URL_"></a>
 <a id="PuppeteerSharp_ConsoleMessageLocation_URL"></a>
 
@@ -120,7 +137,7 @@ Indicates whether the current object is equal to another object of the same type
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the current object is equal to the &lt;code class="paramref"&gt;other&lt;/code&gt; parameter; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L46)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L51)
 
 <a id="PuppeteerSharp_ConsoleMessageLocation_Equals_System_Object_"></a>
 
@@ -142,7 +159,7 @@ Determines whether the specified object is equal to the current object.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the specified object  is equal to the current object; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L50)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L55)
 
 <a id="PuppeteerSharp_ConsoleMessageLocation_GetHashCode_"></a>
 <a id="PuppeteerSharp_ConsoleMessageLocation_GetHashCode"></a>
@@ -159,7 +176,7 @@ Serves as the default hash function.
 
 **Returns:** [int](https://learn.microsoft.com/dotnet/api/system.int32) — A hash code for the current object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L53)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L58)
 
 ## Operators
 
@@ -185,7 +202,7 @@ Overriding == operator for [ConsoleMessageLocation](./).
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the two instances are equal to the same value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L35)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L40)
 
 <a id="PuppeteerSharp_ConsoleMessageLocation_op_Inequality_"></a>
 <a id="PuppeteerSharp_ConsoleMessageLocation_op_Inequality_PuppeteerSharp_ConsoleMessageLocation_PuppeteerSharp_ConsoleMessageLocation_"></a>
@@ -209,4 +226,4 @@ Overriding != operator for [ConsoleMessageLocation](./).
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the two instances are not equal to the same value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L42)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L47)

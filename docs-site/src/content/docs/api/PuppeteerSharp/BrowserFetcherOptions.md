@@ -59,7 +59,7 @@ Gets the default or a custom download delegate.
 
 **Value:** [BrowserFetcherOptions.CustomFileDownloadAction](/api/PuppeteerSharp/BrowserFetcherOptions.CustomFileDownloadAction/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcherOptions.cs#L41)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcherOptions.cs#L47)
 
 <a id="PuppeteerSharp_BrowserFetcherOptions_Host_"></a>
 <a id="PuppeteerSharp_BrowserFetcherOptions_Host"></a>
@@ -111,3 +111,21 @@ Platform. Defaults to current platform.
 **Value:** `Platform?`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcherOptions.cs#L26)
+
+<a id="PuppeteerSharp_BrowserFetcherOptions_SkipChromeHeadlessShellDownload_"></a>
+<a id="PuppeteerSharp_BrowserFetcherOptions_SkipChromeHeadlessShellDownload"></a>
+
+### SkipChromeHeadlessShellDownload
+
+
+```csharp
+public bool SkipChromeHeadlessShellDownload { get; set; }
+```
+
+
+Whether to skip downloading Chrome Headless Shell when downloading Chrome. Defaults to false.
+Mirrors upstream's `skipChromeHeadlessShellDownload` configuration.
+
+**Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcherOptions.cs#L42)

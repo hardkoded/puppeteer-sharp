@@ -42,7 +42,7 @@ public BrowserFetcher()
 
 Supports all classes in the .NET class hierarchy and provides low-level services to derived classes. This is the ultimate base class of all .NET classes; it is the root of the type hierarchy.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L29)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L30)
 
 <a id="PuppeteerSharp_BrowserFetcher__ctor_PuppeteerSharp_BrowserFetcherOptions_Microsoft_Extensions_Logging_ILoggerFactory_"></a>
 
@@ -63,7 +63,7 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 | `options` | [BrowserFetcherOptions](/api/PuppeteerSharp/BrowserFetcherOptions/) |  |
 | `loggerFactory` | [ILoggerFactory](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory) |  |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L44)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L45)
 
 <a id="PuppeteerSharp_BrowserFetcher__ctor_PuppeteerSharp_SupportedBrowser_Microsoft_Extensions_Logging_ILoggerFactory_"></a>
 
@@ -84,7 +84,7 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 | `browser` | [SupportedBrowser](/api/PuppeteerSharp/SupportedBrowser/) |  |
 | `loggerFactory` | [ILoggerFactory](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory) |  |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L39)
 
 ## Properties
 
@@ -103,7 +103,7 @@ A download host to be used.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L62)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L64)
 
 <a id="PuppeteerSharp_BrowserFetcher_Browser_"></a>
 <a id="PuppeteerSharp_BrowserFetcher_Browser"></a>
@@ -120,7 +120,7 @@ Gets the browser.
 
 **Value:** [SupportedBrowser](/api/PuppeteerSharp/SupportedBrowser/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L68)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L70)
 
 <a id="PuppeteerSharp_BrowserFetcher_CacheDir_"></a>
 <a id="PuppeteerSharp_BrowserFetcher_CacheDir"></a>
@@ -137,7 +137,7 @@ Determines the path to download browsers to.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L61)
 
 <a id="PuppeteerSharp_BrowserFetcher_Platform_"></a>
 <a id="PuppeteerSharp_BrowserFetcher_Platform"></a>
@@ -154,7 +154,7 @@ Gets the platform.
 
 **Value:** [Platform](/api/PuppeteerSharp/Platform/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L65)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L67)
 
 <a id="PuppeteerSharp_BrowserFetcher_WebProxy_"></a>
 <a id="PuppeteerSharp_BrowserFetcher_WebProxy"></a>
@@ -171,7 +171,7 @@ Proxy used by the HttpClient in [DownloadAsync()](/api/PuppeteerSharp/IBrowserFe
 
 **Value:** [IWebProxy](https://learn.microsoft.com/dotnet/api/system.net.iwebproxy)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L71)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L73)
 
 ## Methods
 
@@ -196,7 +196,7 @@ The method initiates a HEAD request to check if the revision is available.
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Whether the version is available or not.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L74)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L76)
 
 <a id="PuppeteerSharp_BrowserFetcher_DownloadAsync_"></a>
 <a id="PuppeteerSharp_BrowserFetcher_DownloadAsync"></a>
@@ -213,7 +213,7 @@ Downloads the revision.
 
 **Returns:** [Task&lt;InstalledBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the completed download.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L100)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L102)
 
 <a id="PuppeteerSharp_BrowserFetcher_DownloadAsync_PuppeteerSharp_BrowserTag_"></a>
 
@@ -235,7 +235,7 @@ Downloads the revision.
 
 **Returns:** [Task&lt;InstalledBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the completed download.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L114)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L116)
 
 <a id="PuppeteerSharp_BrowserFetcher_DownloadAsync_System_String_"></a>
 
@@ -257,7 +257,7 @@ Downloads the revision.
 
 **Returns:** [Task&lt;InstalledBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the completed download.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L129)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L131)
 
 <a id="PuppeteerSharp_BrowserFetcher_GetExecutablePath_"></a>
 <a id="PuppeteerSharp_BrowserFetcher_GetExecutablePath_System_String_"></a>
@@ -280,7 +280,7 @@ Gets the executable path.
 
 **Returns:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The executable path.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L142)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L144)
 
 <a id="PuppeteerSharp_BrowserFetcher_GetInstalledBrowsers_"></a>
 <a id="PuppeteerSharp_BrowserFetcher_GetInstalledBrowsers"></a>
@@ -297,7 +297,7 @@ A list of all browsers available locally on disk.
 
 **Returns:** [IEnumerable&lt;InstalledBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1) — The available browsers.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L121)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L123)
 
 <a id="PuppeteerSharp_BrowserFetcher_Uninstall_"></a>
 <a id="PuppeteerSharp_BrowserFetcher_Uninstall_System_String_"></a>
@@ -318,4 +318,4 @@ Removes a downloaded browser.
 | --- | --- | --- |
 | `buildId` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Browser to remove. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L125)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcher.cs#L127)

@@ -26,7 +26,7 @@ ElementHandles can be created by [QuerySelectorAsync(string)](/api/PuppeteerShar
 
 **Implements:** [IElementHandle](/api/PuppeteerSharp/IElementHandle/), [ICdpHandle](/api/PuppeteerSharp.Cdp/ICdpHandle/), [IJSHandle](/api/PuppeteerSharp/IJSHandle/), [IAsyncDisposable](https://learn.microsoft.com/dotnet/api/system.iasyncdisposable)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L35)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L36)
 
 ## Properties
 
@@ -45,7 +45,7 @@ Element's page.
 
 **Value:** [Page](/api/PuppeteerSharp/Page/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L69)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L70)
 
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_RemoteObject_"></a>
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_RemoteObject"></a>
@@ -62,7 +62,7 @@ CDP Remote object.
 
 **Value:** [RemoteObject](/api/PuppeteerSharp.Cdp.Messaging/RemoteObject/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L54)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L55)
 
 ## Methods
 
@@ -92,7 +92,7 @@ Throws an error if the form cannot be autofilled.
 Currently, Puppeteer supports auto-filling credit card information only and
 in Chrome in the new headless and headful modes only.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L182)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L183)
 
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_BackendNodeIdAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_BackendNodeIdAsync"></a>
@@ -109,7 +109,7 @@ When connected using Chrome DevTools Protocol, it returns a DOM.BackendNodeId fo
 
 **Returns:** [Task&lt;int&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to the backend node ID.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L166)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L167)
 
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_ContentFrameAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_ContentFrameAsync"></a>
@@ -126,7 +126,7 @@ Resolves the frame associated with the element..
 
 **Returns:** [Task&lt;IFrame&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the frame associated with the element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L83)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L84)
 
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_ScrollIntoViewAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_ScrollIntoViewAsync"></a>
@@ -143,7 +143,7 @@ Scrolls the element into view using either the automation protocol client or by 
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L95)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L96)
 
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_ToString_"></a>
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_ToString"></a>
@@ -160,7 +160,7 @@ Returns a string that represents the current object.
 
 **Returns:** [string](https://learn.microsoft.com/dotnet/api/system.string) — A string that represents the current object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L206)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L207)
 
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_UploadFileAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpElementHandle_UploadFileAsync_System_Boolean_System_String___"></a>
@@ -186,4 +186,4 @@ Uploads files.
 
 This method expects `elementHandle` to point to an `input element` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"&gt;https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L117)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L118)

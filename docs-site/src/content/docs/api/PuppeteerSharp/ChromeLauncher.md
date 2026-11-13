@@ -73,7 +73,7 @@ Disposes Base process and any temporary user directory.
 | --- | --- | --- |
 | `disposing` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Indicates whether disposal was initiated by [Dispose()](/api/PuppeteerSharp/LauncherBase/#PuppeteerSharp_LauncherBase_Dispose) operation. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ChromeLauncher.cs#L211)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ChromeLauncher.cs#L210)
 
 <a id="PuppeteerSharp_ChromeLauncher_ToString_"></a>
 <a id="PuppeteerSharp_ChromeLauncher_ToString"></a>

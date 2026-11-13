@@ -101,6 +101,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// Raised when an uncaught exception happens within the page.
         /// </summary>
+        /// <remarks>
+        /// Prefer <see cref="ExceptionThrown"/>, which exposes the exception as a <see cref="RemoteException"/>
+        /// (text, name, stack trace, location and a live handle to the thrown value) instead of a reconstructed error.
+        /// </remarks>
         event EventHandler<PageErrorEventArgs> PageError;
 
         /// <summary>

@@ -28,13 +28,13 @@ ConsoleMessage is part of [ConsoleEventArgs](/api/PuppeteerSharp/ConsoleEventArg
 ## Constructors
 
 <a id="PuppeteerSharp_ConsoleMessage__ctor_"></a>
-<a id="PuppeteerSharp_ConsoleMessage__ctor_PuppeteerSharp_ConsoleType_System_String_System_Collections_Generic_IList_PuppeteerSharp_IJSHandle__PuppeteerSharp_ConsoleMessageLocation_System_Collections_Generic_IList_PuppeteerSharp_ConsoleMessageLocation__"></a>
+<a id="PuppeteerSharp_ConsoleMessage__ctor_PuppeteerSharp_ConsoleType_System_String_System_Collections_Generic_IList_PuppeteerSharp_IJSHandle__PuppeteerSharp_ConsoleMessageLocation_System_Collections_Generic_IList_PuppeteerSharp_ConsoleMessageLocation__PuppeteerSharp_IFrame_PuppeteerSharp_WebWorker_"></a>
 
-### `ConsoleMessage(ConsoleType, string, IList<IJSHandle>, ConsoleMessageLocation, IList<ConsoleMessageLocation>)`
+### `ConsoleMessage(ConsoleType, string, IList<IJSHandle>, ConsoleMessageLocation, IList<ConsoleMessageLocation>, IFrame, WebWorker)`
 
 
 ```csharp
-public ConsoleMessage(ConsoleType type, string text, IList<IJSHandle> args, ConsoleMessageLocation location = null, IList<ConsoleMessageLocation> stackTrace = null)
+public ConsoleMessage(ConsoleType type, string text, IList<IJSHandle> args, ConsoleMessageLocation location = null, IList<ConsoleMessageLocation> stackTrace = null, IFrame frame = null, WebWorker worker = null)
 ```
 
 
@@ -49,8 +49,10 @@ Initializes a new instance of the [ConsoleMessage](./) class.
 | `args` | [IList&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1) | Arguments. |
 | `location` | [ConsoleMessageLocation](/api/PuppeteerSharp/ConsoleMessageLocation/) | Message location. |
 | `stackTrace` | [IList&lt;ConsoleMessageLocation&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1) | Stack trace. |
+| `frame` | [IFrame](/api/PuppeteerSharp/IFrame/) | The frame that initiated the message, if it originated from a frame. |
+| `worker` | [WebWorker](/api/PuppeteerSharp/WebWorker/) | The worker that initiated the message, if it originated from a worker. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L18)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L20)
 
 ## Properties
 
@@ -69,7 +71,25 @@ Gets the arguments.
 
 **Value:** [IList&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1) — The arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L43)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L54)
+
+<a id="PuppeteerSharp_ConsoleMessage_Frame_"></a>
+<a id="PuppeteerSharp_ConsoleMessage_Frame"></a>
+
+### Frame
+
+
+```csharp
+public IFrame Frame { get; }
+```
+
+
+Gets the [IFrame](/api/PuppeteerSharp/IFrame/) that initiated the console message, or `null` if the
+message originated from a worker.
+
+**Value:** [IFrame](/api/PuppeteerSharp/IFrame/)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L76)
 
 <a id="PuppeteerSharp_ConsoleMessage_Location_"></a>
 <a id="PuppeteerSharp_ConsoleMessage_Location"></a>
@@ -86,7 +106,25 @@ Gets the location.
 
 **Value:** [ConsoleMessageLocation](/api/PuppeteerSharp/ConsoleMessageLocation/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L48)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L59)
+
+<a id="PuppeteerSharp_ConsoleMessage_Page_"></a>
+<a id="PuppeteerSharp_ConsoleMessage_Page"></a>
+
+### Page
+
+
+```csharp
+public IPage Page { get; }
+```
+
+
+Gets the [IPage](/api/PuppeteerSharp/IPage/) that the console message originated from, or `null` if the
+message originated from a worker or outside of a frame context.
+
+**Value:** [IPage](/api/PuppeteerSharp/IPage/)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L70)
 
 <a id="PuppeteerSharp_ConsoleMessage_StackTrace_"></a>
 <a id="PuppeteerSharp_ConsoleMessage_StackTrace"></a>
@@ -103,7 +141,7 @@ Gets the stack trace.
 
 **Value:** [IList&lt;ConsoleMessageLocation&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L53)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L64)
 
 <a id="PuppeteerSharp_ConsoleMessage_Text_"></a>
 <a id="PuppeteerSharp_ConsoleMessage_Text"></a>
@@ -120,7 +158,7 @@ Gets the console text.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The text.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L37)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L48)
 
 <a id="PuppeteerSharp_ConsoleMessage_Type_"></a>
 <a id="PuppeteerSharp_ConsoleMessage_Type"></a>
@@ -137,4 +175,22 @@ Gets the ConsoleMessage type.
 
 **Value:** [ConsoleType](/api/PuppeteerSharp/ConsoleType/) — ConsoleMessageType.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L31)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L42)
+
+<a id="PuppeteerSharp_ConsoleMessage_Worker_"></a>
+<a id="PuppeteerSharp_ConsoleMessage_Worker"></a>
+
+### Worker
+
+
+```csharp
+public WebWorker Worker { get; }
+```
+
+
+Gets the [WebWorker](/api/PuppeteerSharp/WebWorker/) that initiated the console message, or `null` if the
+message originated from a frame.
+
+**Value:** [WebWorker](/api/PuppeteerSharp/WebWorker/)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessage.cs#L82)

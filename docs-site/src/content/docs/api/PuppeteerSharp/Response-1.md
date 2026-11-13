@@ -33,9 +33,32 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 
 **Derived:** [BidiHttpResponse](/api/PuppeteerSharp.Bidi/BidiHttpResponse/), [CdpHttpResponse](/api/PuppeteerSharp.Cdp/CdpHttpResponse/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L14)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L15)
 
 ## Properties
+
+<a id="PuppeteerSharp_Response_1_EncodedDataLength_"></a>
+<a id="PuppeteerSharp_Response_1_EncodedDataLength"></a>
+
+### EncodedDataLength
+
+
+```csharp
+public abstract long EncodedDataLength { get; }
+```
+
+
+Total number of bytes received for this request over the network.
+
+**Value:** [long](https://learn.microsoft.com/dotnet/api/system.int64)
+
+The value is updated when the response finishes loading. During the `Response` event, it only covers
+the bytes received up to the response headers. To get the total encoded transfer size (headers + compressed
+body), read it in a `RequestFinished` handler or after awaiting [BufferAsync()](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_BufferAsync).
+If the request fails after the response is received, the value is not updated. If the browser does not
+report a size, e.g. for `data:` or `file:` URLs, the value is `0`.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L60)
 
 <a id="PuppeteerSharp_Response_1_Frame_"></a>
 <a id="PuppeteerSharp_Response_1_Frame"></a>
@@ -52,7 +75,7 @@ A [Frame](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_Frame) that in
 
 **Value:** [IFrame](/api/PuppeteerSharp/IFrame/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L53)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L54)
 
 <a id="PuppeteerSharp_Response_1_FromCache_"></a>
 <a id="PuppeteerSharp_Response_1_FromCache"></a>
@@ -69,7 +92,7 @@ True if the response was served from either the browser's disk cache or memory c
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L44)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L45)
 
 <a id="PuppeteerSharp_Response_1_FromServiceWorker_"></a>
 <a id="PuppeteerSharp_Response_1_FromServiceWorker"></a>
@@ -86,7 +109,7 @@ Gets a value indicating whether the [IResponse](/api/PuppeteerSharp/IResponse/) 
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the [IResponse](/api/PuppeteerSharp/IResponse/) was served by a service worker; otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L50)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L51)
 
 <a id="PuppeteerSharp_Response_1_Headers_"></a>
 <a id="PuppeteerSharp_Response_1_Headers"></a>
@@ -105,7 +128,7 @@ Duplicate header values are combined into a single comma-separated list except f
 
 **Value:** [Dictionary&lt;string, string&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2) — The headers.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L39)
 
 <a id="PuppeteerSharp_Response_1_Ok_"></a>
 <a id="PuppeteerSharp_Response_1_Ok"></a>
@@ -122,7 +145,7 @@ Contains a boolean stating whether the response was successful (status in the ra
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if ok; otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L29)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L30)
 
 <a id="PuppeteerSharp_Response_1_RemoteAddress_"></a>
 <a id="PuppeteerSharp_Response_1_RemoteAddress"></a>
@@ -139,7 +162,7 @@ Remove server address.
 
 **Value:** [RemoteAddress](/api/PuppeteerSharp/RemoteAddress/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L23)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L24)
 
 <a id="PuppeteerSharp_Response_1_Request_"></a>
 <a id="PuppeteerSharp_Response_1_Request"></a>
@@ -154,7 +177,7 @@ protected TRequest Request { get; init; }
 
 **Value:** `TRequest`
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L63)
 
 <a id="PuppeteerSharp_Response_1_SecurityDetails_"></a>
 <a id="PuppeteerSharp_Response_1_SecurityDetails"></a>
@@ -171,7 +194,7 @@ Gets or sets the security details.
 
 **Value:** [SecurityDetails](/api/PuppeteerSharp/SecurityDetails/) — The security details.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L47)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L48)
 
 <a id="PuppeteerSharp_Response_1_Status_"></a>
 <a id="PuppeteerSharp_Response_1_Status"></a>
@@ -188,7 +211,7 @@ Contains the status code of the response.
 
 **Value:** [HttpStatusCode](https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode) — The status.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L32)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L33)
 
 <a id="PuppeteerSharp_Response_1_StatusText_"></a>
 <a id="PuppeteerSharp_Response_1_StatusText"></a>
@@ -205,7 +228,7 @@ Contains the status text of the response (e.g. usually an "OK" for a success).
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The status text.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L35)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L36)
 
 <a id="PuppeteerSharp_Response_1_Timing_"></a>
 <a id="PuppeteerSharp_Response_1_Timing"></a>
@@ -222,7 +245,7 @@ Resource timing information for this response.
 
 **Value:** [ResourceTiming](/api/PuppeteerSharp/ResourceTiming/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L56)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L57)
 
 <a id="PuppeteerSharp_Response_1_Url_"></a>
 <a id="PuppeteerSharp_Response_1_Url"></a>
@@ -239,7 +262,7 @@ Contains the URL of the response.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L26)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L27)
 
 ## Methods
 
@@ -261,7 +284,7 @@ Converts the response to an [HttpResponseMessage](https://learn.microsoft.com/do
 Headers are copied to the new response, with multi-line `set-cookie` headers split into
 individual header entries. For responses with null body statuses (101, 204, 205, 304), the body is omitted.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L85)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L92)
 
 <a id="PuppeteerSharp_Response_1_BufferAsync_"></a>
 <a id="PuppeteerSharp_Response_1_BufferAsync"></a>
@@ -278,7 +301,7 @@ Returns a Task which resolves to a buffer with response body.
 
 **Returns:** [ValueTask&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) — A Task which resolves to a buffer with response body.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L65)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L69)
 
 <a id="PuppeteerSharp_Response_1_JsonAsync_"></a>
 <a id="PuppeteerSharp_Response_1_JsonAsync_System_Text_Json_JsonDocumentOptions_"></a>
@@ -301,7 +324,7 @@ Returns a Task which resolves to a [JsonDocument](https://learn.microsoft.com/do
 
 **Returns:** [Task&lt;JsonDocument&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a [JsonDocument](https://learn.microsoft.com/dotnet/api/system.text.json.jsondocument) representation of response body.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L71)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L78)
 
 <a id="PuppeteerSharp_Response_1_JsonAsync__1_System_Text_Json_JsonSerializerOptions_"></a>
 
@@ -329,7 +352,27 @@ Returns a Task which resolves to a &lt;code class="typeparamref"&gt;T&lt;/code&g
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a &lt;code class="typeparamref"&gt;T&lt;/code&gt; representation of response body.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L78)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L85)
+
+<a id="PuppeteerSharp_Response_1_StreamAsync_"></a>
+<a id="PuppeteerSharp_Response_1_StreamAsync"></a>
+
+### StreamAsync()
+
+
+```csharp
+public abstract Task<Stream> StreamAsync()
+```
+
+
+Returns a Task which resolves to a stream of the response body, with chunks delivered as they arrive from the network.
+
+**Returns:** [Task&lt;Stream&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a stream of the response body.
+
+Call this from the [Response](/api/PuppeteerSharp/Page/#PuppeteerSharp_Page_Response) event to receive the body while it is still loading.
+If the body has already finished loading, the stream contains the whole body as a single chunk.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L72)
 
 <a id="PuppeteerSharp_Response_1_TextAsync_"></a>
 <a id="PuppeteerSharp_Response_1_TextAsync"></a>
@@ -346,4 +389,4 @@ Returns a Task which resolves to a text representation of response body.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a text representation of response body.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L68)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L75)
