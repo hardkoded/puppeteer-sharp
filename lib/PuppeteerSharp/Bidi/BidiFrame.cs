@@ -871,6 +871,7 @@ public class BidiFrame : Frame
             IdleTime = 500,
             Timeout = options?.Timeout ?? TimeoutSettings.Timeout,
             Concurrency = concurrency.Value,
+            CancellationToken = cancellationToken,
         });
 
         // Race with cancellation token
