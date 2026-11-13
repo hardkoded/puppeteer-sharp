@@ -71,6 +71,23 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception!.Message, Does.Contain("Navigation timeout of 1 ms exceeded"));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should be cancellable")]
+        public async Task ShouldBeCancellable()
+        {
+            const string imgPath = "/img.png";
+
+            // stall for image
+            Server.SetRoute(imgPath, _ => Task.Delay(-1));
+            using var cts = new CancellationTokenSource();
+            var content = Page.SetContentAsync(
+                $"<img src=\"{TestConstants.ServerUrl + imgPath}\"></img>",
+                new SetContentOptions { CancellationToken = cts.Token });
+            await Server.WaitForRequest(imgPath);
+
+            cts.Cancel();
+            Assert.ThrowsAsync<TaskCanceledException>(async () => await content);
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should respect default navigation timeout")]
         public async Task ShouldRespectDefaultTimeout()
         {

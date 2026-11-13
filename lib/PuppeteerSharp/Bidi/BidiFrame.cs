@@ -196,9 +196,19 @@ public class BidiFrame : Frame
                 }",
                 html).ConfigureAwait(false);
 
-            await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
+            var waitTask = Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
                 timeout,
-                t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+                t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"));
+
+            if (options?.CancellationToken is { } cancellationToken)
+            {
+                var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                using var registration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+                await Task.WhenAny(waitTask, cancellationTcs.Task).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            await waitTask.ConfigureAwait(false);
         }
         finally
         {

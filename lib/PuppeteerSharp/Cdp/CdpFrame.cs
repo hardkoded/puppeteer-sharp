@@ -25,6 +25,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -196,7 +197,7 @@ public class CdpFrame : Frame
         // We rely upon the fact that the document is reopened, which resets the
         // frame lifecycle with an "init" lifecycle event.
         // @see https://crrev.com/608658
-        await SetFrameContentAsync(html).ConfigureAwait(false);
+        await RaceWithCancellationAsync(SetFrameContentAsync(html), cancellationToken).ConfigureAwait(false);
 
         using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, waitUntil, timeout, cancellationToken);
         var watcherTask = await Task.WhenAny(
@@ -410,6 +411,14 @@ public class CdpFrame : Frame
         => FrameManager.GetDeviceRequestPromptManager(CdpCDPSession);
 
     // See https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-ReferrerPolicy.
+    private static async Task RaceWithCancellationAsync(Task task, CancellationToken cancellationToken)
+    {
+        var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var registration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+
+        await (await Task.WhenAny(task, cancellationTcs.Task).ConfigureAwait(false)).ConfigureAwait(false);
+    }
+
     private static string ReferrerPolicyToProtocol(string referrerPolicy)
     {
         // Transform kebab-case to camelCase
