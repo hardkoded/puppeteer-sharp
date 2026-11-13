@@ -1069,24 +1069,15 @@ public class BidiFrame : Frame
             }
             else if (args.Type == "javascript")
             {
-                var text = args.Text ?? string.Empty;
-                var messageLines = new List<string> { text };
-
-                var stackLines = new List<string>();
-                if (args.StackTrace != null)
+                // Chromium reports dedicated worker exceptions on the frame that created the worker.
+                // BidiWorkerRealm already emits them with the right worker.
+                if (args.Source.RealmId != null && BidiPage.HasWorkerWithRealm(args.Source.RealmId))
                 {
-                    foreach (var frame in args.StackTrace.CallFrames)
-                    {
-                        stackLines.Add($"    at {(string.IsNullOrEmpty(frame.FunctionName) ? "<anonymous>" : frame.FunctionName)} ({frame.Url}:{frame.LineNumber + 1}:{frame.ColumnNumber + 1})");
-                        if (stackLines.Count >= 10)
-                        {
-                            break;
-                        }
-                    }
+                    return;
                 }
 
-                var fullStack = string.Join("\n", messageLines.Concat(stackLines));
-                BidiPage.OnPageError(new PageErrorEventArgs(fullStack, fullStack, GetStackTrace(args.StackTrace).ToArray()));
+                BidiPage.OnPageError(BidiRemoteException.CreatePageError(args.Text, args.StackTrace));
+                BidiPage.OnExceptionThrown(new RemoteExceptionEventArgs(BidiRemoteException.Create(args.Text, args.StackTrace)));
             }
         };
 
