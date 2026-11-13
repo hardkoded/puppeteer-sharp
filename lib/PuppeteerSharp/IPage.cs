@@ -81,7 +81,29 @@ namespace PuppeteerSharp
         /// <summary>
         /// Raised when a frame is navigated to a new url.
         /// </summary>
+        /// <remarks>
+        /// This event is raised for both same-document navigations (for example, fragment navigations)
+        /// and navigations to a new document. Use <see cref="FrameNavigatedSameDocument"/> or
+        /// <see cref="FrameNavigatedNewDocument"/> to distinguish between the two.
+        /// </remarks>
         event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
+
+        /// <summary>
+        /// Raised when a frame navigates within the same document, for example, to a different
+        /// fragment (<c>#hash</c>) or via the History API.
+        /// </summary>
+        /// <remarks>
+        /// Raised after <see cref="FrameNavigated"/>.
+        /// </remarks>
+        event EventHandler<FrameEventArgs> FrameNavigatedSameDocument;
+
+        /// <summary>
+        /// Raised when a frame is navigated to a new document.
+        /// </summary>
+        /// <remarks>
+        /// Raised after <see cref="FrameNavigated"/>.
+        /// </remarks>
+        event EventHandler<FrameEventArgs> FrameNavigatedNewDocument;
 
         /// <summary>
         /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.

@@ -49,6 +49,8 @@ namespace PuppeteerSharp.Cdp
 
         internal event EventHandler<FrameEventArgs> FrameNavigatedWithinDocument;
 
+        internal event EventHandler<FrameEventArgs> FrameNavigatedNewDocument;
+
         internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
         IPage IFrameProvider.Page => Page;
@@ -574,6 +576,7 @@ namespace PuppeteerSharp.Cdp
             frame.Navigated(framePayload);
             frame.OnFrameNavigated(new FrameNavigatedEventArgs(frame, type));
             FrameNavigated?.Invoke(this, new FrameNavigatedEventArgs(frame, type));
+            FrameNavigatedNewDocument?.Invoke(this, new FrameEventArgs(frame));
         }
 
         private void OnFrameNavigatedWithinDocument(NavigatedWithinDocumentResponse e)
@@ -583,10 +586,9 @@ namespace PuppeteerSharp.Cdp
             {
                 frame.NavigatedWithinDocument(e.Url);
 
-                var eventArgs = new FrameEventArgs(frame);
-                FrameNavigatedWithinDocument?.Invoke(this, eventArgs);
                 frame.OnFrameNavigated(new FrameNavigatedEventArgs(frame, NavigationType.Navigation, navigatedWithinDocument: true));
                 FrameNavigated?.Invoke(this, new FrameNavigatedEventArgs(frame, NavigationType.Navigation, navigatedWithinDocument: true));
+                FrameNavigatedWithinDocument?.Invoke(this, new FrameEventArgs(frame));
             }
         }
 

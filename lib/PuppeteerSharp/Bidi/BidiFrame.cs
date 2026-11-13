@@ -901,6 +901,13 @@ public class BidiFrame : Frame
         }
     }
 
+    private void OnFrameNavigatedSameDocument()
+    {
+        var page = (Page)Page;
+        page.OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+        page.OnFrameNavigatedSameDocument(new FrameEventArgs(this));
+    }
+
     private void Initialize()
     {
         foreach (var browsingContext in BrowsingContext.Children)
@@ -954,13 +961,18 @@ public class BidiFrame : Frame
         {
             if (args.Navigation.FragmentReceived)
             {
-                ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+                OnFrameNavigatedSameDocument();
             }
 
             args.Navigation.Fragment += (o, eventArgs) =>
             {
-                ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+                OnFrameNavigatedSameDocument();
             };
+        };
+
+        BrowsingContext.HistoryUpdated += (sender, args) =>
+        {
+            OnFrameNavigatedSameDocument();
         };
 
         BrowsingContext.Load += (sender, args) =>
@@ -973,6 +985,7 @@ public class BidiFrame : Frame
             OnLoadingStarted();
             ((Page)Page).OnDOMContentLoaded();
             ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+            ((Page)Page).OnFrameNavigatedNewDocument(new FrameEventArgs(this));
         };
 
         BrowsingContext.UserPrompt += (sender, args) =>
