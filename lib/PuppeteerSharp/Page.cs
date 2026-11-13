@@ -95,6 +95,12 @@ namespace PuppeteerSharp
         public event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
 
         /// <inheritdoc/>
+        public event EventHandler<FrameEventArgs> FrameNavigatedSameDocument;
+
+        /// <inheritdoc/>
+        public event EventHandler<FrameEventArgs> FrameNavigatedNewDocument;
+
+        /// <inheritdoc/>
         public event EventHandler<ResponseCreatedEventArgs> Response;
 
         /// <inheritdoc/>
@@ -1347,6 +1353,18 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="e">Event arguments.</param>
         internal void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
+
+        /// <summary>
+        /// Raises the <see cref="FrameNavigatedSameDocument"/> event.
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        internal void OnFrameNavigatedSameDocument(FrameEventArgs e) => FrameNavigatedSameDocument?.Invoke(this, e);
+
+        /// <summary>
+        /// Raises the <see cref="FrameNavigatedNewDocument"/> event.
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        internal void OnFrameNavigatedNewDocument(FrameEventArgs e) => FrameNavigatedNewDocument?.Invoke(this, e);
 
         /// <summary>
         /// Dispose resources.

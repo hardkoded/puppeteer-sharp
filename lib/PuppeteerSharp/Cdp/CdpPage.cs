@@ -83,6 +83,8 @@ public class CdpPage : Page
         FrameManager.FrameAttached += (_, e) => OnFrameAttached(e);
         FrameManager.FrameDetached += (_, e) => OnFrameDetached(e);
         FrameManager.FrameNavigated += (_, e) => OnFrameNavigated(e);
+        FrameManager.FrameNavigatedWithinDocument += (_, e) => OnFrameNavigatedSameDocument(e);
+        FrameManager.FrameNavigatedNewDocument += (_, e) => OnFrameNavigatedNewDocument(e);
 
         FrameManager.NetworkManager.Request += (_, e) =>
         {
