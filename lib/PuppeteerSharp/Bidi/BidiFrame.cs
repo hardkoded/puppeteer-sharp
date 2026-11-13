@@ -303,6 +303,12 @@ public class BidiFrame : Frame
             : new CancellationTokenSource();
         var timeoutToken = timeoutCts.Token;
 
+        // Cancel the nested waits too when the caller cancels, so they release their event handlers.
+        // The caller's cancellation is rethrown as OperationCanceledException after the race below.
+        using var userCancellationRegistration = options?.CancellationToken.HasValue == true
+            ? options.CancellationToken.Value.Register(() => timeoutCts.Cancel())
+            : (CancellationTokenRegistration?)null;
+
         // Setup frame detachment handler at the outer level to race with the entire navigation
         var frameDetachedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
