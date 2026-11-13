@@ -178,6 +178,7 @@ public class BidiFrame : Frame
     [Obsolete]
     public override async Task SetContentAsync(string html, NavigationOptions options)
     {
+        options?.CancellationToken?.ThrowIfCancellationRequested();
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
         // Setup load event listeners before setting content to avoid race conditions
@@ -208,6 +209,8 @@ public class BidiFrame : Frame
     /// <inheritdoc />
     public override async Task<IResponse> GoToAsync(string url, NavigationOptions options)
     {
+        options?.CancellationToken?.ThrowIfCancellationRequested();
+
         // Clear the events trackers on navigation start to allow fresh events
         BidiPage.ClearEventTrackers();
 
@@ -265,6 +268,7 @@ public class BidiFrame : Frame
     /// <inheritdoc />
     public override async Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
     {
+        options?.CancellationToken?.ThrowIfCancellationRequested();
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
         // Create a cancellation token that will trigger timeout for the ENTIRE operation

@@ -311,5 +311,16 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             // no Node.js MaxListeners warnings are emitted when starting
             // multiple wait tasks with an AbortSignal.
         }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should reject at once when the signal is already aborted")]
+        public void ShouldRejectAtOnceWhenTheSignalIsAlreadyAborted()
+        {
+            using var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            Assert.ThrowsAsync<OperationCanceledException>(() => Page.WaitForFunctionAsync(
+                "() => false",
+                new WaitForFunctionOptions { CancellationToken = cts.Token }));
+        }
     }
 }

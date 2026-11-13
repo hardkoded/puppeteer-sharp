@@ -102,8 +102,10 @@ public class CdpFrame : Frame
             ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValue("referer-policy")
             : options.ReferrerPolicy;
         var timeout = options.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
+        var cancellationToken = options.CancellationToken ?? default;
+        cancellationToken.ThrowIfCancellationRequested();
 
-        using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options.WaitUntil, timeout);
+        using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options.WaitUntil, timeout, cancellationToken);
         var ensureNewDocumentNavigation = false;
         try
         {
@@ -127,7 +129,7 @@ public class CdpFrame : Frame
 
             return await responseTask.ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             throw new NavigationException(ex.Message, ex);
         }
@@ -156,7 +158,9 @@ public class CdpFrame : Frame
     public override async Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
     {
         var timeout = options?.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
-        using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options?.WaitUntil, timeout);
+        var cancellationToken = options?.CancellationToken ?? default;
+        cancellationToken.ThrowIfCancellationRequested();
+        using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options?.WaitUntil, timeout, cancellationToken);
         var raceTask = await Task.WhenAny(
         [
             watcher.NewDocumentNavigationTask,
@@ -186,13 +190,15 @@ public class CdpFrame : Frame
     {
         var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
         var timeout = options?.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
+        var cancellationToken = options?.CancellationToken ?? default;
+        cancellationToken.ThrowIfCancellationRequested();
 
         // We rely upon the fact that the document is reopened, which resets the
         // frame lifecycle with an "init" lifecycle event.
         // @see https://crrev.com/608658
         await SetFrameContentAsync(html).ConfigureAwait(false);
 
-        using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, waitUntil, timeout);
+        using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, waitUntil, timeout, cancellationToken);
         var watcherTask = await Task.WhenAny(
             watcher.TerminationTask,
             watcher.LifecycleTask).ConfigureAwait(false);

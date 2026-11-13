@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -50,6 +52,20 @@ namespace PuppeteerSharp.Tests.NavigationTests
             response = await Page.GoForwardAsync();
             Assert.That(response, Is.Null);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/first.html"));
+        }
+
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goBack", "should not go back when the signal is already aborted")]
+        public async Task ShouldNotGoBackWhenTheSignalIsAlreadyAborted()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            using var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            Assert.ThrowsAsync<OperationCanceledException>(() => Page.GoBackAsync(
+                new NavigationOptions { CancellationToken = cts.Token }));
+            await Task.Delay(200);
+            Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/grid.html"));
         }
     }
 }

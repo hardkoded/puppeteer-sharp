@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -166,6 +167,20 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
             Assert.That(warnings.Where(warning => warning.Contains("document.write")), Is.Empty);
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should not set the content when the signal is already aborted")]
+        [Obsolete]
+        public async Task ShouldNotSetTheContentWhenTheSignalIsAlreadyAborted()
+        {
+            await Page.SetContentAsync("<div>before</div>");
+            using var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            Assert.ThrowsAsync<OperationCanceledException>(() => Page.SetContentAsync(
+                "<div>after</div>",
+                new SetContentOptions { CancellationToken = cts.Token }));
+            Assert.That(await Page.GetContentAsync(), Does.Contain("<div>before</div>"));
         }
     }
 }
