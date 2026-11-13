@@ -557,8 +557,10 @@ public class BidiFrame : Frame
             await Task.WhenAny(tasksToRace).ConfigureAwait(false);
 
             // A caller cancel must surface as cancellation, not as a navigation timeout.
-            if (options?.CancellationToken.HasValue == true)
+            if (options?.CancellationToken.HasValue == true && options.CancellationToken.Value.IsCancellationRequested)
             {
+                // Cancel the nested waits explicitly: the registration callback may not have run yet.
+                timeoutCts.Cancel();
                 options.CancellationToken.Value.ThrowIfCancellationRequested();
             }
 
