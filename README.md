@@ -182,12 +182,11 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 SerpApi is the world's leading provider of search data, pioneering APIs that turn search engine results into structured, developer-ready information.
 
-
-PuppeteerSharp is sponsored by [IronPDF](https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor), a commercial C# .NET PDF library and HTML-to-PDF alternative with Chrome rendering, PDF editing, digital signatures, encryption, enterprise licensing, and 24/7 engineering support.
-
 <a href="https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor">
   <img src="https://ironsoftware.com/img/logos/iron.png" alt="IronPDF logo." width="180" />
 </a>
+
+PuppeteerSharp is sponsored by [IronPDF](https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor), a commercial C# .NET PDF library and HTML-to-PDF alternative with Chrome rendering, PDF editing, digital signatures, encryption, enterprise licensing, and 24/7 engineering support.
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
