@@ -12,6 +12,9 @@ env:
 jobs:
    PushToNugetOrg:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for NuGet Trusted Publishing (OIDC)
+      contents: read
     steps:
     - uses: actions/checkout@v3
       with:
@@ -30,12 +33,14 @@ jobs:
       run: |
         dotnet build lib/PuppeteerSharp.sln --configuration Release --no-restore
         ls ./lib/PuppeteerSharp/bin/Release
+    - name: NuGet login (OIDC trusted publishing)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: kblok # nuget.org profile name (not email) that owns the packages
     - name: NugetPush to nuget.org
-      env:
-        NUGET_TOKEN_EXISTS: ${{ secrets.NUGET_API_KEY  }}
-      if: env.NUGET_TOKEN_EXISTS != ''
       run: |
-        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
     - name: Restore (CDP only)
       run: |
         dotnet restore lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY
@@ -47,8 +52,5 @@ jobs:
         dotnet pack lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY /p:Title=PuppeteerSharp.Cdp /p:PackageId=PuppeteerSharp.Cdp /p:Description="Headless Browser .NET API with CDP support only (no WebDriverBiDi)" --configuration Release --no-restore --no-build
         ls ./lib/PuppeteerSharp/bin/Release
     - name: NugetPush to nuget.org (CDP only)
-      env:
-        NUGET_TOKEN_EXISTS: ${{ secrets.NUGET_API_KEY  }}
-      if: env.NUGET_TOKEN_EXISTS != ''
       run: |
-        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/PuppeteerSharp.Cdp*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/PuppeteerSharp.Cdp*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
