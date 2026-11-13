@@ -79,13 +79,14 @@ namespace PuppeteerSharp.Tests.PageTests
             // stall for image
             Server.SetRoute(imgPath, _ => Task.Delay(-1));
             using var cts = new CancellationTokenSource();
+            var requestTask = Server.WaitForRequest(imgPath);
             var content = Page.SetContentAsync(
                 $"<img src=\"{TestConstants.ServerUrl + imgPath}\"></img>",
                 new SetContentOptions { CancellationToken = cts.Token });
-            await Server.WaitForRequest(imgPath);
+            await requestTask;
 
             cts.Cancel();
-            Assert.ThrowsAsync<TaskCanceledException>(async () => await content);
+            Assert.CatchAsync<OperationCanceledException>(async () => await content);
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should respect default navigation timeout")]

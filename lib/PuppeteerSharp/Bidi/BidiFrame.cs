@@ -188,13 +188,23 @@ public class BidiFrame : Frame
         try
         {
             // Set the frame content using JavaScript, similar to CDP implementation
-            await EvaluateFunctionAsync(
+            var evaluateTask = EvaluateFunctionAsync(
                 @"html => {
                     document.open();
                     document.write(html);
                     document.close();
                 }",
-                html).ConfigureAwait(false);
+                html);
+
+            if (options?.CancellationToken is { } evaluateCancellationToken)
+            {
+                var evaluateCancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                using var evaluateRegistration = evaluateCancellationToken.Register(() => evaluateCancellationTcs.TrySetCanceled(evaluateCancellationToken));
+                await Task.WhenAny(evaluateTask, evaluateCancellationTcs.Task).ConfigureAwait(false);
+                evaluateCancellationToken.ThrowIfCancellationRequested();
+            }
+
+            await evaluateTask.ConfigureAwait(false);
 
             var waitTask = Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
                 timeout,
