@@ -140,7 +140,7 @@ namespace PuppeteerSharp.QueryHandlers
                     return (selector, _defaultHandler, SelectorHelper.HasPseudoClasses(selector) ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);
                 }
 
-                return (jsonSelector, new PQueryHandler(), hasAria ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);
+                return (jsonSelector, new PQueryHandler(), hasAria || hasPseudoClasses ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);
             }
             catch
             {
