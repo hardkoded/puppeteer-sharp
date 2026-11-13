@@ -171,18 +171,23 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 ## Sponsors
 
+### Supporters
+
+<a href="https://serpapi.com/?utm_source=puppeteersharp">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs-site/public/images/sponsors/serpapi-wordmark-white.svg">
+    <img src="docs-site/public/images/sponsors/serpapi-wordmark-black.svg" alt="SerpApi logo." width="180" />
+  </picture>
+</a>
+
+SerpApi is the world's leading provider of search data, pioneering APIs that turn search engine results into structured, developer-ready information.
+
+
 PuppeteerSharp is sponsored by [IronPDF](https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor), a commercial C# .NET PDF library and HTML-to-PDF alternative with Chrome rendering, PDF editing, digital signatures, encryption, enterprise licensing, and 24/7 engineering support.
 
 <a href="https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor">
   <img src="https://ironsoftware.com/img/logos/iron.png" alt="IronPDF logo." width="180" />
 </a>
-
-A massive thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper and Rider license to use on this project.
-
-<div style="display:inline">
-
-[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
-</div>
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
