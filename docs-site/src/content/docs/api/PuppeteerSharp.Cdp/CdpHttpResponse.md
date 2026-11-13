@@ -29,29 +29,6 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 
 ## Properties
 
-<a id="PuppeteerSharp_Cdp_CdpHttpResponse_EncodedDataLength_"></a>
-<a id="PuppeteerSharp_Cdp_CdpHttpResponse_EncodedDataLength"></a>
-
-### EncodedDataLength
-
-
-```csharp
-public override long EncodedDataLength { get; }
-```
-
-
-Total number of bytes received for this request over the network.
-
-**Value:** [long](https://learn.microsoft.com/dotnet/api/system.int64)
-
-The value is updated when the response finishes loading. During the `Response` event, it only covers
-the bytes received up to the response headers. To get the total encoded transfer size (headers + compressed
-body), read it in a `RequestFinished` handler or after awaiting [BufferAsync()](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_BufferAsync).
-If the request fails after the response is received, the value is not updated. If the browser does not
-report a size, e.g. for `data:` or `file:` URLs, the value is `0`.
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpResponse.cs#L62)
-
 <a id="PuppeteerSharp_Cdp_CdpHttpResponse_FromCache_"></a>
 <a id="PuppeteerSharp_Cdp_CdpHttpResponse_FromCache"></a>
 
@@ -67,7 +44,7 @@ True if the response was served from either the browser's disk cache or memory c
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpResponse.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpResponse.cs#L56)
 
 ## Methods
 
@@ -86,24 +63,4 @@ Returns a Task which resolves to a buffer with response body.
 
 **Returns:** [ValueTask&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1) — A Task which resolves to a buffer with response body.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpResponse.cs#L70)
-
-<a id="PuppeteerSharp_Cdp_CdpHttpResponse_StreamAsync_"></a>
-<a id="PuppeteerSharp_Cdp_CdpHttpResponse_StreamAsync"></a>
-
-### StreamAsync()
-
-
-```csharp
-public override Task<Stream> StreamAsync()
-```
-
-
-Returns a Task which resolves to a stream of the response body, with chunks delivered as they arrive from the network.
-
-**Returns:** [Task&lt;Stream&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a stream of the response body.
-
-Call this from the [Response](/api/PuppeteerSharp/Page/#PuppeteerSharp_Page_Response) event to receive the body while it is still loading.
-If the body has already finished loading, the stream contains the whole body as a single chunk.
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpResponse.cs#L99)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpResponse.cs#L64)

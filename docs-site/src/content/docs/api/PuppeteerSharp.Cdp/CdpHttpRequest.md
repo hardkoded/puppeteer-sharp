@@ -25,7 +25,7 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 
 **Implements:** [IRequest](/api/PuppeteerSharp/IRequest/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L17)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L16)
 
 ## Properties
 
@@ -44,7 +44,7 @@ Gets the current intercept resolution state.
 
 **Value:** [InterceptResolutionState](/api/PuppeteerSharp/InterceptResolutionState/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L79)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L76)
 
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_IsInterceptResolutionHandled_"></a>
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_IsInterceptResolutionHandled"></a>
@@ -61,7 +61,7 @@ Gets whether the intercept resolution has already been handled.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L95)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L92)
 
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_Response_"></a>
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_Response"></a>
@@ -76,7 +76,7 @@ public override CdpHttpResponse Response { get; }
 
 **Value:** [CdpHttpResponse](/api/PuppeteerSharp.Cdp/CdpHttpResponse/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L76)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L73)
 
 ## Methods
 
@@ -103,7 +103,7 @@ Exception is immediately thrown if the request interception is not enabled.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L191)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L186)
 
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_CanBeIntercepted_"></a>
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_CanBeIntercepted"></a>
@@ -120,7 +120,7 @@ Determines whether this request can be intercepted.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the request can be intercepted; otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L300)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L295)
 
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_ContentAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_ContentAsync"></a>
@@ -137,7 +137,7 @@ Fetches the unmodified POST data bytes for the request from the browser.
 
 **Returns:** [Task&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's raw POST data, or `null` when there is none or fetching it fails.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L222)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L217)
 
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_ContinueAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_ContinueAsync_PuppeteerSharp_Payload_System_Nullable_System_Int32__"></a>
@@ -162,7 +162,7 @@ If the URL is set it won't perform a redirect. The request will be silently forw
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L118)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L115)
 
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_FetchPostDataAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_FetchPostDataAsync"></a>
@@ -179,7 +179,7 @@ Fetches the POST data for the request from the browser.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's POST data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L215)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L210)
 
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_RespondAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_RespondAsync_PuppeteerSharp_ResponseData_System_Nullable_System_Int32__"></a>
@@ -203,7 +203,7 @@ Fulfills request with given response. To use this, request interception should b
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L156)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L151)
 
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_VerifyInterception_"></a>
 <a id="PuppeteerSharp_Cdp_CdpHttpRequest_VerifyInterception"></a>
@@ -224,4 +224,4 @@ Verifies that request interception is enabled and the request has not been handl
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | Thrown when interception is not enabled or request is already handled. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L286)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpHttpRequest.cs#L281)

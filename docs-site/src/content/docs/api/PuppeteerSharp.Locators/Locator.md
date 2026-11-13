@@ -138,7 +138,7 @@ Clicks the located element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the click is performed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L236)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L234)
 
 <a id="PuppeteerSharp_Locators_Locator_FillAsync_"></a>
 <a id="PuppeteerSharp_Locators_Locator_FillAsync_System_String_PuppeteerSharp_Locators_LocatorActionOptions_"></a>
@@ -162,16 +162,16 @@ Fills the located element with the provided value.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the fill is performed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L295)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L293)
 
 <a id="PuppeteerSharp_Locators_Locator_Filter_"></a>
-<a id="PuppeteerSharp_Locators_Locator_Filter_System_String_System_Object___"></a>
+<a id="PuppeteerSharp_Locators_Locator_Filter_System_String_"></a>
 
-### Filter(string, params object[])
+### Filter(string)
 
 
 ```csharp
-public Locator Filter(string predicate, params object[] args)
+public Locator Filter(string predicate)
 ```
 
 
@@ -183,11 +183,10 @@ If the predicate does not match, the locator will retry.
 | Name | Type | Description |
 | --- | --- | --- |
 | `predicate` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A JavaScript function expression that takes an element and returns a boolean. |
-| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Additional serializable values or handles forwarded to the predicate after the element. |
 
 **Returns:** [Locator](./) — A new locator that filters based on the predicate.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L141)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L140)
 
 <a id="PuppeteerSharp_Locators_Locator_FilterHandle_"></a>
 <a id="PuppeteerSharp_Locators_Locator_FilterHandle_System_Func_PuppeteerSharp_IJSHandle_System_Threading_Tasks_Task_System_Boolean___"></a>
@@ -211,7 +210,7 @@ If the predicate does not match, the locator will retry.
 
 **Returns:** [Locator](./) — A new locator that filters based on the predicate.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L163)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L161)
 
 <a id="PuppeteerSharp_Locators_Locator_HoverAsync_"></a>
 <a id="PuppeteerSharp_Locators_Locator_HoverAsync_PuppeteerSharp_Locators_LocatorActionOptions_"></a>
@@ -234,16 +233,16 @@ Hovers over the located element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the hover is performed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L259)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L257)
 
 <a id="PuppeteerSharp_Locators_Locator_Map_"></a>
-<a id="PuppeteerSharp_Locators_Locator_Map_System_String_System_Object___"></a>
+<a id="PuppeteerSharp_Locators_Locator_Map_System_String_"></a>
 
-### Map(string, params object[])
+### Map(string)
 
 
 ```csharp
-public Locator Map(string mapper, params object[] args)
+public Locator Map(string mapper)
 ```
 
 
@@ -254,11 +253,10 @@ Maps the locator using the provided mapper.
 | Name | Type | Description |
 | --- | --- | --- |
 | `mapper` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A JavaScript function expression that transforms the element. |
-| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Additional serializable values or handles forwarded to the mapper after the element. |
 
 **Returns:** [Locator](./) — A new locator that maps the element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L152)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L150)
 
 <a id="PuppeteerSharp_Locators_Locator_MapHandle_"></a>
 <a id="PuppeteerSharp_Locators_Locator_MapHandle_System_Func_PuppeteerSharp_IJSHandle_System_Threading_Tasks_Task_PuppeteerSharp_IJSHandle___"></a>
@@ -281,7 +279,7 @@ Maps the locator using a handle-based mapper.
 
 **Returns:** [Locator](./) — A new locator that maps the element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L173)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L171)
 
 <a id="PuppeteerSharp_Locators_Locator_Race_"></a>
 <a id="PuppeteerSharp_Locators_Locator_Race_PuppeteerSharp_Locators_Locator___"></a>
@@ -327,7 +325,7 @@ Scrolls the located element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the scroll is performed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L272)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L270)
 
 <a id="PuppeteerSharp_Locators_Locator_SetEnsureElementIsInTheViewport_"></a>
 <a id="PuppeteerSharp_Locators_Locator_SetEnsureElementIsInTheViewport_System_Boolean_"></a>
@@ -465,7 +463,7 @@ Waits for the locator to locate an element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the element is located.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L221)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L219)
 
 <a id="PuppeteerSharp_Locators_Locator_WaitAsync__1_PuppeteerSharp_Locators_LocatorActionOptions_"></a>
 
@@ -494,7 +492,7 @@ Note this requires the value to be JSON-serializable.
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to the serialized value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L197)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L195)
 
 <a id="PuppeteerSharp_Locators_Locator_WaitHandleAsync_"></a>
 <a id="PuppeteerSharp_Locators_Locator_WaitHandleAsync_PuppeteerSharp_Locators_LocatorActionOptions_"></a>
@@ -517,4 +515,4 @@ Waits for the locator to get a handle from the page.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to a handle for the located element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L183)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L181)

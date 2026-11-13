@@ -23,4 +23,4 @@ public interface IResponse
 
 **Derived:** [BidiHttpResponse](/api/PuppeteerSharp.Bidi/BidiHttpResponse/), [CdpHttpResponse](/api/PuppeteerSharp.Cdp/CdpHttpResponse/), [Response&lt;TRequest&gt;](/api/PuppeteerSharp/Response-1/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IResponse.cs#L18)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IResponse.cs#L17)

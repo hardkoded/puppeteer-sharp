@@ -45,26 +45,6 @@ Defaults to `false`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L23)
 
-<a id="PuppeteerSharp_RecordOptions_BufferForEnumeration_"></a>
-<a id="PuppeteerSharp_RecordOptions_BufferForEnumeration"></a>
-
-### BufferForEnumeration
-
-
-```csharp
-public bool? BufferForEnumeration { get; set; }
-```
-
-
-Whether to buffer recording chunks for asynchronous enumeration.
-Defaults to `true`. Set to `false` when writing only to a path or piped destination
-to avoid retaining recording chunks in an unread queue.
-Enumeration is unavailable when buffering is disabled.
-
-**Value:** [bool?](https://learn.microsoft.com/dotnet/api/system.boolean)
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L31)
-
 <a id="PuppeteerSharp_RecordOptions_Fps_"></a>
 <a id="PuppeteerSharp_RecordOptions_Fps"></a>
 
@@ -80,7 +60,7 @@ Frame rate in frames per second (alias for [FrameRate](#PuppeteerSharp_RecordOpt
 
 **Value:** [int?](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L51)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L43)
 
 <a id="PuppeteerSharp_RecordOptions_FrameRate_"></a>
 <a id="PuppeteerSharp_RecordOptions_FrameRate"></a>
@@ -97,7 +77,7 @@ Maximum frame rate in frames per second.
 
 **Value:** [int?](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L46)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L38)
 
 <a id="PuppeteerSharp_RecordOptions_MaxHeight_"></a>
 <a id="PuppeteerSharp_RecordOptions_MaxHeight"></a>
@@ -114,7 +94,7 @@ Maximum frame height in pixels.
 
 **Value:** [int?](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L41)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L33)
 
 <a id="PuppeteerSharp_RecordOptions_MaxWidth_"></a>
 <a id="PuppeteerSharp_RecordOptions_MaxWidth"></a>
@@ -131,7 +111,7 @@ Maximum frame width in pixels.
 
 **Value:** [int?](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L36)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RecordOptions.cs#L28)
 
 <a id="PuppeteerSharp_RecordOptions_Overwrite_"></a>
 <a id="PuppeteerSharp_RecordOptions_Overwrite"></a>

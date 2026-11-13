@@ -44,7 +44,7 @@ public Browser Browser { get; protected init; }
 
 **Value:** [Browser](/api/PuppeteerSharp/Browser/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L50)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L32)
 
 <a id="PuppeteerSharp_BrowserContext_Id_"></a>
 <a id="PuppeteerSharp_BrowserContext_Id"></a>
@@ -61,7 +61,7 @@ Browser Context Id.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L44)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L26)
 
 <a id="PuppeteerSharp_BrowserContext_IsClosed_"></a>
 <a id="PuppeteerSharp_BrowserContext_IsClosed"></a>
@@ -78,113 +78,9 @@ Whether this &lt;a href="IBrowserContext"&gt;IBrowserContext&lt;/a&gt; is closed
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L47)
-
-## Events
-
-<a id="PuppeteerSharp_BrowserContext_Console"></a>
-
-### Console
-
-
-```csharp
-public event EventHandler<ConsoleEventArgs> Console
-```
-
-
-Raised when JavaScript within any page or worker in the browser context calls one of the console API methods, e.g. `console.log` or `console.dir`.
-Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via `Targets()`.
-Service and shared workers are not attached automatically: their messages are only delivered after `WorkerAsync()` has been called for their target.
-With WebDriver BiDi, service and shared worker console messages are not reported.
-
-**Value:** [EventHandler&lt;ConsoleEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L17)
-
-<a id="PuppeteerSharp_BrowserContext_Request"></a>
-
-### Request
-
-
-```csharp
-public event EventHandler<RequestEventArgs> Request
-```
-
-
-Raised when any page in the browser context issues a request. Contains an [IRequest](/api/PuppeteerSharp/IRequest/) instance.
-Use [IPage](/api/PuppeteerSharp/IPage/) or [IFrame](/api/PuppeteerSharp/IFrame/) from the request to identify the originating context.
-Events are only delivered for pages that have an [IPage](/api/PuppeteerSharp/IPage/) instance, for example one created via [PagesAsync(bool)](/api/PuppeteerSharp/IBrowserContext/#PuppeteerSharp_IBrowserContext_PagesAsync_System_Boolean_).
-These listeners only observe requests. Do not call `Continue`, `Abort` or `Respond` from them. To intercept requests, use [SetRequestInterceptionAsync(bool)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_SetRequestInterceptionAsync_System_Boolean_) with an [Request](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Request) listener.
-
-**Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L41)
-
-<a id="PuppeteerSharp_BrowserContext_RequestFailed"></a>
-
-### RequestFailed
-
-
-```csharp
-public event EventHandler<RequestEventArgs> RequestFailed
-```
-
-
-Raised when a request issued by any page in the browser context fails, for example by timing out.
-HTTP error responses, such as 404 or 503, complete with [RequestFinished](/api/PuppeteerSharp/IBrowserContext/#PuppeteerSharp_IBrowserContext_RequestFinished) instead.
-
-**Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L35)
-
-<a id="PuppeteerSharp_BrowserContext_RequestFinished"></a>
-
-### RequestFinished
-
-
-```csharp
-public event EventHandler<RequestEventArgs> RequestFinished
-```
-
-
-Raised when a request issued by any page in the browser context finishes successfully.
-
-**Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L38)
-
-<a id="PuppeteerSharp_BrowserContext_RequestServedFromCache"></a>
-
-### RequestServedFromCache
-
-
-```csharp
-public event EventHandler<RequestEventArgs> RequestServedFromCache
-```
-
-
-Raised when a request issued by any page in the browser context is served from the memory cache.
-
-**Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
-
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L29)
 
-<a id="PuppeteerSharp_BrowserContext_Response"></a>
-
-### Response
-
-
-```csharp
-public event EventHandler<ResponseCreatedEventArgs> Response
-```
-
-
-Raised when a response is received for a request issued by any page in the browser context.
-Use [Request](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_Request) to access the originating request.
-
-**Value:** [EventHandler&lt;ResponseCreatedEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L32)
+## Events
 
 <a id="PuppeteerSharp_BrowserContext_TargetChanged"></a>
 
@@ -200,7 +96,7 @@ Raised when the url of a target changes
 
 **Value:** [EventHandler&lt;TargetChangedArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L20)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L17)
 
 <a id="PuppeteerSharp_BrowserContext_TargetCreated"></a>
 
@@ -216,7 +112,7 @@ Raised when a target is created, for example when a new page is opened by `windo
 
 **Value:** [EventHandler&lt;TargetChangedArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L23)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L20)
 
 <a id="PuppeteerSharp_BrowserContext_TargetDestroyed"></a>
 
@@ -232,7 +128,7 @@ Raised when a target is destroyed, for example when a page is closed
 
 **Value:** [EventHandler&lt;TargetChangedArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L26)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L23)
 
 ## Methods
 
@@ -251,7 +147,7 @@ Clears all permission overrides for the browser context.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L80)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L60)
 
 <a id="PuppeteerSharp_BrowserContext_CloseAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_CloseAsync"></a>
@@ -268,7 +164,7 @@ Closes the browser context. All the targets that belong to the browser context w
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L71)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L51)
 
 <a id="PuppeteerSharp_BrowserContext_DeleteCookieAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_DeleteCookieAsync_PuppeteerSharp_CookieParam___"></a>
@@ -291,7 +187,7 @@ Removes cookies from the browser context.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L89)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L69)
 
 <a id="PuppeteerSharp_BrowserContext_DeleteMatchingCookiesAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_DeleteMatchingCookiesAsync_PuppeteerSharp_DeleteCookiesRequest___"></a>
@@ -314,7 +210,7 @@ Deletes cookies matching the provided filters in this browser context.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L109)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L89)
 
 <a id="PuppeteerSharp_BrowserContext_Dispose_"></a>
 <a id="PuppeteerSharp_BrowserContext_Dispose"></a>
@@ -329,7 +225,7 @@ public void Dispose()
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L162)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L142)
 
 <a id="PuppeteerSharp_BrowserContext_Dispose_System_Boolean_"></a>
 
@@ -349,7 +245,7 @@ Closes the browser context. All the targets that belong to the browser context w
 | --- | --- | --- |
 | `disposing` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Indicates whether disposal was initiated by [Dispose()](#PuppeteerSharp_BrowserContext_Dispose) operation. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L236)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L204)
 
 <a id="PuppeteerSharp_BrowserContext_DisposeAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_DisposeAsync"></a>
@@ -366,7 +262,7 @@ Closes the browser context. All the targets that belong to the browser context w
 
 **Returns:** [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) — ValueTask.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L172)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L152)
 
 <a id="PuppeteerSharp_BrowserContext_GetCookiesAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_GetCookiesAsync"></a>
@@ -383,7 +279,7 @@ Gets all cookies in the browser context.
 
 **Returns:** [Task&lt;CookieParam\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [CookieParam](/api/PuppeteerSharp/CookieParam/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L83)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L63)
 
 <a id="PuppeteerSharp_BrowserContext_NewPageAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_NewPageAsync_PuppeteerSharp_CreatePageOptions_"></a>
@@ -406,7 +302,7 @@ Creates a new page.
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a new [IPage](/api/PuppeteerSharp/IPage/) object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L68)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L48)
 
 <a id="PuppeteerSharp_BrowserContext_OverridePermissionsAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_OverridePermissionsAsync_System_String_System_Collections_Generic_IEnumerable_PuppeteerSharp_OverridePermission__"></a>
@@ -435,7 +331,7 @@ Overrides the browser context permissions.
 var context = browser.DefaultBrowserContext;
 await context.OverridePermissionsAsync("https://html5demos.com", new List&lt;string&gt; {"geolocation"});
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L74)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L54)
 
 <a id="PuppeteerSharp_BrowserContext_PagesAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_PagesAsync_System_Boolean_"></a>
@@ -460,7 +356,7 @@ An array of all pages inside the browser context.
     Non visible pages, such as `"background_page"`, will not be listed here.
     You can find them using [PageAsync()](/api/PuppeteerSharp/ITarget/#PuppeteerSharp_ITarget_PageAsync).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L65)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L45)
 
 <a id="PuppeteerSharp_BrowserContext_SetCookieAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_SetCookieAsync_PuppeteerSharp_CookieData___"></a>
@@ -483,7 +379,7 @@ Sets cookies in the browser context.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L86)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L66)
 
 <a id="PuppeteerSharp_BrowserContext_SetPermissionAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_SetPermissionAsync_System_String_PuppeteerSharp_PermissionEntry___"></a>
@@ -507,7 +403,7 @@ Sets the permission for a specific origin.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L77)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L57)
 
 <a id="PuppeteerSharp_BrowserContext_Targets_"></a>
 <a id="PuppeteerSharp_BrowserContext_Targets"></a>
@@ -524,7 +420,7 @@ Gets an array of all active targets inside the browser context.
 
 **Returns:** `ITarget\[\]` — An array of all active targets inside the browser context.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L58)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L38)
 
 <a id="PuppeteerSharp_BrowserContext_WaitForTargetAsync_"></a>
 <a id="PuppeteerSharp_BrowserContext_WaitForTargetAsync_System_Func_PuppeteerSharp_ITarget_System_Boolean__PuppeteerSharp_WaitForOptions_"></a>
@@ -559,4 +455,4 @@ var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target
 
 **Returns:** [Task&lt;ITarget&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Resolves to the first target found that matches the predicate function.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L61)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L41)

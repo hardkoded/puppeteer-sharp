@@ -90,7 +90,7 @@ Attaches Puppeteer to an existing process instance. The browser will be closed w
 
 **Returns:** [Task&lt;IBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A connected browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs#L265)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs#L264)
 
 <a id="PuppeteerSharp_Launcher_LaunchAsync_"></a>
 <a id="PuppeteerSharp_Launcher_LaunchAsync_PuppeteerSharp_LaunchOptions_"></a>

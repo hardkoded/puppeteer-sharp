@@ -33,7 +33,7 @@ Chrome info.
 
 
 ```csharp
-public const string DefaultBuildId = "stable_160.0"
+public const string DefaultBuildId = "stable_158.0.1"
 ```
 
 

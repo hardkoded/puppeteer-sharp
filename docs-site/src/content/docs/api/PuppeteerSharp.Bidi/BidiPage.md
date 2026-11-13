@@ -192,7 +192,7 @@ Provide credentials for http authentication &lt;a href="https://developer.mozill
 
 To disable authentication, pass `null`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L188)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L186)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_BringToFrontAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_BringToFrontAsync"></a>
@@ -209,7 +209,7 @@ Brings page to front (activates tab).
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message has been sent to Chromium.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L199)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L197)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_CaptureHeapSnapshotAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_CaptureHeapSnapshotAsync_PuppeteerSharp_HeapSnapshotOptions_"></a>
@@ -232,7 +232,7 @@ Captures a snapshot of the JavaScript heap and writes it to a file.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task which resolves after the heap snapshot is captured and written to disk.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L651)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L648)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_CloseAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_CloseAsync_PuppeteerSharp_PageCloseOptions_"></a>
@@ -255,7 +255,7 @@ Closes the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L591)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L588)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_CreateScreenRecording_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_CreateScreenRecording_PuppeteerSharp_RecordOptions_"></a>
@@ -278,7 +278,7 @@ Creates a protocol-specific screen recording instance.
 
 **Returns:** [ScreenRecording](/api/PuppeteerSharp/ScreenRecording/) — A screen recording instance.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L1116)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L1111)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_DeleteCookieAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_DeleteCookieAsync_PuppeteerSharp_CookieParam___"></a>
@@ -301,7 +301,7 @@ Deletes cookies from the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L607)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L604)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_Dispose_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_Dispose_System_Boolean_"></a>
@@ -322,7 +322,7 @@ Dispose resources.
 | --- | --- | --- |
 | `disposing` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Indicates whether disposal was initiated by [Dispose()](/api/PuppeteerSharp/Page/#PuppeteerSharp_Page_Dispose) operation. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L1123)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L1118)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateCPUThrottlingAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateCPUThrottlingAsync_System_Nullable_System_Decimal__"></a>
@@ -345,7 +345,7 @@ Enables CPU throttling to emulate slow CPUs.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message has been sent to the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L268)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L265)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateFocusedPageAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateFocusedPageAsync_System_Boolean_"></a>
@@ -368,7 +368,7 @@ Emulates focus state of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message has been sent to the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L272)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L269)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateIdleStateAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateIdleStateAsync_PuppeteerSharp_EmulateIdleOverrides_"></a>
@@ -403,7 +403,7 @@ await page.EmulateIdleStateAsync(new EmulateIdleOverrides() {IsUserActive = true
 await page.EmulateIdleStateAsync();
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L264)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L261)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateLocaleAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateLocaleAsync_System_String_"></a>
@@ -426,7 +426,7 @@ Emulates the locale of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the locale has been set.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L252)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L249)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateMediaFeaturesAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateMediaFeaturesAsync_System_Collections_Generic_IEnumerable_PuppeteerSharp_MediaFeatureValue__"></a>
@@ -481,7 +481,7 @@ await page.EvaluateFunctionAsync<bool>("() => matchMedia('(prefers-color-scheme:
 // → false
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L433)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L430)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateMediaTypeAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateMediaTypeAsync_PuppeteerSharp_Media_MediaType_"></a>
@@ -523,7 +523,7 @@ await page.EvaluateFunctionAsync<bool>("() => matchMedia('print').matches)");
 // → true
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L430)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L427)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateNetworkConditionsAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateNetworkConditionsAsync_PuppeteerSharp_NetworkConditions_"></a>
@@ -548,7 +548,7 @@ Emulates network conditions.
 
 **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L739)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L736)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateTimezoneAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateTimezoneAsync_System_String_"></a>
@@ -571,7 +571,7 @@ Changes the timezone of the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The viewport task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L207)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L205)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateVisionDeficiencyAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EmulateVisionDeficiencyAsync_PuppeteerSharp_VisionDeficiency_"></a>
@@ -599,7 +599,7 @@ Simulates the given vision deficiency on the page.
 await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Achromatopsia);
 await Page.ScreenshotAsync("Achromatopsia.png").
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L203)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L201)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EvaluateExpressionOnNewDocumentAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EvaluateExpressionOnNewDocumentAsync_System_String_"></a>
@@ -635,7 +635,7 @@ An example of overriding the navigator.languages property before the page loads:
 await page.EvaluateExpressionOnNewDocumentAsync("window.__example = true;");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L688)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L685)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_EvaluateFunctionOnNewDocumentAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_EvaluateFunctionOnNewDocumentAsync_System_String_System_Object___"></a>
@@ -672,7 +672,7 @@ An example of overriding the navigator.languages property before the page loads:
 await page.EvaluateFunctionOnNewDocumentAsync("() => window.__example = true");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L655)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L652)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_ExposeFunctionAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_ExposeFunctionAsync_System_String_System_Delegate_"></a>
@@ -696,7 +696,7 @@ Internal add exposed functions.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that completes when the function has been added.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L1112)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L1107)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_ExtensionRealms_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_ExtensionRealms"></a>
@@ -714,7 +714,7 @@ Shortcut for `MainFrame.ExtensionRealms()`.
 
 **Returns:** [IReadOnlyList&lt;Realm&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1) — A list of [Realm](/api/PuppeteerSharp/Realm/) instances representing extension execution contexts.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L684)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L681)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_GetCookiesAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_GetCookiesAsync_System_String___"></a>
@@ -740,7 +740,7 @@ Returns the page's cookies.
 If no URLs are specified, this method returns cookies for the current page URL.
 If URLs are specified, only cookies for those URLs are returned.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L773)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L770)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_GoBackAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_GoBackAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -764,7 +764,7 @@ Navigate to the previous page in history.
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task that resolves to the main resource response. In case of multiple redirects,
     the navigation will resolve with the response of the last redirect. If can not go back, resolves to null.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L346)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L343)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_GoForwardAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_GoForwardAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -788,7 +788,7 @@ Navigate to the next page in history.
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task that resolves to the main resource response. In case of multiple redirects,
     the navigation will resolve with the response of the last redirect. If can not go forward, resolves to null.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L349)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L346)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_HasDevToolsAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_HasDevToolsAsync"></a>
@@ -806,7 +806,7 @@ Use [OpenDevToolsAsync()](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_OpenDe
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with true if DevTools is attached.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L706)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L703)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_MetricsAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_MetricsAsync"></a>
@@ -825,7 +825,7 @@ Returns metrics.
 
 All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L647)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L644)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_OpenDevToolsAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_OpenDevToolsAsync"></a>
@@ -843,7 +843,7 @@ This method is only available in Chrome.
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with the DevTools page.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L703)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L700)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_PdfInternalAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_PdfInternalAsync_System_IO_Stream_PuppeteerSharp_PdfOptions_"></a>
@@ -867,7 +867,7 @@ PDF implementation.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — PDF data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L927)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L922)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_PerformScreenshotAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_PerformScreenshotAsync_PuppeteerSharp_ScreenshotType_PuppeteerSharp_ScreenshotOptions_"></a>
@@ -891,7 +891,7 @@ Screenshot implementation.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The screenshot as a base64 string.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L1014)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L1009)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_QueryObjectsAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_QueryObjectsAsync_PuppeteerSharp_IJSHandle_"></a>
@@ -915,7 +915,7 @@ Shortcut for `page.MainFrame.GetExecutionContextAsync().QueryObjectsAsync(protot
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task which resolves to a handle to an array of objects with this prototype.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L700)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L697)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_ReloadAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_ReloadAsync_PuppeteerSharp_ReloadOptions_"></a>
@@ -938,7 +938,7 @@ Reloads the page.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L276)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L273)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_RemoveExposedFunctionAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_RemoveExposedFunctionAsync_System_String_"></a>
@@ -961,7 +961,7 @@ Removes a previously added function via `Action)`.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L666)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L663)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_RemoveScriptToEvaluateOnNewDocumentAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_RemoveScriptToEvaluateOnNewDocumentAsync_System_String_"></a>
@@ -984,7 +984,7 @@ Removes script that injected into page by [EvaluateExpressionOnNewDocumentAsync(
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the script is removed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L670)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L667)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_ResizeAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_ResizeAsync_System_Int32_System_Int32_"></a>
@@ -1010,7 +1010,7 @@ Resizes the browser window of this page so that the content area (excluding brow
 
 This is an experimental API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L240)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L237)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetBurstModeOffAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetBurstModeOffAsync"></a>
@@ -1027,7 +1027,7 @@ Resets the background color and Viewport after taking Screenshots using BurstMod
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The burst mode off.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L352)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L349)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetBypassCSPAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetBypassCSPAsync_System_Boolean_"></a>
@@ -1053,7 +1053,7 @@ Toggles bypassing page's Content-Security-Policy.
 CSP bypassing happens at the moment of CSP initialization rather then evaluation.
 Usually this means that [SetBypassCSPAsync(bool)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_SetBypassCSPAsync_System_Boolean_) should be called before navigating to the domain.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L412)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L409)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetBypassServiceWorkerAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetBypassServiceWorkerAsync_System_Boolean_"></a>
@@ -1076,7 +1076,7 @@ Toggles ignoring of service worker for each request.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the message is sent to the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L677)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L674)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetCacheEnabledAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetCacheEnabledAsync_System_Boolean_"></a>
@@ -1099,7 +1099,7 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L421)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L418)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetCookieAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetCookieAsync_PuppeteerSharp_CookieParam___"></a>
@@ -1122,7 +1122,7 @@ Clears all of the current cookies and then sets the cookies for the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L505)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L502)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetDragInterceptionAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetDragInterceptionAsync_System_Boolean_"></a>
@@ -1149,7 +1149,7 @@ Activating drag interception enables the `Input.drag`,
 methods This provides the capability to capture drag events emitted
 on the page, which can then be used to simulate drag-and-drop.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L644)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L641)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetExtraHttpHeadersAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetExtraHttpHeadersAsync_System_Collections_Generic_Dictionary_System_String_System_String__"></a>
@@ -1197,7 +1197,7 @@ Sets the page's geolocation.
 
 Consider using `OverridePermission%7d)` to grant permissions for the page to read its geolocation.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L355)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L352)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetJavaScriptEnabledAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetJavaScriptEnabledAsync_System_Boolean_"></a>
@@ -1220,7 +1220,7 @@ Enables/Disables Javascript on the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L399)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L396)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetOfflineModeAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetOfflineModeAsync_System_Boolean_"></a>
@@ -1243,7 +1243,7 @@ Set offline mode for the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Result task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L718)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L715)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetRequestInterceptionAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetRequestInterceptionAsync_System_Boolean_"></a>
@@ -1267,7 +1267,7 @@ Activating request interception enables `AbortAsync`,
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The request interception task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L709)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L706)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetUserAgentAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetUserAgentAsync_PuppeteerSharp_SetUserAgentOptions_"></a>
@@ -1290,7 +1290,7 @@ Sets the user agent, user agent metadata, and platform.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L450)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L447)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetUserAgentAsync_System_String_PuppeteerSharp_UserAgentMetadata_"></a>
 
@@ -1313,7 +1313,7 @@ Sets the user agent to be used in this page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L437)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L434)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_SetViewportAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_SetViewportAsync_PuppeteerSharp_ViewPortOptions_"></a>
@@ -1351,7 +1351,7 @@ using(var page = await browser.NewPageAsync())
     await page.goto('https://www.example.com');
 }
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L464)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L461)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_TabInfoAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_TabInfoAsync"></a>
@@ -1370,7 +1370,7 @@ Returns information about the browser tab of this page. The result is a snapshot
 
 This is an experimental API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L248)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L245)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_TriggerExtensionActionAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_TriggerExtensionActionAsync_PuppeteerSharp_Extension_"></a>
@@ -1393,7 +1393,7 @@ Triggers an extension action for the given extension.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the extension action has been triggered.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L680)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L677)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_WaitForFileChooserAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_WaitForFileChooserAsync_PuppeteerSharp_WaitForOptions_"></a>
@@ -1437,7 +1437,7 @@ await waitTask.Result.AcceptAsync('/tmp/myfile.pdf');
 
 This must be called *before* the file chooser is launched. It will not return a currently active file chooser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L308)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L305)
 
 <a id="PuppeteerSharp_Bidi_BidiPage_WindowIdAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiPage_WindowIdAsync"></a>
@@ -1456,4 +1456,4 @@ Returns the page's window ID.
 
 This is an experimental API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L244)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L241)
