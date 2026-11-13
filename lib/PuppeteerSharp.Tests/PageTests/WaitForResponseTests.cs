@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -102,6 +103,19 @@ namespace PuppeteerSharp.Tests.PageTests
                 }, 50)")
             );
             Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForResponse", "should be cancellable")]
+        public void ShouldBeCancellable()
+        {
+            using var cts = new CancellationTokenSource();
+
+            var task = Page.WaitForResponseAsync(
+                TestConstants.ServerUrl + "/abortme",
+                new WaitForOptions { CancellationToken = cts.Token });
+
+            cts.Cancel();
+            Assert.CatchAsync<OperationCanceledException>(() => task);
         }
     }
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -32,6 +34,20 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var waitedFrame = await waitedFrameTask;
             Assert.That(waitedFrame.ParentFrame, Is.EqualTo(Page.MainFrame));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForFrame", "should be cancellable")]
+        public async Task ShouldBeCancellable()
+        {
+            using var cts = new CancellationTokenSource();
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            var task = Page.WaitForFrameAsync(
+                frame => frame.Url.EndsWith("/title.html"),
+                new WaitForOptions { CancellationToken = cts.Token });
+
+            cts.Cancel();
+            Assert.CatchAsync<OperationCanceledException>(() => task);
         }
     }
 }

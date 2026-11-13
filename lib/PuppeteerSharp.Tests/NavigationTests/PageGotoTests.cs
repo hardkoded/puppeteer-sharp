@@ -613,5 +613,20 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(requested, Is.False);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
+
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should be cancellable")]
+        public async Task ShouldBeCancellable()
+        {
+            // Hang for request to the empty.html
+            Server.SetRoute("/empty.html", _ => Task.Delay(-1));
+            using var cts = new CancellationTokenSource();
+            var navigation = Page.GoToAsync(
+                TestConstants.EmptyPage,
+                new NavigationOptions { CancellationToken = cts.Token });
+            await Server.WaitForRequest("/empty.html");
+
+            cts.Cancel();
+            Assert.CatchAsync<OperationCanceledException>(() => navigation);
+        }
     }
 }

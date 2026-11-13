@@ -7,6 +7,9 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during bad navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation of 11 pages")]
+        // The listener counts (FrameEvent.FrameDetached listenerCount, getEventListeners on an AbortSignal) have no C# equivalent: events are not counted and CancellationToken has no listener list
+        [PuppeteerTest("navigation.spec", "navigation Page.goto", "should remove its listeners when the navigation times out")]
+        [PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should remove the abort listener from the signal")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should throw if networkidle is passed as an option")]
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should report the correct product")] //We don't use the product in this way
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "falls back to launching chrome if there is an unknown product but logs a warning")]
