@@ -113,7 +113,7 @@ namespace PuppeteerSharp.QueryHandlers
                 }
 
                 // Check for pseudo-classes (for hasPseudoClasses flag)
-                if (ch == ':' && (i + 1 >= selector.Length || selector[i + 1] != ':'))
+                if (ch == ':' && (i + 1 >= selector.Length || selector[i + 1] != ':') && (i == 0 || selector[i - 1] != ':'))
                 {
                     hasPseudoClasses = true;
 
