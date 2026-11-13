@@ -299,6 +299,13 @@ public class BidiFrame : Frame
             : new CancellationTokenSource();
         var timeoutToken = timeoutCts.Token;
 
+        // Caller cancellation must reach the inner waits (so their handlers are released), but it must not
+        // go through timeoutCts, which is reported as a timeout. Mirrors upstream raceWith(timeout, fromAbortSignal).
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            timeoutToken,
+            options?.CancellationToken ?? CancellationToken.None);
+        var waitToken = linkedCts.Token;
+
         // Setup frame detachment handler at the outer level to race with the entire navigation
         var frameDetachedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -358,6 +365,7 @@ public class BidiFrame : Frame
                     // can convert it to NavigationException
                     if (cancellationToken.IsCancellationRequested)
                     {
+                        options?.CancellationToken?.ThrowIfCancellationRequested();
                         throw new TimeoutException("Navigation timeout exceeded");
                     }
 
@@ -369,6 +377,7 @@ public class BidiFrame : Frame
                         // Check again after the delay
                         if (cancellationToken.IsCancellationRequested)
                         {
+                            options?.CancellationToken?.ThrowIfCancellationRequested();
                             throw new TimeoutException("Navigation timeout exceeded");
                         }
 
@@ -486,8 +495,8 @@ public class BidiFrame : Frame
                 }
             }
 
-            var waitForEventNavigationTask = WaitForEventNavigationAsync(timeoutToken);
-            var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options, timeoutToken);
+            var waitForEventNavigationTask = WaitForEventNavigationAsync(waitToken);
+            var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options, waitToken);
 
             var waitForResponse = new Func<Task<IResponse>>(async () =>
             {
