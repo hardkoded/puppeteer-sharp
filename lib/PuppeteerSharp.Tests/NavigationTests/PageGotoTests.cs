@@ -278,7 +278,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             cts.Cancel();
 
-            Assert.ThrowsAsync<TaskCanceledException>(async () => await navigation);
+            Assert.CatchAsync<OperationCanceledException>(async () => await navigation);
         }
 
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should settle when the page navigates again while loading")]

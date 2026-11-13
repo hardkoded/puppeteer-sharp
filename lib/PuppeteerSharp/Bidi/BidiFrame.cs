@@ -267,6 +267,10 @@ public class BidiFrame : Frame
         {
             throw;
         }
+        catch (OperationCanceledException) when (options?.CancellationToken?.IsCancellationRequested == true)
+        {
+            throw;
+        }
         catch (PuppeteerException ex) when (ex.Message == "Navigating frame was detached")
         {
             // Convert frame detachment to NavigationException for GoToAsync
