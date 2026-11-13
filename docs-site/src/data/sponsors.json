@@ -15,13 +15,6 @@
       "blurb": "A commercial C# .NET PDF library with Chrome rendering, PDF editing, digital signatures, and encryption."
     },
     {
-      "name": "JetBrains",
-      "login": "jetbrains",
-      "url": "https://www.jetbrains.com/?from=PuppeteerSharp",
-      "blurb": "Community ReSharper and Rider licenses for working on this project.",
-      "logo": "images/sponsors/jetbrains.svg"
-    },
-    {
       "name": "HTML/CSS to Image API",
       "login": "htmlcsstoimage",
       "url": "https://github.com/htmlcsstoimage",
