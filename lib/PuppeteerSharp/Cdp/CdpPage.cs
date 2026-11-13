@@ -86,7 +86,12 @@ public class CdpPage : Page
         FrameManager.FrameNavigatedWithinDocument += (_, e) => OnFrameNavigatedSameDocument(e);
         FrameManager.FrameNavigatedNewDocument += (_, e) => OnFrameNavigatedNewDocument(e);
 
-        FrameManager.NetworkManager.Request += (_, e) => OnRequest(e.Request);
+        FrameManager.NetworkManager.Request += (_, e) =>
+        {
+            OnRequest(e.Request);
+            ((BrowserContext)BrowserContext).OnRequest(e);
+            Browser.OnRequest(e);
+        };
         FrameManager.NetworkManager.RequestFailed += (_, e) => OnRequestFailed(e);
         FrameManager.NetworkManager.Response += (_, e) => OnResponse(e);
         FrameManager.NetworkManager.RequestFinished += (_, e) => OnRequestFinished(e);
@@ -616,6 +621,7 @@ public class CdpPage : Page
             throw new ArgumentNullException(nameof(headers));
         }
 
+        HttpUtils.ValidateHeaders(headers);
         return FrameManager.NetworkManager.SetExtraHTTPHeadersAsync(headers);
     }
 
@@ -631,7 +637,7 @@ public class CdpPage : Page
 
         if (Client?.Detached ?? true)
         {
-            _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
+            _logger.ConnectionClosedPageClosed();
             return;
         }
 
@@ -661,10 +667,7 @@ public class CdpPage : Page
             await _closedFinishedTask.WithTimeout(
                 () =>
                 {
-                    _logger.LogWarning(
-                        "Timed out waiting for confirmation that target {TargetId} was closed. Target.closeTarget " +
-                        "was acknowledged but no Target.detachedFromTarget/targetDestroyed event followed within " +
-                        "{Timeout}ms; this can happen when the close races an in-flight navigation. Continuing.",
+                    _logger.TimedOutWaitingForTargetClose(
                         PrimaryTarget.TargetId,
                         PrimaryTargetClient.Connection.ProtocolTimeout);
                     return Task.CompletedTask;
@@ -746,6 +749,9 @@ public class CdpPage : Page
     }
 
     internal bool IsUrlAllowed(string url) => _targetManager.IsUrlAllowed(url);
+
+    internal CdpWebWorker GetWorker(CDPSession client)
+        => client != null && _workers.TryGetValue(client.Id, out var worker) ? worker : null;
 
     /// <inheritdoc />
     protected override async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
@@ -951,12 +957,13 @@ public class CdpPage : Page
 
         if (session.Target.Type == TargetType.Worker)
         {
-            var worker = new CdpWebWorker(
+            CdpWebWorker worker = null;
+            worker = new CdpWebWorker(
                 session,
                 session.Target.Url,
                 session.Target.TargetId,
                 session.Target.TargetInfo.Type,
-                AddConsoleMessageAsync,
+                (type, values, stackTrace) => AddConsoleMessageAsync(type, values, stackTrace, Client, worker: worker),
                 HandleException);
             _workers[session.Id] = worker;
             _ = FrameManager.NetworkManager.AddClientAsync(session);
@@ -975,16 +982,23 @@ public class CdpPage : Page
     {
         try
         {
-            if (e.MessageID == "Runtime.bindingCalled")
+            switch (e.MessageID)
             {
-                await OnBindingCalledAsync(
-                    e.MessageData.ToObject<BindingCalledResponse>(),
-                    sender as CDPSession).ConfigureAwait(false);
+                case "Runtime.bindingCalled":
+                    await OnBindingCalledAsync(
+                        e.MessageData.ToObject<BindingCalledResponse>(),
+                        sender as CDPSession).ConfigureAwait(false);
+                    break;
+                case "Runtime.consoleAPICalled":
+                    await OnConsoleAPIAsync(
+                        e.MessageData.ToObject<PageConsoleResponse>(),
+                        sender as CDPSession).ConfigureAwait(false);
+                    break;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process OOPIF message {MessageId}", e.MessageID);
+            _logger.FailedToProcessOopifMessage(ex, e.MessageID);
         }
     }
 
@@ -1001,7 +1015,7 @@ public class CdpPage : Page
                     OnLoad();
                     break;
                 case "Runtime.consoleAPICalled":
-                    await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>())
+                    await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(), Client)
                         .ConfigureAwait(false);
                     break;
                 case "Page.javascriptDialogOpening":
@@ -1033,7 +1047,7 @@ public class CdpPage : Page
         catch (Exception ex)
         {
             var message = $"Page failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-            _logger.LogError(ex, message);
+            _logger.ErrorWithException(ex, message);
             PrimaryTargetClient.Close(message);
         }
     }
@@ -1057,7 +1071,7 @@ public class CdpPage : Page
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to activate primary target");
+            _logger.FailedToActivatePrimaryTarget(ex);
         }
     }
 
@@ -1075,7 +1089,7 @@ public class CdpPage : Page
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to register speculative session");
+            _logger.FailedToRegisterSpeculativeSession(ex);
         }
     }
 
@@ -1088,32 +1102,39 @@ public class CdpPage : Page
         }
     }
 
-    private Task OnConsoleAPIAsync(PageConsoleResponse message)
+    private Task OnConsoleAPIAsync(PageConsoleResponse message, CDPSession session = null)
     {
         if (message.ExecutionContextId == 0)
         {
             return Task.CompletedTask;
         }
 
-        var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId, Client);
+        session ??= Client;
+        var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId, session);
 
         if (ctx == null)
         {
-            _logger.LogError($"ExecutionContext not found from message.");
+            _logger.ExecutionContextNotFound();
             return Task.CompletedTask;
         }
 
         var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
 
-        return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
+        return AddConsoleMessageAsync(message.Type, values, message.StackTrace, session, ctx.World?.Frame);
     }
 
-    private async Task AddConsoleMessageAsync(ConsoleType type, IJSHandle[] values, StackTrace stackTrace)
+    private async Task AddConsoleMessageAsync(
+        ConsoleType type,
+        IJSHandle[] values,
+        StackTrace stackTrace,
+        CDPSession session,
+        IFrame frame = null,
+        WebWorker worker = null)
     {
-        if (HasConsoleEventListeners)
+        if (!HasAnyConsoleListeners)
         {
             await Task.WhenAll(values.Select(v =>
-                RemoteObjectHelper.ReleaseObjectAsync(Client, ((ICdpHandle)v).RemoteObject, _logger))).ConfigureAwait(false);
+                RemoteObjectHelper.ReleaseObjectAsync(session, ((ICdpHandle)v).RemoteObject, _logger))).ConfigureAwait(false);
             return;
         }
 
@@ -1125,9 +1146,16 @@ public class CdpPage : Page
                 return handle.RemoteObject.Description.Split('\n')[0];
             }
 
+            if (handle.RemoteObject.Subtype == RemoteObjectSubtype.Null)
+            {
+                return "null";
+            }
+
             return handle.RemoteObject.ObjectId != null || handle.RemoteObject.Type == RemoteObjectType.Object
                 ? i.ToString()
-                : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
+                : handle.RemoteObject.Type == RemoteObjectType.Undefined
+                    ? "undefined"
+                    : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
         });
         var location = new ConsoleMessageLocation();
         var stackTraceLocations = new List<ConsoleMessageLocation>();
@@ -1141,13 +1169,14 @@ public class CdpPage : Page
                     LineNumber = callFrame.LineNumber,
                     ColumnNumber = callFrame.ColumnNumber,
                     FunctionName = callFrame.FunctionName,
+                    ScriptId = callFrame.ScriptId,
                 });
             }
 
             location = stackTraceLocations[0];
         }
 
-        var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location, stackTraceLocations);
+        var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location, stackTraceLocations, frame, worker);
         OnConsole(new ConsoleEventArgs(consoleMessage));
     }
 
@@ -1286,7 +1315,7 @@ public class CdpPage : Page
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.ToString());
+                _logger.ErrorWithException(ex, ex.ToString());
             }
         }
 

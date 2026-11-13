@@ -194,7 +194,8 @@ namespace PuppeteerSharp
                                 networkEnabled: options.NetworkEnabled,
                                 issuesEnabled: options.IssuesEnabled,
                                 blockList: options.BlockList,
-                                allowList: options.Allowlist)
+                                allowList: options.Allowlist,
+                                downloadBehavior: options.DownloadBehavior)
                             .ConfigureAwait(false);
                     }
 
@@ -554,7 +555,8 @@ namespace PuppeteerSharp
                         options.NetworkEnabled,
                         options.IssuesEnabled,
                         options.BlockList,
-                        options.Allowlist)
+                        options.Allowlist,
+                        options.DownloadBehavior)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

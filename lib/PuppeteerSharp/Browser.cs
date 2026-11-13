@@ -27,6 +27,9 @@ namespace PuppeteerSharp
         public event EventHandler Closed;
 
         /// <inheritdoc/>
+        public event EventHandler<ConsoleEventArgs> Console;
+
+        /// <inheritdoc/>
         public event EventHandler Disconnected;
 
         /// <inheritdoc/>
@@ -40,6 +43,21 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
+
+        /// <inheritdoc cref="IBrowser.RequestServedFromCache"/>
+        public event EventHandler<RequestEventArgs> RequestServedFromCache;
+
+        /// <inheritdoc cref="IBrowser.Response"/>
+        public event EventHandler<ResponseCreatedEventArgs> Response;
+
+        /// <inheritdoc cref="IBrowser.RequestFailed"/>
+        public event EventHandler<RequestEventArgs> RequestFailed;
+
+        /// <inheritdoc cref="IBrowser.RequestFinished"/>
+        public event EventHandler<RequestEventArgs> RequestFinished;
+
+        /// <inheritdoc/>
+        public event EventHandler<RequestEventArgs> Request;
 
         /// <inheritdoc/>
         public virtual string WebSocketEndpoint => Connection.Url;
@@ -67,6 +85,8 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public virtual ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
+
+        internal bool HasConsoleListeners => Console != null;
 
         internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
@@ -270,8 +290,44 @@ namespace PuppeteerSharp
 
         internal virtual bool IsIssuesEnabled() => true;
 
+        /// <summary>
+        /// Emits <see cref="Request"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnRequest(RequestEventArgs e) => Request?.Invoke(this, e);
+
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
+
+        /// <summary>
+        /// Emits <see cref="RequestServedFromCache"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+
+        /// <summary>
+        /// Emits <see cref="Response"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
+
+        /// <summary>
+        /// Emits <see cref="RequestFailed"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
+
+        /// <summary>
+        /// Emits <see cref="RequestFinished"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
+
+        /// <summary>
+        /// Emits <see cref="Console"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnConsole(ConsoleEventArgs e) => Console?.Invoke(this, e);
 
         /// <summary>
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was

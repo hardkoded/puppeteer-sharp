@@ -166,12 +166,13 @@ internal class BidiKeyboard(BidiPage page) : Keyboard
 
         return key switch
         {
-            "Cancel" => "\uE001",
+            "Cancel" or "Abort" => "\uE001",
             "Help" => "\uE002",
             "Backspace" => "\uE003",
             "Tab" => "\uE004",
             "Clear" => "\uE005",
-            "Enter" => "\uE007",
+            "Enter" => "\uE006",
+            "NumpadEnter" => "\uE007",
             "Shift" or "ShiftLeft" => "\uE008",
             "Control" or "ControlLeft" => "\uE009",
             "Alt" or "AltLeft" => "\uE00A",
@@ -267,6 +268,7 @@ internal class BidiKeyboard(BidiPage page) : Keyboard
             "Backslash" => "\\",
             "BracketRight" => "]",
             "Quote" => "'",
+            "Space" => " ",
             _ => throw new KeyNotFoundException($"Unknown key: \"{key}\""),
         };
     }

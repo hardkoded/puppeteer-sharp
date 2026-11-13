@@ -81,6 +81,9 @@ namespace PuppeteerSharp.Cdp
 
         public Task<CdpFrame> GetFrameAsync(string frameId) => FrameTree.TryGetFrameAsync(frameId);
 
+        /// <inheritdoc/>
+        public WebWorker Worker(CDPSession client) => (Page as CdpPage)?.GetWorker(client);
+
         internal ExecutionContext ExecutionContextById(int contextId, CDPSession session = null)
         {
             session ??= Client;
@@ -89,7 +92,7 @@ namespace PuppeteerSharp.Cdp
 
             if (context == null)
             {
-                _logger.LogError("INTERNAL ERROR: missing context with id = {ContextId}", contextId);
+                _logger.MissingContext(contextId);
             }
 
             return context;
@@ -136,7 +139,7 @@ namespace PuppeteerSharp.Cdp
                             {
                                 if (task.IsFaulted)
                                 {
-                                    _logger.LogError(task.Exception?.ToString());
+                                    _logger.ErrorMessage(task.Exception?.ToString());
                                 }
                             },
                             TaskScheduler.Default);
@@ -381,7 +384,7 @@ namespace PuppeteerSharp.Cdp
                 catch (Exception ex)
                 {
                     var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                    _logger.LogError(ex, message);
+                    _logger.ErrorWithException(ex, message);
                     Client.Close(message);
                 }
             });
@@ -486,7 +489,7 @@ namespace PuppeteerSharp.Cdp
 
                     if (extId == null)
                     {
-                        _logger.LogError("Error while parsing extension id from origin: {Origin}", contextPayload.Origin);
+                        _logger.ErrorParsingExtensionId(contextPayload.Origin);
                         return;
                     }
 
@@ -703,7 +706,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (PuppeteerException ex)
             {
-                _logger.LogError(ex.ToString());
+                _logger.ErrorMessage(ex.ToString());
             }
         }
 
@@ -759,7 +762,7 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error while disconnecting");
+                _logger.ErrorWhileDisconnecting(e);
             }
         }
     }

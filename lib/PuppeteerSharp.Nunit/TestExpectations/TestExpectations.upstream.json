@@ -30,6 +30,21 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"console\") should report console messages from service workers",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support service worker targets"
+  },
+  {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
     "platforms": [
       "win32"
@@ -541,6 +556,21 @@
       "SKIP"
     ],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.stream *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Not supported in WebDriver BiDi yet - https://github.com/w3c/webdriver-bidi/issues/958"
   },
   {
     "testIdPattern": "[network.spec] network Response.remoteAddress *",
@@ -1508,6 +1538,21 @@
     "comment": "Flaky with both CDP and WebDriver BiDi. Needs investigation."
   },
   {
+    "testIdPattern": "[network.spec] network Page.setRequestInterception should work with internal redirects not paused by Fetch.requestPaused",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Test relies on Chrome's internal 307 HSTS upgrade redirect"
+  },
+  {
     "testIdPattern": "[network.spec] network Request.resourceType *",
     "platforms": [
       "darwin",
@@ -2344,6 +2389,38 @@
     "comment": "CDP-specific"
   },
   {
+    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"console\") should report console messages replayed when attaching after connect",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1862018 - Requires multiple session support"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"console\") should report console messages replayed when attaching after connect",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "chrome",
+      "pipe"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
     "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
     "platforms": [
       "darwin",
@@ -2533,38 +2610,6 @@
       "SKIP"
     ],
     "comment": "We can't connect to a browser started with pipe:true"
-  },
-  {
-    "testIdPattern": "[download.spec] Download Browser.createBrowserContext should download to configured location",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ],
-    "comment": "Firefox does not support download behavior."
-  },
-  {
-    "testIdPattern": "[download.spec] Download Browser.createBrowserContext should not download to location",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ],
-    "comment": "Firefox does not support download behavior."
   },
   {
     "testIdPattern": "[drag-and-drop.spec] Drag n' Drop should drag and drop",
@@ -3409,7 +3454,9 @@
   {
     "testIdPattern": "[network.spec] network Request.headers cookie header should show Cookie header for redirect",
     "platforms": [
-      "darwin"
+      "darwin",
+      "linux",
+      "win32"
     ],
     "parameters": [
       "chrome",
@@ -3420,7 +3467,8 @@
       "PASS"
     ],
     "comment": [
-      "Test is flaky for MacOS BiDi as event order is we don't repopulate the request data from the response."
+      "CDP can emit Network.requestWillBeSentExtraInfo for the redirected request after Network.requestWillBeSent for the redirect target.",
+      "chromium-bidi then emits all events of the redirected request without the Cookie header (NetworkRequest.handleRedirect) and applies the late ExtraInfo to the next request in the chain."
     ]
   },
   {
@@ -4940,5 +4988,112 @@
       "FAIL"
     ],
     "comment": "Experimental support for WebMCP is not supported in BiDi"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"console\") should report console messages from dedicated workers",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Firefox does not support web worker targets in Puppeteer, see [worker.spec] *"
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext.on(\"console\") should only report console messages from workers of its own pages",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Firefox does not support web worker targets in Puppeteer, see [worker.spec] *"
+  },
+  {
+    "testIdPattern": "[worker.test] Workers should report network requests*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
+    "testIdPattern": "[network.test] network Request.worker should return null for page navigation requests",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
+    "testIdPattern": "[oopif.test] OOPIF should continue intercepted requests from workers in OOPIFs",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser.on(\"request\") should report requests from dedicated workers",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support worker network requests yet"
+  },
+  {
+    "testIdPattern": "[browser.test] Browser specs Browser network events should report responses from dedicated workers",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support worker network requests yet"
   }
 ]

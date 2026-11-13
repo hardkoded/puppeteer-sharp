@@ -36,6 +36,12 @@ namespace PuppeteerSharp
         public string Host { get; set; }
 
         /// <summary>
+        /// Whether to skip downloading Chrome Headless Shell when downloading Chrome. Defaults to false.
+        /// Mirrors upstream's <c>skipChromeHeadlessShellDownload</c> configuration.
+        /// </summary>
+        public bool SkipChromeHeadlessShellDownload { get; set; }
+
+        /// <summary>
         /// Gets the default or a custom download delegate.
         /// </summary>
         public CustomFileDownloadAction CustomFileDownload { get; set; }

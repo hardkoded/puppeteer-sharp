@@ -411,7 +411,7 @@ namespace PuppeteerSharp
                 }
                 catch
                 {
-                    Logger.LogWarning("FrameElementAsync: Error disposing iframe");
+                    Logger.ErrorDisposingIframe();
                 }
             }
 

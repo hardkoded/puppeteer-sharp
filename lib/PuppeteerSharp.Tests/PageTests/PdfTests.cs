@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
@@ -226,6 +227,28 @@ namespace PuppeteerSharp.Tests.PageTests
             });
 
             Assert.That(exception, Is.Not.Null);
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page.pdf", "should not wait for fonts if waitForFonts is false")]
+        public async Task ShouldNotWaitForFontsIfWaitForFontsIsFalse()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            // The font request never gets a response, so `document.fonts.ready`
+            // does not resolve.
+            Server.SetRoute("/never-loading-font.woff2", _ => Task.Delay(Timeout.Infinite));
+            await Task.WhenAll(
+                Server.WaitForRequest("/never-loading-font.woff2"),
+                Page.EvaluateFunctionAsync(
+                    @"url => {
+                        const font = new FontFace('never-loading', `url(${url})`);
+                        document.fonts.add(font);
+                        void font.load();
+                    }",
+                    TestConstants.ServerUrl + "/never-loading-font.woff2"));
+
+            var pdf = await Page.PdfDataAsync(new PdfOptions { WaitForFonts = false, Timeout = 5_000 });
+            Assert.That(pdf, Is.Not.Empty);
         }
 
         [Test]
