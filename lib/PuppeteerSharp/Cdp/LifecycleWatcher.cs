@@ -103,6 +103,7 @@ namespace PuppeteerSharp.Cdp
             _frame.FrameNavigated -= Navigated;
             _frame.FrameDetached -= OnFrameDetached;
             _frame.FrameSwapped -= FrameSwapped;
+            _frame.FrameSwappedByActivation -= FrameSwapped;
             _networkManager.Request -= OnRequest;
             _networkManager.Response -= OnResponse;
             _networkManager.RequestFailed -= OnRequestFailed;
