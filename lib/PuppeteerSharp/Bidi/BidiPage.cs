@@ -293,6 +293,11 @@ public class BidiPage : Page
             // This ensures timeout exceptions propagate immediately instead of waiting for all tasks
             await new[] { waitForNavigationTask, navigationTask }.WhenAllFailFast().ConfigureAwait(false);
         }
+        catch (OperationCanceledException) when (options?.CancellationToken?.IsCancellationRequested == true)
+        {
+            // Caller cancellation surfaces as cancellation, not as a navigation error
+            throw;
+        }
         catch (Exception ex)
         {
             if (ex.Message.Contains("no such history entry"))
@@ -1215,6 +1220,11 @@ public class BidiPage : Page
         try
         {
             await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (options?.CancellationToken?.IsCancellationRequested == true)
+        {
+            // Caller cancellation surfaces as cancellation, not as a navigation error
+            throw;
         }
         catch (Exception ex)
         {
