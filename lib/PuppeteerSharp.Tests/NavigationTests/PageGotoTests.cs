@@ -270,15 +270,24 @@ namespace PuppeteerSharp.Tests.NavigationTests
         public async Task ShouldBeCancellable()
         {
             // Hang for request to the empty.html
-            Server.SetRoute("/empty.html", _ => Task.Delay(-1));
+            var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Server.SetRoute("/empty.html", _ => release.Task);
             using var cts = new CancellationTokenSource();
             var requested = Server.WaitForRequest("/empty.html");
             var navigation = Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { CancellationToken = cts.Token });
             await requested;
 
-            cts.Cancel();
+            try
+            {
+                cts.Cancel();
 
-            Assert.CatchAsync<OperationCanceledException>(async () => await navigation);
+                Assert.CatchAsync<OperationCanceledException>(async () => await navigation);
+            }
+            finally
+            {
+                // Let the server finish the hanging request so it does not leak into later tests.
+                release.TrySetResult(true);
+            }
         }
 
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should settle when the page navigates again while loading")]
