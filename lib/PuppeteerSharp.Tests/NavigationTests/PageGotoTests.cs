@@ -266,6 +266,21 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(exception.Message, Does.Contain("Navigation timeout of 1 ms exceeded"));
         }
 
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should be cancellable")]
+        public async Task ShouldBeCancellable()
+        {
+            // Hang for request to the empty.html
+            Server.SetRoute("/empty.html", _ => Task.Delay(-1));
+            using var cts = new CancellationTokenSource();
+            var requested = Server.WaitForRequest("/empty.html");
+            var navigation = Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { CancellationToken = cts.Token });
+            await requested;
+
+            cts.Cancel();
+
+            Assert.CatchAsync<OperationCanceledException>(async () => await navigation);
+        }
+
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should settle when the page navigates again while loading")]
         public async Task ShouldSettleWhenThePageNavigatesAgainWhileLoading()
         {
