@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
@@ -164,6 +165,27 @@ namespace PuppeteerSharp.Tests.PageTests
                         fetch('/digits/3.png');
                     }, 50)")
             );
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should be cancelable")]
+        public async Task ShouldBeCancelable()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            using var cts = new CancellationTokenSource();
+
+            var task = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions
+            {
+                CancellationToken = cts.Token,
+            });
+            var promise = Page.EvaluateFunctionAsync(@"async () => {
+                await Promise.all([fetch('/digits/1.png')]);
+                await fetch('/digits/2.png');
+            }");
+
+            cts.Cancel();
+            Assert.CatchAsync<OperationCanceledException>(() => task);
+            await promise;
         }
     }
 }
