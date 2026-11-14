@@ -267,8 +267,9 @@ public class BidiFrame : Frame
         {
             throw;
         }
-        catch (OperationCanceledException) when (options?.CancellationToken.HasValue == true && options.CancellationToken.Value.IsCancellationRequested)
+        catch (OperationCanceledException) when (options?.CancellationToken?.IsCancellationRequested == true)
         {
+            // Caller cancellation surfaces as cancellation, not as a navigation error
             throw;
         }
         catch (PuppeteerException ex) when (ex.Message == "Navigating frame was detached")
@@ -303,11 +304,12 @@ public class BidiFrame : Frame
             : new CancellationTokenSource();
         var timeoutToken = timeoutCts.Token;
 
-        // Cancel the nested waits too when the caller cancels, so they release their event handlers.
-        // The caller's cancellation is rethrown as OperationCanceledException after the race below.
-        using var userCancellationRegistration = options?.CancellationToken.HasValue == true
-            ? options.CancellationToken.Value.Register(() => timeoutCts.Cancel())
-            : (CancellationTokenRegistration?)null;
+        // Caller cancellation must reach the inner waits (so their handlers are released), but it must not
+        // go through timeoutCts, which is reported as a timeout. Mirrors upstream raceWith(timeout, fromAbortSignal).
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            timeoutToken,
+            options?.CancellationToken ?? CancellationToken.None);
+        var waitToken = linkedCts.Token;
 
         // Setup frame detachment handler at the outer level to race with the entire navigation
         var frameDetachedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -348,6 +350,10 @@ public class BidiFrame : Frame
                     historyUpdatedTcs.TrySetResult(true);
                 }
 
+                // Handlers released in the finally block, so cancellation also unsubscribes them
+                // (upstream: rxjs raceWith unsubscribes the losing branches).
+                var cleanups = new List<Action>();
+
                 BrowsingContext.Navigation += OnNavigation;
                 BrowsingContext.HistoryUpdated += OnHistoryUpdated;
 
@@ -364,6 +370,7 @@ public class BidiFrame : Frame
                     // can convert it to NavigationException
                     if (cancellationToken.IsCancellationRequested)
                     {
+                        options?.CancellationToken?.ThrowIfCancellationRequested();
                         throw new TimeoutException("Navigation timeout exceeded");
                     }
 
@@ -375,6 +382,7 @@ public class BidiFrame : Frame
                         // Check again after the delay
                         if (cancellationToken.IsCancellationRequested)
                         {
+                            options?.CancellationToken?.ThrowIfCancellationRequested();
                             throw new TimeoutException("Navigation timeout exceeded");
                         }
 
@@ -394,8 +402,7 @@ public class BidiFrame : Frame
                         void OnClosed(object sender, ClosedEventArgs args) => tcs.TrySetResult(true);
                         frame.BrowsingContext.Closed += OnClosed;
 
-                        // Clean up handler when task completes
-                        tcs.Task.ContinueWith(_ => frame.BrowsingContext.Closed -= OnClosed, TaskScheduler.Default);
+                        cleanups.Add(() => frame.BrowsingContext.Closed -= OnClosed);
                         return tcs.Task;
                     }).ToList();
 
@@ -411,18 +418,18 @@ public class BidiFrame : Frame
                         void OnFragment(object sender, NavigationEventArgs args) => fragmentTcs.TrySetResult(true);
                         navigation.Fragment += OnFragment;
                         waitForFragmentTask = fragmentTcs.Task;
-                        _ = waitForFragmentTask.ContinueWith(_ => navigation.Fragment -= OnFragment, TaskScheduler.Default);
+                        cleanups.Add(() => navigation.Fragment -= OnFragment);
                     }
 
                     var failedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                     navigation.Failed += OnFailed;
                     var waitForFailedTask = failedTcs.Task;
-                    _ = waitForFailedTask.ContinueWith(_ => navigation.Failed -= OnFailed, TaskScheduler.Default);
+                    cleanups.Add(() => navigation.Failed -= OnFailed);
 
                     var abortedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                     navigation.Aborted += OnAborted;
                     var waitForAbortedTask = abortedTcs.Task;
-                    _ = waitForAbortedTask.ContinueWith(_ => navigation.Aborted -= OnAborted, TaskScheduler.Default);
+                    cleanups.Add(() => navigation.Aborted -= OnAborted);
 
                     // Create a task that waits for load, then child frames to detach
                     var waitForLoadAndChildFramesTask = Task.Run(
@@ -485,11 +492,16 @@ public class BidiFrame : Frame
                 {
                     BrowsingContext.Navigation -= OnNavigation;
                     BrowsingContext.HistoryUpdated -= OnHistoryUpdated;
+
+                    foreach (var cleanup in cleanups)
+                    {
+                        cleanup();
+                    }
                 }
             }
 
-            var waitForEventNavigationTask = WaitForEventNavigationAsync(timeoutToken);
-            var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options, timeoutToken);
+            var waitForEventNavigationTask = WaitForEventNavigationAsync(waitToken);
+            var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options, waitToken);
 
             var waitForResponse = new Func<Task<IResponse>>(async () =>
             {
@@ -556,14 +568,6 @@ public class BidiFrame : Frame
 
             await Task.WhenAny(tasksToRace).ConfigureAwait(false);
 
-            // A caller cancel must surface as cancellation, not as a navigation timeout.
-            if (options?.CancellationToken.HasValue == true && options.CancellationToken.Value.IsCancellationRequested)
-            {
-                // Cancel the nested waits explicitly: the registration callback may not have run yet.
-                timeoutCts.Cancel();
-                options.CancellationToken.Value.ThrowIfCancellationRequested();
-            }
-
             // Check if frame was detached or timeout occurred - re-throw the exception if so
             if (frameDetachedTcs.Task.IsCompleted)
             {
@@ -575,6 +579,8 @@ public class BidiFrame : Frame
         }
         finally
         {
+            // Release the inner waits (and their handlers) when we leave early, e.g. on frame detachment.
+            linkedCts.Cancel();
             timeoutRegistration?.Dispose();
             BrowsingContext.Closed -= OnFrameDetached;
             cleanupLoadListeners();
