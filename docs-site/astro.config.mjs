@@ -54,6 +54,13 @@ export default defineConfig({
             sidebar: [
                 ...guidesSidebar,
                 {
+                    label: "Releases",
+                    items: [
+                        { label: "Overview", slug: "releases" },
+                        { label: "v25.17", slug: "releases/v25-17" },
+                    ],
+                },
+                {
                     label: "API",
                     collapsed: false,
                     items: apiSidebar,
