@@ -30,9 +30,9 @@ namespace PuppeteerSharp.Cdp;
 internal interface IFrameProvider
 {
     /// <summary>
-    /// Gets the page that owns this provider.
+    /// Gets the browser that owns this provider.
     /// </summary>
-    IPage Page { get; }
+    IBrowser Browser { get; }
 
     /// <summary>
     /// Gets a frame by its ID.

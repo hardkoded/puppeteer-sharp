@@ -908,17 +908,15 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetUserAgentAsync("test", null));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should not throw if page().browser().userAgent() throws")]
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should not throw if browser().userAgent() throws")]
     public async Task ShouldNotThrowIfUserAgentThrows()
     {
         var client = Substitute.For<ICDPSession>();
 
         var frameManagerMock = Substitute.For<IFrameProvider>();
-        var pageMock = Substitute.For<IPage>();
         var browserMock = Substitute.For<IBrowser>();
         browserMock.GetUserAgentAsync().Returns<string>(_ => throw new TargetClosedException("Target closed"));
-        pageMock.Browser.Returns(browserMock);
-        frameManagerMock.Page.Returns(pageMock);
+        frameManagerMock.Browser.Returns(browserMock);
 
         using var loggerFactory = new LoggerFactory();
         var manager = new NetworkManager(frameManagerMock, loggerFactory);
@@ -1675,11 +1673,9 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     private static NetworkManager CreateNetworkManager(ILoggerFactory loggerFactory, Func<CDPSession, WebWorker> workerForSession = null)
     {
         var frameManagerMock = Substitute.For<IFrameProvider>();
-        var pageMock = Substitute.For<IPage>();
         var browserMock = Substitute.For<IBrowser>();
         browserMock.GetUserAgentAsync().Returns("user-agent");
-        pageMock.Browser.Returns(browserMock);
-        frameManagerMock.Page.Returns(pageMock);
+        frameManagerMock.Browser.Returns(browserMock);
         frameManagerMock.Worker(Arg.Any<CDPSession>()).Returns(ci => workerForSession?.Invoke(ci.Arg<CDPSession>()));
 
         return new NetworkManager(frameManagerMock, loggerFactory);

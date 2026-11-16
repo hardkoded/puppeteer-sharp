@@ -960,15 +960,13 @@ public class CdpPage : Page
             CdpWebWorker worker = null;
             worker = new CdpWebWorker(
                 session,
-                session.Target.Url,
-                session.Target.TargetId,
-                session.Target.TargetInfo.Type,
+                session.Target,
                 (type, values, stackTrace) => AddConsoleMessageAsync(type, values, stackTrace, Client, worker: worker),
                 HandleException,
+                FrameManager.NetworkManager,
                 () => HasExceptionThrownListeners,
                 exception => OnExceptionThrown(new RemoteExceptionEventArgs(exception)));
             _workers[session.Id] = worker;
-            _ = FrameManager.NetworkManager.AddClientAsync(session);
             OnWorkerCreated(worker);
         }
 
