@@ -1,0 +1,44 @@
+# Temporary workflow: formats the codebase with CSharpier once and commits the result.
+# Removed in the follow-up commit of the same PR.
+name: csharpier bootstrap
+
+on:
+  push:
+    branches:
+      - chore/csharpier
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: chore/csharpier
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    - name: Format with CSharpier
+      run: |
+        dotnet tool restore
+        dotnet csharpier format .
+    - name: Commit and push
+      run: |
+        git status --short
+        if [ -z "$(git status --porcelain)" ]; then
+          echo "Nothing to format."
+          exit 0
+        fi
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add -A
+        git commit -F- <<'MSG'
+        Format codebase with CSharpier
+
+        Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+        Claude-Session: https://claude.ai/code/session_01Ls2e1y2tkZNP6dfy8F5GTF
+        MSG
+        git push origin HEAD:chore/csharpier
