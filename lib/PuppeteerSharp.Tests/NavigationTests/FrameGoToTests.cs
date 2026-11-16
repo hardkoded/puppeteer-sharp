@@ -9,23 +9,38 @@ namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class FrameGoToTests : PuppeteerPageBaseTest
     {
-        public FrameGoToTests() : base()
-        {
-        }
+        public FrameGoToTests()
+            : base() { }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Frame.goto", "should navigate subframes")]
+        [
+            Test,
+            PuppeteerTest("navigation.spec", "navigation Frame.goto", "should navigate subframes")
+        ]
         public async Task ShouldNavigateSubFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            Assert.That(Page.Frames.Where(f => f.Url.Contains("/frames/one-frame.html")), Has.Exactly(1).Items);
-            Assert.That(Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")), Has.Exactly(1).Items);
+            Assert.That(
+                Page.Frames.Where(f => f.Url.Contains("/frames/one-frame.html")),
+                Has.Exactly(1).Items
+            );
+            Assert.That(
+                Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")),
+                Has.Exactly(1).Items
+            );
             var childFrame = await Page.FirstChildFrameAsync();
             var response = await childFrame.GoToAsync(TestConstants.EmptyPage);
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(childFrame, Is.SameAs(response.Frame));
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Frame.goto", "should reject when frame detaches")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Frame.goto",
+                "should reject when frame detaches"
+            )
+        ]
         public async Task ShouldRejectWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -34,18 +49,30 @@ namespace PuppeteerSharp.Tests.NavigationTests
             var frame = await Page.FirstChildFrameAsync();
             var navigationTask = frame.GoToAsync(TestConstants.EmptyPage);
             await waitForRequestTask;
-            await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
-            var exception = Assert.ThrowsAsync<NavigationException>(async () => await navigationTask);
+            await Page.QuerySelectorAsync("iframe")
+                .EvaluateFunctionAsync("frame => frame.remove()");
+            var exception = Assert.ThrowsAsync<NavigationException>(async () =>
+                await navigationTask
+            );
             Assert.That(
                 new[]
                 {
                     "Navigating frame was detached",
                     "Error: NS_BINDING_ABORTED",
-                    "net::ERR_ABORTED"
-                }.Any(error => exception.Message.Contains(error)), Is.True);
+                    "net::ERR_ABORTED",
+                }.Any(error => exception.Message.Contains(error)),
+                Is.True
+            );
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Frame.goto", "should return matching responses")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Frame.goto",
+                "should return matching responses"
+            )
+        ]
         public async Task ShouldReturnMatchingResponses()
         {
             // Disable cache: otherwise, chromium will cache similar requests.
@@ -54,21 +81,46 @@ namespace PuppeteerSharp.Tests.NavigationTests
             // Attach three frames.
             var matchingData = new MatchingResponseData[]
             {
-                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage)},
-                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage)},
-                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame3", TestConstants.EmptyPage)}
+                new MatchingResponseData
+                {
+                    FrameTask = FrameUtils.AttachFrameAsync(
+                        Page,
+                        "frame1",
+                        TestConstants.EmptyPage
+                    ),
+                },
+                new MatchingResponseData
+                {
+                    FrameTask = FrameUtils.AttachFrameAsync(
+                        Page,
+                        "frame2",
+                        TestConstants.EmptyPage
+                    ),
+                },
+                new MatchingResponseData
+                {
+                    FrameTask = FrameUtils.AttachFrameAsync(
+                        Page,
+                        "frame3",
+                        TestConstants.EmptyPage
+                    ),
+                },
             };
 
             await Task.WhenAll(matchingData.Select(m => m.FrameTask));
 
             // Navigate all frames to the same URL.
-            var requestHandler = new RequestDelegate(async (context) =>
-            {
-                if (int.TryParse(context.Request.Query["index"], out var index))
+            var requestHandler = new RequestDelegate(
+                async (context) =>
                 {
-                    await context.Response.WriteAsync(await matchingData[index].ServerResponseTcs.Task);
+                    if (int.TryParse(context.Request.Query["index"], out var index))
+                    {
+                        await context.Response.WriteAsync(
+                            await matchingData[index].ServerResponseTcs.Task
+                        );
+                    }
                 }
-            });
+            );
 
             Server.SetRoute("/one-style.html?index=0", requestHandler);
             Server.SetRoute("/one-style.html?index=1", requestHandler);
@@ -77,7 +129,10 @@ namespace PuppeteerSharp.Tests.NavigationTests
             for (var i = 0; i < 3; ++i)
             {
                 var waitRequestTask = Server.WaitForRequest("/one-style.html");
-                matchingData[i].NavigationTask = matchingData[i].FrameTask.Result.GoToAsync($"{TestConstants.ServerUrl}/one-style.html?index={i}");
+                matchingData[i].NavigationTask = matchingData[i]
+                    .FrameTask.Result.GoToAsync(
+                        $"{TestConstants.ServerUrl}/one-style.html?index={i}"
+                    );
                 await waitRequestTask;
             }
             // Respond from server out-of-order.
@@ -94,7 +149,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
         private sealed class MatchingResponseData
         {
             public Task<IFrame> FrameTask { get; internal set; }
-            public TaskCompletionSource<string> ServerResponseTcs { get; internal set; } = new TaskCompletionSource<string>();
+            public TaskCompletionSource<string> ServerResponseTcs { get; internal set; } =
+                new TaskCompletionSource<string>();
             public Task<IResponse> NavigationTask { get; internal set; }
         }
     }

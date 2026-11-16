@@ -40,9 +40,16 @@ internal class BidiMouse(BidiPage page) : Mouse
     private readonly HashSet<MouseButton> _pressedButtons = [];
     private Point _lastMovePoint = new() { X = 0, Y = 0 };
 
-    public override Task DropAsync(decimal x, decimal y, DragData data) => throw new NotImplementedException();
+    public override Task DropAsync(decimal x, decimal y, DragData data) =>
+        throw new NotImplementedException();
 
-    public override Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0) => throw new NotImplementedException();
+    public override Task DragAndDropAsync(
+        decimal startX,
+        decimal startY,
+        decimal endX,
+        decimal endY,
+        int delay = 0
+    ) => throw new NotImplementedException();
 
     public override Task ResetAsync()
     {
@@ -61,32 +68,28 @@ internal class BidiMouse(BidiPage page) : Mouse
         return _actionsQueue.Enqueue(async () =>
         {
             var from = _lastMovePoint;
-            var to = new Point
-            {
-                X = Math.Round(x),
-                Y = Math.Round(y),
-            };
+            var to = new Point { X = Math.Round(x), Y = Math.Round(y) };
 
             var steps = options?.Steps ?? 0;
 
             for (var i = 0; i < steps; ++i)
             {
-                _mouseSource.Actions.Add(new PointerMoveAction
-                {
-                    X = (long)(from.X + ((to.X - from.X) * (i / (decimal)steps))),
-                    Y = (long)(from.Y + ((to.Y - from.Y) * (i / (decimal)steps))),
-                });
+                _mouseSource.Actions.Add(
+                    new PointerMoveAction
+                    {
+                        X = (long)(from.X + ((to.X - from.X) * (i / (decimal)steps))),
+                        Y = (long)(from.Y + ((to.Y - from.Y) * (i / (decimal)steps))),
+                    }
+                );
             }
 
-            _mouseSource.Actions.Add(new PointerMoveAction
-            {
-                X = (long)to.X,
-                Y = (long)to.Y,
-            });
+            _mouseSource.Actions.Add(new PointerMoveAction { X = (long)to.X, Y = (long)to.Y });
 
             _lastMovePoint = to;
 
-            await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource]).ConfigureAwait(false);
+            await page
+                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource])
+                .ConfigureAwait(false);
             _mouseSource.Actions.Clear();
         });
     }
@@ -98,7 +101,9 @@ internal class BidiMouse(BidiPage page) : Mouse
             var button = options?.Button ?? MouseButton.Left;
             _mouseSource.Actions.Add(new PointerDownAction(GetBidiButton(button)));
 
-            await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource]).ConfigureAwait(false);
+            await page
+                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource])
+                .ConfigureAwait(false);
             _mouseSource.Actions.Clear();
             _pressedButtons.Add(button);
         });
@@ -111,7 +116,9 @@ internal class BidiMouse(BidiPage page) : Mouse
             var button = options?.Button ?? MouseButton.Left;
             _mouseSource.Actions.Add(new PointerUpAction(GetBidiButton(button)));
 
-            await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource]).ConfigureAwait(false);
+            await page
+                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource])
+                .ConfigureAwait(false);
             _mouseSource.Actions.Clear();
             _pressedButtons.Remove(button);
         });
@@ -121,37 +128,50 @@ internal class BidiMouse(BidiPage page) : Mouse
     {
         return _actionsQueue.Enqueue(async () =>
         {
-            _wheelSource.Actions.Add(new WheelScrollAction
-            {
-                X = (long)_lastMovePoint.X,
-                Y = (long)_lastMovePoint.Y,
-                DeltaX = (long)deltaX,
-                DeltaY = (long)deltaY,
-            });
+            _wheelSource.Actions.Add(
+                new WheelScrollAction
+                {
+                    X = (long)_lastMovePoint.X,
+                    Y = (long)_lastMovePoint.Y,
+                    DeltaX = (long)deltaX,
+                    DeltaY = (long)deltaY,
+                }
+            );
 
-            await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_wheelSource]).ConfigureAwait(false);
+            await page
+                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_wheelSource])
+                .ConfigureAwait(false);
             _wheelSource.Actions.Clear();
         });
     }
 
-    public override Task<DragData> DragAsync(decimal startX, decimal startY, decimal endX, decimal endY) => throw new NotImplementedException();
+    public override Task<DragData> DragAsync(
+        decimal startX,
+        decimal startY,
+        decimal endX,
+        decimal endY
+    ) => throw new NotImplementedException();
 
-    public override Task DragEnterAsync(decimal x, decimal y, DragData data) => throw new NotImplementedException();
+    public override Task DragEnterAsync(decimal x, decimal y, DragData data) =>
+        throw new NotImplementedException();
 
-    public override Task DragOverAsync(decimal x, decimal y, DragData data) => throw new NotImplementedException();
+    public override Task DragOverAsync(decimal x, decimal y, DragData data) =>
+        throw new NotImplementedException();
 
     public override Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
     {
         return _actionsQueue.Enqueue(async () =>
         {
-            _mouseSource.Actions.Add(new PointerMoveAction
-            {
-                X = (long)Math.Round(x),
-                Y = (long)Math.Round(y),
-            });
+            _mouseSource.Actions.Add(
+                new PointerMoveAction { X = (long)Math.Round(x), Y = (long)Math.Round(y) }
+            );
 
-            var pointerDownAction = new PointerDownAction(GetBidiButton(options?.Button ?? MouseButton.Left));
-            var pointerUpAction = new PointerUpAction(GetBidiButton(options?.Button ?? MouseButton.Left));
+            var pointerDownAction = new PointerDownAction(
+                GetBidiButton(options?.Button ?? MouseButton.Left)
+            );
+            var pointerUpAction = new PointerUpAction(
+                GetBidiButton(options?.Button ?? MouseButton.Left)
+            );
 
             for (var i = 1; i < (options?.Count ?? 1); ++i)
             {
@@ -163,15 +183,16 @@ internal class BidiMouse(BidiPage page) : Mouse
 
             if (options?.Delay is > 0)
             {
-                _mouseSource.Actions.Add(new PauseAction
-                {
-                    Duration = TimeSpan.FromMilliseconds(options.Delay),
-                });
+                _mouseSource.Actions.Add(
+                    new PauseAction { Duration = TimeSpan.FromMilliseconds(options.Delay) }
+                );
             }
 
             _mouseSource.Actions.Add(pointerUpAction);
 
-            await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource]).ConfigureAwait(false);
+            await page
+                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource])
+                .ConfigureAwait(false);
             _mouseSource.Actions.Clear();
         });
     }
@@ -193,7 +214,10 @@ internal class BidiMouse(BidiPage page) : Mouse
             MouseButton.Right => 2,
             MouseButton.Back => 3,
             MouseButton.Forward => 4,
-            _ => throw new ArgumentOutOfRangeException(nameof(optionsButton), $"Unsupported mouse button: {optionsButton}"),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(optionsButton),
+                $"Unsupported mouse button: {optionsButton}"
+            ),
         };
     }
 

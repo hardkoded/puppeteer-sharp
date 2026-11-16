@@ -48,13 +48,17 @@ internal class BidiFrameTarget : Target
 
     public override Task<IPage> PageAsync()
     {
-        _page ??= BidiPage.From((BidiBrowserContext)_frame.Page.BrowserContext, _frame.BrowsingContext);
+        _page ??= BidiPage.From(
+            (BidiBrowserContext)_frame.Page.BrowserContext,
+            _frame.BrowsingContext
+        );
         return Task.FromResult<IPage>(_page);
     }
 
     public override Task<IPage> AsPageAsync() => Task.FromResult<IPage>(_frame.Page as BidiPage);
 
-    public override Task<ICDPSession> CreateCDPSessionAsync() => throw new PuppeteerException("Not supported");
+    public override Task<ICDPSession> CreateCDPSessionAsync() =>
+        throw new PuppeteerException("Not supported");
 }
 
 #endif

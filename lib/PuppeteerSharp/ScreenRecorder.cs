@@ -20,21 +20,32 @@ namespace PuppeteerSharp
         private const int DefaultCrf = 30;
         private const int DefaultColors = 256;
 
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "Page is owned by the caller.")]
+        [SuppressMessage(
+            "Microsoft.Usage",
+            "CA2213:DisposableFieldsShouldBeDisposed",
+            Justification = "Page is owned by the caller."
+        )]
         private readonly Page _page;
         private readonly int _fps;
         private readonly Process _ffmpegProcess;
         private readonly Stream _outputStream;
         private readonly Task _copyOutputTask;
         private readonly CancellationTokenSource _cts = new();
-        private readonly TaskCompletionSource<(byte[] Buffer, double WallTime)> _lastFrameTcs =
-            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<(byte[] Buffer, double WallTime)> _lastFrameTcs = new(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
 
         private readonly Task _frameProcessingTask;
 
         private bool _stopped;
 
-        internal ScreenRecorder(Page page, int width, int height, ScreencastOptions options, Stream outputStream = null)
+        internal ScreenRecorder(
+            Page page,
+            int width,
+            int height,
+            ScreencastOptions options,
+            Stream outputStream = null
+        )
         {
             _page = page;
             _outputStream = outputStream;
@@ -81,12 +92,18 @@ namespace PuppeteerSharp
             if (options.Crop != null)
             {
                 var crop = options.Crop;
-                filters.Add(FormattableString.Invariant($"crop={crop.Width}:{crop.Height}:{crop.X}:{crop.Y}"));
+                filters.Add(
+                    FormattableString.Invariant(
+                        $"crop={crop.Width}:{crop.Height}:{crop.X}:{crop.Y}"
+                    )
+                );
             }
 
             if (options.Scale.HasValue)
             {
-                filters.Add(FormattableString.Invariant($"scale=iw*{options.Scale.Value}:-1:flags=lanczos"));
+                filters.Add(
+                    FormattableString.Invariant($"scale=iw*{options.Scale.Value}:-1:flags=lanczos")
+                );
             }
 
             var formatArgs = GetFormatArgs(format, fps, loop, delay, quality, colors, filters);
@@ -94,34 +111,41 @@ namespace PuppeteerSharp
             // Build ffmpeg argument list as a single string for compatibility with netstandard2.0.
             var argParts = new List<string>
             {
-                "-loglevel", "error",
-
+                "-loglevel",
+                "error",
                 // Reduces general buffering.
-                "-avioflags", "direct",
-
+                "-avioflags",
+                "direct",
                 // Reduces initial buffering while analyzing input fps and other stats.
-                "-fpsprobesize", "0",
-                "-probesize", "32",
-                "-analyzeduration", "0",
-                "-fflags", "nobuffer",
-
+                "-fpsprobesize",
+                "0",
+                "-probesize",
+                "32",
+                "-analyzeduration",
+                "0",
+                "-fflags",
+                "nobuffer",
                 // `-framerate` is an input option and must appear before `-i`;
                 // otherwise ffmpeg ignores it and the image2pipe demuxer falls back to
                 // its default 25fps, stretching the output timeline relative to the
                 // frames we feed it at `fps`.
-                "-framerate", fps.ToString(CultureInfo.InvariantCulture),
-
+                "-framerate",
+                fps.ToString(CultureInfo.InvariantCulture),
                 // Forces input to be read from standard input, and forces png input image format.
-                "-f", "image2pipe", "-vcodec", "png", "-i", "pipe:0",
-
+                "-f",
+                "image2pipe",
+                "-vcodec",
+                "png",
+                "-i",
+                "pipe:0",
                 // No audio.
                 "-an",
-
                 // This drastically reduces stalling when cpu is overbooked.
-                "-threads", "1",
-
+                "-threads",
+                "1",
                 // Disable bitrate.
-                "-b:v", "0",
+                "-b:v",
+                "0",
             };
 
             argParts.AddRange(formatArgs);
@@ -130,7 +154,10 @@ namespace PuppeteerSharp
             // Output to stdout. File overwrite is applied when Page opens the stream.
             argParts.Add("pipe:1");
 
-            var startInfo = new ProcessStartInfo(ffmpegPath, string.Join(" ", argParts.Select(QuoteArgument)))
+            var startInfo = new ProcessStartInfo(
+                ffmpegPath,
+                string.Join(" ", argParts.Select(QuoteArgument))
+            )
             {
                 UseShellExecute = false,
                 RedirectStandardInput = true,
@@ -142,9 +169,10 @@ namespace PuppeteerSharp
             _ffmpegProcess = Process.Start(startInfo)
                 ?? throw new PuppeteerException("Failed to start ffmpeg process.");
 
-            _copyOutputTask = _outputStream != null
-                ? _ffmpegProcess.StandardOutput.BaseStream.CopyToAsync(_outputStream)
-                : Task.CompletedTask;
+            _copyOutputTask =
+                _outputStream != null
+                    ? _ffmpegProcess.StandardOutput.BaseStream.CopyToAsync(_outputStream)
+                    : Task.CompletedTask;
 
             _ffmpegProcess.ErrorDataReceived += (_, e) =>
             {
@@ -195,7 +223,8 @@ namespace PuppeteerSharp
                     var (buffer, lastWallTime) = await _lastFrameTcs.Task.ConfigureAwait(false);
                     if (buffer.Length > 0)
                     {
-                        var elapsed = (Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency) - lastWallTime;
+                        var elapsed =
+                            (Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency) - lastWallTime;
                         var padFrames = Math.Max(1, (int)Math.Round(_fps * elapsed));
                         for (var i = 0; i < padFrames; i++)
                         {
@@ -252,7 +281,12 @@ namespace PuppeteerSharp
         /// <param name="timestamp">Timestamp of the current captured frame (seconds).</param>
         /// <param name="fps">Target output frames per second.</param>
         /// <returns>Number of encoder frames to emit for this interval.</returns>
-        internal static int CountFrames(double startTimestamp, double previousTimestamp, double timestamp, int fps)
+        internal static int CountFrames(
+            double startTimestamp,
+            double previousTimestamp,
+            double timestamp,
+            int fps
+        )
         {
             var end = (int)Math.Round((timestamp - startTimestamp) * fps);
             var start = (int)Math.Round((previousTimestamp - startTimestamp) * fps);
@@ -266,14 +300,19 @@ namespace PuppeteerSharp
             int delay,
             int quality,
             int colors,
-            List<string> filters)
+            List<string> filters
+        )
         {
             var libvpxArgs = new List<string>
             {
-                "-vcodec", "vp9",
-                "-crf", quality.ToString(CultureInfo.InvariantCulture),
-                "-deadline", "realtime",
-                "-cpu-used", Math.Min(Environment.ProcessorCount / 2, 8).ToString(CultureInfo.InvariantCulture),
+                "-vcodec",
+                "vp9",
+                "-crf",
+                quality.ToString(CultureInfo.InvariantCulture),
+                "-deadline",
+                "realtime",
+                "-cpu-used",
+                Math.Min(Environment.ProcessorCount / 2, 8).ToString(CultureInfo.InvariantCulture),
             };
 
             switch (format)
@@ -286,25 +325,35 @@ namespace PuppeteerSharp
                     var gifLoop = loop == int.MaxValue ? 0 : loop;
                     var gifDelay = delay != -1 ? delay / 10 : delay;
 
-                    filters.Add(FormattableString.Invariant(
-                        $"fps={gifFps},split[s0][s1];[s0]palettegen=stats_mode=diff:max_colors={colors}[p];[s1][p]paletteuse=dither=bayer"));
+                    filters.Add(
+                        FormattableString.Invariant(
+                            $"fps={gifFps},split[s0][s1];[s0]palettegen=stats_mode=diff:max_colors={colors}[p];[s1][p]paletteuse=dither=bayer"
+                        )
+                    );
 
                     return new List<string>
                     {
-                        "-loop", gifLoop.ToString(CultureInfo.InvariantCulture),
-                        "-final_delay", gifDelay.ToString(CultureInfo.InvariantCulture),
-                        "-f", "gif",
+                        "-loop",
+                        gifLoop.ToString(CultureInfo.InvariantCulture),
+                        "-final_delay",
+                        gifDelay.ToString(CultureInfo.InvariantCulture),
+                        "-f",
+                        "gif",
                     };
 
                 case "mp4":
                     return new List<string>(libvpxArgs)
                     {
-                        "-movflags", "hybrid_fragmented",
-                        "-f", "mp4",
+                        "-movflags",
+                        "hybrid_fragmented",
+                        "-f",
+                        "mp4",
                     };
 
                 default:
-                    throw new PuppeteerException($"Unsupported format: {format}. Supported formats are: webm, gif, mp4.");
+                    throw new PuppeteerException(
+                        $"Unsupported format: {format}. Supported formats are: webm, gif, mp4."
+                    );
             }
         }
 
@@ -325,7 +374,8 @@ namespace PuppeteerSharp
             double? startTimestamp = null;
 
             var frameChannel = Channel.CreateUnbounded<(byte[] Buffer, double Timestamp)>(
-                new UnboundedChannelOptions { SingleReader = true });
+                new UnboundedChannelOptions { SingleReader = true }
+            );
 
             void OnScreencastFrame(object sender, MessageEventArgs e)
             {
@@ -338,8 +388,10 @@ namespace PuppeteerSharp
                 var sessionId = e.MessageData.GetProperty("sessionId").GetInt32();
                 _ = _page.Client.SendAsync("Page.screencastFrameAck", new { sessionId });
 
-                if (!e.MessageData.TryGetProperty("metadata", out var metadata) ||
-                    !metadata.TryGetProperty("timestamp", out var timestampElement))
+                if (
+                    !e.MessageData.TryGetProperty("metadata", out var metadata)
+                    || !metadata.TryGetProperty("timestamp", out var timestampElement)
+                )
                 {
                     return;
                 }
@@ -355,12 +407,21 @@ namespace PuppeteerSharp
 
             try
             {
-                await foreach (var (buffer, timestamp) in frameChannel.Reader.ReadAllAsync(_cts.Token).ConfigureAwait(false))
+                await foreach (
+                    var (buffer, timestamp) in frameChannel
+                        .Reader.ReadAllAsync(_cts.Token)
+                        .ConfigureAwait(false)
+                )
                 {
                     if (previousBuffer != null)
                     {
                         startTimestamp ??= previousTimestamp;
-                        var framesToWrite = CountFrames(startTimestamp.Value, previousTimestamp, timestamp, _fps);
+                        var framesToWrite = CountFrames(
+                            startTimestamp.Value,
+                            previousTimestamp,
+                            timestamp,
+                            _fps
+                        );
                         for (var i = 0; i < framesToWrite; i++)
                         {
                             await WriteFrameAsync(previousBuffer).ConfigureAwait(false);
@@ -386,8 +447,8 @@ namespace PuppeteerSharp
         {
             try
             {
-                await _ffmpegProcess.StandardInput.BaseStream
-                    .WriteAsync(buffer, 0, buffer.Length)
+                await _ffmpegProcess
+                    .StandardInput.BaseStream.WriteAsync(buffer, 0, buffer.Length)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

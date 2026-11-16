@@ -22,8 +22,15 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(json.Foo, Is.EqualTo("bar"));
         }
 
-        [Test, Retry(2),
-         PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "works with jsonValues that are not objects")]
+        [
+            Test,
+            Retry(2),
+            PuppeteerTest(
+                "jshandle.spec",
+                "JSHandle JSHandle.jsonValue",
+                "works with jsonValues that are not objects"
+            )
+        ]
         public async Task WorksWithJsonValuesThatAreNotObjects()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => ['a', 'b']");
@@ -31,8 +38,15 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(json, Is.EqualTo(new[] { "a", "b" }));
         }
 
-        [Test, Retry(2),
-         PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "works with jsonValues that are primitives")]
+        [
+            Test,
+            Retry(2),
+            PuppeteerTest(
+                "jshandle.spec",
+                "JSHandle JSHandle.jsonValue",
+                "works with jsonValues that are primitives"
+            )
+        ]
         public async Task WorksWithJsonValuesThatArePrimitives()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => 'foo'");
@@ -40,22 +54,36 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(json, Is.EqualTo("foo"));
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work with dates")]
+        [
+            Test,
+            PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work with dates")
+        ]
         public async Task ShouldWorkWithDates()
         {
-            var dateHandle = await Page.EvaluateExpressionHandleAsync("new Date('2017-09-26T00:00:00.000Z')");
+            var dateHandle = await Page.EvaluateExpressionHandleAsync(
+                "new Date('2017-09-26T00:00:00.000Z')"
+            );
             var date = await dateHandle.JsonValueAsync<DateTime>();
             Assert.That(date, Is.EqualTo(new DateTime(2017, 9, 26)));
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should not throw for circular objects")]
+        [
+            Test,
+            PuppeteerTest(
+                "jshandle.spec",
+                "JSHandle JSHandle.jsonValue",
+                "should not throw for circular objects"
+            )
+        ]
         public async Task ShouldNotThrowForCircularObjects()
         {
-            var windowHandle = await Page.EvaluateFunctionHandleAsync(@"() => {
+            var windowHandle = await Page.EvaluateFunctionHandleAsync(
+                @"() => {
                 const t = {g: 1};
                 t.t = t;
                 return t;
-              }");
+              }"
+            );
             await windowHandle.JsonValueAsync();
         }
     }

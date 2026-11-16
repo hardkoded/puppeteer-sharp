@@ -35,7 +35,10 @@ namespace PuppeteerSharp.Locators
             return new NodeLocator(frame, selector);
         }
 
-        internal override async Task<IJSHandle> WaitHandleCoreAsync(LocatorActionOptions options, CancellationToken cancellationToken)
+        internal override async Task<IJSHandle> WaitHandleCoreAsync(
+            LocatorActionOptions options,
+            CancellationToken cancellationToken
+        )
         {
             var waitOptions = new WaitForSelectorOptions
             {
@@ -48,18 +51,24 @@ namespace PuppeteerSharp.Locators
 
             if (_page != null)
             {
-                handle = await _page.WaitForSelectorAsync(_selector, waitOptions).ConfigureAwait(false);
+                handle = await _page
+                    .WaitForSelectorAsync(_selector, waitOptions)
+                    .ConfigureAwait(false);
             }
             else
             {
-                handle = await _frame.WaitForSelectorAsync(_selector, waitOptions).ConfigureAwait(false);
+                handle = await _frame
+                    .WaitForSelectorAsync(_selector, waitOptions)
+                    .ConfigureAwait(false);
             }
 
             // When waiting for Hidden, a null handle means the element is no longer in the DOM,
             // which is a valid resolution (see WaitForSelectorOptions.Hidden docs), not a failure.
             if (handle == null && Visibility != VisibilityOption.Hidden)
             {
-                throw new PuppeteerException($"Could not find element matching selector: {_selector}");
+                throw new PuppeteerException(
+                    $"Could not find element matching selector: {_selector}"
+                );
             }
 
             return handle;

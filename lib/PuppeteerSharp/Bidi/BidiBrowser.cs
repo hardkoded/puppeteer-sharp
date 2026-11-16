@@ -50,7 +50,12 @@ public class BidiBrowser : Browser
     private readonly bool _issuesEnabled;
     private bool _isClosed;
 
-    private BidiBrowser(Core.Browser browserCore, IBrowserOptions options, ILoggerFactory loggerFactory, string webSocketEndpoint)
+    private BidiBrowser(
+        Core.Browser browserCore,
+        IBrowserOptions options,
+        ILoggerFactory loggerFactory,
+        string webSocketEndpoint
+    )
     {
         _target = new BidiBrowserTarget(this);
         _options = options;
@@ -69,28 +74,23 @@ public class BidiBrowser : Browser
     public override bool IsConnected => !BrowserCore.IsDisconnected;
 
     /// <inheritdoc />
-    public override string WebSocketEndpoint => _webSocketEndpoint ?? (Launcher?.EndPoint != null ? Launcher.EndPoint + "/session" : null);
+    public override string WebSocketEndpoint =>
+        _webSocketEndpoint ?? (Launcher?.EndPoint != null ? Launcher.EndPoint + "/session" : null);
 
     /// <inheritdoc />
     public override ITarget Target => _target;
 
     /// <inheritdoc/>
-    public override IBrowserContext DefaultContext => _browserContexts.TryGetValue(BrowserCore.DefaultUserContext, out var context) ? context : null;
+    public override IBrowserContext DefaultContext =>
+        _browserContexts.TryGetValue(BrowserCore.DefaultUserContext, out var context)
+            ? context
+            : null;
 
     /// <inheritdoc />
-    public override DebugInfo DebugInfo => new()
-    {
-        PendingProtocolErrors = [],
-    };
+    public override DebugInfo DebugInfo => new() { PendingProtocolErrors = [] };
 
     internal static string[] SubscribeModules { get; } =
-    [
-        "browsingContext",
-        "network",
-        "log",
-        "script",
-        "input",
-    ];
+    ["browsingContext", "network", "log", "script", "input"];
 
     internal static string[] SubscribeCdpEvents { get; } =
     [
@@ -119,10 +119,12 @@ public class BidiBrowser : Browser
     internal string BrowserName => BrowserCore.Session.Info.Capabilities.BrowserName;
 
     /// <inheritdoc />
-    public override Task<string> GetVersionAsync() => Task.FromResult($"{BrowserName}/{BrowserVersion}");
+    public override Task<string> GetVersionAsync() =>
+        Task.FromResult($"{BrowserName}/{BrowserVersion}");
 
     /// <inheritdoc />
-    public override Task<string> GetUserAgentAsync() => Task.FromResult(BrowserCore.Session.Info.Capabilities.UserAgent);
+    public override Task<string> GetUserAgentAsync() =>
+        Task.FromResult(BrowserCore.Session.Info.Capabilities.UserAgent);
 
     /// <inheritdoc />
     public override void Disconnect()
@@ -181,75 +183,93 @@ public class BidiBrowser : Browser
     }
 
     /// <inheritdoc />
-    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) => DefaultContext.NewPageAsync(options);
+    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) =>
+        DefaultContext.NewPageAsync(options);
 
     /// <inheritdoc/>
-    public override Task<ScreenInfo[]> ScreensAsync()
-        => throw new NotSupportedException("Screens is not supported in WebDriver BiDi.");
+    public override Task<ScreenInfo[]> ScreensAsync() =>
+        throw new NotSupportedException("Screens is not supported in WebDriver BiDi.");
 
     /// <inheritdoc/>
-    public override Task<ScreenInfo> AddScreenAsync(AddScreenParams @params)
-        => throw new NotSupportedException("AddScreen is not supported in WebDriver BiDi.");
+    public override Task<ScreenInfo> AddScreenAsync(AddScreenParams @params) =>
+        throw new NotSupportedException("AddScreen is not supported in WebDriver BiDi.");
 
     /// <inheritdoc/>
-    public override Task RemoveScreenAsync(string screenId)
-        => throw new NotSupportedException("RemoveScreen is not supported in WebDriver BiDi.");
+    public override Task RemoveScreenAsync(string screenId) =>
+        throw new NotSupportedException("RemoveScreen is not supported in WebDriver BiDi.");
 
     /// <inheritdoc/>
-    public override async Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null)
+    public override async Task<string> InstallExtensionAsync(
+        string path,
+        ExtensionInstallOptions options = null
+    )
     {
-        var result = await Driver.WebExtension.InstallAsync(
-            new WebDriverBiDi.WebExtension.InstallCommandParameters(
-                new WebDriverBiDi.WebExtension.ExtensionPath(path))).ConfigureAwait(false);
+        var result = await Driver
+            .WebExtension.InstallAsync(
+                new WebDriverBiDi.WebExtension.InstallCommandParameters(
+                    new WebDriverBiDi.WebExtension.ExtensionPath(path)
+                )
+            )
+            .ConfigureAwait(false);
         return result.ExtensionId;
     }
 
     /// <inheritdoc/>
     public override async Task UninstallExtensionAsync(string id)
     {
-        await Driver.WebExtension.UninstallAsync(
-            new WebDriverBiDi.WebExtension.UninstallCommandParameters(id)).ConfigureAwait(false);
+        await Driver
+            .WebExtension.UninstallAsync(
+                new WebDriverBiDi.WebExtension.UninstallCommandParameters(id)
+            )
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public override Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync()
-        => throw new NotSupportedException("Extensions is not supported in WebDriver BiDi.");
+    public override Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync() =>
+        throw new NotSupportedException("Extensions is not supported in WebDriver BiDi.");
 
     /// <inheritdoc/>
-    public override Task<string> InstallPWAAsync(InstallPWAOptions options)
-        => throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
+    public override Task<string> InstallPWAAsync(InstallPWAOptions options) =>
+        throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
 
     /// <inheritdoc/>
-    public override Task UninstallPWAAsync(UninstallPWAOptions options)
-        => throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
+    public override Task UninstallPWAAsync(UninstallPWAOptions options) =>
+        throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
 
     /// <inheritdoc/>
-    public override Task<IPage> LaunchPWAAsync(LaunchPWAOptions options)
-        => throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
+    public override Task<IPage> LaunchPWAAsync(LaunchPWAOptions options) =>
+        throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
 
     /// <inheritdoc/>
-    public override Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options)
-        => throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
+    public override Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options) =>
+        throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
 
     /// <inheritdoc />
-    public override ITarget[] Targets()
-        =>
+    public override ITarget[] Targets() =>
         [
             _target,
-            .. BrowserContexts().SelectMany(context => ((BidiBrowserContext)context).Targets()).ToArray()
+            .. BrowserContexts()
+                .SelectMany(context => ((BidiBrowserContext)context).Targets())
+                .ToArray(),
         ];
 
     /// <inheritdoc />
-    public override async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
+    public override async Task<IBrowserContext> CreateBrowserContextAsync(
+        BrowserContextOptions options = null
+    )
     {
-        var userContext = await BrowserCore.CreateUserContextAsync(options?.DownloadBehavior).ConfigureAwait(false);
+        var userContext = await BrowserCore
+            .CreateUserContextAsync(options?.DownloadBehavior)
+            .ConfigureAwait(false);
         return CreateBrowserContext(userContext);
     }
 
     /// <inheritdoc />
     public override IBrowserContext[] BrowserContexts() =>
-        BrowserCore.UserContexts
-            .Select(userContext => _browserContexts.TryGetValue(userContext, out var context) ? context : null)
+        BrowserCore
+            .UserContexts.Select(userContext =>
+                _browserContexts.TryGetValue(userContext, out var context) ? context : null
+            )
             .Where(context => context != null)
             .Cast<IBrowserContext>()
             .ToArray();
@@ -314,39 +334,42 @@ public class BidiBrowser : Browser
     [SuppressMessage(
         "Reliability",
         "CA2000:Dispose objects before losing scope",
-        Justification = "We return the session, the browser needs to dispose the session")]
+        Justification = "We return the session, the browser needs to dispose the session"
+    )]
     internal static Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         LaunchOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher,
-        Func<Task> closeCallback = null)
-        => CreateAsync(driver, options, loggerFactory, launcher, closeCallback, null);
+        Func<Task> closeCallback = null
+    ) => CreateAsync(driver, options, loggerFactory, launcher, closeCallback, null);
 
     internal static Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         ConnectOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher,
-        Func<Task> closeCallback = null)
-        => CreateAsync(driver, options, loggerFactory, launcher, closeCallback, null);
+        Func<Task> closeCallback = null
+    ) => CreateAsync(driver, options, loggerFactory, launcher, closeCallback, null);
 
     [SuppressMessage(
         "Reliability",
         "CA2000:Dispose objects before losing scope",
-        Justification = "We return the session, the browser needs to dispose the session")]
+        Justification = "We return the session, the browser needs to dispose the session"
+    )]
     internal static async Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         IBrowserOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher,
         Func<Task> closeCallback,
-        string webSocketEndpoint)
+        string webSocketEndpoint
+    )
     {
         var capabilityRequest = new CapabilityRequest()
         {
             AcceptInsecureCerts = options.AcceptInsecureCerts,
-            AdditionalCapabilities = { ["webSocketUrl"] = true, },
+            AdditionalCapabilities = { ["webSocketUrl"] = true },
 
             // Tell the browser not to auto-handle prompts so we can handle them via the Dialog API.
             UnhandledPromptBehavior = new UserPromptHandler
@@ -361,16 +384,16 @@ public class BidiBrowser : Browser
             capabilityRequest.AdditionalCapabilities["goog:prerenderingDisabled"] = true;
         }
 
-        var session = await Session.FromAsync(
-            driver,
-            new NewCommandParameters
-            {
-                Capabilities = new CapabilitiesRequest()
+        var session = await Session
+            .FromAsync(
+                driver,
+                new NewCommandParameters
                 {
-                    AlwaysMatch = capabilityRequest,
+                    Capabilities = new CapabilitiesRequest() { AlwaysMatch = capabilityRequest },
                 },
-            },
-            loggerFactory).ConfigureAwait(false);
+                loggerFactory
+            )
+            .ConfigureAwait(false);
 
         // CDP events (cdp.*) are only available with Chrome's native BiDi support.
         // The chromium-bidi mapper (used for Chrome BiDi-over-CDP) doesn't support them,
@@ -409,13 +432,25 @@ public class BidiBrowser : Browser
         // This enables network.getData to return response/request bodies.
         // Data collectors might not be implemented for specific data types, so create them
         // separately and ignore protocol errors.
-        foreach (var dataType in new[] { WebDriverBiDi.Network.DataType.Request, WebDriverBiDi.Network.DataType.Response })
+        foreach (
+            var dataType in new[]
+            {
+                WebDriverBiDi.Network.DataType.Request,
+                WebDriverBiDi.Network.DataType.Response,
+            }
+        )
         {
             try
             {
                 // Buffer size of 20 MB is equivalent to CDP
-                await driver.Network.AddDataCollectorAsync(
-                    new WebDriverBiDi.Network.AddDataCollectorCommandParameters(20_000_000, dataType)).ConfigureAwait(false);
+                await driver
+                    .Network.AddDataCollectorAsync(
+                        new WebDriverBiDi.Network.AddDataCollectorCommandParameters(
+                            20_000_000,
+                            dataType
+                        )
+                    )
+                    .ConfigureAwait(false);
             }
             catch (WebDriverBiDi.WebDriverBiDiException)
             {
@@ -423,7 +458,11 @@ public class BidiBrowser : Browser
             }
         }
 
-        var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher, CloseCallback = closeCallback };
+        var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint)
+        {
+            Launcher = launcher,
+            CloseCallback = closeCallback,
+        };
         browser.InitializeAsync();
 
         // From here on frames receive console entries directly, so stop
@@ -440,7 +479,12 @@ public class BidiBrowser : Browser
         {
             try
             {
-                await session.Browser.SetDownloadBehaviorAsync(options.DownloadBehavior, [Core.UserContext.DEFAULT]).ConfigureAwait(false);
+                await session
+                    .Browser.SetDownloadBehaviorAsync(
+                        options.DownloadBehavior,
+                        [Core.UserContext.DEFAULT]
+                    )
+                    .ConfigureAwait(false);
             }
             catch
             {
@@ -475,23 +519,29 @@ public class BidiBrowser : Browser
 
     internal override bool IsIssuesEnabled() => _issuesEnabled;
 
-    private static WindowState MapFromClientWindowState(WebDriverBiDi.Browser.ClientWindowState state) => state switch
-    {
-        WebDriverBiDi.Browser.ClientWindowState.Normal => WindowState.Normal,
-        WebDriverBiDi.Browser.ClientWindowState.Minimized => WindowState.Minimized,
-        WebDriverBiDi.Browser.ClientWindowState.Maximized => WindowState.Maximized,
-        WebDriverBiDi.Browser.ClientWindowState.Fullscreen => WindowState.Fullscreen,
-        _ => WindowState.Normal,
-    };
+    private static WindowState MapFromClientWindowState(
+        WebDriverBiDi.Browser.ClientWindowState state
+    ) =>
+        state switch
+        {
+            WebDriverBiDi.Browser.ClientWindowState.Normal => WindowState.Normal,
+            WebDriverBiDi.Browser.ClientWindowState.Minimized => WindowState.Minimized,
+            WebDriverBiDi.Browser.ClientWindowState.Maximized => WindowState.Maximized,
+            WebDriverBiDi.Browser.ClientWindowState.Fullscreen => WindowState.Fullscreen,
+            _ => WindowState.Normal,
+        };
 
-    private static WebDriverBiDi.Browser.ClientWindowState MapToClientWindowState(WindowState state) => state switch
-    {
-        WindowState.Normal => WebDriverBiDi.Browser.ClientWindowState.Normal,
-        WindowState.Minimized => WebDriverBiDi.Browser.ClientWindowState.Minimized,
-        WindowState.Maximized => WebDriverBiDi.Browser.ClientWindowState.Maximized,
-        WindowState.Fullscreen => WebDriverBiDi.Browser.ClientWindowState.Fullscreen,
-        _ => WebDriverBiDi.Browser.ClientWindowState.Normal,
-    };
+    private static WebDriverBiDi.Browser.ClientWindowState MapToClientWindowState(
+        WindowState state
+    ) =>
+        state switch
+        {
+            WindowState.Normal => WebDriverBiDi.Browser.ClientWindowState.Normal,
+            WindowState.Minimized => WebDriverBiDi.Browser.ClientWindowState.Minimized,
+            WindowState.Maximized => WebDriverBiDi.Browser.ClientWindowState.Maximized,
+            WindowState.Fullscreen => WebDriverBiDi.Browser.ClientWindowState.Fullscreen,
+            _ => WebDriverBiDi.Browser.ClientWindowState.Normal,
+        };
 
     private void InitializeAsync()
     {
@@ -546,7 +596,8 @@ public class BidiBrowser : Browser
         var browserContext = BidiBrowserContext.From(
             this,
             userContext,
-            new BidiBrowserContextOptions() { DefaultViewport = _options.DefaultViewport, });
+            new BidiBrowserContextOptions() { DefaultViewport = _options.DefaultViewport }
+        );
 
         _browserContexts.TryAdd(userContext, browserContext);
 
@@ -561,7 +612,8 @@ public class BidiBrowser : Browser
 
     private void OnTargetChanged(object sender, TargetChangedArgs args) => OnTargetChanged(args);
 
-    private void OnTargetDestroyed(object sender, TargetChangedArgs args) => OnTargetDestroyed(args);
+    private void OnTargetDestroyed(object sender, TargetChangedArgs args) =>
+        OnTargetDestroyed(args);
 }
 
 #endif

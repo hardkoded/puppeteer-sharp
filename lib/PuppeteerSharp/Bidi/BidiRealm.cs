@@ -40,9 +40,15 @@ using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILogger logger) : Realm(timeoutSettings), IDisposable, IPuppeteerUtilWrapper
+internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILogger logger)
+    : Realm(timeoutSettings),
+        IDisposable,
+        IPuppeteerUtilWrapper
 {
-    private static readonly Regex _sourceUrlRegex = new(@"^[\x20\t]*//([@#])\s*sourceURL=\s{0,10}(\S*?)\s{0,10}$", RegexOptions.Multiline);
+    private static readonly Regex _sourceUrlRegex = new(
+        @"^[\x20\t]*//([@#])\s*sourceURL=\s{0,10}(\S*?)\s{0,10}$",
+        RegexOptions.Multiline
+    );
     private readonly ILogger _logger = logger ?? NullLogger.Instance;
 
     public bool Disposed { get; private set; }
@@ -50,18 +56,21 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
     public JSHandle InternalPuppeteerUtilHandle { get; set; }
 
     /// <inheritdoc/>
-    public override string Origin => throw new NotSupportedException("Origin is not supported in WebDriver BiDi.");
+    public override string Origin =>
+        throw new NotSupportedException("Origin is not supported in WebDriver BiDi.");
 
     internal override IEnvironment Environment { get; }
 
     /// <inheritdoc/>
-    public override Task<Extension> ExtensionAsync()
-        => throw new NotSupportedException("Extension is not supported in WebDriver BiDi.");
+    public override Task<Extension> ExtensionAsync() =>
+        throw new NotSupportedException("Extension is not supported in WebDriver BiDi.");
 
     public void Dispose()
     {
         Disposed = true;
-        TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
+        TaskManager.TerminateAll(
+            new PuppeteerException("waitForFunction failed: frame got detached.")
+        );
     }
 
     public virtual Task<IJSHandle> GetPuppeteerUtilAsync() => throw new NotImplementedException();
@@ -75,7 +84,8 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
 
         var handleIds = handles
             .Select((handle) => handle.Id)
-            .Where(id => !string.IsNullOrEmpty(id)).ToArray();
+            .Where(id => !string.IsNullOrEmpty(id))
+            .ToArray();
 
         if (handleIds.Length == 0)
         {
@@ -97,10 +107,12 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         try
         {
             return await EvaluateFunctionHandleAsync(
-                @"node => {
+                    @"node => {
                 return node;
             }",
-                handle).ConfigureAwait(false);
+                    handle
+                )
+                .ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -109,7 +121,8 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         }
     }
 
-    internal override Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId) => throw new System.NotImplementedException();
+    internal override Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId) =>
+        throw new System.NotImplementedException();
 
     internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
     {
@@ -123,20 +136,28 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         return await transferredHandle.ConfigureAwait(false);
     }
 
-    internal override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
-        => CreateHandleAsync(await EvaluateAsync(false, true, script).ConfigureAwait(false));
+    internal override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script) =>
+        CreateHandleAsync(await EvaluateAsync(false, true, script).ConfigureAwait(false));
 
-    internal override async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
-        => CreateHandleAsync(await EvaluateAsync(false, false, script, args).ConfigureAwait(false));
+    internal override async Task<IJSHandle> EvaluateFunctionHandleAsync(
+        string script,
+        params object[] args
+    ) => CreateHandleAsync(await EvaluateAsync(false, false, script, args).ConfigureAwait(false));
 
-    internal override async Task<T> EvaluateExpressionAsync<T>(string script)
-        => DeserializeResult<T>(GetValueObject((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result));
+    internal override async Task<T> EvaluateExpressionAsync<T>(string script) =>
+        DeserializeResult<T>(
+            GetValueObject((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result)
+        );
 
-    internal override async Task EvaluateExpressionAsync(string script)
-        => await EvaluateAsync(true, true, script).ConfigureAwait(false);
+    internal override async Task EvaluateExpressionAsync(string script) =>
+        await EvaluateAsync(true, true, script).ConfigureAwait(false);
 
-    internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-        => DeserializeResult<T>(GetValueObject((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result));
+    internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args) =>
+        DeserializeResult<T>(
+            GetValueObject(
+                (await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result
+            )
+        );
 
     internal override async Task EvaluateFunctionAsync(string script, params object[] args)
     {
@@ -146,8 +167,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
     internal IJSHandle CreateHandle(RemoteValue remoteValue)
     {
         if (
-            remoteValue.Type is RemoteValueType.Node or RemoteValueType.Window &&
-            this is BidiFrameRealm)
+            remoteValue.Type is RemoteValueType.Node or RemoteValueType.Window
+            && this is BidiFrameRealm
+        )
         {
             return BidiElementHandle.From(remoteValue, this);
         }
@@ -167,7 +189,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         {
             // Always use "frame got detached" message for consistency with upstream
             // The e.Reason might be "Browsing context already closed." or similar
-            TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
+            TaskManager.TerminateAll(
+                new PuppeteerException("waitForFunction failed: frame got detached.")
+            );
             Dispose();
         };
 
@@ -186,47 +210,64 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         // - Their name contains "AnonymousType"
         // - They have CompilerGeneratedAttribute
 #if NET8_0_OR_GREATER
-        var nameContainsAnonymousType = type.Name.Contains("AnonymousType", StringComparison.Ordinal);
+        var nameContainsAnonymousType = type.Name.Contains(
+            "AnonymousType",
+            StringComparison.Ordinal
+        );
 #else
-        var nameContainsAnonymousType = type.Name.IndexOf("AnonymousType", StringComparison.Ordinal) >= 0;
+        var nameContainsAnonymousType =
+            type.Name.IndexOf("AnonymousType", StringComparison.Ordinal) >= 0;
 #endif
-        return type.IsGenericType &&
-               type.IsSealed &&
-               nameContainsAnonymousType &&
-               type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Length > 0;
+        return type.IsGenericType
+            && type.IsSealed
+            && nameContainsAnonymousType
+            && type.GetCustomAttributes(
+                typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute),
+                false
+            ).Length > 0;
     }
 
     /// <summary>
     /// Checks if a RemoteValue represents a null or undefined JavaScript value.
     /// These types have HasValue=false but are valid values, not circular references.
     /// </summary>
-    private static bool IsNullOrUndefinedType(RemoteValue remoteValue)
-        => remoteValue.Type is RemoteValueType.Null or RemoteValueType.Undefined;
+    private static bool IsNullOrUndefinedType(RemoteValue remoteValue) =>
+        remoteValue.Type is RemoteValueType.Null or RemoteValueType.Undefined;
 
     /// <summary>
     /// Checks if a RemoteValue represents a non-serializable JavaScript type that should be deserialized
     /// as an empty object rather than treated as a circular reference or null.
     /// Matches upstream Puppeteer's Deserializer behavior where promises return {}.
     /// </summary>
-    private static bool IsEmptyObjectType(RemoteValue remoteValue)
-        => remoteValue.Type is RemoteValueType.Promise;
+    private static bool IsEmptyObjectType(RemoteValue remoteValue) =>
+        remoteValue.Type is RemoteValueType.Promise;
 
     /// <summary>
     /// Checks if a RemoteValue represents a non-serializable JavaScript type that should be treated as null/undefined.
     /// Symbols, functions, weakmaps, weaksets, errors, proxies, and other non-serializable types
     /// should return null rather than being treated as circular references.
     /// </summary>
-    private static bool IsNonSerializableType(RemoteValue remoteValue)
-        => remoteValue.Type is RemoteValueType.Symbol or RemoteValueType.Function or RemoteValueType.WeakMap or RemoteValueType.WeakSet or RemoteValueType.Error or RemoteValueType.Proxy
-            or RemoteValueType.TypedArray or RemoteValueType.ArrayBuffer or RemoteValueType.Generator or RemoteValueType.Window;
+    private static bool IsNonSerializableType(RemoteValue remoteValue) =>
+        remoteValue.Type
+            is RemoteValueType.Symbol
+                or RemoteValueType.Function
+                or RemoteValueType.WeakMap
+                or RemoteValueType.WeakSet
+                or RemoteValueType.Error
+                or RemoteValueType.Proxy
+                or RemoteValueType.TypedArray
+                or RemoteValueType.ArrayBuffer
+                or RemoteValueType.Generator
+                or RemoteValueType.Window;
 
-    private static object GetValueObject(RemoteValue remoteValue) => remoteValue switch
-    {
-        ValueHoldingRemoteValue vh => vh.ValueObject,
-        CollectionRemoteValue crv => crv.Value,
-        KeyValuePairCollectionRemoteValue kvp => kvp.Value,
-        _ => null,
-    };
+    private static object GetValueObject(RemoteValue remoteValue) =>
+        remoteValue switch
+        {
+            ValueHoldingRemoteValue vh => vh.ValueObject,
+            CollectionRemoteValue crv => crv.Value,
+            KeyValuePairCollectionRemoteValue kvp => kvp.Value,
+            _ => null,
+        };
 
     private static string ToCamelCase(string name)
     {
@@ -242,9 +283,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
     {
         var result = evaluateResult.Result;
 
-        if (
-            result.Type is RemoteValueType.Node or RemoteValueType.Window &&
-            this is BidiFrameRealm)
+        if (result.Type is RemoteValueType.Node or RemoteValueType.Window && this is BidiFrameRealm)
         {
             return BidiElementHandle.From(result, this);
         }
@@ -252,13 +291,16 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         return BidiJSHandle.From(result, this);
     }
 
-    private async Task<EvaluateResultSuccess> EvaluateAsync(bool returnByValue, bool isExpression, string script, params object[] args)
+    private async Task<EvaluateResultSuccess> EvaluateAsync(
+        bool returnByValue,
+        bool isExpression,
+        string script,
+        params object[] args
+    )
     {
         ThrowIfDetached();
         var sourceUrlComment = ExecutionUtils.GetSourceUrlComment();
-        var resultOwnership = returnByValue
-            ? ResultOwnership.None
-            : ResultOwnership.Root;
+        var resultOwnership = returnByValue ? ResultOwnership.None : ResultOwnership.Root;
 
         var serializationOptions = new SerializationOptions();
 
@@ -275,7 +317,8 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         var options = new CallFunctionParameters();
 
         options.Arguments.AddRange(
-            await Task.WhenAll(args.Select(FormatArgumentAsync).ToArray()).ConfigureAwait(false));
+            await Task.WhenAll(args.Select(FormatArgumentAsync).ToArray()).ConfigureAwait(false)
+        );
         options.ResultOwnership = resultOwnership;
         options.UserActivation = true;
         options.SerializationOptions = serializationOptions;
@@ -286,51 +329,63 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         {
             if (isExpression)
             {
-                result = await realm.EvaluateAsync(
-                    functionDeclaration,
-                    true,
-                    options).ConfigureAwait(false);
+                result = await realm
+                    .EvaluateAsync(functionDeclaration, true, options)
+                    .ConfigureAwait(false);
             }
             else
             {
-                result = await realm.CallFunctionAsync(
-                    functionDeclaration,
-                    true,
-                    options).ConfigureAwait(false);
+                result = await realm
+                    .CallFunctionAsync(functionDeclaration, true, options)
+                    .ConfigureAwait(false);
             }
         }
         catch (WebDriverBiDi.WebDriverBiDiException ex)
-            when (ex.Message.Contains("no such frame") || ex.Message.Contains("DiscardedBrowsingContextError"))
+            when (ex.Message.Contains("no such frame")
+                || ex.Message.Contains("DiscardedBrowsingContextError")
+            )
         {
             // Check if the frame is actually detached (page closed) vs navigation/reload
             if (this is BidiFrameRealm frameRealm && frameRealm.Frame.Detached)
             {
-                throw new TargetClosedException($"Protocol error ({ex.Message})", "Browsing context closed");
+                throw new TargetClosedException(
+                    $"Protocol error ({ex.Message})",
+                    "Browsing context closed"
+                );
             }
 
             throw new EvaluationFailedException($"Protocol error ({ex.Message})", ex);
         }
-        catch (WebDriverBiDi.WebDriverBiDiException ex)
-            when (ex.Message.Contains("no such handle"))
+        catch (WebDriverBiDi.WebDriverBiDiException ex) when (ex.Message.Contains("no such handle"))
         {
             throw new PuppeteerException("Could not serialize referenced object", ex);
         }
         catch (WebDriverBiDi.WebDriverBiDiException ex)
-            when (ex.Message.Contains("are both null") || ex.Message.Contains("was canceled before a result was received"))
+            when (ex.Message.Contains("are both null")
+                || ex.Message.Contains("was canceled before a result was received")
+            )
         {
             // This happens when the browser closes while a command is pending
             // The command result is null because the connection closed
-            throw new TargetClosedException($"Protocol error ({ex.Message})", "Browser disconnected");
+            throw new TargetClosedException(
+                $"Protocol error ({ex.Message})",
+                "Browser disconnected"
+            );
         }
         catch (WebDriverBiDi.WebDriverBiDiConnectionException ex)
         {
-            throw new TargetClosedException($"Protocol error ({ex.Message})", "Browser disconnected");
+            throw new TargetClosedException(
+                $"Protocol error ({ex.Message})",
+                "Browser disconnected"
+            );
         }
 
         if (result.ResultType == EvaluateResultType.Exception)
         {
             // TODO: Improve text details
-            throw new EvaluationFailedException(((EvaluateResultException)result).ExceptionDetails.Text);
+            throw new EvaluationFailedException(
+                ((EvaluateResultException)result).ExceptionDetails.Text
+            );
         }
 
         return result as EvaluateResultSuccess;
@@ -403,16 +458,22 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
             if (elementType != null && result is IEnumerable enumerable)
             {
                 // Create a list of the element type
-                var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType));
+                var list = (IList)
+                    Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType));
 
                 // Iterate over the input and add converted items to the list
                 foreach (var item in enumerable)
                 {
-                    var itemToSerialize = item is RemoteValue rv ? GetValueObject(rv) ?? item : item;
+                    var itemToSerialize = item is RemoteValue rv
+                        ? GetValueObject(rv) ?? item
+                        : item;
 
                     // Maybe there is a better way to do this.
                     var deserializedItem = typeof(BidiRealm)
-                        .GetMethod(nameof(DeserializeResult), BindingFlags.Instance | BindingFlags.NonPublic)
+                        .GetMethod(
+                            nameof(DeserializeResult),
+                            BindingFlags.Instance | BindingFlags.NonPublic
+                        )
                         ?.MakeGenericMethod(elementType)
                         .Invoke(this, [itemToSerialize]);
 
@@ -437,7 +498,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         {
             // Recursively deserialize to the underlying type and convert back to nullable
             var deserializedValue = typeof(BidiRealm)
-                .GetMethod(nameof(DeserializeRemoteValueDictionary), BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetMethod(
+                    nameof(DeserializeRemoteValueDictionary),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )
                 ?.MakeGenericMethod(underlyingType)
                 .Invoke(this, [remoteValueDictionary]);
             return (T)deserializedValue;
@@ -489,7 +553,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
             var remoteValue = entry.Value;
 
             // Find the property on the type (case-insensitive)
-            var property = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            var property = type.GetProperty(
+                propertyName,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+            );
 
             if (property != null && property.CanWrite)
             {
@@ -508,7 +575,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
                     {
                         // Recursively deserialize the value to the property type
                         var deserializedValue = typeof(BidiRealm)
-                            .GetMethod(nameof(DeserializeResult), BindingFlags.Instance | BindingFlags.NonPublic)
+                            .GetMethod(
+                                nameof(DeserializeResult),
+                                BindingFlags.Instance | BindingFlags.NonPublic
+                            )
                             ?.MakeGenericMethod(property.PropertyType)
                             .Invoke(this, [value]);
 
@@ -761,7 +831,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
                     return objectHandle.RemoteValue.ToLocalValue();
                 }
 
-                return ((IObjectReferenceRemoteValue)objectHandle.RemoteValue).ToRemoteObjectReference();
+                return (
+                    (IObjectReferenceRemoteValue)objectHandle.RemoteValue
+                ).ToRemoteObjectReference();
             case BidiElementHandle elementHandle:
                 ValidateHandle(elementHandle.BidiJSHandle);
                 if (string.IsNullOrEmpty(elementHandle.BidiJSHandle.Id))
@@ -810,13 +882,15 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
             if (handle.Realm is not BidiFrameRealm || this is not BidiFrameRealm)
             {
                 throw new PuppeteerException(
-                    "Trying to evaluate JSHandle from different global types. Usually this means you're using a handle from a worker in a page or vice versa.");
+                    "Trying to evaluate JSHandle from different global types. Usually this means you're using a handle from a worker in a page or vice versa."
+                );
             }
 
             if (handle.Realm.Environment != Environment)
             {
                 throw new PuppeteerException(
-                    "JSHandles can be evaluated only in the context they were created!");
+                    "JSHandles can be evaluated only in the context they were created!"
+                );
             }
         }
 
@@ -888,8 +962,11 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
             double d => LocalValue.Number(d),
             decimal m => LocalValue.Number(m),
             BigInteger big => LocalValue.BigInt(big),
-            IJSHandle => throw new PuppeteerException("Unable to make function call. Are you passing a nested JSHandle?"),
-            _ when value.GetType().IsClass || IsAnonymousType(value.GetType()) => SerializePlainObject(value, seen),
+            IJSHandle => throw new PuppeteerException(
+                "Unable to make function call. Are you passing a nested JSHandle?"
+            ),
+            _ when value.GetType().IsClass || IsAnonymousType(value.GetType()) =>
+                SerializePlainObject(value, seen),
             _ => LocalValue.Null,
         };
     }

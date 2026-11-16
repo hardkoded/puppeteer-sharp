@@ -9,9 +9,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseTextTests : PuppeteerPageBaseTest
     {
-        public ResponseTextTests() : base()
-        {
-        }
+        public ResponseTextTests()
+            : base() { }
 
         [Test, PuppeteerTest("network.spec", "network Response.text", "should work")]
         public async Task ShouldWork()
@@ -20,7 +19,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That((await response.TextAsync()).Trim(), Is.EqualTo("{\"foo\": \"bar\"}"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.text", "should return uncompressed text")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.text",
+                "should return uncompressed text"
+            )
+        ]
         public async Task ShouldReturnUncompressedText()
         {
             Server.EnableGzip("/simple.json");
@@ -29,7 +35,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That((await response.TextAsync()).Trim(), Is.EqualTo("{\"foo\": \"bar\"}"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.text", "should throw when requesting body of redirected response")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.text",
+                "should throw when requesting body of redirected response"
+            )
+        ]
         public async Task ShouldThrowWhenRequestingBodyOfRedirectedResponse()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
@@ -39,15 +52,22 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var redirected = redirectChain[0].Response;
             Assert.That(redirected.Status, Is.EqualTo(HttpStatusCode.Redirect));
 
-            var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
-            Assert.That(exception.Message, Does.Contain("Response body is unavailable for redirect responses"));
+            var exception = Assert.ThrowsAsync<PuppeteerException>(async () =>
+                await redirected.TextAsync()
+            );
+            Assert.That(
+                exception.Message,
+                Does.Contain("Response body is unavailable for redirect responses")
+            );
         }
 
         [Test]
         public async Task ShouldNotRaiseUnobservedTaskExceptionForRedirects()
         {
-            var unobserved = new System.Collections.Concurrent.ConcurrentBag<System.AggregateException>();
-            void Handler(object sender, UnobservedTaskExceptionEventArgs e) => unobserved.Add(e.Exception);
+            var unobserved =
+                new System.Collections.Concurrent.ConcurrentBag<System.AggregateException>();
+            void Handler(object sender, UnobservedTaskExceptionEventArgs e) =>
+                unobserved.Add(e.Exception);
 
             TaskScheduler.UnobservedTaskException += Handler;
             try
@@ -63,7 +83,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
                 Assert.That(
                     unobserved.SelectMany(e => e.Flatten().InnerExceptions).Select(e => e.Message),
-                    Has.None.Contains("Response body is unavailable for redirect responses"));
+                    Has.None.Contains("Response body is unavailable for redirect responses")
+                );
             }
             finally
             {
@@ -71,7 +92,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        [System.Runtime.CompilerServices.MethodImpl(
+            System.Runtime.CompilerServices.MethodImplOptions.NoInlining
+        )]
         private async Task NavigateAsync(string url)
         {
             await using var context = await Browser.CreateBrowserContextAsync();
@@ -82,7 +105,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.text", "should wait until response completes")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.text",
+                "should wait until response completes"
+            )
+        ]
         public async Task ShouldWaitUntilResponseCompletes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -101,13 +131,17 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
             // Setup page to trap response.
             var requestFinished = false;
-            Page.RequestFinished += (_, e) => requestFinished = requestFinished || e.Request.Url.Contains("/get");
+            Page.RequestFinished += (_, e) =>
+                requestFinished = requestFinished || e.Request.Url.Contains("/get");
             // send request and wait for server response
-            var waitForResponseTask = Page.WaitForResponseAsync(r => !TestUtils.IsFavicon(r.Request));
+            var waitForResponseTask = Page.WaitForResponseAsync(r =>
+                !TestUtils.IsFavicon(r.Request)
+            );
             await Task.WhenAll(
                 waitForResponseTask,
                 Page.EvaluateExpressionAsync("fetch('/get', { method: 'GET'})"),
-                Server.WaitForRequest("/get"));
+                Server.WaitForRequest("/get")
+            );
             var pageResponse = await waitForResponseTask;
 
             var serverResponse = await serverResponseTcs.Task;

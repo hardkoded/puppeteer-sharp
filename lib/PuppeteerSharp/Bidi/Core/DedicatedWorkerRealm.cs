@@ -36,8 +36,13 @@ internal class DedicatedWorkerRealm : Realm, IDedicatedWorkerOwnerRealm
     private readonly ConcurrentSet<IDedicatedWorkerOwnerRealm> _owners = [];
     private readonly ConcurrentDictionary<string, DedicatedWorkerRealm> _workers = [];
 
-    private DedicatedWorkerRealm(BrowsingContext context, IDedicatedWorkerOwnerRealm owner, string id, string origin)
-    : base(context, id, origin)
+    private DedicatedWorkerRealm(
+        BrowsingContext context,
+        IDedicatedWorkerOwnerRealm owner,
+        string id,
+        string origin
+    )
+        : base(context, id, origin)
     {
         _owners.Add(owner);
     }
@@ -48,7 +53,12 @@ internal class DedicatedWorkerRealm : Realm, IDedicatedWorkerOwnerRealm
 
     public override Session Session => _owners.FirstOrDefault()?.Session;
 
-    public static DedicatedWorkerRealm From(BrowsingContext context, IDedicatedWorkerOwnerRealm owner, string id, string origin)
+    public static DedicatedWorkerRealm From(
+        BrowsingContext context,
+        IDedicatedWorkerOwnerRealm owner,
+        string id,
+        string origin
+    )
     {
         var realm = new DedicatedWorkerRealm(context, owner, id, origin);
         realm.Initialize();
@@ -104,13 +114,19 @@ internal class DedicatedWorkerRealm : Realm, IDedicatedWorkerOwnerRealm
             return;
         }
 
-        var realm = DedicatedWorkerRealm.From(Context, this, dedicatedWorkerInfo.RealmId, dedicatedWorkerInfo.Origin);
+        var realm = DedicatedWorkerRealm.From(
+            Context,
+            this,
+            dedicatedWorkerInfo.RealmId,
+            dedicatedWorkerInfo.Origin
+        );
         _workers.TryAdd(realm.Id, realm);
         realm.Destroyed += (sender, args) => _workers.TryRemove(realm.Id, out _);
         OnWorker(realm);
     }
 
-    private void OnWorker(DedicatedWorkerRealm realm) => Worker?.Invoke(this, new WorkerRealmEventArgs(realm));
+    private void OnWorker(DedicatedWorkerRealm realm) =>
+        Worker?.Invoke(this, new WorkerRealmEventArgs(realm));
 }
 
 #endif

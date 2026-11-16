@@ -8,9 +8,8 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class MetricsTests : PuppeteerPageBaseTest
     {
-        public MetricsTests() : base()
-        {
-        }
+        public MetricsTests()
+            : base() { }
 
         [Test, PuppeteerTest("page.spec", "Page Page.metrics", "should get metrics from a page")]
         public async Task ShouldGetMetricsFromPage()
@@ -20,7 +19,14 @@ namespace PuppeteerSharp.Tests.PageTests
             CheckMetrics(metrics);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.metrics", "metrics event fired on console.timeStamp")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.metrics",
+                "metrics event fired on console.timeStamp"
+            )
+        ]
         public async Task MetricsEventFiredOnConsoleTimespan()
         {
             var metricsTaskWrapper = new TaskCompletionSource<MetricEventArgs>();

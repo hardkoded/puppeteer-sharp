@@ -9,14 +9,16 @@ namespace PuppeteerSharp.Tests.LocatorTests
         [Test, PuppeteerTest("locator.spec", "Locator.prototype.waitHandle", "should work")]
         public async Task ShouldWork()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
                 <script>
                     setTimeout(() => {
                         const element = document.createElement('div');
                         element.innerText = 'test2';
                         document.body.append(element);
                     }, 50);
-                </script>");
+                </script>"
+            );
 
             var handle = await Page.Locator("div").WaitHandleAsync();
             Assert.That(handle, Is.Not.Null);

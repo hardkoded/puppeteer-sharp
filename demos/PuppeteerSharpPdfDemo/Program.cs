@@ -18,11 +18,7 @@ namespace PuppeteerSharpPdfDemo
             var isFirefox = args.Any(arg => arg == "firefox");
             var browserType = isFirefox ? SupportedBrowser.Firefox : SupportedBrowser.Chrome;
 
-            var options = new LaunchOptions
-            {
-                Headless = true,
-                Browser = browserType
-            };
+            var options = new LaunchOptions { Headless = true, Browser = browserType };
 
             Console.WriteLine($"Downloading {browserType}");
 
@@ -37,13 +33,17 @@ namespace PuppeteerSharpPdfDemo
                 @"() => {
                     document.body.innerHTML = '<h1>Hello from PuppeteerSharp!</h1>';
                     return document.body.innerText;
-                }");
+                }"
+            );
             Console.WriteLine($"Body content: {bodyContent}");
 
 #if NET8_0_OR_GREATER
             // AOT Test - serialize TestClass as argument, return a string to avoid
             // reflection-based deserialization which is not yet AOT-compatible in BiDi
-            var result = await page.EvaluateFunctionAsync<string>("test => test.Name", new TestClass { Name = "Dario"});
+            var result = await page.EvaluateFunctionAsync<string>(
+                "test => test.Name",
+                new TestClass { Name = "Dario" }
+            );
             Console.WriteLine($"Name evaluated to {result}");
 #endif
             if (!args.Any(arg => arg == "auto-exit"))
@@ -60,7 +60,6 @@ namespace PuppeteerSharpPdfDemo
     }
 
     [JsonSerializable(typeof(TestClass))]
-    public partial class DemoJsonSerializationContext : JsonSerializerContext
-    {}
+    public partial class DemoJsonSerializationContext : JsonSerializerContext { }
 #endif
 }

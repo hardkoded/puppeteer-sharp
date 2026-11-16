@@ -6,17 +6,24 @@ namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class PageEmulateFocusedPageTests : PuppeteerPageBaseTest
     {
-        public PageEmulateFocusedPageTests() : base()
-        {
-        }
+        public PageEmulateFocusedPageTests()
+            : base() { }
 
-        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateFocusedPage", "should emulate focus")]
+        [
+            Test,
+            PuppeteerTest(
+                "emulation.spec",
+                "Emulation Page.emulateFocusedPage",
+                "should emulate focus"
+            )
+        ]
         public async Task ShouldEmulateFocus()
         {
             await Page.EmulateFocusedPageAsync(true);
             Assert.That(
                 await Page.EvaluateFunctionAsync<bool>("() => document.hasFocus()"),
-                Is.True);
+                Is.True
+            );
 
             var page2 = await Context.NewPageAsync();
             // Move page into background by focusing page2.
@@ -24,10 +31,18 @@ namespace PuppeteerSharp.Tests.EmulationTests
 
             Assert.That(
                 await Page.EvaluateFunctionAsync<bool>("() => document.hasFocus()"),
-                Is.True);
+                Is.True
+            );
         }
 
-        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateFocusedPage", "should reset focus")]
+        [
+            Test,
+            PuppeteerTest(
+                "emulation.spec",
+                "Emulation Page.emulateFocusedPage",
+                "should reset focus"
+            )
+        ]
         public async Task ShouldResetFocus()
         {
             await Page.EmulateFocusedPageAsync(true);
@@ -38,12 +53,14 @@ namespace PuppeteerSharp.Tests.EmulationTests
 
             Assert.That(
                 await Page.EvaluateFunctionAsync<bool>("() => document.hasFocus()"),
-                Is.True);
+                Is.True
+            );
 
             await Page.EmulateFocusedPageAsync(false);
             Assert.That(
                 await Page.EvaluateFunctionAsync<bool>("() => document.hasFocus()"),
-                Is.False);
+                Is.False
+            );
         }
     }
 }

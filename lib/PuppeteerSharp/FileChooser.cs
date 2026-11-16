@@ -79,7 +79,9 @@ namespace PuppeteerSharp
             }
 
             _handled = true;
-            return _element.EvaluateFunctionAsync("element => element.dispatchEvent(new Event('cancel', {bubbles: true}))");
+            return _element.EvaluateFunctionAsync(
+                "element => element.dispatchEvent(new Event('cancel', {bubbles: true}))"
+            );
         }
     }
 }

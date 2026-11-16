@@ -35,12 +35,12 @@ namespace PuppeteerSharp.Locators
             return new FunctionLocator(frame, func);
         }
 
-        internal override async Task<IJSHandle> WaitHandleCoreAsync(LocatorActionOptions options, CancellationToken cancellationToken)
+        internal override async Task<IJSHandle> WaitHandleCoreAsync(
+            LocatorActionOptions options,
+            CancellationToken cancellationToken
+        )
         {
-            var waitOptions = new WaitForFunctionOptions
-            {
-                Timeout = Timeout,
-            };
+            var waitOptions = new WaitForFunctionOptions { Timeout = Timeout };
 
             IJSHandle handle;
 
@@ -50,7 +50,9 @@ namespace PuppeteerSharp.Locators
             }
             else
             {
-                handle = await _frame.WaitForFunctionAsync(_func, waitOptions).ConfigureAwait(false);
+                handle = await _frame
+                    .WaitForFunctionAsync(_func, waitOptions)
+                    .ConfigureAwait(false);
             }
 
             return handle;

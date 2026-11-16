@@ -7,7 +7,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseTimingTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("network.spec", "network Response.timing", "returns timing information")]
+        [
+            Test,
+            PuppeteerTest("network.spec", "network Response.timing", "returns timing information")
+        ]
         public async Task ReturnsTimingInformation()
         {
             var responses = new List<IResponse>();

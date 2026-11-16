@@ -44,7 +44,9 @@ internal sealed class BidiScreenRecording : ScreenRecording
 
             try
             {
-                result = await _page.BidiMainFrame.BrowsingContext.StopScreencastAsync(_screencastId).ConfigureAwait(false);
+                result = await _page
+                    .BidiMainFrame.BrowsingContext.StopScreencastAsync(_screencastId)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -95,11 +97,15 @@ internal sealed class BidiScreenRecording : ScreenRecording
             };
         }
 
-        var result = await _page.BidiMainFrame.BrowsingContext.StartScreencastAsync(new StartScreencastCommandParameters(_page.BidiMainFrame.BrowsingContext.Id)
-        {
-            Audio = Options.Audio,
-            Video = video,
-        }).ConfigureAwait(false);
+        var result = await _page
+            .BidiMainFrame.BrowsingContext.StartScreencastAsync(
+                new StartScreencastCommandParameters(_page.BidiMainFrame.BrowsingContext.Id)
+                {
+                    Audio = Options.Audio,
+                    Video = video,
+                }
+            )
+            .ConfigureAwait(false);
 
         _screencastId = result.Screencast;
         _path = result.Path;

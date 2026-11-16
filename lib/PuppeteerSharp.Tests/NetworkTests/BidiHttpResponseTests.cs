@@ -10,7 +10,14 @@ namespace PuppeteerSharp.Tests.NetworkTests;
 [TestFixture]
 public class BidiHttpResponseTests
 {
-    [Test, PuppeteerTest("HTTPResponse.test.ts", "BidiHTTPResponse", "should combine duplicate set-cookie headers using \\n")]
+    [
+        Test,
+        PuppeteerTest(
+            "HTTPResponse.test.ts",
+            "BidiHTTPResponse",
+            "should combine duplicate set-cookie headers using \\n"
+        )
+    ]
     public void ShouldCombineDuplicateSetCookieHeadersUsingNewline()
     {
         var data = CreateResponseData(("set-cookie", "a=b"), ("set-cookie", "c=d"));
@@ -20,7 +27,14 @@ public class BidiHttpResponseTests
         Assert.That(response.Headers["set-cookie"], Is.EqualTo("a=b\n c=d"));
     }
 
-    [Test, PuppeteerTest("HTTPResponse.test.ts", "BidiHTTPResponse", "should combine other duplicate headers using ,")]
+    [
+        Test,
+        PuppeteerTest(
+            "HTTPResponse.test.ts",
+            "BidiHTTPResponse",
+            "should combine other duplicate headers using ,"
+        )
+    ]
     public void ShouldCombineOtherDuplicateHeadersUsingComma()
     {
         var data = CreateResponseData(("cache-control", "no-cache"), ("cache-control", "no-store"));
@@ -30,13 +44,19 @@ public class BidiHttpResponseTests
         Assert.That(response.Headers["cache-control"], Is.EqualTo("no-cache, no-store"));
     }
 
-    private static WebDriverBiDi.Network.ResponseData CreateResponseData(params (string Name, string Value)[] headers)
+    private static WebDriverBiDi.Network.ResponseData CreateResponseData(
+        params (string Name, string Value)[] headers
+    )
     {
         var headersJson = string.Join(
             ",",
-            headers.Select(header => $"{{\"name\":\"{header.Name}\",\"value\":{{\"type\":\"string\",\"value\":\"{header.Value}\"}}}}"));
+            headers.Select(header =>
+                $"{{\"name\":\"{header.Name}\",\"value\":{{\"type\":\"string\",\"value\":\"{header.Value}\"}}}}"
+            )
+        );
 
-        var json = "{"
+        var json =
+            "{"
             + "\"url\":\"http://localhost/\","
             + "\"protocol\":\"http/1.1\","
             + "\"status\":200,"
@@ -50,6 +70,9 @@ public class BidiHttpResponseTests
             + $"\"headers\":[{headersJson}]"
             + "}";
 
-        return JsonSerializer.Deserialize(json, WebDriverBiDiJsonSerializerContext.Default.ResponseData);
+        return JsonSerializer.Deserialize(
+            json,
+            WebDriverBiDiJsonSerializerContext.Default.ResponseData
+        );
     }
 }

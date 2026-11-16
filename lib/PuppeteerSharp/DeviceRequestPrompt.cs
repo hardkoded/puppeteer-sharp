@@ -20,7 +20,8 @@ namespace PuppeteerSharp;
 [SuppressMessage(
     "Microsoft.Design",
     "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
-    Justification = "Listener subscriptions are disposed in SelectAsync/CancelAsync via DisposableActionsStack.")]
+    Justification = "Listener subscriptions are disposed in SelectAsync/CancelAsync via DisposableActionsStack."
+)]
 public class DeviceRequestPrompt
 {
     private readonly string _id;
@@ -29,7 +30,11 @@ public class DeviceRequestPrompt
     private readonly DisposableActionsStack _subscriptions = new();
     private bool _handled;
 
-    internal DeviceRequestPrompt(ICDPSession client, TimeoutSettings timeoutSettings, DeviceAccessDeviceRequestPromptedResponse firstEvent)
+    internal DeviceRequestPrompt(
+        ICDPSession client,
+        TimeoutSettings timeoutSettings,
+        DeviceAccessDeviceRequestPromptedResponse firstEvent
+    )
     {
         _client = client;
         _timeoutSettings = timeoutSettings;
@@ -69,17 +74,18 @@ public class DeviceRequestPrompt
 
         if (_handled)
         {
-            throw new PuppeteerException("Cannot select DeviceRequestPrompt which is already handled!");
+            throw new PuppeteerException(
+                "Cannot select DeviceRequestPrompt which is already handled!"
+            );
         }
 
         _subscriptions.Dispose();
         _handled = true;
 
-        return _client.SendAsync("DeviceAccess.selectPrompt", new DeviceAccessSelectPrompt
-        {
-            Id = _id,
-            DeviceId = device.Id,
-        });
+        return _client.SendAsync(
+            "DeviceAccess.selectPrompt",
+            new DeviceAccessSelectPrompt { Id = _id, DeviceId = device.Id }
+        );
     }
 
     /// <summary>
@@ -88,7 +94,10 @@ public class DeviceRequestPrompt
     /// <param name="filter">The filter to apply.</param>
     /// <param name="options">The options.</param>
     /// <returns>A task that resolves to the first device matching the filter.</returns>
-    public Task<DeviceRequestPromptDevice> WaitForDeviceAsync(Func<DeviceRequestPromptDevice, bool> filter, WaitForOptions options = default)
+    public Task<DeviceRequestPromptDevice> WaitForDeviceAsync(
+        Func<DeviceRequestPromptDevice, bool> filter,
+        WaitForOptions options = default
+    )
     {
         foreach (var device in Devices.Where(filter))
         {
@@ -120,16 +129,18 @@ public class DeviceRequestPrompt
     {
         if (_handled)
         {
-            throw new PuppeteerException("Cannot cancel DeviceRequestPrompt which is already handled!");
+            throw new PuppeteerException(
+                "Cannot cancel DeviceRequestPrompt which is already handled!"
+            );
         }
 
         _subscriptions.Dispose();
         _handled = true;
 
-        return _client.SendAsync("DeviceAccess.cancelPrompt", new DeviceAccessCancelPrompt
-        {
-            Id = _id,
-        });
+        return _client.SendAsync(
+            "DeviceAccess.cancelPrompt",
+            new DeviceAccessCancelPrompt { Id = _id }
+        );
     }
 
     private void OnMessageReceived(object sender, MessageEventArgs e)
@@ -142,7 +153,9 @@ public class DeviceRequestPrompt
                     // This is not upstream. But in upstream they have individual events.
                     if (!_handled)
                     {
-                        UpdateDevices(e.MessageData.ToObject<DeviceAccessDeviceRequestPromptedResponse>());
+                        UpdateDevices(
+                            e.MessageData.ToObject<DeviceAccessDeviceRequestPromptedResponse>()
+                        );
                     }
 
                     break;
@@ -150,7 +163,8 @@ public class DeviceRequestPrompt
         }
         catch (Exception ex)
         {
-            var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+            var message =
+                $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
             (_client as CDPSession)?.Close(message);
         }
     }

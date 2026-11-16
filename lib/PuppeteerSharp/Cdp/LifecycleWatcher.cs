@@ -11,16 +11,27 @@ namespace PuppeteerSharp.Cdp
 {
     internal sealed class LifecycleWatcher : IDisposable
     {
-        private static readonly WaitUntilNavigation[] _defaultWaitUntil = [WaitUntilNavigation.Load];
+        private static readonly WaitUntilNavigation[] _defaultWaitUntil =
+        [
+            WaitUntilNavigation.Load,
+        ];
 
         private readonly NetworkManager _networkManager;
         private readonly CdpFrame _frame;
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
-        private readonly TaskCompletionSource<bool> _newDocumentNavigationTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly TaskCompletionSource<bool> _lifecycleTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly TaskCompletionSource<bool> _terminationTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<bool> _newDocumentNavigationTaskWrapper = new(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+        private readonly TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper = new(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+        private readonly TaskCompletionSource<bool> _lifecycleTaskWrapper = new(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+        private readonly TaskCompletionSource<bool> _terminationTaskWrapper = new(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
         private readonly CancellationTokenSource _terminationCancellationToken = new();
         private readonly CancellationTokenRegistration _cancellationRegistration;
         private readonly string _initialLoaderId;
@@ -34,7 +45,8 @@ namespace PuppeteerSharp.Cdp
             CdpFrame frame,
             WaitUntilNavigation[] waitUntil,
             int timeout,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default
+        )
         {
             _expectedLifecycle = (waitUntil ?? _defaultWaitUntil).Select(w =>
             {
@@ -57,8 +69,9 @@ namespace PuppeteerSharp.Cdp
                 }
                 else
                 {
-                    _cancellationRegistration = cancellationToken.Register(
-                        () => _terminationTaskWrapper.TrySetCanceled(cancellationToken));
+                    _cancellationRegistration = cancellationToken.Register(() =>
+                        _terminationTaskWrapper.TrySetCanceled(cancellationToken)
+                    );
                 }
             }
 
@@ -78,10 +91,14 @@ namespace PuppeteerSharp.Cdp
 
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
 
-        public Task TerminationTask => _terminationTaskWrapper.Task.WithTimeout(
-            _timeout,
-            t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"),
-            _terminationCancellationToken.Token);
+        public Task TerminationTask =>
+            _terminationTaskWrapper.Task.WithTimeout(
+                _timeout,
+                t => new TimeoutException(
+                    $"Navigation timeout of {t.TotalMilliseconds} ms exceeded"
+                ),
+                _terminationCancellationToken.Token
+            );
 
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
@@ -112,14 +129,15 @@ namespace PuppeteerSharp.Cdp
             _terminationCancellationToken.Dispose();
         }
 
-        private static string GetProtocolEvent(WaitUntilNavigation waitUntil) => waitUntil switch
-        {
-            WaitUntilNavigation.Load => "load",
-            WaitUntilNavigation.DOMContentLoaded => "DOMContentLoaded",
-            WaitUntilNavigation.Networkidle0 => "networkIdle",
-            WaitUntilNavigation.Networkidle2 => "networkAlmostIdle",
-            _ => null,
-        };
+        private static string GetProtocolEvent(WaitUntilNavigation waitUntil) =>
+            waitUntil switch
+            {
+                WaitUntilNavigation.Load => "load",
+                WaitUntilNavigation.DOMContentLoaded => "DOMContentLoaded",
+                WaitUntilNavigation.Networkidle0 => "networkIdle",
+                WaitUntilNavigation.Networkidle2 => "networkAlmostIdle",
+                _ => null,
+            };
 
         private void Navigated(object sender, FrameNavigatedEventArgs e)
         {
@@ -132,7 +150,8 @@ namespace PuppeteerSharp.Cdp
             CheckLifecycleComplete();
         }
 
-        private void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) => CheckLifecycleComplete();
+        private void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) =>
+            CheckLifecycleComplete();
 
         private void FrameSwapped(object sender, EventArgs e)
         {
@@ -186,7 +205,8 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private void Terminate(PuppeteerException ex) => _terminationTaskWrapper.TrySetException(ex);
+        private void Terminate(PuppeteerException ex) =>
+            _terminationTaskWrapper.TrySetException(ex);
 
         private void OnRequest(object sender, RequestEventArgs e)
         {
@@ -201,7 +221,9 @@ namespace PuppeteerSharp.Cdp
             // navigation requests reported by the backend. This generally should not
             // happen but it looks like it's possible.
             _navigationResponseReceived?.TrySetResult(true);
-            _navigationResponseReceived = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _navigationResponseReceived = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
 
             if (e.Request.Response != null)
             {

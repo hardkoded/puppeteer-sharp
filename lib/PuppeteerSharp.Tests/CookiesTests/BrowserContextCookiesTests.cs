@@ -8,14 +8,28 @@ namespace PuppeteerSharp.Tests.CookiesTests
 {
     public class BrowserContextCookiesTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.cookies", "should find no cookies in new context")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.cookies",
+                "should find no cookies in new context"
+            )
+        ]
         public async Task ShouldFindNoCookiesInNewContext()
         {
             await using var context = await Browser.CreateBrowserContextAsync();
             Assert.That(await context.GetCookiesAsync(), Is.Empty);
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.cookies", "should find cookie created in page")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.cookies",
+                "should find cookie created in page"
+            )
+        ]
         public async Task ShouldFindCookieCreatedInPage()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -26,128 +40,180 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookies.Any(c => c.Name == "infoCookie" && c.Value == "secret"), Is.True);
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.cookies", "should find partitioned cookie")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.cookies",
+                "should find partitioned cookie"
+            )
+        ]
         public async Task ShouldFindPartitionedCookie()
         {
             var topLevelSite = "https://example.test";
-            await Context.SetCookieAsync(new CookieData
-            {
-                Name = "infoCookie",
-                Value = "secret",
-                Domain = new Uri(topLevelSite).Host,
-                Path = "/",
-                Expires = -1,
-                HttpOnly = false,
-                Secure = true,
-                PartitionKey = TestConstants.IsChrome
-                    ? new CookiePartitionKey
-                    {
-                        SourceOrigin = topLevelSite,
-                        HasCrossSiteAncestor = false,
-                    }
-                    : new CookiePartitionKey
-                    {
-                        SourceOrigin = topLevelSite,
-                    },
-            });
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = "infoCookie",
+                    Value = "secret",
+                    Domain = new Uri(topLevelSite).Host,
+                    Path = "/",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                    PartitionKey = TestConstants.IsChrome
+                        ? new CookiePartitionKey
+                        {
+                            SourceOrigin = topLevelSite,
+                            HasCrossSiteAncestor = false,
+                        }
+                        : new CookiePartitionKey { SourceOrigin = topLevelSite },
+                }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
 
             if (TestConstants.IsChrome)
             {
-                Assert.That(cookies[0].PartitionKey, Is.EqualTo(new CookiePartitionKey
-                {
-                    SourceOrigin = topLevelSite,
-                    HasCrossSiteAncestor = false,
-                }));
+                Assert.That(
+                    cookies[0].PartitionKey,
+                    Is.EqualTo(
+                        new CookiePartitionKey
+                        {
+                            SourceOrigin = topLevelSite,
+                            HasCrossSiteAncestor = false,
+                        }
+                    )
+                );
             }
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.cookies", "should properly report \"Default\" sameSite cookie")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.cookies",
+                "should properly report \"Default\" sameSite cookie"
+            )
+        ]
         public async Task ShouldProperlyReportDefaultSameSiteCookie()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var name = "defaultSameSite";
-            await Context.SetCookieAsync(new CookieData
-            {
-                Name = name,
-                Value = "b",
-                Domain = "localhost",
-                SameSite = SameSite.Default,
-            });
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = name,
+                    Value = "b",
+                    Domain = "localhost",
+                    SameSite = SameSite.Default,
+                }
+            );
             var cookies = await Context.GetCookiesAsync();
             var cookie = cookies.FirstOrDefault(c => c.Name == name);
             Assert.That(cookie, Is.Not.Null);
             // Different browsers have different sameSite values for the "Default" sameSite.
             Assert.That(
                 new SameSite?[] { SameSite.Default, SameSite.Lax, null },
-                Does.Contain(cookie.SameSite));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Name = name,
-                Domain = "localhost",
-            });
+                Does.Contain(cookie.SameSite)
+            );
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest { Name = name, Domain = "localhost" }
+            );
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.setCookie", "should set with undefined partition key")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.setCookie",
+                "should set with undefined partition key"
+            )
+        ]
         public async Task ShouldSetWithUndefinedPartitionKey()
         {
-            await Context.SetCookieAsync(new CookieData
-            {
-                Name = "infoCookie",
-                Value = "secret",
-                Domain = "localhost",
-                Path = "/",
-                Expires = -1,
-                HttpOnly = false,
-                Secure = false,
-                SourceScheme = CookieSourceScheme.NonSecure,
-            });
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = "infoCookie",
+                    Value = "secret",
+                    Domain = "localhost",
+                    Path = "/",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = false,
+                    SourceScheme = CookieSourceScheme.NonSecure,
+                }
+            );
 
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             Assert.That(
                 await Page.EvaluateExpressionAsync<string>("document.cookie"),
-                Is.EqualTo("infoCookie=secret"));
+                Is.EqualTo("infoCookie=secret")
+            );
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.setCookie", "should set cookie with a partition key")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.setCookie",
+                "should set cookie with a partition key"
+            )
+        ]
         public async Task ShouldSetCookieWithAPartitionKey()
         {
             var options = TestConstants.DefaultBrowserOptions();
             options.AcceptInsecureCerts = true;
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
             var context = browser.DefaultContext;
             var page = await context.NewPageAsync();
 
             var url = new Uri(TestConstants.HttpsPrefix + "/empty.html");
-            await context.SetCookieAsync(new CookieData
-            {
-                Name = "infoCookie",
-                Value = "secret",
-                Domain = url.Host,
-                Secure = true,
-                PartitionKey = TestConstants.IsChrome
-                    ? new CookiePartitionKey
-                    {
-                        SourceOrigin = url.GetComponents(UriComponents.Scheme | UriComponents.Host, UriFormat.UriEscaped),
-                        HasCrossSiteAncestor = false,
-                    }
-                    : new CookiePartitionKey
-                    {
-                        SourceOrigin = url.GetLeftPart(UriPartial.Authority),
-                    },
-            });
+            await context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = "infoCookie",
+                    Value = "secret",
+                    Domain = url.Host,
+                    Secure = true,
+                    PartitionKey = TestConstants.IsChrome
+                        ? new CookiePartitionKey
+                        {
+                            SourceOrigin = url.GetComponents(
+                                UriComponents.Scheme | UriComponents.Host,
+                                UriFormat.UriEscaped
+                            ),
+                            HasCrossSiteAncestor = false,
+                        }
+                        : new CookiePartitionKey
+                        {
+                            SourceOrigin = url.GetLeftPart(UriPartial.Authority),
+                        },
+                }
+            );
 
             await page.GoToAsync(url.ToString());
 
             Assert.That(
                 await page.EvaluateExpressionAsync<string>("document.cookie"),
-                Is.EqualTo("infoCookie=secret"));
+                Is.EqualTo("infoCookie=secret")
+            );
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteCookies", "should delete cookies")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteCookies",
+                "should delete cookies"
+            )
+        ]
         public async Task ShouldDeleteCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -173,41 +239,60 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     HttpOnly = false,
                     Secure = false,
                     SourceScheme = CookieSourceScheme.NonSecure,
-                });
+                }
+            );
             Assert.That(
                 await Page.EvaluateExpressionAsync<string>("document.cookie"),
-                Is.EqualTo("cookie1=1; cookie2=2"));
-            await Context.DeleteCookieAsync((await Context.GetCookiesAsync()).Where(c => c.Name == "cookie1").ToArray());
+                Is.EqualTo("cookie1=1; cookie2=2")
+            );
+            await Context.DeleteCookieAsync(
+                (await Context.GetCookiesAsync()).Where(c => c.Name == "cookie1").ToArray()
+            );
             Assert.That(
                 await Page.EvaluateExpressionAsync<string>("document.cookie"),
-                Is.EqualTo("cookie2=2"));
+                Is.EqualTo("cookie2=2")
+            );
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteCookies", "should be able to delete \"Default\" sameSite cookie")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteCookies",
+                "should be able to delete \"Default\" sameSite cookie"
+            )
+        ]
         public async Task ShouldBeAbleToDeleteDefaultSameSiteCookie()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var name = "deleteDefaultSameSite";
-            await Context.SetCookieAsync(new CookieData
-            {
-                Name = name,
-                Value = "b",
-                Domain = "localhost",
-                SameSite = SameSite.Default,
-            });
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = name,
+                    Value = "b",
+                    Domain = "localhost",
+                    SameSite = SameSite.Default,
+                }
+            );
             var cookies = await Context.GetCookiesAsync();
             var cookie = cookies.FirstOrDefault(c => c.Name == name);
             Assert.That(cookie, Is.Not.Null);
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Name = name,
-                Domain = "localhost",
-            });
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest { Name = name, Domain = "localhost" }
+            );
             var cookiesAfter = await Context.GetCookiesAsync();
             Assert.That(cookiesAfter.FirstOrDefault(c => c.Name == name), Is.Null);
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should delete cookies matching {\"name\":\"cookie1\"}")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should delete cookies matching {\"name\":\"cookie1\"}"
+            )
+        ]
         public async Task ShouldDeleteCookiesMatchingName()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -232,18 +317,23 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Expires = -1,
                     HttpOnly = false,
                     Secure = false,
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Name = "cookie1",
-            });
+            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest { Name = "cookie1" });
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Name, Is.EqualTo("cookie2"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should delete cookies matching {\"url\":\"https://example.test/test\",\"name\":\"cookie1\"}")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should delete cookies matching {\"url\":\"https://example.test/test\",\"name\":\"cookie1\"}"
+            )
+        ]
         public async Task ShouldDeleteCookiesMatchingUrl()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -268,19 +358,25 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Expires = -1,
                     HttpOnly = false,
                     Secure = true,
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Url = "https://example.test/test",
-                Name = "cookie1",
-            });
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest { Url = "https://example.test/test", Name = "cookie1" }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Name, Is.EqualTo("cookie2"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should delete cookies matching {\"domain\":\"example.test\",\"name\":\"cookie1\"}")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should delete cookies matching {\"domain\":\"example.test\",\"name\":\"cookie1\"}"
+            )
+        ]
         public async Task ShouldDeleteCookiesMatchingDomain()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -305,19 +401,25 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Expires = -1,
                     HttpOnly = false,
                     Secure = true,
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Domain = "example.test",
-                Name = "cookie1",
-            });
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest { Domain = "example.test", Name = "cookie1" }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Name, Is.EqualTo("cookie2"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should delete cookies matching {\"path\":\"/test\",\"name\":\"cookie1\"}")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should delete cookies matching {\"path\":\"/test\",\"name\":\"cookie1\"}"
+            )
+        ]
         public async Task ShouldDeleteCookiesMatchingPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -342,24 +444,32 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Expires = -1,
                     HttpOnly = false,
                     Secure = true,
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Path = "/test",
-                Name = "cookie1",
-            });
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest { Path = "/test", Name = "cookie1" }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Name, Is.EqualTo("cookie2"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should delete cookies matching {\"name\":\"cookie1\",\"partitionKey\":{\"sourceOrigin\":\"https://example.test\"}}")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should delete cookies matching {\"name\":\"cookie1\",\"partitionKey\":{\"sourceOrigin\":\"https://example.test\"}}"
+            )
+        ]
         public async Task ShouldDeleteCookiesMatchingPartitionKey()
         {
             if (!TestConstants.IsChrome)
             {
-                Assert.Ignore("In Firefox with WebDriver BiDi, we do not know the actual partition.");
+                Assert.Ignore(
+                    "In Firefox with WebDriver BiDi, we do not know the actual partition."
+                );
             }
 
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -399,22 +509,29 @@ namespace PuppeteerSharp.Tests.CookiesTests
                             HasCrossSiteAncestor = false,
                         }
                         : null,
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Name = "cookie1",
-                PartitionKey = new CookiePartitionKey
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest
                 {
-                    SourceOrigin = "https://example.test",
-                },
-            });
+                    Name = "cookie1",
+                    PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.test" },
+                }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Name, Is.EqualTo("cookie2"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should only delete cookies matching {\"url\":\"https://example.test/test\",\"name\":\"cookie1\"}")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should only delete cookies matching {\"url\":\"https://example.test/test\",\"name\":\"cookie1\"}"
+            )
+        ]
         public async Task ShouldOnlyDeleteCookiesMatchingUrl()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -438,19 +555,25 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Expires = -1,
                     HttpOnly = false,
                     Secure = true,
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Url = "https://example.test/test",
-                Name = "cookie1",
-            });
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest { Url = "https://example.test/test", Name = "cookie1" }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should only delete cookies matching {\"domain\":\"example.test\",\"name\":\"cookie1\"}")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should only delete cookies matching {\"domain\":\"example.test\",\"name\":\"cookie1\"}"
+            )
+        ]
         public async Task ShouldOnlyDeleteCookiesMatchingDomain()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -474,19 +597,25 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Expires = -1,
                     HttpOnly = false,
                     Secure = true,
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Domain = "example.test",
-                Name = "cookie1",
-            });
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest { Domain = "example.test", Name = "cookie1" }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should only delete cookies matching {\"path\":\"/test\",\"name\":\"cookie1\"}")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should only delete cookies matching {\"path\":\"/test\",\"name\":\"cookie1\"}"
+            )
+        ]
         public async Task ShouldOnlyDeleteCookiesMatchingPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -510,24 +639,32 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Expires = -1,
                     HttpOnly = false,
                     Secure = true,
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Path = "/test",
-                Name = "cookie1",
-            });
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest { Path = "/test", Name = "cookie1" }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should only delete cookies in the matching partition")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should only delete cookies in the matching partition"
+            )
+        ]
         public async Task ShouldOnlyDeleteCookiesInTheMatchingPartition()
         {
             if (!TestConstants.IsChrome)
             {
-                Assert.Ignore("In Firefox with WebDriver BiDi, we do not know the actual partition.");
+                Assert.Ignore(
+                    "In Firefox with WebDriver BiDi, we do not know the actual partition."
+                );
             }
 
             await Context.SetCookieAsync(
@@ -560,24 +697,36 @@ namespace PuppeteerSharp.Tests.CookiesTests
                         SourceOrigin = "https://other.test",
                         HasCrossSiteAncestor = false,
                     },
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Name = "cookie1",
-                PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.test" },
-            });
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest
+                {
+                    Name = "cookie1",
+                    PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.test" },
+                }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should not delete unpartitioned cookies when partitionKey is given")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should not delete unpartitioned cookies when partitionKey is given"
+            )
+        ]
         public async Task ShouldNotDeleteUnpartitionedCookiesWhenPartitionKeyIsGiven()
         {
             if (!TestConstants.IsChrome)
             {
-                Assert.Ignore("In Firefox with WebDriver BiDi, we do not know the actual partition.");
+                Assert.Ignore(
+                    "In Firefox with WebDriver BiDi, we do not know the actual partition."
+                );
             }
 
             await Context.SetCookieAsync(
@@ -605,24 +754,36 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Expires = -1,
                     HttpOnly = false,
                     Secure = true,
-                });
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Name = "cookie1",
-                PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.test" },
-            });
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest
+                {
+                    Name = "cookie1",
+                    PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.test" },
+                }
+            );
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
         }
 
-        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should match hasCrossSiteAncestor in partitionKey")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext-cookies.spec",
+                "BrowserContext cookies BrowserContext.deleteMatchingCookies",
+                "should match hasCrossSiteAncestor in partitionKey"
+            )
+        ]
         public async Task ShouldMatchHasCrossSiteAncestorInPartitionKey()
         {
             if (!TestConstants.IsChrome)
             {
-                Assert.Ignore("In Firefox with WebDriver BiDi, we do not know the actual partition.");
+                Assert.Ignore(
+                    "In Firefox with WebDriver BiDi, we do not know the actual partition."
+                );
             }
 
             await Context.SetCookieAsync(
@@ -640,26 +801,31 @@ namespace PuppeteerSharp.Tests.CookiesTests
                         SourceOrigin = "https://example.test",
                         HasCrossSiteAncestor = false,
                     },
-                });
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Name = "cookie1",
-                PartitionKey = new CookiePartitionKey
+                }
+            );
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest
                 {
-                    SourceOrigin = "https://example.test",
-                    HasCrossSiteAncestor = true,
-                },
-            });
+                    Name = "cookie1",
+                    PartitionKey = new CookiePartitionKey
+                    {
+                        SourceOrigin = "https://example.test",
+                        HasCrossSiteAncestor = true,
+                    },
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(1));
-            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
-            {
-                Name = "cookie1",
-                PartitionKey = new CookiePartitionKey
+            await Context.DeleteMatchingCookiesAsync(
+                new DeleteCookiesRequest
                 {
-                    SourceOrigin = "https://example.test",
-                    HasCrossSiteAncestor = false,
-                },
-            });
+                    Name = "cookie1",
+                    PartitionKey = new CookiePartitionKey
+                    {
+                        SourceOrigin = "https://example.test",
+                        HasCrossSiteAncestor = false,
+                    },
+                }
+            );
             Assert.That(await Context.GetCookiesAsync(), Is.Empty);
         }
     }

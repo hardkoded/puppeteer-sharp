@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-#if !CDP_ONLY
-using PuppeteerSharp.Bidi;
-#endif
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers.Json;
 using static PuppeteerSharp.Cdp.Messaging.AccessibilityGetFullAXTreeResponse;
+#if !CDP_ONLY
+using PuppeteerSharp.Bidi;
+#endif
 
 namespace PuppeteerSharp.QueryHandlers
 {
@@ -19,20 +19,25 @@ namespace PuppeteerSharp.QueryHandlers
 #if NETSTANDARD2_0
         private static readonly Regex _ariaSelectorAttributeRegex = new(
             """\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]""",
-            RegexOptions.Compiled);
+            RegexOptions.Compiled
+        );
 #endif
 
         private static readonly string[] _nonElementNodeRoles = { "StaticText", "InlineTextBox" };
 
         public AriaQueryHandler()
         {
-            QuerySelector = @"async (node, selector) => {
+            QuerySelector =
+                @"async (node, selector) => {
                 const context = globalThis;
                 return context.__ariaQuerySelector(node, selector);
             }";
         }
 
-        internal override async IAsyncEnumerable<IElementHandle> QueryAllAsync(IElementHandle element, string selector)
+        internal override async IAsyncEnumerable<IElementHandle> QueryAllAsync(
+            IElementHandle element,
+            string selector
+        )
         {
             var ariaSelector = ParseAriaSelector(selector);
 
@@ -40,7 +45,11 @@ namespace PuppeteerSharp.QueryHandlers
             // Handle BiDi element handles
             if (element is BidiElementHandle bidiElementHandle)
             {
-                await foreach (var item in bidiElementHandle.QueryAXTreeAsync(ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false))
+                await foreach (
+                    var item in bidiElementHandle
+                        .QueryAXTreeAsync(ariaSelector.Name, ariaSelector.Role)
+                        .ConfigureAwait(false)
+                )
                 {
                     yield return item;
                 }
@@ -55,24 +64,40 @@ namespace PuppeteerSharp.QueryHandlers
                 yield break;
             }
 
-            var results = await QueryAXTreeAsync(elementHandle.Realm.Environment.Client, element, ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false);
+            var results = await QueryAXTreeAsync(
+                    elementHandle.Realm.Environment.Client,
+                    element,
+                    ariaSelector.Name,
+                    ariaSelector.Role
+                )
+                .ConfigureAwait(false);
 
             foreach (var item in results)
             {
-                yield return await elementHandle.Realm.AdoptBackendNodeAsync(item.BackendDOMNodeId).ConfigureAwait(false);
+                yield return await elementHandle
+                    .Realm.AdoptBackendNodeAsync(item.BackendDOMNodeId)
+                    .ConfigureAwait(false);
             }
         }
 
-        internal override async Task<IElementHandle> QueryOneAsync(IElementHandle element, string selector)
+        internal override async Task<IElementHandle> QueryOneAsync(
+            IElementHandle element,
+            string selector
+        )
         {
             var enumerator = QueryAllAsync(element, selector).GetAsyncEnumerator();
             await using (enumerator.ConfigureAwait(false))
             {
-                return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : default;
+                return await enumerator.MoveNextAsync().ConfigureAwait(false)
+                    ? enumerator.Current
+                    : default;
             }
         }
 
-        internal async Task<IJSHandle> QueryAllAsJSArrayAsync(IElementHandle element, string selector)
+        internal async Task<IJSHandle> QueryAllAsJSArrayAsync(
+            IElementHandle element,
+            string selector
+        )
         {
             if (element is not ElementHandle elementHandle)
             {
@@ -80,17 +105,22 @@ namespace PuppeteerSharp.QueryHandlers
             }
 
             // Create an empty JS array in the same execution context
-            var arrayHandle = await elementHandle.EvaluateFunctionHandleAsync("() => []").ConfigureAwait(false);
+            var arrayHandle = await elementHandle
+                .EvaluateFunctionHandleAsync("() => []")
+                .ConfigureAwait(false);
 
             await foreach (var item in QueryAllAsync(element, selector).ConfigureAwait(false))
             {
                 try
                 {
                     // Push each element into the JS array
-                    await elementHandle.Realm.EvaluateFunctionAsync(
-                        "(arr, elem) => arr.push(elem)",
-                        arrayHandle,
-                        item).ConfigureAwait(false);
+                    await elementHandle
+                        .Realm.EvaluateFunctionAsync(
+                            "(arr, elem) => arr.push(elem)",
+                            arrayHandle,
+                            item
+                        )
+                        .ConfigureAwait(false);
                 }
                 finally
                 {
@@ -107,7 +137,8 @@ namespace PuppeteerSharp.QueryHandlers
             ElementHandle element,
             string selector,
             WaitForSelectorOptions options,
-            WaitForFunctionPollingOption polling = WaitForFunctionPollingOption.Mutation)
+            WaitForFunctionPollingOption polling = WaitForFunctionPollingOption.Mutation
+        )
         {
             // Get frame from element if not provided
             var targetFrame = frame ?? element?.Frame;
@@ -116,16 +147,20 @@ namespace PuppeteerSharp.QueryHandlers
             // For BiDi frames, use native BiDi approach with polling
             if (targetFrame is BidiFrame)
             {
-                return await WaitForBidiAsync(targetFrame, element, selector, options).ConfigureAwait(false);
+                return await WaitForBidiAsync(targetFrame, element, selector, options)
+                    .ConfigureAwait(false);
             }
 #endif
 
             // For CDP frames, use the base implementation
-            return await base.WaitForAsync(frame, element, selector, options, polling).ConfigureAwait(false);
+            return await base.WaitForAsync(frame, element, selector, options, polling)
+                .ConfigureAwait(false);
         }
 
 #if NET8_0_OR_GREATER
-        [GeneratedRegex("""\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]""")]
+        [GeneratedRegex(
+            """\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]"""
+        )]
         private static partial Regex GetAriaSelectorAttributeRegex();
 #else
         private static Regex GetAriaSelectorAttributeRegex() => _ariaSelectorAttributeRegex;
@@ -134,24 +169,36 @@ namespace PuppeteerSharp.QueryHandlers
 #if !CDP_ONLY
         private static async Task<bool> IsVisibleAsync(IElementHandle element)
         {
-            return await element.EvaluateFunctionAsync<bool>(@"(element) => {
+            return await element
+                .EvaluateFunctionAsync<bool>(
+                    @"(element) => {
                 const style = window.getComputedStyle(element);
                 return style && style.visibility !== 'hidden' && style.display !== 'none';
-            }").ConfigureAwait(false);
+            }"
+                )
+                .ConfigureAwait(false);
         }
 #endif
 
-        private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(ICDPSession client, IElementHandle element, string accessibleName, string role)
+        private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(
+            ICDPSession client,
+            IElementHandle element,
+            string accessibleName,
+            string role
+        )
         {
             var cdpElementHandle = (CdpElementHandle)element;
-            var nodes = await client.SendAsync<AccessibilityQueryAXTreeResponse>(
-                "Accessibility.queryAXTree",
-                new AccessibilityQueryAXTreeRequest()
-                {
-                    ObjectId = cdpElementHandle.RemoteObject.ObjectId,
-                    AccessibleName = accessibleName,
-                    Role = role,
-                }).ConfigureAwait(false);
+            var nodes = await client
+                .SendAsync<AccessibilityQueryAXTreeResponse>(
+                    "Accessibility.queryAXTree",
+                    new AccessibilityQueryAXTreeRequest()
+                    {
+                        ObjectId = cdpElementHandle.RemoteObject.ObjectId,
+                        AccessibleName = accessibleName,
+                        Role = role,
+                    }
+                )
+                .ConfigureAwait(false);
 
             return nodes.Nodes.Where(node =>
             {
@@ -173,25 +220,28 @@ namespace PuppeteerSharp.QueryHandlers
         {
             var knownAriaAttributes = new[] { "name", "role" };
             AriaQueryOption queryOptions = new();
-            var defaultName = GetAriaSelectorAttributeRegex().Replace(selector, match =>
-            {
-                var attribute = match.Groups["attribute"].Value;
-                if (!knownAriaAttributes.Contains(attribute))
+            var defaultName = GetAriaSelectorAttributeRegex()
+                .Replace(selector, match =>
                 {
-                    throw new PuppeteerException($"Unknown aria attribute \"{attribute}\" in selector");
-                }
+                    var attribute = match.Groups["attribute"].Value;
+                    if (!knownAriaAttributes.Contains(attribute))
+                    {
+                        throw new PuppeteerException(
+                            $"Unknown aria attribute \"{attribute}\" in selector"
+                        );
+                    }
 
-                if (attribute == "name")
-                {
-                    queryOptions.Name = match.Groups["value"].Value;
-                }
-                else
-                {
-                    queryOptions.Role = match.Groups["value"].Value;
-                }
+                    if (attribute == "name")
+                    {
+                        queryOptions.Name = match.Groups["value"].Value;
+                    }
+                    else
+                    {
+                        queryOptions.Role = match.Groups["value"].Value;
+                    }
 
-                return string.Empty;
-            });
+                    return string.Empty;
+                });
 
             if (!string.IsNullOrEmpty(defaultName) && string.IsNullOrEmpty(queryOptions.Name))
             {
@@ -206,9 +256,12 @@ namespace PuppeteerSharp.QueryHandlers
             Frame frame,
             ElementHandle element,
             string selector,
-            WaitForSelectorOptions options)
+            WaitForSelectorOptions options
+        )
         {
-            var timeout = options?.Timeout ?? (frame.Page as Page)?.TimeoutSettings.Timeout ?? 30000;
+            var timeout = options?.Timeout
+                ?? (frame.Page as Page)?.TimeoutSettings.Timeout
+                ?? 30000;
             var waitForVisible = options?.Visible ?? false;
             var waitForHidden = options?.Hidden ?? false;
 
@@ -218,7 +271,9 @@ namespace PuppeteerSharp.QueryHandlers
             {
                 if (sw.ElapsedMilliseconds > timeout)
                 {
-                    throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: timeout {timeout}ms exceeded");
+                    throw new WaitTaskTimeoutException(
+                        $"Waiting for selector `{selector}` failed: timeout {timeout}ms exceeded"
+                    );
                 }
 
                 try
@@ -227,17 +282,22 @@ namespace PuppeteerSharp.QueryHandlers
                     if (queryElement == null)
                     {
                         // Get the document element as the root
-                        queryElement = await frame.QuerySelectorAsync("body").ConfigureAwait(false) as ElementHandle;
+                        queryElement =
+                            await frame.QuerySelectorAsync("body").ConfigureAwait(false)
+                            as ElementHandle;
                         if (queryElement == null)
                         {
                             // Fallback to html element
-                            queryElement = await frame.QuerySelectorAsync("html").ConfigureAwait(false) as ElementHandle;
+                            queryElement =
+                                await frame.QuerySelectorAsync("html").ConfigureAwait(false)
+                                as ElementHandle;
                         }
                     }
 
                     if (queryElement != null)
                     {
-                        var result = await QueryOneAsync(queryElement, selector).ConfigureAwait(false);
+                        var result = await QueryOneAsync(queryElement, selector)
+                            .ConfigureAwait(false);
 
                         if (element == null && queryElement != null)
                         {
@@ -278,7 +338,9 @@ namespace PuppeteerSharp.QueryHandlers
                 }
                 catch (Exception) when (sw.ElapsedMilliseconds > timeout)
                 {
-                    throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: timeout {timeout}ms exceeded");
+                    throw new WaitTaskTimeoutException(
+                        $"Waiting for selector `{selector}` failed: timeout {timeout}ms exceeded"
+                    );
                 }
                 catch (Exception)
                 {
@@ -290,6 +352,5 @@ namespace PuppeteerSharp.QueryHandlers
             }
         }
 #endif
-
     }
 }

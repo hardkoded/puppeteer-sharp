@@ -8,10 +8,19 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class BrowserRequestTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.on(\"request\")", "should report requests from pages")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.on(\"request\")",
+                "should report requests from pages"
+            )
+        ]
         public async Task ShouldReportRequestsFromPages()
         {
-            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var requestTcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
 
             void OnRequest(object sender, RequestEventArgs e)
             {
@@ -36,7 +45,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.on(\"request\")", "should emit context events before browser events")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.on(\"request\")",
+                "should emit context events before browser events"
+            )
+        ]
         public async Task ShouldEmitContextEventsBeforeBrowserEvents()
         {
             var order = new List<string>();
@@ -72,16 +88,27 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.test", "Browser specs Browser.on(\"request\")", "should report requests from dedicated workers")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.test",
+                "Browser specs Browser.on(\"request\")",
+                "should report requests from dedicated workers"
+            )
+        ]
         public async Task ShouldReportRequestsFromDedicatedWorkers()
         {
-            var workerCreatedTcs = new TaskCompletionSource<WebWorker>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
             await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
             var worker = await workerCreatedTcs.Task.WithTimeout();
 
             var url = TestConstants.ServerUrl + "/one-style.css";
-            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var requestTcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
 
             void OnRequest(object sender, RequestEventArgs e)
             {
@@ -106,7 +133,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.on(\"request\")", "should not interfere with request interception")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.on(\"request\")",
+                "should not interfere with request interception"
+            )
+        ]
         public async Task ShouldNotInterfereWithRequestInterception()
         {
             await Page.SetRequestInterceptionAsync(true);

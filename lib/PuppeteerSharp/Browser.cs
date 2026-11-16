@@ -4,9 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-#if !CDP_ONLY
-using PuppeteerSharp.Bidi;
-#endif
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.QueryHandlers;
@@ -14,6 +11,10 @@ using ReactiveExtensionsSharp;
 using ReactiveExtensionsSharp.Extras;
 using ReactiveExtensionsSharp.Operators;
 using RxSharp = ReactiveExtensionsSharp;
+#if !CDP_ONLY
+using PuppeteerSharp.Bidi;
+#endif
+
 
 namespace PuppeteerSharp
 {
@@ -84,7 +85,8 @@ namespace PuppeteerSharp
         public abstract DebugInfo DebugInfo { get; }
 
         /// <inheritdoc/>
-        public virtual ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
+        public virtual ITarget Target =>
+            Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
         internal bool HasConsoleListeners => Console != null;
 
@@ -109,7 +111,9 @@ namespace PuppeteerSharp
         public abstract ITarget[] Targets();
 
         /// <inheritdoc/>
-        public abstract Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null);
+        public abstract Task<IBrowserContext> CreateBrowserContextAsync(
+            BrowserContextOptions options = null
+        );
 
         /// <inheritdoc/>
         public abstract IBrowserContext[] BrowserContexts();
@@ -124,7 +128,10 @@ namespace PuppeteerSharp
         public abstract Task RemoveScreenAsync(string screenId);
 
         /// <inheritdoc/>
-        public abstract Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null);
+        public abstract Task<string> InstallExtensionAsync(
+            string path,
+            ExtensionInstallOptions options = null
+        );
 
         /// <inheritdoc/>
         public abstract Task UninstallExtensionAsync(string id);
@@ -145,14 +152,19 @@ namespace PuppeteerSharp
         public abstract Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options);
 
         /// <inheritdoc/>
-        public virtual Task RestrictNetworkAsync(NetworkRestrictions restrictions = null)
-            => throw new NotSupportedException("RestrictNetwork is only supported with Chrome and the CDP protocol.");
+        public virtual Task RestrictNetworkAsync(NetworkRestrictions restrictions = null) =>
+            throw new NotSupportedException(
+                "RestrictNetwork is only supported with Chrome and the CDP protocol."
+            );
 
         /// <inheritdoc/>
-        public async Task<IPage[]> PagesAsync(bool includeAll = false)
-            => (await Task.WhenAll(
-                BrowserContexts().Select(t => t.PagesAsync(includeAll))).ConfigureAwait(false))
-                .SelectMany(p => p).ToArray();
+        public async Task<IPage[]> PagesAsync(bool includeAll = false) =>
+            (
+                await Task.WhenAll(BrowserContexts().Select(t => t.PagesAsync(includeAll)))
+                    .ConfigureAwait(false)
+            )
+                .SelectMany(p => p)
+                .ToArray();
 
         /// <inheritdoc/>
         public abstract Task<string> GetVersionAsync();
@@ -167,7 +179,10 @@ namespace PuppeteerSharp
         public abstract Task CloseAsync();
 
         /// <inheritdoc/>
-        public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
+        public async Task<ITarget> WaitForTargetAsync(
+            Func<ITarget, bool> predicate,
+            WaitForOptions options = null
+        )
         {
             if (predicate == null)
             {
@@ -177,14 +192,21 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var cancellationToken = options?.CancellationToken ?? default;
 
-            using var created = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h);
-            using var changed = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h);
+            using var created = RxExtensions.FromEventBuffered<TargetChangedArgs>(
+                h => TargetCreated += h,
+                h => TargetCreated -= h
+            );
+            using var changed = RxExtensions.FromEventBuffered<TargetChangedArgs>(
+                h => TargetChanged += h,
+                h => TargetChanged -= h
+            );
 
             try
             {
                 // causeFactory: null (the default) so cancellation and timeout keep their own distinct
                 // exception types below - RaceWithSignalAndTimer would otherwise use one factory for both.
-                return await created.AsObservable()
+                return await created
+                    .AsObservable()
                     .MergeWith(changed.AsObservable())
                     .Map(e => (ITarget)e.Target)
                     .MergeWith(Observable.From(Targets()))
@@ -209,7 +231,10 @@ namespace PuppeteerSharp
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException("Custom query handler name must not be empty", nameof(name));
+                throw new ArgumentException(
+                    "Custom query handler name must not be empty",
+                    nameof(name)
+                );
             }
 
             if (queryHandler == null)
@@ -221,32 +246,31 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public void UnregisterCustomQueryHandler(string name)
-            => CustomQuerySelectorRegistry.Default.UnregisterCustomQueryHandler(name);
+        public void UnregisterCustomQueryHandler(string name) =>
+            CustomQuerySelectorRegistry.Default.UnregisterCustomQueryHandler(name);
 
         /// <inheritdoc/>
-        public void ClearCustomQueryHandlers()
-            => CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
+        public void ClearCustomQueryHandlers() =>
+            CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
 
         /// <inheritdoc/>
-        public Task SetPermissionAsync(string origin, params PermissionEntry[] permissions)
-            => DefaultContext.SetPermissionAsync(origin, permissions);
+        public Task SetPermissionAsync(string origin, params PermissionEntry[] permissions) =>
+            DefaultContext.SetPermissionAsync(origin, permissions);
 
         /// <inheritdoc/>
-        public Task<CookieParam[]> GetCookiesAsync()
-            => DefaultContext.GetCookiesAsync();
+        public Task<CookieParam[]> GetCookiesAsync() => DefaultContext.GetCookiesAsync();
 
         /// <inheritdoc/>
-        public Task SetCookieAsync(params CookieData[] cookies)
-            => DefaultContext.SetCookieAsync(cookies);
+        public Task SetCookieAsync(params CookieData[] cookies) =>
+            DefaultContext.SetCookieAsync(cookies);
 
         /// <inheritdoc/>
-        public Task DeleteCookieAsync(params CookieParam[] cookies)
-            => DefaultContext.DeleteCookieAsync(cookies);
+        public Task DeleteCookieAsync(params CookieParam[] cookies) =>
+            DefaultContext.DeleteCookieAsync(cookies);
 
         /// <inheritdoc/>
-        public Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)
-            => DefaultContext.DeleteMatchingCookiesAsync(filters);
+        public Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters) =>
+            DefaultContext.DeleteMatchingCookiesAsync(filters);
 
         /// <inheritdoc/>
         public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
@@ -296,14 +320,15 @@ namespace PuppeteerSharp
         /// <param name="e">The event arguments.</param>
         internal void OnRequest(RequestEventArgs e) => Request?.Invoke(this, e);
 
-        internal IEnumerable<string> GetCustomQueryHandlerNames()
-            => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
+        internal IEnumerable<string> GetCustomQueryHandlerNames() =>
+            CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
 
         /// <summary>
         /// Emits <see cref="RequestServedFromCache"/> event.
         /// </summary>
         /// <param name="e">The event arguments.</param>
-        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+        internal void OnRequestServedFromCache(RequestEventArgs e) =>
+            RequestServedFromCache?.Invoke(this, e);
 
         /// <summary>
         /// Emits <see cref="Response"/> event.
@@ -334,10 +359,9 @@ namespace PuppeteerSharp
         /// created by Puppeteer.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _ = CloseAsync()
-            .ContinueWith(
-                _ => ScreenshotTaskQueue.DisposeAsync(),
-                TaskScheduler.Default);
+        protected virtual void Dispose(bool disposing) =>
+            _ = CloseAsync()
+                .ContinueWith(_ => ScreenshotTaskQueue.DisposeAsync(), TaskScheduler.Default);
 
         /// <summary>
         /// Emits <see cref="Closed"/> event.

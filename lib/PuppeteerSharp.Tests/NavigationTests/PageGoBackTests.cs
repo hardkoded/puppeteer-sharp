@@ -24,24 +24,44 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(response.Url, Does.Contain("grid"));
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.goBack", "should error if no history is found")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.goBack",
+                "should error if no history is found"
+            )
+        ]
         public async Task ShouldErrorIfNoHistoryIsFound()
         {
-            var exception = Assert.CatchAsync<PuppeteerException>(async () => await Page.GoBackAsync());
+            var exception = Assert.CatchAsync<PuppeteerException>(async () =>
+                await Page.GoBackAsync()
+            );
             Assert.That(exception, Is.Not.Null);
             Assert.That(
                 exception.Message,
-                Does.Contain("History entry to navigate to not found.").Or.Contain("no such history entry"));
+                Does.Contain("History entry to navigate to not found.")
+                    .Or.Contain("no such history entry")
+            );
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.goBack", "should work with HistoryAPI")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.goBack",
+                "should work with HistoryAPI"
+            )
+        ]
         public async Task ShouldWorkWithHistoryAPI()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateExpressionAsync(@"
+            await Page.EvaluateExpressionAsync(
+                @"
               history.pushState({ }, '', '/first.html');
               history.pushState({ }, '', '/second.html');
-            ");
+            "
+            );
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/second.html"));
 
             var response = await Page.GoBackAsync();
@@ -54,7 +74,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/first.html"));
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.goBack", "should not go back when the signal is already aborted")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.goBack",
+                "should not go back when the signal is already aborted"
+            )
+        ]
         public async Task ShouldNotGoBackWhenTheSignalIsAlreadyAborted()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -62,8 +89,9 @@ namespace PuppeteerSharp.Tests.NavigationTests
             using var cts = new CancellationTokenSource();
             cts.Cancel();
 
-            Assert.ThrowsAsync<OperationCanceledException>(() => Page.GoBackAsync(
-                new NavigationOptions { CancellationToken = cts.Token }));
+            Assert.ThrowsAsync<OperationCanceledException>(() =>
+                Page.GoBackAsync(new NavigationOptions { CancellationToken = cts.Token })
+            );
             await Task.Delay(200);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/grid.html"));
         }

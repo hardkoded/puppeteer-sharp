@@ -8,9 +8,13 @@ namespace PuppeteerSharp.Tests
 {
     public static class PageExtensions
     {
-        public static IEnumerable<IFrame> ChildFrames(this IPage page) => page.Frames.Where(f => f.ParentFrame == page.MainFrame);
+        public static IEnumerable<IFrame> ChildFrames(this IPage page) =>
+            page.Frames.Where(f => f.ParentFrame == page.MainFrame);
 
-        public static async Task<IFrame> FirstChildFrameAsync(this IPage page, int timeoutMs = 5_000)
+        public static async Task<IFrame> FirstChildFrameAsync(
+            this IPage page,
+            int timeoutMs = 5_000
+        )
         {
             var stopwatch = Stopwatch.StartNew();
 

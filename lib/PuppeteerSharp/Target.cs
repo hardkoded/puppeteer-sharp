@@ -15,9 +15,7 @@ namespace PuppeteerSharp
     {
         private readonly ConcurrentSet<ITarget> _childTargets = [];
 
-        internal Target()
-        {
-        }
+        internal Target() { }
 
         /// <inheritdoc/>
         public abstract string Url { get; }

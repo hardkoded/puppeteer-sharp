@@ -17,9 +17,12 @@ namespace PuppeteerSharp.Tests.ConsoleTests
 
             await Task.WhenAll(
                 messageTask.Task,
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     return console.log('hello', 5, {foo: 'bar'});
-                }"));
+                }"
+                )
+            );
 
             var message = await messageTask.Task;
 
@@ -37,7 +40,10 @@ namespace PuppeteerSharp.Tests.ConsoleTests
             Assert.That(await fooProperty.JsonValueAsync<string>(), Is.EqualTo("bar"));
         }
 
-        [Test, PuppeteerTest("console.spec", "console", "should include null and undefined in text()")]
+        [
+            Test,
+            PuppeteerTest("console.spec", "console", "should include null and undefined in text()")
+        ]
         public async Task ShouldIncludeNullAndUndefinedInText()
         {
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
@@ -46,9 +52,12 @@ namespace PuppeteerSharp.Tests.ConsoleTests
 
             await Task.WhenAll(
                 messageTask.Task,
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     return console.log('hello', null, undefined);
-                }"));
+                }"
+                )
+            );
 
             var message = await messageTask.Task;
             Assert.That(message.Text, Is.EqualTo("hello null undefined"));
@@ -64,9 +73,12 @@ namespace PuppeteerSharp.Tests.ConsoleTests
 
             await Task.WhenAll(
                 messageTask.Task,
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     return console.log(new Error('test error'));
-                }"));
+                }"
+                )
+            );
 
             var message = await messageTask.Task;
             Assert.That(message.Text, Is.EqualTo("Error: test error"));
@@ -74,7 +86,14 @@ namespace PuppeteerSharp.Tests.ConsoleTests
             Assert.That(message.Args.Count, Is.EqualTo(1));
         }
 
-        [Test, PuppeteerTest("console.spec", "console", "should return the first line of the error message in text()")]
+        [
+            Test,
+            PuppeteerTest(
+                "console.spec",
+                "console",
+                "should return the first line of the error message in text()"
+            )
+        ]
         public async Task ShouldReturnTheFirstLineOfTheErrorMessageInText()
         {
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
@@ -83,9 +102,12 @@ namespace PuppeteerSharp.Tests.ConsoleTests
 
             await Task.WhenAll(
                 messageTask.Task,
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     return console.log(new Error('test error\nsecond line'));
-                }"));
+                }"
+                )
+            );
 
             var message = await messageTask.Task;
             Assert.That(message.Text, Is.EqualTo("Error: test error"));
@@ -93,7 +115,14 @@ namespace PuppeteerSharp.Tests.ConsoleTests
             Assert.That(message.Args.Count, Is.EqualTo(1));
         }
 
-        [Test, PuppeteerTest("console.spec", "console", "should work on script call right after navigation")]
+        [
+            Test,
+            PuppeteerTest(
+                "console.spec",
+                "console",
+                "should work on script call right after navigation"
+            )
+        ]
         public async Task ShouldWorkOnScriptCallRightAfterNavigation()
         {
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
@@ -103,13 +132,23 @@ namespace PuppeteerSharp.Tests.ConsoleTests
             await Task.WhenAll(
                 messageTask.Task,
                 // Firefox prints warn if <!DOCTYPE html> is not present
-                Page.GoToAsync("data:text/html,<!DOCTYPE html><script>console.log('SOME_LOG_MESSAGE');</script>"));
+                Page.GoToAsync(
+                    "data:text/html,<!DOCTYPE html><script>console.log('SOME_LOG_MESSAGE');</script>"
+                )
+            );
 
             var message = await messageTask.Task;
             Assert.That(message.Text, Is.EqualTo("SOME_LOG_MESSAGE"));
         }
 
-        [Test, PuppeteerTest("console.spec", "console", "should work for different console API calls with logging functions")]
+        [
+            Test,
+            PuppeteerTest(
+                "console.spec",
+                "console",
+                "should work for different console API calls with logging functions"
+            )
+        ]
         public async Task ShouldWorkForDifferentConsoleApiCallsWithLoggingFunctions()
         {
             var messages = new List<ConsoleMessage>();
@@ -117,38 +156,53 @@ namespace PuppeteerSharp.Tests.ConsoleTests
             Page.Console += (_, e) => messages.Add(e.Message);
 
             // All console events will be reported before `page.evaluate` is finished.
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
               console.trace('calling console.trace');
               console.dir('calling console.dir');
               console.warn('calling console.warn');
               console.error('calling console.error');
               console.log(Promise.resolve('should not wait until resolved!'));
-            }");
+            }"
+            );
 
-            Assert.That(messages
-                .Select(_ => _.Type)
-                .ToArray(), Is.EqualTo(new[]
-            {
-                ConsoleType.Trace,
-                ConsoleType.Dir,
-                ConsoleType.Warning,
-                ConsoleType.Error,
-                ConsoleType.Log
-            }));
+            Assert.That(
+                messages.Select(_ => _.Type).ToArray(),
+                Is.EqualTo(
+                    new[]
+                    {
+                        ConsoleType.Trace,
+                        ConsoleType.Dir,
+                        ConsoleType.Warning,
+                        ConsoleType.Error,
+                        ConsoleType.Log,
+                    }
+                )
+            );
 
-            Assert.That(messages
-                .Select(msg => msg.Text)
-                .ToArray(), Is.EqualTo(new[]
-            {
-                "calling console.trace",
-                "calling console.dir",
-                "calling console.warn",
-                "calling console.error",
-                "JSHandle@promise"
-            }));
+            Assert.That(
+                messages.Select(msg => msg.Text).ToArray(),
+                Is.EqualTo(
+                    new[]
+                    {
+                        "calling console.trace",
+                        "calling console.dir",
+                        "calling console.warn",
+                        "calling console.error",
+                        "JSHandle@promise",
+                    }
+                )
+            );
         }
 
-        [Test, PuppeteerTest("console.spec", "console", "should work for different console API calls with timing functions")]
+        [
+            Test,
+            PuppeteerTest(
+                "console.spec",
+                "console",
+                "should work for different console API calls with timing functions"
+            )
+        ]
         public async Task ShouldWorkForDifferentConsoleApiCallsWithTimingFunctions()
         {
             var messages = new List<ConsoleMessage>();
@@ -156,23 +210,30 @@ namespace PuppeteerSharp.Tests.ConsoleTests
             Page.Console += (_, e) => messages.Add(e.Message);
 
             // All console events will be reported before `page.evaluate` is finished.
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
               // A pair of time/timeEnd generates only one Console API call.
               console.time('calling console.time');
               console.timeEnd('calling console.time');
-            }");
+            }"
+            );
 
-            Assert.That(messages
-                .Select(_ => _.Type)
-                .ToArray(), Is.EqualTo(new[]
-            {
-                ConsoleType.TimeEnd
-            }));
+            Assert.That(
+                messages.Select(_ => _.Type).ToArray(),
+                Is.EqualTo(new[] { ConsoleType.TimeEnd })
+            );
 
             Assert.That(messages[0].Text, Does.Contain("calling console.time"));
         }
 
-        [Test, PuppeteerTest("console.spec", "console", "should work for different console API calls with group functions")]
+        [
+            Test,
+            PuppeteerTest(
+                "console.spec",
+                "console",
+                "should work for different console API calls with group functions"
+            )
+        ]
         public async Task ShouldWorkForDifferentConsoleApiCallsWithGroupFunctions()
         {
             var messages = new List<ConsoleMessage>();
@@ -180,18 +241,17 @@ namespace PuppeteerSharp.Tests.ConsoleTests
             Page.Console += (_, e) => messages.Add(e.Message);
 
             // All console events will be reported before `page.evaluate` is finished.
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
               console.group('calling console.group');
               console.groupEnd();
-            }");
+            }"
+            );
 
-            Assert.That(messages
-                .Select(_ => _.Type)
-                .ToArray(), Is.EqualTo(new[]
-            {
-                ConsoleType.StartGroup,
-                ConsoleType.EndGroup
-            }));
+            Assert.That(
+                messages.Select(_ => _.Type).ToArray(),
+                Is.EqualTo(new[] { ConsoleType.StartGroup, ConsoleType.EndGroup })
+            );
 
             // We should be able to check both messages, but Chrome report text
             Assert.That(messages[0].Text, Does.Contain("calling console.group"));
@@ -206,14 +266,15 @@ namespace PuppeteerSharp.Tests.ConsoleTests
 
             await Task.WhenAll(
                 messageTask.Task,
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     return console.error(window);
-                }"));
+                }"
+                )
+            );
 
             var message = await messageTask.Task;
-            Assert.That(
-                new[] { "JSHandle@object", "JSHandle@window" },
-                Does.Contain(message.Text));
+            Assert.That(new[] { "JSHandle@object", "JSHandle@window" }, Does.Contain(message.Text));
         }
 
         [Test, PuppeteerTest("console.spec", "console", "should return remote objects")]
@@ -223,16 +284,19 @@ namespace PuppeteerSharp.Tests.ConsoleTests
 
             Page.Console += (_, e) => logTask.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
                 globalThis.test = 1;
                 console.log(1, 2, 3, globalThis);
-            }");
+            }"
+            );
 
             var log = await logTask.Task;
 
             Assert.That(
                 new[] { "1 2 3 JSHandle@object", "1 2 3 JSHandle@window" },
-                Does.Contain(log.Text));
+                Does.Contain(log.Text)
+            );
             Assert.That(log.Args.Count, Is.EqualTo(4));
 
             var property = await log.Args[3].GetPropertyAsync("test");
@@ -253,7 +317,9 @@ namespace PuppeteerSharp.Tests.ConsoleTests
                 messageTask.Task,
                 Page.EvaluateFunctionAsync(
                     "async url => await fetch(url).catch(() => {})",
-                    $"{TestConstants.CrossProcessUrl}/empty.html"));
+                    $"{TestConstants.CrossProcessUrl}/empty.html"
+                )
+            );
 
             var message = await messageTask.Task;
             Assert.That(message.Text, Does.Contain("Access-Control-Allow-Origin"));
@@ -279,19 +345,26 @@ namespace PuppeteerSharp.Tests.ConsoleTests
 
             await Task.WhenAll(
                 consoleTask.Task,
-                Page.SetContentAsync("<script>fetch('http://wat');</script>"));
+                Page.SetContentAsync("<script>fetch('http://wat');</script>")
+            );
 
             var message = await consoleTask.Task;
             Assert.That(message.Text, Does.Contain("ERR_NAME"));
             Assert.That(message.Type, Is.EqualTo(ConsoleType.Error));
-            Assert.That(message.Location, Is.EqualTo(new ConsoleMessageLocation
-            {
-                URL = "http://wat/",
-                LineNumber = null,
-            }));
+            Assert.That(
+                message.Location,
+                Is.EqualTo(new ConsoleMessageLocation { URL = "http://wat/", LineNumber = null })
+            );
         }
 
-        [Test, PuppeteerTest("console.spec", "console", "should have location and stack trace for console API calls")]
+        [
+            Test,
+            PuppeteerTest(
+                "console.spec",
+                "console",
+                "should have location and stack trace for console API calls"
+            )
+        ]
         public async Task ShouldHaveLocationAndStackTraceForConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -311,46 +384,67 @@ namespace PuppeteerSharp.Tests.ConsoleTests
 
             await Task.WhenAll(
                 consoleTask.Task,
-                Page.GoToAsync(TestConstants.ServerUrl + "/consoletrace.html"));
+                Page.GoToAsync(TestConstants.ServerUrl + "/consoletrace.html")
+            );
 
             var message = await consoleTask.Task;
             Assert.That(message.Text, Is.EqualTo("yellow"));
             Assert.That(message.Type, Is.EqualTo(ConsoleType.Trace));
-            Assert.That(message.Location, Is.EqualTo(new ConsoleMessageLocation
-            {
-                URL = TestConstants.ServerUrl + "/consoletrace.html",
-                LineNumber = 8,
-                ColumnNumber = 16,
-            }));
-            Assert.That(message.StackTrace, Is.EqualTo(new[]
-            {
-                new ConsoleMessageLocation
-                {
-                    URL = TestConstants.ServerUrl + "/consoletrace.html",
-                    LineNumber = 8,
-                    ColumnNumber = 16,
-                },
-                new ConsoleMessageLocation
-                {
-                    URL = TestConstants.ServerUrl + "/consoletrace.html",
-                    LineNumber = 11,
-                    ColumnNumber = 8,
-                },
-                new ConsoleMessageLocation
-                {
-                    URL = TestConstants.ServerUrl + "/consoletrace.html",
-                    LineNumber = 13,
-                    ColumnNumber = 6,
-                },
-            }));
+            Assert.That(
+                message.Location,
+                Is.EqualTo(
+                    new ConsoleMessageLocation
+                    {
+                        URL = TestConstants.ServerUrl + "/consoletrace.html",
+                        LineNumber = 8,
+                        ColumnNumber = 16,
+                    }
+                )
+            );
+            Assert.That(
+                message.StackTrace,
+                Is.EqualTo(
+                    new[]
+                    {
+                        new ConsoleMessageLocation
+                        {
+                            URL = TestConstants.ServerUrl + "/consoletrace.html",
+                            LineNumber = 8,
+                            ColumnNumber = 16,
+                        },
+                        new ConsoleMessageLocation
+                        {
+                            URL = TestConstants.ServerUrl + "/consoletrace.html",
+                            LineNumber = 11,
+                            ColumnNumber = 8,
+                        },
+                        new ConsoleMessageLocation
+                        {
+                            URL = TestConstants.ServerUrl + "/consoletrace.html",
+                            LineNumber = 13,
+                            ColumnNumber = 6,
+                        },
+                    }
+                )
+            );
             if (PuppeteerTestAttribute.IsCdp)
             {
                 Assert.That(message.Location.ScriptId, Is.Not.Null.And.Not.Empty);
-                Assert.That(message.StackTrace.Select(f => f.ScriptId), Is.All.Not.Null.And.Not.Empty);
+                Assert.That(
+                    message.StackTrace.Select(f => f.ScriptId),
+                    Is.All.Not.Null.And.Not.Empty
+                );
             }
         }
 
-        [Test, PuppeteerTest("console.spec", "console", "should have scriptId in stack trace for eval console API calls")]
+        [
+            Test,
+            PuppeteerTest(
+                "console.spec",
+                "console",
+                "should have scriptId in stack trace for eval console API calls"
+            )
+        ]
         public async Task ShouldHaveScriptIdInStackTraceForEvalConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -369,9 +463,12 @@ namespace PuppeteerSharp.Tests.ConsoleTests
 
             await Task.WhenAll(
                 consoleTask.Task,
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     eval(""function dynamicFoo() { console.trace('from eval'); }\ndynamicFoo();"");
-                }"));
+                }"
+                )
+            );
 
             var message = await consoleTask.Task;
             Assert.That(message.Text, Is.EqualTo("from eval"));
@@ -384,11 +481,19 @@ namespace PuppeteerSharp.Tests.ConsoleTests
         }
 
         // @see https://github.com/puppeteer/puppeteer/issues/3865
-        [Test, PuppeteerTest("console.spec", "console", "should not throw when there are console messages in detached iframes")]
+        [
+            Test,
+            PuppeteerTest(
+                "console.spec",
+                "console",
+                "should not throw when there are console messages in detached iframes"
+            )
+        ]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"async () =>
+            await Page.EvaluateFunctionAsync(
+                @"async () =>
             {
                 // 1. Create a popup that Puppeteer is not connected to.
                 const win = window.open(
@@ -403,7 +508,8 @@ namespace PuppeteerSharp.Tests.ConsoleTests
                 await new Promise(x => { return (frame.onload = x); });
                 // 3. After that, remove the iframe.
                 frame.remove();
-            }");
+            }"
+            );
             // 4. Find the popup target - filter by page type first since targets can include frames/workers
             var popupTarget = await FindPopupTargetAsync(Page);
             // 5. Connect to the popup and make sure it doesn't throw and is not the same page.

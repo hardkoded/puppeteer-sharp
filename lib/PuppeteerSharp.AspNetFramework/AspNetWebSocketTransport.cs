@@ -18,25 +18,39 @@ namespace PuppeteerSharp.AspNetFramework
         /// Gets a <see cref="TransportTaskScheduler"/> that uses ASP.NET <see cref="HostingEnvironment.QueueBackgroundWorkItem(Func{CancellationToken,Task})"/>
         /// for scheduling of tasks.
         /// </summary>
-        public static readonly TransportTaskScheduler AspNetTransportScheduler = ScheduleBackgroundTask;
+        public static readonly TransportTaskScheduler AspNetTransportScheduler =
+            ScheduleBackgroundTask;
 
-        private static async Task<IConnectionTransport> CreateAspNetTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
+        private static async Task<IConnectionTransport> CreateAspNetTransport(
+            Uri url,
+            IConnectionOptions connectionOptions,
+            CancellationToken cancellationToken
+        )
         {
             var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
             var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken);
-            return new AspNetWebSocketTransport(webSocket, connectionOptions.EnqueueTransportMessages);
+            return new AspNetWebSocketTransport(
+                webSocket,
+                connectionOptions.EnqueueTransportMessages
+            );
         }
 
-        private static void ScheduleBackgroundTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
+        private static void ScheduleBackgroundTask(
+            Func<CancellationToken, Task> taskFactory,
+            CancellationToken cancellationToken
+        )
         {
-            Task ExecuteAsync(CancellationToken hostingCancellationToken)
-                => taskFactory(CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, hostingCancellationToken).Token);
+            Task ExecuteAsync(CancellationToken hostingCancellationToken) =>
+                taskFactory(
+                    CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, hostingCancellationToken)
+                        .Token
+                );
             HostingEnvironment.QueueBackgroundWorkItem(ExecuteAsync);
         }
 
         /// <inheritdoc />
         public AspNetWebSocketTransport(WebSocket client, bool queueRequests)
-            : base(client, AspNetTransportScheduler, queueRequests)
-        { }
+            : base(client, AspNetTransportScheduler, queueRequests) { }
     }
 }

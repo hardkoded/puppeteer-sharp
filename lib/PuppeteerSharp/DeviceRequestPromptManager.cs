@@ -45,14 +45,17 @@ public class DeviceRequestPromptManager
         _client.MessageReceived += OnMessageReceived;
     }
 
-    internal async Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
+    internal async Task<DeviceRequestPrompt> WaitForDevicePromptAsync(
+        WaitForOptions options = default
+    )
     {
         if (_client == null)
         {
             throw new PuppeteerException("Cannot wait for device prompt through detached session!");
         }
 
-        var needsEnable = _deviceRequestPromptTcs == null || _deviceRequestPromptTcs.Task.IsCompleted;
+        var needsEnable =
+            _deviceRequestPromptTcs == null || _deviceRequestPromptTcs.Task.IsCompleted;
         var enableTask = Task.CompletedTask;
 
         if (needsEnable)
@@ -67,13 +70,17 @@ public class DeviceRequestPromptManager
 
         if (cancellationToken != default)
         {
-            registration = cancellationToken.Register(
-                () => _deviceRequestPromptTcs.TrySetCanceled(cancellationToken));
+            registration = cancellationToken.Register(() =>
+                _deviceRequestPromptTcs.TrySetCanceled(cancellationToken)
+            );
         }
 
         try
         {
-            var task = _deviceRequestPromptTcs.Task.WithTimeout(timeout, cancellationToken: cancellationToken);
+            var task = _deviceRequestPromptTcs.Task.WithTimeout(
+                timeout,
+                cancellationToken: cancellationToken
+            );
 
             await Task.WhenAll(enableTask, task).ConfigureAwait(false);
 
@@ -92,7 +99,9 @@ public class DeviceRequestPromptManager
             switch (e.MessageID)
             {
                 case "DeviceAccess.deviceRequestPrompted":
-                    OnDeviceRequestPrompted(e.MessageData.ToObject<DeviceAccessDeviceRequestPromptedResponse>());
+                    OnDeviceRequestPrompted(
+                        e.MessageData.ToObject<DeviceAccessDeviceRequestPromptedResponse>()
+                    );
                     break;
                 case "Target.detachedFromTarget":
                     _client = null;
@@ -101,7 +110,8 @@ public class DeviceRequestPromptManager
         }
         catch (Exception ex)
         {
-            var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+            var message =
+                $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
             (_client as CDPSession)?.Close(message);
         }
     }
@@ -115,7 +125,9 @@ public class DeviceRequestPromptManager
 
         if (_client == null)
         {
-            _deviceRequestPromptTcs.TrySetException(new PuppeteerException("Session closed. Most likely the target has been closed."));
+            _deviceRequestPromptTcs.TrySetException(
+                new PuppeteerException("Session closed. Most likely the target has been closed.")
+            );
             return;
         }
 

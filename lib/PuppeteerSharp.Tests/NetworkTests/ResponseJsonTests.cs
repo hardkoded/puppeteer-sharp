@@ -12,7 +12,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
 
-            Assert.That((await response.JsonAsync<JsonElement>()).GetProperty("foo").GetString(), Is.EqualTo("bar"));
+            Assert.That(
+                (await response.JsonAsync<JsonElement>()).GetProperty("foo").GetString(),
+                Is.EqualTo("bar")
+            );
         }
     }
 }

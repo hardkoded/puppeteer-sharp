@@ -28,7 +28,9 @@ namespace PuppeteerSharp
         private readonly List<string> _contextBindings = new();
         private readonly TaskQueue _bindingQueue = new();
         private bool _detached;
-        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
         private ExecutionContext _context;
         private string _worldId;
         private string _origin;
@@ -37,7 +39,9 @@ namespace PuppeteerSharp
             Frame frame,
             WebWorker worker,
             TimeoutSettings timeoutSettings,
-            bool isMainWorld) : base(timeoutSettings)
+            bool isMainWorld
+        )
+            : base(timeoutSettings)
         {
             Frame = frame;
             Worker = worker;
@@ -106,7 +110,9 @@ namespace PuppeteerSharp
             }
 
             // _worldId is the extension ID for extension worlds
-            var extensions = await ((IPage)((CdpFrame)Frame).FrameManager.Page).Browser.ExtensionsAsync().ConfigureAwait(false);
+            var extensions = await ((IPage)((CdpFrame)Frame).FrameManager.Page)
+                .Browser.ExtensionsAsync()
+                .ConfigureAwait(false);
             extensions.TryGetValue(_worldId, out var extension);
             return extension;
         }
@@ -125,46 +131,64 @@ namespace PuppeteerSharp
                 return;
             }
 
-            await _bindingQueue.Enqueue(async () =>
-            {
-                var expression = BindingUtils.PageBindingInitString("internal", name);
-                try
+            await _bindingQueue
+                .Enqueue(async () =>
                 {
-                    // TODO: In theory, it would be enough to call this just once
-                    await context.Client.SendAsync(
-                        "Runtime.addBinding",
-                        new RuntimeAddBindingRequest
-                        {
-                            Name = BindingUtils.CdpBindingPrefix + name,
-                            ExecutionContextName = !string.IsNullOrEmpty(context.ContextName) ? context.ContextName : null,
-                            ExecutionContextId = string.IsNullOrEmpty(context.ContextName) ? context.ContextId : null,
-                        }).ConfigureAwait(false);
-
-                    await context.EvaluateExpressionAsync(expression).ConfigureAwait(false);
-                    _contextBindings.Add(name);
-                }
-                catch (Exception ex)
-                {
-                    var ctxDestroyed = ex.Message.Contains("Execution context was destroyed");
-                    var ctxNotFound = ex.Message.Contains("Cannot find context with specified id");
-                    if (ctxDestroyed || ctxNotFound)
+                    var expression = BindingUtils.PageBindingInitString("internal", name);
+                    try
                     {
-                        return;
-                    }
+                        // TODO: In theory, it would be enough to call this just once
+                        await context
+                            .Client.SendAsync(
+                                "Runtime.addBinding",
+                                new RuntimeAddBindingRequest
+                                {
+                                    Name = BindingUtils.CdpBindingPrefix + name,
+                                    ExecutionContextName = !string.IsNullOrEmpty(
+                                        context.ContextName
+                                    )
+                                        ? context.ContextName
+                                        : null,
+                                    ExecutionContextId = string.IsNullOrEmpty(context.ContextName)
+                                        ? context.ContextId
+                                        : null,
+                                }
+                            )
+                            .ConfigureAwait(false);
 
-                    _logger.ErrorMessage(ex.ToString());
-                }
-            }).ConfigureAwait(false);
+                        await context.EvaluateExpressionAsync(expression).ConfigureAwait(false);
+                        _contextBindings.Add(name);
+                    }
+                    catch (Exception ex)
+                    {
+                        var ctxDestroyed = ex.Message.Contains("Execution context was destroyed");
+                        var ctxNotFound = ex.Message.Contains(
+                            "Cannot find context with specified id"
+                        );
+                        if (ctxDestroyed || ctxNotFound)
+                        {
+                            return;
+                        }
+
+                        _logger.ErrorMessage(ex.ToString());
+                    }
+                })
+                .ConfigureAwait(false);
         }
 
         internal override async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
-            {
-                BackendNodeId = backendNodeId,
-                ExecutionContextId = context.ContextId,
-            }).ConfigureAwait(false);
+            var obj = await Client
+                .SendAsync<DomResolveNodeResponse>(
+                    "DOM.resolveNode",
+                    new DomResolveNodeRequest
+                    {
+                        BackendNodeId = backendNodeId,
+                        ExecutionContextId = context.ContextId,
+                    }
+                )
+                .ConfigureAwait(false);
 
             return context.CreateJSHandle(obj.Object) as IElementHandle;
         }
@@ -182,14 +206,15 @@ namespace PuppeteerSharp
                 return handle;
             }
 
-            var info = await Client.SendAsync<DomDescribeNodeResponse>(
-                "DOM.describeNode",
-                new DomDescribeNodeRequest
-                {
-                    ObjectId = cdpHandle.RemoteObject.ObjectId,
-                }).ConfigureAwait(false);
+            var info = await Client
+                .SendAsync<DomDescribeNodeResponse>(
+                    "DOM.describeNode",
+                    new DomDescribeNodeRequest { ObjectId = cdpHandle.RemoteObject.ObjectId }
+                )
+                .ConfigureAwait(false);
 
-            var newHandle = await AdoptBackendNodeAsync(info.Node.BackendNodeId).ConfigureAwait(false);
+            var newHandle = await AdoptBackendNodeAsync(info.Node.BackendNodeId)
+                .ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
             return newHandle;
         }
@@ -202,10 +227,12 @@ namespace PuppeteerSharp
                 return handle;
             }
 
-            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
-            {
-                ObjectId = cdpHandle.RemoteObject.ObjectId,
-            }).ConfigureAwait(false);
+            var nodeInfo = await Client
+                .SendAsync<DomDescribeNodeResponse>(
+                    "DOM.describeNode",
+                    new DomDescribeNodeRequest { ObjectId = cdpHandle.RemoteObject.ObjectId }
+                )
+                .ConfigureAwait(false);
             return await AdoptBackendNodeAsync(nodeInfo.Node.BackendNodeId).ConfigureAwait(false);
         }
 
@@ -213,18 +240,22 @@ namespace PuppeteerSharp
         {
             _detached = true;
             Client.MessageReceived -= Client_MessageReceived;
-            TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
+            TaskManager.TerminateAll(
+                new PuppeteerException("waitForFunction failed: frame got detached.")
+            );
         }
 
         internal async Task<ExecutionContext> GetExecutionContextAsync()
         {
             if (_detached)
             {
-                throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)");
+                throw new PuppeteerException(
+                    $"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)"
+                );
             }
 
-            return await _contextResolveTaskWrapper.Task
-                .WithTimeout(TimeoutSettings.Timeout)
+            return await _contextResolveTaskWrapper
+                .Task.WithTimeout(TimeoutSettings.Timeout)
                 .ConfigureAwait(false);
         }
 
@@ -234,7 +265,10 @@ namespace PuppeteerSharp
             return await context.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
         }
 
-        internal override async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+        internal override async Task<IJSHandle> EvaluateFunctionHandleAsync(
+            string script,
+            params object[] args
+        )
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateFunctionHandleAsync(script, args).ConfigureAwait(false);
@@ -252,7 +286,10 @@ namespace PuppeteerSharp
             await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
         }
 
-        internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+        internal override async Task<T> EvaluateFunctionAsync<T>(
+            string script,
+            params object[] args
+        )
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
@@ -266,8 +303,12 @@ namespace PuppeteerSharp
 
         internal void ClearContext()
         {
-            _contextResolveTaskWrapper.TrySetException(new PuppeteerException("Execution Context was destroyed"));
-            _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _contextResolveTaskWrapper.TrySetException(
+                new PuppeteerException("Execution Context was destroyed")
+            );
+            _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             _context?.Dispose();
             _context = null;
             Frame?.ClearDocumentHandle();
@@ -277,12 +318,10 @@ namespace PuppeteerSharp
         internal void SetNewContext(
             CDPSession client,
             ContextPayload contextPayload,
-            IsolatedWorld world)
+            IsolatedWorld world
+        )
         {
-            _context = new ExecutionContext(
-                client,
-                contextPayload,
-                world);
+            _context = new ExecutionContext(client, contextPayload, world);
 
             SetContext(_context);
         }
@@ -307,13 +346,15 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Runtime.bindingCalled":
-                        await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>()).ConfigureAwait(false);
+                        await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>())
+                            .ConfigureAwait(false);
                         break;
                 }
             }
             catch (Exception ex)
             {
-                var message = $"IsolatedWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                var message =
+                    $"IsolatedWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.ErrorWithException(ex, message);
                 Client.Close(message);
             }
@@ -344,7 +385,14 @@ namespace PuppeteerSharp
 
                 if (Bindings.TryGetValue(payload.Name, out var binding))
                 {
-                    await binding.RunAsync(context, payload.Seq, payload.Args.Cast<object>().ToArray(), payload.IsTrivial).ConfigureAwait(false);
+                    await binding
+                        .RunAsync(
+                            context,
+                            payload.Seq,
+                            payload.Args.Cast<object>().ToArray(),
+                            payload.IsTrivial
+                        )
+                        .ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

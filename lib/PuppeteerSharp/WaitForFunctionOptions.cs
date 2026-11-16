@@ -11,7 +11,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// An interval at which the <c>pageFunction</c> is executed. defaults to <see cref="WaitForFunctionPollingOption.Raf"/>.
         /// </summary>
-        public WaitForFunctionPollingOption Polling { get; set; } = WaitForFunctionPollingOption.Raf;
+        public WaitForFunctionPollingOption Polling { get; set; } =
+            WaitForFunctionPollingOption.Raf;
 
         /// <summary>
         /// An interval at which the <c>pageFunction</c> is executed. If no value is specified will use <see cref="Polling"/>.

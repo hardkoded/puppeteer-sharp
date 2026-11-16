@@ -11,15 +11,16 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
     /// </summary>
     public class CliTests
     {
-        private readonly string _cacheDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        private readonly string _cacheDir = Path.Combine(
+            Path.GetTempPath(),
+            Path.GetRandomFileName()
+        );
 
         [SetUp]
-        public void CreateDir()
-            => new DirectoryInfo(_cacheDir).Create();
+        public void CreateDir() => new DirectoryInfo(_cacheDir).Create();
 
         [TearDown]
-        public void DeleteDir()
-            => new Cache(_cacheDir).Clear();
+        public void DeleteDir() => new Cache(_cacheDir).Clear();
 
         [Test, PuppeteerTest("CLI.spec", "Chrome CLI", "should download Chrome binaries")]
         public async Task ShouldDownloadChromeBinaries()
@@ -27,16 +28,22 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
             var fetcher = new BrowserFetcher(SupportedBrowser.Chrome)
             {
                 CacheDir = _cacheDir,
-                Platform = Platform.Linux
+                Platform = Platform.Linux,
             };
             await fetcher.DownloadAsync(BrowserData.Chrome.DefaultBuildId);
 
-            Assert.That(new FileInfo(Path.Combine(
-                _cacheDir,
-                "Chrome",
-                $"Linux-{BrowserData.Chrome.DefaultBuildId}",
-                "chrome-linux64",
-                "chrome")).Exists, Is.True);
+            Assert.That(
+                new FileInfo(
+                    Path.Combine(
+                        _cacheDir,
+                        "Chrome",
+                        $"Linux-{BrowserData.Chrome.DefaultBuildId}",
+                        "chrome-linux64",
+                        "chrome"
+                    )
+                ).Exists,
+                Is.True
+            );
         }
     }
 }

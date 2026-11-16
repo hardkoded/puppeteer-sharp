@@ -6,6 +6,7 @@ namespace PuppeteerSharp.DevicesFetcher
     {
         [JsonPropertyName("width")]
         public int Width { get; set; }
+
         [JsonPropertyName("height")]
         public int Height { get; set; }
 
@@ -14,8 +15,10 @@ namespace PuppeteerSharp.DevicesFetcher
 
         [JsonPropertyName("isMobile")]
         public bool IsMobile { get; set; }
+
         [JsonPropertyName("hasTouch")]
         public bool HasTouch { get; set; }
+
         [JsonPropertyName("isLandscape")]
         public bool IsLandscape { get; set; }
     }

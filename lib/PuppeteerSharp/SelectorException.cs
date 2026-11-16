@@ -18,24 +18,22 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectorException"/> class.
         /// </summary>
-        public SelectorException()
-        {
-        }
+        public SelectorException() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectorException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
-        public SelectorException(string message) : base(message)
-        {
-        }
+        public SelectorException(string message)
+            : base(message) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectorException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="selector">Selector.</param>
-        public SelectorException(string message, string selector) : base(message)
+        public SelectorException(string message, string selector)
+            : base(message)
         {
             Selector = selector;
         }
@@ -45,9 +43,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
-        public SelectorException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+        public SelectorException(string message, Exception innerException)
+            : base(message, innerException) { }
 
         /// <summary>
         /// Gets the selector.

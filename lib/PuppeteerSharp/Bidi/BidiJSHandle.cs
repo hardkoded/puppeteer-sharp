@@ -40,7 +40,12 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
         {
             return RemoteValue.Type switch
             {
-                RemoteValueType.String or RemoteValueType.Number or RemoteValueType.BigInt or RemoteValueType.Boolean or RemoteValueType.Undefined or RemoteValueType.Null => true,
+                RemoteValueType.String
+                or RemoteValueType.Number
+                or RemoteValueType.BigInt
+                or RemoteValueType.Boolean
+                or RemoteValueType.Undefined
+                or RemoteValueType.Null => true,
                 _ => false,
             };
         }
@@ -60,7 +65,11 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
         // For handleless objects (e.g. from log events), look up the property
         // directly from the RemoteValue dictionary to avoid a browser round-trip
         // that would fail due to serialization issues
-        if (string.IsNullOrEmpty(Id) && RemoteValue is KeyValuePairCollectionRemoteValue kvp && kvp.Value != null)
+        if (
+            string.IsNullOrEmpty(Id)
+            && RemoteValue is KeyValuePairCollectionRemoteValue kvp
+            && kvp.Value != null
+        )
         {
             foreach (var entry in kvp.Value)
             {

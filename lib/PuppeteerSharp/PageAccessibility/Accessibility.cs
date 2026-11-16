@@ -18,7 +18,11 @@ namespace PuppeteerSharp.PageAccessibility
         private readonly Func<Realm> _realmProvider;
         private CDPSession _client;
 
-        internal Accessibility(CDPSession client, Func<string> getFrameId, Func<Realm> realmProvider)
+        internal Accessibility(
+            CDPSession client,
+            Func<string> getFrameId,
+            Func<Realm> realmProvider
+        )
         {
             _client = client;
             _getFrameId = getFrameId;
@@ -26,19 +30,29 @@ namespace PuppeteerSharp.PageAccessibility
         }
 
         /// <inheritdoc/>
-        public async Task<SerializedAXNode> SnapshotAsync(AccessibilitySnapshotOptions options = null)
+        public async Task<SerializedAXNode> SnapshotAsync(
+            AccessibilitySnapshotOptions options = null
+        )
         {
-            var response = await _client.SendAsync<AccessibilityGetFullAXTreeResponse>(
-                "Accessibility.getFullAXTree",
-                new AccessibilityGetFullAXTreeRequest { FrameId = _getFrameId() }).ConfigureAwait(false);
+            var response = await _client
+                .SendAsync<AccessibilityGetFullAXTreeResponse>(
+                    "Accessibility.getFullAXTree",
+                    new AccessibilityGetFullAXTreeRequest { FrameId = _getFrameId() }
+                )
+                .ConfigureAwait(false);
             var nodes = response.Nodes;
             JsonElement? backendNodeId = null;
             if (options?.Root != null)
             {
-                var node = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
-                {
-                    ObjectId = ((CdpElementHandle)options.Root).RemoteObject.ObjectId,
-                }).ConfigureAwait(false);
+                var node = await _client
+                    .SendAsync<DomDescribeNodeResponse>(
+                        "DOM.describeNode",
+                        new DomDescribeNodeRequest
+                        {
+                            ObjectId = ((CdpElementHandle)options.Root).RemoteObject.ObjectId,
+                        }
+                    )
+                    .ConfigureAwait(false);
                 backendNodeId = node.Node.BackendNodeId;
             }
 
@@ -58,8 +72,9 @@ namespace PuppeteerSharp.PageAccessibility
             if (backendNodeId != null)
             {
                 needle = defaultRoot.Find(node =>
-                    node.Payload.BackendDOMNodeId.ValueKind == JsonValueKind.Number &&
-                    node.Payload.BackendDOMNodeId.GetInt32() == backendNodeId.Value.GetInt32());
+                    node.Payload.BackendDOMNodeId.ValueKind == JsonValueKind.Number
+                    && node.Payload.BackendDOMNodeId.GetInt32() == backendNodeId.Value.GetInt32()
+                );
                 if (needle == null)
                 {
                     return null;
@@ -86,14 +101,19 @@ namespace PuppeteerSharp.PageAccessibility
 
             if (root.Payload.Role?.Value.ToObject<string>() == "Iframe")
             {
-                if (root.Payload.BackendDOMNodeId.ValueKind != JsonValueKind.Number || realm == null)
+                if (
+                    root.Payload.BackendDOMNodeId.ValueKind != JsonValueKind.Number
+                    || realm == null
+                )
                 {
                     return;
                 }
 
                 try
                 {
-                    var handle = await realm.AdoptBackendNodeAsync(root.Payload.BackendDOMNodeId.GetInt32()).ConfigureAwait(false);
+                    var handle = await realm
+                        .AdoptBackendNodeAsync(root.Payload.BackendDOMNodeId.GetInt32())
+                        .ConfigureAwait(false);
 
                     if (handle is not IElementHandle elementHandle)
                     {
@@ -107,7 +127,9 @@ namespace PuppeteerSharp.PageAccessibility
                         return;
                     }
 
-                    var iframeSnapshot = await cdpFrame.Accessibility.SnapshotAsync(options).ConfigureAwait(false);
+                    var iframeSnapshot = await cdpFrame
+                        .Accessibility.SnapshotAsync(options)
+                        .ConfigureAwait(false);
                     root.IframeSnapshot = iframeSnapshot;
                 }
                 catch (Exception ex)
@@ -118,10 +140,15 @@ namespace PuppeteerSharp.PageAccessibility
                 }
             }
 
-            await Task.WhenAll(root.Children.Select(child => PopulateIframesAsync(child, options))).ConfigureAwait(false);
+            await Task.WhenAll(root.Children.Select(child => PopulateIframesAsync(child, options)))
+                .ConfigureAwait(false);
         }
 
-        private void CollectInterestingNodes(List<AXNode> collection, AXNode node, bool insideControl)
+        private void CollectInterestingNodes(
+            List<AXNode> collection,
+            AXNode node,
+            bool insideControl
+        )
         {
             if (node.IsInteresting(insideControl) || node.IframeSnapshot != null)
             {

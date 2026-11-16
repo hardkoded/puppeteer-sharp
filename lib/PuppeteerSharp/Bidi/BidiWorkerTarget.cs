@@ -41,13 +41,15 @@ internal class BidiWorkerTarget : Target
 
     public override ITarget Opener => throw new PuppeteerException("Not supported");
 
-    internal override BrowserContext BrowserContext => (BrowserContext)_worker.Frame.Page.BrowserContext;
+    internal override BrowserContext BrowserContext =>
+        (BrowserContext)_worker.Frame.Page.BrowserContext;
 
     internal override Browser Browser => (Browser)BrowserContext.Browser;
 
     public override Task<IPage> AsPageAsync() => throw new PuppeteerException("Not supported");
 
-    public override Task<ICDPSession> CreateCDPSessionAsync() => throw new PuppeteerException("Not supported");
+    public override Task<ICDPSession> CreateCDPSessionAsync() =>
+        throw new PuppeteerException("Not supported");
 }
 
 #endif

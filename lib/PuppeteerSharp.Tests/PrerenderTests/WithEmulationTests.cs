@@ -6,14 +6,17 @@ namespace PuppeteerSharp.Tests.PrerenderTests;
 
 public class WithEmulationTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("prerender.spec", "Prerender with emulation", "can configure viewport for prerendered pages")]
+    [
+        Test,
+        PuppeteerTest(
+            "prerender.spec",
+            "Prerender with emulation",
+            "can configure viewport for prerendered pages"
+        )
+    ]
     public async Task CanConfigureViewportForPrerenderedPages()
     {
-        await Page.SetViewportAsync(new ViewPortOptions()
-        {
-            Width = 300,
-            Height = 400,
-        });
+        await Page.SetViewportAsync(new ViewPortOptions() { Width = 300, Height = 400 });
 
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");
 
@@ -22,18 +25,17 @@ public class WithEmulationTests : PuppeteerPageBaseTest
 
         var mainFrame = Page.MainFrame;
         var link = await mainFrame.WaitForSelectorAsync("a");
-        await Task.WhenAll(
-            mainFrame.WaitForNavigationAsync(),
-            link.ClickAsync()
-        );
+        await Task.WhenAll(mainFrame.WaitForNavigationAsync(), link.ClickAsync());
 
-        var result = await Page.EvaluateFunctionAsync<decimal[]>(@"() => {
+        var result = await Page.EvaluateFunctionAsync<decimal[]>(
+            @"() => {
             return [
                 document.documentElement.clientWidth,
                 document.documentElement.clientHeight,
                 window.devicePixelRatio,
             ];
-        }");
+        }"
+        );
 
         Assert.That(result[0], Is.EqualTo(300 * result[2]));
         Assert.That(result[1], Is.EqualTo(400 * result[2]));

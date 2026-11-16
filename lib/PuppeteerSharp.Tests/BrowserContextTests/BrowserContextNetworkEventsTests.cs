@@ -9,7 +9,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 {
     public class BrowserContextNetworkEventsTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext network events", "should only report network events from its own pages")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext BrowserContext network events",
+                "should only report network events from its own pages"
+            )
+        ]
         public async Task ShouldOnlyReportNetworkEventsFromItsOwnPages()
         {
             await using var otherContext = await Browser.CreateBrowserContextAsync();
@@ -67,8 +74,16 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
                 foreach (var (eventName, pages) in seen)
                 {
-                    Assert.That(pages.Contains(Page), Is.True, $"{eventName} should be reported for the context page");
-                    Assert.That(pages.Count(p => p != Page), Is.EqualTo(0), $"{eventName} should not be reported for pages of other contexts");
+                    Assert.That(
+                        pages.Contains(Page),
+                        Is.True,
+                        $"{eventName} should be reported for the context page"
+                    );
+                    Assert.That(
+                        pages.Count(p => p != Page),
+                        Is.EqualTo(0),
+                        $"{eventName} should not be reported for pages of other contexts"
+                    );
                 }
             }
             finally

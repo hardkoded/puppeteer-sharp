@@ -6,6 +6,9 @@ namespace PupppeterSharpAspNetFrameworkSample.Controllers
 {
     public class TestController : ApiController
     {
-        public Task<string> Get() => BrowserClient.GetTextAsync("http://localhost/PupppeterSharpAspNetFrameworkSample/api/foo");
+        public Task<string> Get() =>
+            BrowserClient.GetTextAsync(
+                "http://localhost/PupppeterSharpAspNetFrameworkSample/api/foo"
+            );
     }
 }

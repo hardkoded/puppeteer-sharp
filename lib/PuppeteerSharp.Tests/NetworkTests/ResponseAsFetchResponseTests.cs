@@ -10,11 +10,17 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseAsFetchResponseTests : PuppeteerPageBaseTest
     {
-        public ResponseAsFetchResponseTests() : base()
-        {
-        }
+        public ResponseAsFetchResponseTests()
+            : base() { }
 
-        [Test, PuppeteerTest("HTTPResponse.test.ts", "HTTPResponse asFetchResponse", "should convert to a standard Fetch Response")]
+        [
+            Test,
+            PuppeteerTest(
+                "HTTPResponse.test.ts",
+                "HTTPResponse asFetchResponse",
+                "should convert to a standard Fetch Response"
+            )
+        ]
         public async Task ShouldConvertToStandardFetchResponse()
         {
             Server.SetRoute("/fetch-target", context =>
@@ -29,11 +35,21 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(fetchResponse, Is.InstanceOf<HttpResponseMessage>());
             Assert.That(fetchResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(fetchResponse.ReasonPhrase, Is.EqualTo("OK"));
-            Assert.That(fetchResponse.Content.Headers.ContentType.MediaType, Is.EqualTo("text/plain"));
+            Assert.That(
+                fetchResponse.Content.Headers.ContentType.MediaType,
+                Is.EqualTo("text/plain")
+            );
             Assert.That(await fetchResponse.Content.ReadAsStringAsync(), Is.EqualTo("hello world"));
         }
 
-        [Test, PuppeteerTest("HTTPResponse.test.ts", "HTTPResponse asFetchResponse", "should properly parse multi-line set-cookie headers")]
+        [
+            Test,
+            PuppeteerTest(
+                "HTTPResponse.test.ts",
+                "HTTPResponse asFetchResponse",
+                "should properly parse multi-line set-cookie headers"
+            )
+        ]
         public async Task ShouldParseMultiLineSetCookieHeaders()
         {
             Server.SetRoute("/fetch-target", context =>
@@ -46,10 +62,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var response = await FetchFromPageAsync("/fetch-target");
             using var fetchResponse = await response.AsFetchResponseAsync();
 
-            Assert.That(fetchResponse.Headers.GetValues("Set-Cookie").ToArray(), Is.EqualTo(new[] { "session=xyz; Secure", "theme=dark" }));
+            Assert.That(
+                fetchResponse.Headers.GetValues("Set-Cookie").ToArray(),
+                Is.EqualTo(new[] { "session=xyz; Secure", "theme=dark" })
+            );
         }
 
-        [Test, PuppeteerTest("HTTPResponse.test.ts", "HTTPResponse asFetchResponse", "should handle null body status codes without body")]
+        [
+            Test,
+            PuppeteerTest(
+                "HTTPResponse.test.ts",
+                "HTTPResponse asFetchResponse",
+                "should handle null body status codes without body"
+            )
+        ]
         public async Task ShouldHandleNullBodyStatusCodesWithoutBody()
         {
             foreach (var status in new[] { 204, 205, 304 })

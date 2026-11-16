@@ -11,17 +11,14 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationException"/> class.
         /// </summary>
-        public NavigationException()
-        {
-        }
+        public NavigationException() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
-        public NavigationException(string message) : base(message)
-        {
-        }
+        public NavigationException(string message)
+            : base(message) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationException"/> class.
@@ -29,7 +26,8 @@ namespace PuppeteerSharp
         /// <param name="message">Message.</param>
         /// <param name="url">Url.</param>
         /// <param name="innerException">Inner exception.</param>
-        public NavigationException(string message, string url, Exception innerException = null) : base(message, innerException)
+        public NavigationException(string message, string url, Exception innerException = null)
+            : base(message, innerException)
         {
             Url = url;
         }
@@ -39,8 +37,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
-        public NavigationException(string message, Exception innerException) : base(message, innerException)
-            => Url = (innerException as NavigationException)?.Url;
+        public NavigationException(string message, Exception innerException)
+            : base(message, innerException) => Url = (innerException as NavigationException)?.Url;
 
         /// <inheritdoc/>
         public override string Message

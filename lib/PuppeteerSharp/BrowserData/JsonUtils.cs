@@ -11,7 +11,10 @@ namespace PuppeteerSharp.BrowserData
         {
             using var client = new HttpClient();
             var response = await client.GetStringAsync(url).ConfigureAwait(false);
-            return JsonSerializer.Deserialize<T>(response, JsonHelper.DefaultJsonSerializerSettings.Value);
+            return JsonSerializer.Deserialize<T>(
+                response,
+                JsonHelper.DefaultJsonSerializerSettings.Value
+            );
         }
 
         internal static async Task<string> GetTextAsync(string url)

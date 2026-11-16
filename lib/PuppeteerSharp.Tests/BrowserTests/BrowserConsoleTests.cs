@@ -8,7 +8,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class BrowserConsoleTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.on(\"console\")", "should report console messages from pages")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.on(\"console\")",
+                "should report console messages from pages"
+            )
+        ]
         public async Task ShouldReportConsoleMessagesFromPages()
         {
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
@@ -25,7 +32,8 @@ namespace PuppeteerSharp.Tests.BrowserTests
             {
                 await Task.WhenAll(
                     messageTask.Task,
-                    Page.EvaluateFunctionAsync("() => console.log('from-page')"));
+                    Page.EvaluateFunctionAsync("() => console.log('from-page')")
+                );
 
                 var message = messageTask.Task.Result;
                 Assert.That(message.Type, Is.EqualTo(ConsoleType.Log));
@@ -39,24 +47,35 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.on(\"console\")", "should report console messages replayed when attaching after connect")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.on(\"console\")",
+                "should report console messages replayed when attaching after connect"
+            )
+        ]
         public async Task ShouldReportConsoleMessagesReplayedWhenAttachingAfterConnect()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.EvaluateFunctionAsync("() => { console.log('logged-before-connect'); }");
 
-            var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
-            {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint,
-                Protocol = ((Browser)Browser).Protocol,
-            });
+            var remoteBrowser = await Puppeteer.ConnectAsync(
+                new ConnectOptions
+                {
+                    BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                    Protocol = ((Browser)Browser).Protocol,
+                }
+            );
 
             try
             {
                 // The listener is registered before any page is attached, so the
                 // messages replayed on attachment must not be dropped.
                 var messages = new List<ConsoleMessage>();
-                var afterConnect = new TaskCompletionSource<ConsoleMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var afterConnect = new TaskCompletionSource<ConsoleMessage>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
                 remoteBrowser.Console += (_, e) =>
                 {
                     lock (messages)
@@ -69,13 +88,18 @@ namespace PuppeteerSharp.Tests.BrowserTests
                         afterConnect.TrySetResult(e.Message);
                     }
                 };
-                var remotePage = (await remoteBrowser.PagesAsync()).First(p => p.Url == TestConstants.EmptyPage);
+                var remotePage = (await remoteBrowser.PagesAsync()).First(p =>
+                    p.Url == TestConstants.EmptyPage
+                );
 
                 // Log a marker after attaching: once it arrives, any duplicate of the
                 // replayed message would have arrived too.
                 await Task.WhenAll(
                     afterConnect.Task,
-                    remotePage.EvaluateFunctionAsync("() => { console.log('logged-after-connect'); }"));
+                    remotePage.EvaluateFunctionAsync(
+                        "() => { console.log('logged-after-connect'); }"
+                    )
+                );
 
                 ConsoleMessage[] replayed;
                 lock (messages)
@@ -94,11 +118,21 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.on(\"console\")", "should report console messages from service workers")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.on(\"console\")",
+                "should report console messages from service workers"
+            )
+        ]
         public async Task ShouldReportConsoleMessagesFromServiceWorkers()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
-            var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker, new WaitForOptions(3_000));
+            var target = await Context.WaitForTargetAsync(
+                t => t.Type == TargetType.ServiceWorker,
+                new WaitForOptions(3_000)
+            );
             var worker = await target.WorkerAsync();
 
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
@@ -115,7 +149,8 @@ namespace PuppeteerSharp.Tests.BrowserTests
             {
                 await Task.WhenAll(
                     messageTask.Task,
-                    worker.EvaluateFunctionAsync("() => console.log('from-service-worker')"));
+                    worker.EvaluateFunctionAsync("() => console.log('from-service-worker')")
+                );
 
                 var message = messageTask.Task.Result;
                 Assert.That(message.Type, Is.EqualTo(ConsoleType.Log));
@@ -128,17 +163,26 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.on(\"console\")", "should report console messages from dedicated workers")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.on(\"console\")",
+                "should report console messages from dedicated workers"
+            )
+        ]
         public async Task ShouldReportConsoleMessagesFromDedicatedWorkers()
         {
-            const string workerUrl = "data:text/javascript,console.log('from-worker');console.log('done')";
+            const string workerUrl =
+                "data:text/javascript,console.log('from-worker');console.log('done')";
             var pageMessages = new List<ConsoleMessage>();
             var contextMessages = new List<ConsoleMessage>();
             var browserMessages = new List<ConsoleMessage>();
             var workerCreated = new TaskCompletionSource<WebWorker>();
             var done = new TaskCompletionSource<ConsoleMessage>();
 
-            void OnWorkerCreated(object _, WorkerEventArgs e) => workerCreated.TrySetResult(e.Worker);
+            void OnWorkerCreated(object _, WorkerEventArgs e) =>
+                workerCreated.TrySetResult(e.Worker);
 
             void OnPageConsole(object _, ConsoleEventArgs e)
             {
@@ -178,7 +222,8 @@ namespace PuppeteerSharp.Tests.BrowserTests
                 await Task.WhenAll(
                     workerCreated.Task,
                     done.Task,
-                    Page.EvaluateFunctionAsync("url => new Worker(url)", workerUrl));
+                    Page.EvaluateFunctionAsync("url => new Worker(url)", workerUrl)
+                );
 
                 Assert.That(pageMessages, Has.Count.EqualTo(1));
                 Assert.That(contextMessages, Has.Count.EqualTo(1));

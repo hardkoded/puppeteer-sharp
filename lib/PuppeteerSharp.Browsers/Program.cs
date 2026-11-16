@@ -9,12 +9,19 @@ namespace PuppeteerSharp.Browsers
     {
         internal static async Task<int> Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<InstallOptions, ListOptions, UninstallOptions>(args);
-            return await result.MapResult(
-                (InstallOptions o) => RunAsync(() => InstallAsync(o)),
-                (ListOptions o) => RunAsync(() => Task.FromResult(List(o))),
-                (UninstallOptions o) => RunAsync(() => Task.FromResult(Uninstall(o))),
-                _ => Task.FromResult(1)).ConfigureAwait(false);
+            var result = Parser.Default.ParseArguments<
+                InstallOptions,
+                ListOptions,
+                UninstallOptions
+            >(args);
+            return await result
+                .MapResult(
+                    (InstallOptions o) => RunAsync(() => InstallAsync(o)),
+                    (ListOptions o) => RunAsync(() => Task.FromResult(List(o))),
+                    (UninstallOptions o) => RunAsync(() => Task.FromResult(Uninstall(o))),
+                    _ => Task.FromResult(1)
+                )
+                .ConfigureAwait(false);
         }
 
         private static async Task<int> RunAsync(Func<Task<int>> action)
@@ -30,8 +37,19 @@ namespace PuppeteerSharp.Browsers
             }
         }
 
-        private static BrowserFetcher CreateFetcher(SupportedBrowser browser, CommonOptions options)
-            => new(new BrowserFetcherOptions { Browser = browser, Path = options.Path, Platform = options.Platform, SkipChromeHeadlessShellDownload = true })
+        private static BrowserFetcher CreateFetcher(
+            SupportedBrowser browser,
+            CommonOptions options
+        ) =>
+            new(
+                new BrowserFetcherOptions
+                {
+                    Browser = browser,
+                    Path = options.Path,
+                    Platform = options.Platform,
+                    SkipChromeHeadlessShellDownload = true,
+                }
+            )
             {
                 BaseUrl = options.BaseUrl,
             };
@@ -40,21 +58,32 @@ namespace PuppeteerSharp.Browsers
         {
             var spec = BrowserSpec.Parse(options.Browser);
             var fetcher = CreateFetcher(spec.Browser, options);
-            var installed = spec.Version == null
-                ? await fetcher.DownloadAsync().ConfigureAwait(false)
+            var installed =
+                spec.Version == null ? await fetcher.DownloadAsync().ConfigureAwait(false)
                 : spec.TryGetTag(out var tag)
                     ? await fetcher.DownloadAsync(tag).ConfigureAwait(false)
-                    : await fetcher.DownloadAsync(spec.Version).ConfigureAwait(false);
+                : await fetcher.DownloadAsync(spec.Version).ConfigureAwait(false);
 
-            Console.WriteLine($"{installed.Browser}@{installed.BuildId} {installed.GetExecutablePath()}");
+            Console.WriteLine(
+                $"{installed.Browser}@{installed.BuildId} {installed.GetExecutablePath()}"
+            );
             return 0;
         }
 
         private static int List(ListOptions options)
         {
-            foreach (var installed in new BrowserFetcher(new BrowserFetcherOptions { Path = options.Path }).GetInstalledBrowsers().OrderBy(b => b.Browser).ThenBy(b => b.BuildId))
+            foreach (
+                var installed in new BrowserFetcher(
+                    new BrowserFetcherOptions { Path = options.Path }
+                )
+                    .GetInstalledBrowsers()
+                    .OrderBy(b => b.Browser)
+                    .ThenBy(b => b.BuildId)
+            )
             {
-                Console.WriteLine($"{installed.Browser}@{installed.BuildId} {installed.GetExecutablePath()}");
+                Console.WriteLine(
+                    $"{installed.Browser}@{installed.BuildId} {installed.GetExecutablePath()}"
+                );
             }
 
             return 0;

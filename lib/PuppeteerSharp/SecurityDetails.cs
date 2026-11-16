@@ -9,9 +9,7 @@ namespace PuppeteerSharp
         /// <summary>
         ///  Initializes a new instance of the <see cref="SecurityDetails"/> class.
         /// </summary>
-        public SecurityDetails()
-        {
-        }
+        public SecurityDetails() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SecurityDetails"/> class.
@@ -21,10 +19,14 @@ namespace PuppeteerSharp
         /// <param name="validFrom">Valid from.</param>
         /// <param name="validTo">Valid to.</param>
         /// <param name="protocol">Protocol.</param>
-        public SecurityDetails(string subjectName, string issuer, long validFrom, long validTo, string protocol)
-         : this(subjectName, issuer, validFrom, validTo, protocol, [])
-        {
-        }
+        public SecurityDetails(
+            string subjectName,
+            string issuer,
+            long validFrom,
+            long validTo,
+            string protocol
+        )
+            : this(subjectName, issuer, validFrom, validTo, protocol, []) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SecurityDetails"/> class.
@@ -35,7 +37,14 @@ namespace PuppeteerSharp
         /// <param name="validTo">Valid to.</param>
         /// <param name="protocol">Protocol.</param>
         /// <param name="subjectAlternativeNames">Subject alternative names.</param>
-        public SecurityDetails(string subjectName, string issuer, long validFrom, long validTo, string protocol, string[] subjectAlternativeNames)
+        public SecurityDetails(
+            string subjectName,
+            string issuer,
+            long validFrom,
+            long validTo,
+            string protocol,
+            string[] subjectAlternativeNames
+        )
         {
             SubjectName = subjectName;
             Issuer = issuer;

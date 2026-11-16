@@ -58,8 +58,15 @@ public class BidiCdpSession : CDPSession
     internal BidiFrame Frame { get; set; }
 
     /// <inheritdoc />
-    public override Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
-        => throw new PuppeteerException("CDP support is required for this feature. The current browser does not support CDP.");
+    public override Task<JsonElement?> SendAsync(
+        string method,
+        object args = null,
+        bool waitForCallback = true,
+        CommandOptions options = null
+    ) =>
+        throw new PuppeteerException(
+            "CDP support is required for this feature. The current browser does not support CDP."
+        );
 
     /// <inheritdoc />
     public override Task DetachAsync() => throw new NotImplementedException();

@@ -10,7 +10,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 {
     public class BrowserContextTests : PuppeteerBrowserBaseTest
     {
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext.on(\"console\")", "should only report console messages from its own pages")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext.on(\"console\")",
+                "should only report console messages from its own pages"
+            )
+        ]
         public async Task ShouldOnlyReportConsoleMessagesFromItsOwnPages()
         {
             await using var context = await Browser.CreateBrowserContextAsync();
@@ -32,13 +39,21 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await otherPage.EvaluateFunctionAsync("() => console.log('from-other-context')");
             await Task.WhenAll(
                 messageTask.Task,
-                page.EvaluateFunctionAsync("() => console.log('from-own-context')"));
+                page.EvaluateFunctionAsync("() => console.log('from-own-context')")
+            );
 
             Assert.That(messageTask.Task.Result.Page, Is.SameAs(page));
             Assert.That(messages, Is.EqualTo(new[] { "from-own-context" }));
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext.on(\"console\")", "should only report console messages from workers of its own pages")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext.on(\"console\")",
+                "should only report console messages from workers of its own pages"
+            )
+        ]
         public async Task ShouldOnlyReportConsoleMessagesFromWorkersOfItsOwnPages()
         {
             await using var context = await Browser.CreateBrowserContextAsync();
@@ -60,7 +75,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             var ownWorkerCreated = new TaskCompletionSource<WebWorker>();
             var ownDone = new TaskCompletionSource<ConsoleMessage>();
-            void OnWorkerCreated(object _, WorkerEventArgs e) => ownWorkerCreated.TrySetResult(e.Worker);
+            void OnWorkerCreated(object _, WorkerEventArgs e) =>
+                ownWorkerCreated.TrySetResult(e.Worker);
             void OnOwnConsole(object _, ConsoleEventArgs e)
             {
                 if (e.Message.Text == "own-done")
@@ -76,16 +92,25 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             {
                 await Task.WhenAll(
                     otherDone.Task,
-                    otherPage.EvaluateFunctionAsync("url => new Worker(url)", "data:text/javascript,console.log('from-other-worker');console.log('other-done')"));
+                    otherPage.EvaluateFunctionAsync(
+                        "url => new Worker(url)",
+                        "data:text/javascript,console.log('from-other-worker');console.log('other-done')"
+                    )
+                );
 
                 await Task.WhenAll(
                     ownWorkerCreated.Task,
                     ownDone.Task,
-                    page.EvaluateFunctionAsync("url => new Worker(url)", "data:text/javascript,console.log('from-own-worker');console.log('own-done')"));
+                    page.EvaluateFunctionAsync(
+                        "url => new Worker(url)",
+                        "data:text/javascript,console.log('from-own-worker');console.log('own-done')"
+                    )
+                );
 
                 Assert.That(
                     messages.ConvertAll(m => m.Text),
-                    Is.EqualTo(new[] { "from-own-worker", "own-done" }));
+                    Is.EqualTo(new[] { "from-own-worker", "own-done" })
+                );
             }
             finally
             {
@@ -95,14 +120,24 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             }
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should have default context")]
+        [
+            Test,
+            PuppeteerTest("browsercontext.spec", "BrowserContext", "should have default context")
+        ]
         public void ShouldHaveDefaultContext()
         {
             // Firefox with BiDi returns multiple user contexts (container tabs) by default
             Assert.That(Browser.BrowserContexts().Length, Is.GreaterThanOrEqualTo(1));
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should not be able to close default context")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext",
+                "should not be able to close default context"
+            )
+        ]
         public void ShouldNotBeAbleToCloseDefaultContext()
         {
             var defaultContext = Browser.DefaultContext;
@@ -124,7 +159,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount));
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should close all belonging targets once closing context")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext",
+                "should close all belonging targets once closing context"
+            )
+        ]
         public async Task ShouldCloseAllBelongingTargetsOnceClosingContext()
         {
             Assert.That((await Browser.PagesAsync()), Has.Exactly(1).Items);
@@ -138,7 +180,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That((await Browser.PagesAsync()), Has.Exactly(1).Items);
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "window.open should use parent tab context")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext",
+                "window.open should use parent tab context"
+            )
+        ]
         public async Task WindowOpenShouldUseParentTabContext()
         {
             await using var context = await Browser.CreateBrowserContextAsync();
@@ -170,14 +219,27 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             // Just for half a second to get the last event
             await Task.Delay(500);
 
-            Assert.That(events, Is.EqualTo(new[] {
-                $"CREATED: {TestConstants.AboutBlank}",
-                $"CHANGED: {TestConstants.EmptyPage}",
-                $"DESTROYED: {TestConstants.EmptyPage}"
-            }));
+            Assert.That(
+                events,
+                Is.EqualTo(
+                    new[]
+                    {
+                        $"CREATED: {TestConstants.AboutBlank}",
+                        $"CHANGED: {TestConstants.EmptyPage}",
+                        $"DESTROYED: {TestConstants.EmptyPage}",
+                    }
+                )
+            );
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should isolate localStorage and cookies")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext",
+                "should isolate localStorage and cookies"
+            )
+        ]
         public async Task ShouldIsolateLocalStorageAndCookies()
         {
             // Firefox with BiDi returns multiple user contexts (container tabs) by default
@@ -192,10 +254,12 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             // Create a page in first incognito context.
             var page1 = await context1.NewPageAsync();
             await page1.GoToAsync(TestConstants.EmptyPage);
-            await page1.EvaluateExpressionAsync(@"{
+            await page1.EvaluateExpressionAsync(
+                @"{
                 localStorage.setItem('name', 'page1');
                 document.cookie = 'name=page1';
-            }");
+            }"
+            );
 
             Assert.That(context1.Targets(), Has.Exactly(1).Items);
             Assert.That(context2.Targets(), Is.Empty);
@@ -203,10 +267,12 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             // Create a page in second incognito context.
             var page2 = await context2.NewPageAsync();
             await page2.GoToAsync(TestConstants.EmptyPage);
-            await page2.EvaluateExpressionAsync(@"{
+            await page2.EvaluateExpressionAsync(
+                @"{
                 localStorage.setItem('name', 'page2');
                 document.cookie = 'name=page2';
-            }");
+            }"
+            );
 
             Assert.That(context1.Targets(), Has.Exactly(1).Items);
             Assert.That(await context1.Targets()[0].PageAsync(), Is.EqualTo(page1));
@@ -214,10 +280,22 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(await context2.Targets()[0].PageAsync(), Is.EqualTo(page2));
 
             // Make sure pages don't share localstorage or cookies.
-            Assert.That(await page1.EvaluateExpressionAsync<string>("localStorage.getItem('name')"), Is.EqualTo("page1"));
-            Assert.That(await page1.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("name=page1"));
-            Assert.That(await page2.EvaluateExpressionAsync<string>("localStorage.getItem('name')"), Is.EqualTo("page2"));
-            Assert.That(await page2.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("name=page2"));
+            Assert.That(
+                await page1.EvaluateExpressionAsync<string>("localStorage.getItem('name')"),
+                Is.EqualTo("page1")
+            );
+            Assert.That(
+                await page1.EvaluateExpressionAsync<string>("document.cookie"),
+                Is.EqualTo("name=page1")
+            );
+            Assert.That(
+                await page2.EvaluateExpressionAsync<string>("localStorage.getItem('name')"),
+                Is.EqualTo("page2")
+            );
+            Assert.That(
+                await page2.EvaluateExpressionAsync<string>("document.cookie"),
+                Is.EqualTo("name=page2")
+            );
 
             // Cleanup contexts.
             await Task.WhenAll(context1.CloseAsync(), context2.CloseAsync());
@@ -226,24 +304,32 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount));
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should work across sessions")]
+        [
+            Test,
+            PuppeteerTest("browsercontext.spec", "BrowserContext", "should work across sessions")
+        ]
         public async Task ShouldWorkAcrossSessions()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             await using var context = await Browser.CreateBrowserContextAsync();
             Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
 
-            var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
-            {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint,
-                Protocol = ((Browser)Browser).Protocol,
-            });
+            var remoteBrowser = await Puppeteer.ConnectAsync(
+                new ConnectOptions
+                {
+                    BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                    Protocol = ((Browser)Browser).Protocol,
+                }
+            );
             var contexts = remoteBrowser.BrowserContexts();
             Assert.That(contexts, Has.Length.EqualTo(2));
             remoteBrowser.Disconnect();
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should provide a context id")]
+        [
+            Test,
+            PuppeteerTest("browsercontext.spec", "BrowserContext", "should provide a context id")
+        ]
         public async Task ShouldProvideAContextId()
         {
             // Firefox with BiDi returns multiple user contexts (container tabs) by default
@@ -259,7 +345,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         public async Task ShouldWaitForTarget()
         {
             await using var context = await Browser.CreateBrowserContextAsync();
-            var targetPromise = context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
+            var targetPromise = context.WaitForTargetAsync(
+                (target) => target.Url == TestConstants.EmptyPage
+            );
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             var promiseTarget = await targetPromise;
@@ -267,15 +355,33 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(page, Is.EqualTo(targetPage));
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should timeout waiting for a non-existent target")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext",
+                "should timeout waiting for a non-existent target"
+            )
+        ]
         public async Task ShouldTimeoutWaitingForNonExistentTarget()
         {
             await using var context = await Browser.CreateBrowserContextAsync();
-            Assert.ThrowsAsync<TimeoutException>(()
-                => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions(1)));
+            Assert.ThrowsAsync<TimeoutException>(() =>
+                context.WaitForTargetAsync(
+                    (target) => target.Url == TestConstants.EmptyPage,
+                    new WaitForOptions(1)
+                )
+            );
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext.on(\"request\")", "should only report requests from its own pages")]
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext.on(\"request\")",
+                "should only report requests from its own pages"
+            )
+        ]
         public async Task ShouldOnlyReportRequestsFromItsOwnPages()
         {
             await using var context = await Browser.CreateBrowserContextAsync();
@@ -284,7 +390,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var otherPage = await otherContext.NewPageAsync();
 
             var requests = new List<IRequest>();
-            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var requestTcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
 
             void OnRequest(object sender, RequestEventArgs e)
             {
@@ -307,7 +415,10 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 var request = await requestTcs.Task.WithTimeout();
 
                 Assert.That(request.Page, Is.EqualTo(page));
-                Assert.That(requests.Select(r => r.Url).ToArray(), Is.EqualTo(new[] { TestConstants.EmptyPage }));
+                Assert.That(
+                    requests.Select(r => r.Url).ToArray(),
+                    Is.EqualTo(new[] { TestConstants.EmptyPage })
+                );
             }
             finally
             {

@@ -8,14 +8,19 @@ namespace PuppeteerSharp.Tests.TargetTests
 {
     public class BrowserWaitForTargetTests : PuppeteerPageBaseTest
     {
-        public BrowserWaitForTargetTests() : base()
-        {
-        }
+        public BrowserWaitForTargetTests()
+            : base() { }
 
-        [Test, PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should wait for a target")]
+        [
+            Test,
+            PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should wait for a target")
+        ]
         public async Task ShouldWaitForATarget()
         {
-            var targetTask = Browser.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new() { Timeout = 3000 });
+            var targetTask = Browser.WaitForTargetAsync(
+                (target) => target.Url == TestConstants.EmptyPage,
+                new() { Timeout = 3000 }
+            );
             var page = await Browser.NewPageAsync();
             Assert.That(targetTask.IsCompleted, Is.False);
             await page.GoToAsync(TestConstants.EmptyPage);
@@ -25,19 +30,33 @@ namespace PuppeteerSharp.Tests.TargetTests
             await page.CloseAsync();
         }
 
-        [Test, PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should timeout waiting for a non-existent target")]
-        public void ShouldTimeoutWaitingForANonExistentTarget()
-            => Assert.ThrowsAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
-                (target) => target.Url == TestConstants.EmptyPage,
-                new() { Timeout = 1 }));
+        [
+            Test,
+            PuppeteerTest(
+                "target.spec",
+                "Target Browser.waitForTarget",
+                "should timeout waiting for a non-existent target"
+            )
+        ]
+        public void ShouldTimeoutWaitingForANonExistentTarget() =>
+            Assert.ThrowsAsync<TimeoutException>(async () =>
+                await Browser.WaitForTargetAsync(
+                    (target) => target.Url == TestConstants.EmptyPage,
+                    new() { Timeout = 1 }
+                )
+            );
 
-        [Test, PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should be able to abort")]
+        [
+            Test,
+            PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should be able to abort")
+        ]
         public void ShouldBeAbleToAbort()
         {
             using var cts = new CancellationTokenSource();
             var task = Browser.WaitForTargetAsync(
                 _ => false,
-                new WaitForOptions { CancellationToken = cts.Token });
+                new WaitForOptions { CancellationToken = cts.Token }
+            );
 
             cts.Cancel();
             Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
@@ -48,13 +67,18 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             var targetTask = Context.WaitForTargetAsync(
                 target => target.Url == TestConstants.CrossProcessHttpPrefix + "/empty.html",
-                new() { Timeout = 3000 });
+                new() { Timeout = 3000 }
+            );
             await Page.EvaluateFunctionAsync(
                 "url => window.open(url)",
-                TestConstants.CrossProcessHttpPrefix + "/empty.html");
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
+            );
             var target = await targetTask;
             var otherPage = await target.PageAsync();
-            Assert.That(otherPage.Url, Is.EqualTo(TestConstants.CrossProcessHttpPrefix + "/empty.html"));
+            Assert.That(
+                otherPage.Url,
+                Is.EqualTo(TestConstants.CrossProcessHttpPrefix + "/empty.html")
+            );
             Assert.That(Page, Is.Not.SameAs(otherPage));
             await otherPage.CloseAsync();
         }

@@ -57,12 +57,19 @@ public class WebMcpTool
     /// <param name="input">Input object matching the tool's <c>inputSchema</c>. Defaults to empty object.</param>
     /// <param name="options">Optional execution options, including a cancellation token.</param>
     /// <returns>A task resolving to the tool call result.</returns>
-    public async Task<WebMcpToolCallResult> ExecuteAsync(object input = null, WebMcpToolExecuteOptions options = null)
+    public async Task<WebMcpToolCallResult> ExecuteAsync(
+        object input = null,
+        WebMcpToolExecuteOptions options = null
+    )
     {
         options ??= new WebMcpToolExecuteOptions();
-        var invocationId = await WebMcp.InvokeToolAsync(this, input ?? new { }).ConfigureAwait(false);
+        var invocationId = await WebMcp
+            .InvokeToolAsync(this, input ?? new { })
+            .ConfigureAwait(false);
 
-        var tcs = new TaskCompletionSource<WebMcpToolCallResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var tcs = new TaskCompletionSource<WebMcpToolCallResult>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
         CancellationTokenRegistration registration = default;
 
         void OnCancel()

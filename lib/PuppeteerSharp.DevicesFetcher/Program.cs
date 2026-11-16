@@ -11,9 +11,12 @@ namespace PuppeteerSharp.DevicesFetcher
 {
     static class Program
     {
-        private const string DevicesURL = "https://raw.githubusercontent.com/puppeteer/puppeteer/master/src/common/DeviceDescriptors.ts";
-        private const string DeviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
-        private const string DeviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
+        private const string DevicesURL =
+            "https://raw.githubusercontent.com/puppeteer/puppeteer/master/src/common/DeviceDescriptors.ts";
+        private const string DeviceDescriptorsOutput =
+            "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
+        private const string DeviceDescriptorNameOutput =
+            "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
 
         static async Task Main(string[] args)
         {
@@ -27,7 +30,8 @@ namespace PuppeteerSharp.DevicesFetcher
             var text = await HttpGet(url).ConfigureAwait(false);
 
             const string deviceArray = "Device[] = [";
-            var startIndex = text.IndexOf(deviceArray, StringComparison.Ordinal) + deviceArray.Length;
+            var startIndex =
+                text.IndexOf(deviceArray, StringComparison.Ordinal) + deviceArray.Length;
             var endIndex = text.IndexOf("];", startIndex, StringComparison.Ordinal);
             var length = endIndex - startIndex;
             text = "[" + text.Substring(startIndex, length) + "]";
@@ -50,7 +54,8 @@ namespace PuppeteerSharp.DevicesFetcher
         static void WriteDeviceDescriptors(IEnumerable<Device> devices)
         {
             var builder = new StringBuilder();
-            var begin = @"using System;
+            var begin =
+                @"using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -64,7 +69,8 @@ namespace PuppeteerSharp.Mobile
         private static readonly Dictionary<DeviceDescriptorName, DeviceDescriptor> Devices = new Dictionary<DeviceDescriptorName, DeviceDescriptor>
         {
 ";
-            var end = @"
+            var end =
+                @"
         };
 
         private static Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>> _readOnlyDevices =
@@ -84,23 +90,30 @@ namespace PuppeteerSharp.Mobile
         static void WriteDeviceDescriptorName(IEnumerable<Device> devices)
         {
             var builder = new StringBuilder();
-            var begin = @"namespace PuppeteerSharp.Mobile
+            var begin =
+                @"namespace PuppeteerSharp.Mobile
 {
     /// <summary>
     /// Device descriptor name.
     /// </summary>
     public enum DeviceDescriptorName
     {";
-            var end = @"
+            var end =
+                @"
     }
 }";
 
             builder.Append(begin);
-            builder.AppendJoin(",", devices.Select(device => $@"
+            builder.AppendJoin(
+                ",",
+                devices.Select(device =>
+                    $@"
         /// <summary>
         /// {device.Name}
         /// </summary>
-        {DeviceNameToEnumValue(device)}"));
+        {DeviceNameToEnumValue(device)}"
+                )
+            );
             builder.Append(end);
 
             File.WriteAllText(DeviceDescriptorNameOutput, builder.ToString());

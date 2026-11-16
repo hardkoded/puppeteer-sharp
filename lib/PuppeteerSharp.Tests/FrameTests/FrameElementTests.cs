@@ -7,17 +7,23 @@ namespace PuppeteerSharp.Tests.FrameTests
 {
     public class FrameElementTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("frame.spec", "Frame specs Frame.prototype.frameElement", "should work")]
+        [
+            Test,
+            PuppeteerTest("frame.spec", "Frame specs Frame.prototype.frameElement", "should work")
+        ]
         public async Task ShouldWork()
         {
             await FrameUtils.AttachFrameAsync(Page, "theFrameId", TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"(url) => {
+            await Page.EvaluateFunctionAsync(
+                @"(url) => {
                 const frame = document.createElement('iframe');
                 frame.name = 'theFrameName';
                 frame.src = url;
                 document.body.appendChild(frame);
                 return new Promise(x => frame.onload = x);
-            }", TestConstants.EmptyPage);
+            }",
+                TestConstants.EmptyPage
+            );
 
             await using var mainFrameElement = await Page.MainFrame.FrameElementAsync();
             Assert.That(mainFrameElement, Is.Null);
@@ -47,10 +53,18 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.That(names, Has.Member("theFrameName"));
         }
 
-        [Test, PuppeteerTest("frame.spec", "Frame specs Frame.prototype.frameElement", "should handle shadow roots")]
+        [
+            Test,
+            PuppeteerTest(
+                "frame.spec",
+                "Frame specs Frame.prototype.frameElement",
+                "should handle shadow roots"
+            )
+        ]
         public async Task ShouldHandleShadowRoots()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
                 <div id=""shadow-host""></div>
                 <script>
                     const host = document.getElementById('shadow-host');
@@ -59,7 +73,8 @@ namespace PuppeteerSharp.Tests.FrameTests
                     frame.srcdoc = '<p>Inside frame</p>';
                     shadowRoot.appendChild(frame);
                 </script>
-            ");
+            "
+            );
             // Wait for the iframe to load inside shadow DOM
             await Page.WaitForFrameAsync(f => f != Page.MainFrame);
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
@@ -67,17 +82,29 @@ namespace PuppeteerSharp.Tests.FrameTests
             await using var frameElement = await frame.FrameElementAsync();
             Assert.That(frameElement, Is.Not.Null);
             Assert.That(
-                await frameElement.EvaluateFunctionAsync<string>("el => el.tagName.toLocaleLowerCase()"),
-                Is.EqualTo("iframe"));
+                await frameElement.EvaluateFunctionAsync<string>(
+                    "el => el.tagName.toLocaleLowerCase()"
+                ),
+                Is.EqualTo("iframe")
+            );
         }
 
-        [Test, PuppeteerTest("frame.spec", "Frame specs Frame.prototype.frameElement", "should return ElementHandle in the correct world")]
+        [
+            Test,
+            PuppeteerTest(
+                "frame.spec",
+                "Frame specs Frame.prototype.frameElement",
+                "should return ElementHandle in the correct world"
+            )
+        ]
         public async Task ShouldReturnElementHandleInTheCorrectWorld()
         {
             await FrameUtils.AttachFrameAsync(Page, "theFrameId", TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
                 globalThis.isMainWorld = true;
-            }");
+            }"
+            );
 
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
 
@@ -85,7 +112,9 @@ namespace PuppeteerSharp.Tests.FrameTests
             await using var frameElement = await childFrame.FrameElementAsync();
             Assert.That(frameElement, Is.Not.Null);
 
-            var isMainWorld = await frameElement.EvaluateFunctionAsync<bool>("() => globalThis.isMainWorld");
+            var isMainWorld = await frameElement.EvaluateFunctionAsync<bool>(
+                "() => globalThis.isMainWorld"
+            );
             Assert.That(isMainWorld, Is.True);
         }
     }

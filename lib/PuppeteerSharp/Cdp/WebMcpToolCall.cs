@@ -36,7 +36,10 @@ public class WebMcpToolCall
         Tool = tool;
         try
         {
-            Input = JsonSerializer.Deserialize<object>(input, JsonHelper.DefaultJsonSerializerSettings.Value);
+            Input = JsonSerializer.Deserialize<object>(
+                input,
+                JsonHelper.DefaultJsonSerializerSettings.Value
+            );
         }
         catch
         {

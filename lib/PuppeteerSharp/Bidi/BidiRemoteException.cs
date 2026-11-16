@@ -38,13 +38,8 @@ internal static class BidiRemoteException
     /// <param name="text">The log entry text.</param>
     /// <param name="stackTrace">The log entry stack trace.</param>
     /// <returns>The remote exception.</returns>
-    internal static RemoteException Create(string text, StackTrace stackTrace)
-        => new(
-            text ?? string.Empty,
-            string.Empty,
-            GetStackTrace(stackTrace),
-            null,
-            null);
+    internal static RemoteException Create(string text, StackTrace stackTrace) =>
+        new(text ?? string.Empty, string.Empty, GetStackTrace(stackTrace), null, null);
 
     /// <summary>
     /// Creates the event args of the deprecated <c>PageError</c> event from a WebDriver BiDi JavaScript log entry.
@@ -59,7 +54,9 @@ internal static class BidiRemoteException
         {
             foreach (var frame in stackTrace.CallFrames)
             {
-                stackLines.Add($"    at {(string.IsNullOrEmpty(frame.FunctionName) ? "<anonymous>" : frame.FunctionName)} ({frame.Url}:{frame.LineNumber + 1}:{frame.ColumnNumber + 1})");
+                stackLines.Add(
+                    $"    at {(string.IsNullOrEmpty(frame.FunctionName) ? "<anonymous>" : frame.FunctionName)} ({frame.Url}:{frame.LineNumber + 1}:{frame.ColumnNumber + 1})"
+                );
                 if (stackLines.Count >= 10)
                 {
                     break;
@@ -71,14 +68,17 @@ internal static class BidiRemoteException
         return new PageErrorEventArgs(fullStack, fullStack, GetStackTrace(stackTrace));
     }
 
-    private static IReadOnlyList<ConsoleMessageLocation> GetStackTrace(StackTrace stackTrace)
-        => stackTrace?.CallFrames?.Select(callFrame => new ConsoleMessageLocation
-        {
-            URL = callFrame.Url,
-            LineNumber = (int)callFrame.LineNumber,
-            ColumnNumber = (int)callFrame.ColumnNumber,
-            FunctionName = callFrame.FunctionName,
-        }).ToList() ?? [];
+    private static IReadOnlyList<ConsoleMessageLocation> GetStackTrace(StackTrace stackTrace) =>
+        stackTrace
+            ?.CallFrames?.Select(callFrame => new ConsoleMessageLocation
+            {
+                URL = callFrame.Url,
+                LineNumber = (int)callFrame.LineNumber,
+                ColumnNumber = (int)callFrame.ColumnNumber,
+                FunctionName = callFrame.FunctionName,
+            })
+            .ToList()
+        ?? [];
 }
 
 #endif

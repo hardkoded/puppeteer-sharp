@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.Issues
             {
                 Headless = false,
                 DefaultViewport = null,
-                IgnoredDefaultArgs = new[] { "--enable-automation" }
+                IgnoredDefaultArgs = new[] { "--enable-automation" },
             };
 
             await using var browser = await new Launcher().LaunchAsync(opts);
@@ -39,7 +39,12 @@ namespace PuppeteerSharp.Tests.Issues
         {
             return page.MainFrame.GoToAsync(
                 url,
-                new NavigationOptions { Timeout = 0, WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded } });
+                new NavigationOptions
+                {
+                    Timeout = 0,
+                    WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded },
+                }
+            );
         }
     }
 }

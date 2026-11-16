@@ -12,10 +12,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseEncodedDataLengthTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("network.spec", "network Response.encodedDataLength", "should return the encoded transfer size")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.encodedDataLength",
+                "should return the encoded transfer size"
+            )
+        ]
         public async Task ShouldReturnTheEncodedTransferSize()
         {
-            var raw = string.Join("\n", Enumerable.Range(0, 1000).Select(i => $"line-number-{i}-some-repeated-text"));
+            var raw = string.Join(
+                "\n",
+                Enumerable.Range(0, 1000).Select(i => $"line-number-{i}-some-repeated-text")
+            );
             var rawBytes = Encoding.UTF8.GetBytes(raw);
             byte[] compressed;
             using (var memory = new MemoryStream())
@@ -42,7 +52,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(response.EncodedDataLength, Is.LessThan(rawBytes.Length));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.encodedDataLength", "should return 0 for cached responses")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.encodedDataLength",
+                "should return 0 for cached responses"
+            )
+        ]
         public async Task ShouldReturnZeroForCachedResponses()
         {
             var url = TestConstants.ServerUrl + "/cached-encoded-length";
@@ -50,7 +67,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             {
                 context.Response.Headers["Cache-Control"] = "public, max-age=3600";
                 context.Response.Headers["Content-Type"] = "text/plain";
-                return context.Response.WriteAsync(string.Concat(Enumerable.Repeat("cached-content-", 100)));
+                return context.Response.WriteAsync(
+                    string.Concat(Enumerable.Repeat("cached-content-", 100))
+                );
             });
 
             var firstResponse = await Page.GoToAsync(url);
@@ -58,7 +77,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(firstResponse.FromCache, Is.False);
             Assert.That(firstResponse.EncodedDataLength, Is.GreaterThan(1500));
 
-            var cachedRequestFinished = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var cachedRequestFinished = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             void OnRequestFinished(object sender, RequestEventArgs e)
             {
                 if (e.Request.Url == url)
@@ -71,7 +92,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             try
             {
                 var cachedResponse = await Page.GoToAsync(url);
-                await cachedRequestFinished.Task.WaitAsync(TimeSpan.FromMilliseconds(TestConstants.DefaultPuppeteerTimeout));
+                await cachedRequestFinished.Task.WaitAsync(
+                    TimeSpan.FromMilliseconds(TestConstants.DefaultPuppeteerTimeout)
+                );
                 Assert.That(cachedResponse.FromCache, Is.True);
                 Assert.That(cachedResponse.EncodedDataLength, Is.EqualTo(0));
             }
@@ -81,7 +104,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.encodedDataLength", "should not return a negative value for data: URLs")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.encodedDataLength",
+                "should not return a negative value for data: URLs"
+            )
+        ]
         public async Task ShouldNotReturnANegativeValueForDataUrls()
         {
             long? responseLengthOnEvent = null;

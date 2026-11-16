@@ -14,14 +14,28 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.That(element, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "Page.$", "should return null for non-existing element")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryselector.spec",
+                "Page.$",
+                "should return null for non-existing element"
+            )
+        ]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             var element = await Page.QuerySelectorAsync("non-existing-element");
             Assert.That(element, Is.Null);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "querySelector Page.$$ xpath", "should query existing element")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryselector.spec",
+                "querySelector Page.$$ xpath",
+                "should query existing element"
+            )
+        ]
         public async Task XPathShouldQueryExistingElement()
         {
             await Page.SetContentAsync(TestUtils.Html("<section>test</section>"));
@@ -30,14 +44,28 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.That(elements, Has.Exactly(1).Items);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "querySelector Page.$$ xpath", "should return empty array for non-existing element")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryselector.spec",
+                "querySelector Page.$$ xpath",
+                "should return empty array for non-existing element"
+            )
+        ]
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
             var elements = await Page.QuerySelectorAllAsync("xpath/html/body/non-existing-element");
             Assert.That(elements, Is.Empty);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "querySelector Page.$$ xpath", "should return multiple elements")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryselector.spec",
+                "querySelector Page.$$ xpath",
+                "should return multiple elements"
+            )
+        ]
         public async Task XpathShouldReturnMultipleElements()
         {
             await Page.SetContentAsync(TestUtils.Html("<div></div> <div></div>"));

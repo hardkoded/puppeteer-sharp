@@ -9,7 +9,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class BrowserNetworkEventsTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser network events", "should report responses from pages")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser network events",
+                "should report responses from pages"
+            )
+        ]
         public async Task ShouldReportResponsesFromPages()
         {
             var responseTcs = new TaskCompletionSource<IResponse>();
@@ -37,7 +44,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser network events", "should report finished requests from pages")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser network events",
+                "should report finished requests from pages"
+            )
+        ]
         public async Task ShouldReportFinishedRequestsFromPages()
         {
             var requestTcs = new TaskCompletionSource<IRequest>();
@@ -64,7 +78,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser network events", "should report failed requests from pages")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser network events",
+                "should report failed requests from pages"
+            )
+        ]
         public async Task ShouldReportFailedRequestsFromPages()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -105,7 +126,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser network events", "should report requests served from cache")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser network events",
+                "should report requests served from cache"
+            )
+        ]
         public async Task ShouldReportRequestsServedFromCache()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-script.html");
@@ -134,7 +162,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser network events", "should emit context events before browser events")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser network events",
+                "should emit context events before browser events"
+            )
+        ]
         public async Task ShouldEmitContextEventsBeforeBrowserEvents()
         {
             var order = new Dictionary<string, List<string>>
@@ -160,9 +195,12 @@ namespace PuppeteerSharp.Tests.BrowserTests
                 }
             }
 
-            void OnContextResponse(object sender, ResponseCreatedEventArgs e) => RecordResponse("context", e.Response);
-            void OnBrowserResponse(object sender, ResponseCreatedEventArgs e) => RecordResponse("browser", e.Response);
-            void OnContextFinished(object sender, RequestEventArgs e) => RecordFinished("context", e.Request);
+            void OnContextResponse(object sender, ResponseCreatedEventArgs e) =>
+                RecordResponse("context", e.Response);
+            void OnBrowserResponse(object sender, ResponseCreatedEventArgs e) =>
+                RecordResponse("browser", e.Response);
+            void OnContextFinished(object sender, RequestEventArgs e) =>
+                RecordFinished("context", e.Request);
             void OnBrowserFinished(object sender, RequestEventArgs e)
             {
                 RecordFinished("browser", e.Request);
@@ -192,7 +230,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser network events", "should emit each event once per page event")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser network events",
+                "should emit each event once per page event"
+            )
+        ]
         public async Task ShouldEmitEachEventOncePerPageEvent()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
@@ -251,17 +296,30 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.test", "Browser specs Browser network events", "should report responses from dedicated workers")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.test",
+                "Browser specs Browser network events",
+                "should report responses from dedicated workers"
+            )
+        ]
         public async Task ShouldReportResponsesFromDedicatedWorkers()
         {
-            var workerCreatedTcs = new TaskCompletionSource<WebWorker>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
             await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
             var worker = await workerCreatedTcs.Task.WithTimeout();
             var url = TestConstants.ServerUrl + "/one-style.css";
 
-            var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
-            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var responseTcs = new TaskCompletionSource<IResponse>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+            var requestTcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
 
             void OnResponse(object sender, ResponseCreatedEventArgs e)
             {
@@ -283,7 +341,10 @@ namespace PuppeteerSharp.Tests.BrowserTests
             Browser.RequestFinished += OnRequestFinished;
             try
             {
-                await worker.EvaluateFunctionAsync("async (url) => { await (await fetch(url)).text(); }", url);
+                await worker.EvaluateFunctionAsync(
+                    "async (url) => { await (await fetch(url)).text(); }",
+                    url
+                );
                 var response = await responseTcs.Task.WithTimeout();
                 var request = await requestTcs.Task.WithTimeout();
 

@@ -5,9 +5,8 @@ namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue1354 : PuppeteerPageBaseTest
     {
-        public Issue1354() : base()
-        {
-        }
+        public Issue1354()
+            : base() { }
 
         public async Task ShouldAllowSyncClose()
         {
@@ -37,8 +36,13 @@ namespace PuppeteerSharp.Tests.Issues
             {
                 // Async low-level use
                 await using var page = await browser.NewPageAsync().ConfigureAwait(false);
-                await page.GoToAsync("http://ipecho.net/plain", WaitUntilNavigation.DOMContentLoaded).ConfigureAwait(false);
-                await page.SetContentAsync("<html><body>REPLACED</body></html>").ConfigureAwait(false);
+                await page.GoToAsync(
+                        "http://ipecho.net/plain",
+                        WaitUntilNavigation.DOMContentLoaded
+                    )
+                    .ConfigureAwait(false);
+                await page.SetContentAsync("<html><body>REPLACED</body></html>")
+                    .ConfigureAwait(false);
 
                 // Deep inside an existing mostly sync app...
                 var content = page.GetContentAsync().ConfigureAwait(false).GetAwaiter().GetResult();

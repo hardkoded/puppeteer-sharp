@@ -20,8 +20,14 @@ namespace PuppeteerSharp.Tests.FrameTests
             const int rounds = 200;
             const int padding = 50000;
 
-            var handleFrameTree = typeof(FrameManager).GetMethod("HandleFrameTreeAsync", BindingFlags.NonPublic | BindingFlags.Instance);
-            var received = typeof(FrameManager).GetField("_frameNavigatedReceived", BindingFlags.NonPublic | BindingFlags.Instance);
+            var handleFrameTree = typeof(FrameManager).GetMethod(
+                "HandleFrameTreeAsync",
+                BindingFlags.NonPublic | BindingFlags.Instance
+            );
+            var received = typeof(FrameManager).GetField(
+                "_frameNavigatedReceived",
+                BindingFlags.NonPublic | BindingFlags.Instance
+            );
             var errors = new List<Exception>();
             var violations = 0;
 
@@ -33,24 +39,40 @@ namespace PuppeteerSharp.Tests.FrameTests
                 received.SetValue(manager, entries);
 
                 using var start = new Barrier(actors);
-                var workers = ids.Select(id => Task.Factory.StartNew(
-                    () =>
-                    {
-                        var tree = new PageGetFrameTree { Frame = new FramePayload { Id = id } };
-                        start.SignalAndWait();
-                        try
+                var workers = ids.Select(id =>
+                    Task.Factory.StartNew(
+                        () =>
                         {
-                            ((Task)handleFrameTree.Invoke(manager, [null, tree])).GetAwaiter().GetResult();
-                        }
-                        catch (Exception ex)
-                        {
-                            lock (errors)
+                            var tree = new PageGetFrameTree
                             {
-                                errors.Add(ex is TargetInvocationException { InnerException: not null } t ? t.InnerException : ex);
+                                Frame = new FramePayload { Id = id },
+                            };
+                            start.SignalAndWait();
+                            try
+                            {
+                                ((Task)handleFrameTree.Invoke(manager, [null, tree]))
+                                    .GetAwaiter()
+                                    .GetResult();
                             }
-                        }
-                    },
-                    TaskCreationOptions.LongRunning));
+                            catch (Exception ex)
+                            {
+                                lock (errors)
+                                {
+                                    errors.Add(
+                                        ex
+                                            is TargetInvocationException
+                                            {
+                                                InnerException: not null
+                                            } t
+                                            ? t.InnerException
+                                            : ex
+                                    );
+                                }
+                            }
+                        },
+                        TaskCreationOptions.LongRunning
+                    )
+                );
 
                 await Task.WhenAll(workers);
 

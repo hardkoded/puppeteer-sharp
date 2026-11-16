@@ -15,7 +15,9 @@ namespace PuppeteerSharp
         private readonly Task _timeoutTimer;
         private readonly IElementHandle _root;
         private readonly CancellationTokenSource _cts = new();
-        private readonly TaskCompletionSource<IJSHandle> _result = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<IJSHandle> _result = new(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
         private readonly CancellationTokenRegistration _cancellationTokenRegistration;
 
         private bool _isDisposed;
@@ -32,7 +34,8 @@ namespace PuppeteerSharp
             int timeout,
             IElementHandle root,
             CancellationToken cancellationToken = default,
-            object[] args = null)
+            object[] args = null
+        )
         {
             if (string.IsNullOrEmpty(fn))
             {
@@ -41,7 +44,10 @@ namespace PuppeteerSharp
 
             if (pollingInterval <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
+                throw new ArgumentOutOfRangeException(
+                    nameof(pollingInterval),
+                    "Cannot poll with non-positive interval"
+                );
             }
 
             _realm = realm;
@@ -53,7 +59,12 @@ namespace PuppeteerSharp
 
             if (cancellationToken.IsCancellationRequested)
             {
-                _ = TerminateAsync(new OperationCanceledException("WaitTask has been cancelled.", cancellationToken));
+                _ = TerminateAsync(
+                    new OperationCanceledException(
+                        "WaitTask has been cancelled.",
+                        cancellationToken
+                    )
+                );
                 return;
             }
 
@@ -61,16 +72,21 @@ namespace PuppeteerSharp
 
             if (cancellationToken != default)
             {
-                _cancellationTokenRegistration = cancellationToken.Register(
-                    () => _ = TerminateAsync(new OperationCanceledException("WaitTask has been cancelled.")));
+                _cancellationTokenRegistration = cancellationToken.Register(() =>
+                    _ = TerminateAsync(
+                        new OperationCanceledException("WaitTask has been cancelled.")
+                    )
+                );
             }
 
             if (timeout > 0)
             {
-                _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token)
+                _timeoutTimer = System
+                    .Threading.Tasks.Task.Delay(timeout, _cts.Token)
                     .ContinueWith(
                         _ => TerminateAsync(new WaitTaskTimeoutException(timeout)),
-                        TaskScheduler.Default);
+                        TaskScheduler.Default
+                    );
             }
 
             _ = RerunAsync();
@@ -85,7 +101,12 @@ namespace PuppeteerSharp
                 return;
             }
 
-            if (_timeoutTimer is { Status: TaskStatus.RanToCompletion or TaskStatus.Faulted or TaskStatus.Canceled } timeoutTimer)
+            if (
+                _timeoutTimer is
+                {
+                    Status: TaskStatus.RanToCompletion or TaskStatus.Faulted or TaskStatus.Canceled
+                } timeoutTimer
+            )
             {
                 timeoutTimer.Dispose();
             }
@@ -108,7 +129,8 @@ namespace PuppeteerSharp
             {
                 if (_pollingInterval.HasValue)
                 {
-                    _poller = await _realm.EvaluateFunctionHandleAsync(
+                    _poller = await _realm
+                        .EvaluateFunctionHandleAsync(
                             @"
                             ({IntervalPoller, createFunction}, ms, fn, ...args) => {
                                 const fun = createFunction(fn);
@@ -117,15 +139,20 @@ namespace PuppeteerSharp
                                 }, ms);
                             }",
                             [
-                                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                                new LazyArg(async context =>
+                                    await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                                ),
                                 _pollingInterval,
                                 _fn,
                                 .. _args,
-                            ]).ConfigureAwait(false);
+                            ]
+                        )
+                        .ConfigureAwait(false);
                 }
                 else if (_polling == WaitForFunctionPollingOption.Raf)
                 {
-                    _poller = await _realm.EvaluateFunctionHandleAsync(
+                    _poller = await _realm
+                        .EvaluateFunctionHandleAsync(
                             @"
                             ({RAFPoller, createFunction}, fn, ...args) => {
                                 const fun = createFunction(fn);
@@ -134,14 +161,19 @@ namespace PuppeteerSharp
                                 });
                             }",
                             [
-                                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                                new LazyArg(async context =>
+                                    await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                                ),
                                 _fn,
-                                .._args
-                            ]).ConfigureAwait(false);
+                                .. _args,
+                            ]
+                        )
+                        .ConfigureAwait(false);
                 }
                 else
                 {
-                    _poller = await _realm.EvaluateFunctionHandleAsync(
+                    _poller = await _realm
+                        .EvaluateFunctionHandleAsync(
                             @"
                             ({MutationPoller, createFunction}, root, fn, ...args) => {
                                 const fun = createFunction(fn);
@@ -150,11 +182,15 @@ namespace PuppeteerSharp
                                 }, root || document);
                             }",
                             [
-                                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                                new LazyArg(async context =>
+                                    await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                                ),
                                 _root,
                                 _fn,
-                                .._args
-                            ]).ConfigureAwait(false);
+                                .. _args,
+                            ]
+                        )
+                        .ConfigureAwait(false);
                 }
 
                 // Avoid starting a poller created after the task has already terminated.
@@ -166,7 +202,9 @@ namespace PuppeteerSharp
 
                 // Note that FrameWaitForFunctionTests listen for this particular message to orchestrate the test execution
                 // Using void to not await the start promise - matches upstream behavior
-                await _poller.EvaluateFunctionAsync("poller => { void poller.start(); }").ConfigureAwait(false);
+                await _poller
+                    .EvaluateFunctionAsync("poller => { void poller.start(); }")
+                    .ConfigureAwait(false);
 
                 // Termination already stops the poller; only skip the result round trip.
                 if (_terminated)
@@ -175,7 +213,9 @@ namespace PuppeteerSharp
                     return;
                 }
 
-                var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result()").ConfigureAwait(false);
+                var success = await _poller
+                    .EvaluateFunctionHandleAsync("poller => poller.result()")
+                    .ConfigureAwait(false);
                 _result.TrySetResult(success);
                 await TerminateAsync().ConfigureAwait(false);
             }
@@ -190,7 +230,8 @@ namespace PuppeteerSharp
                 var exception = GetBadException(ex);
                 if (exception != null)
                 {
-                    await TerminateAsync(new PuppeteerException("Waiting failed", exception)).ConfigureAwait(false);
+                    await TerminateAsync(new PuppeteerException("Waiting failed", exception))
+                        .ConfigureAwait(false);
                 }
             }
         }
@@ -242,7 +283,11 @@ namespace PuppeteerSharp
             // We have a situation in our async code where a new navigation could be executed
             // before the WaitForFunction completes its initialization
             // See FrameWaitForSelectorTests.ShouldSurviveCrossProcessNavigation
-            if (exception.Message.Contains("JSHandles can be evaluated only in the context they were created!"))
+            if (
+                exception.Message.Contains(
+                    "JSHandles can be evaluated only in the context they were created!"
+                )
+            )
             {
                 return null;
             }
@@ -256,15 +301,20 @@ namespace PuppeteerSharp
 
             // Errors coming from WebDriver BiDi. TODO: Adjust messages after
             // https://github.com/w3c/webdriver-bidi/issues/540 is resolved.
-            if (exception.Message.Contains("DiscardedBrowsingContextError") || exception.Message.Contains("Polling never started"))
+            if (
+                exception.Message.Contains("DiscardedBrowsingContextError")
+                || exception.Message.Contains("Polling never started")
+            )
             {
                 return null;
             }
 
             // BiDi error when a handle from previous context is used after navigation.
             // We should retry in the new context.
-            if (exception.Message.Contains("no such handle") ||
-                exception.Message.Contains("Could not serialize referenced object"))
+            if (
+                exception.Message.Contains("no such handle")
+                || exception.Message.Contains("Could not serialize referenced object")
+            )
             {
                 return null;
             }
@@ -283,9 +333,13 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await poller.EvaluateFunctionAsync(@"async poller => {
+                    await poller
+                        .EvaluateFunctionAsync(
+                            @"async poller => {
                         await poller.stop();
-                    }").ConfigureAwait(false);
+                    }"
+                        )
+                        .ConfigureAwait(false);
 
                     _poller = null;
                 }

@@ -10,18 +10,17 @@ namespace PuppeteerSharp.Tests.LocatorTests
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<div>test</div>");
-            var result = await Page
-                .Locator("div")
+            var result = await Page.Locator("div")
                 .Map("(element) => element.getAttribute('clickable')")
                 .WaitAsync<string>();
 
             Assert.That(result, Is.Null);
 
             await Page.EvaluateExpressionAsync(
-                "document.querySelector('div')?.setAttribute('clickable', 'true')");
+                "document.querySelector('div')?.setAttribute('clickable', 'true')"
+            );
 
-            var result2 = await Page
-                .Locator("div")
+            var result2 = await Page.Locator("div")
                 .Map("(element) => element.getAttribute('clickable')")
                 .WaitAsync<string>();
 
@@ -32,21 +31,23 @@ namespace PuppeteerSharp.Tests.LocatorTests
         public async Task ShouldWorkWithThrows()
         {
             await Page.SetContentAsync("<div>test</div>");
-            var resultTask = Page
-                .Locator("div")
+            var resultTask = Page.Locator("div")
                 .SetTimeout(5000)
-                .Map(@"(element) => {
+                .Map(
+                    @"(element) => {
                     const clickable = element.getAttribute('clickable');
                     if (!clickable) {
                         throw new Error('Missing `clickable` as an attribute');
                     }
                     return clickable;
-                }")
+                }"
+                )
                 .WaitAsync<string>();
 
             await Task.Delay(2000);
             await Page.EvaluateExpressionAsync(
-                "document.querySelector('div')?.setAttribute('clickable', 'true')");
+                "document.querySelector('div')?.setAttribute('clickable', 'true')"
+            );
 
             var result = await resultTask;
             Assert.That(result, Is.EqualTo("true"));
@@ -56,8 +57,7 @@ namespace PuppeteerSharp.Tests.LocatorTests
         public async Task ShouldWorkWithExpect()
         {
             await Page.SetContentAsync("<div>test</div>");
-            var resultTask = Page
-                .Locator("div")
+            var resultTask = Page.Locator("div")
                 .SetTimeout(5000)
                 .Filter("(element) => element.getAttribute('clickable') !== null")
                 .Map("(element) => element.getAttribute('clickable')")
@@ -65,7 +65,8 @@ namespace PuppeteerSharp.Tests.LocatorTests
 
             await Task.Delay(2000);
             await Page.EvaluateExpressionAsync(
-                "document.querySelector('div')?.setAttribute('clickable', 'true')");
+                "document.querySelector('div')?.setAttribute('clickable', 'true')"
+            );
 
             var result = await resultTask;
             Assert.That(result, Is.EqualTo("true"));
@@ -76,12 +77,12 @@ namespace PuppeteerSharp.Tests.LocatorTests
         {
             await Page.SetContentAsync("<div>test</div>");
             await using var suffixHandle = await Page.EvaluateExpressionHandleAsync("'-handle'");
-            var result = await Page
-                .Locator("div")
+            var result = await Page.Locator("div")
                 .Map(
                     "(element, suffix, handleSuffix) => (element.textContent ?? '') + suffix + handleSuffix",
                     "-mapped",
-                    suffixHandle)
+                    suffixHandle
+                )
                 .WaitAsync<string>();
 
             Assert.That(result, Is.EqualTo("test-mapped-handle"));

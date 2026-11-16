@@ -9,20 +9,15 @@ namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue0616 : PuppeteerPageBaseTest
     {
-        public Issue0616() : base()
-        {
-        }
+        public Issue0616()
+            : base() { }
 
         public async Task ShouldBeAbleToChangeToPost()
         {
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
             {
-                var payload = new Payload()
-                {
-                    Method = HttpMethod.Post,
-                    PostData = "foo"
-                };
+                var payload = new Payload() { Method = HttpMethod.Post, PostData = "foo" };
                 await e.Request.ContinueAsync(payload);
             };
 

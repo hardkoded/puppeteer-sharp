@@ -51,10 +51,17 @@ namespace PuppeteerSharp.Tests.TransportTests
             using var client = new ClientWebSocket();
             ConnectionOptionsHelper.ConfigureWebSocketKeepAlive(
                 client,
-                new WsOptions { KeepAlive = true, KeepAliveIntervalMs = 1234 });
+                new WsOptions { KeepAlive = true, KeepAliveIntervalMs = 1234 }
+            );
 
-            Assert.That(client.Options.KeepAliveInterval, Is.EqualTo(TimeSpan.FromMilliseconds(1234)));
-            Assert.That(client.Options.KeepAliveTimeout, Is.EqualTo(TimeSpan.FromMilliseconds(1234)));
+            Assert.That(
+                client.Options.KeepAliveInterval,
+                Is.EqualTo(TimeSpan.FromMilliseconds(1234))
+            );
+            Assert.That(
+                client.Options.KeepAliveTimeout,
+                Is.EqualTo(TimeSpan.FromMilliseconds(1234))
+            );
         }
 
         [Test]
@@ -65,32 +72,40 @@ namespace PuppeteerSharp.Tests.TransportTests
             listener.Prefixes.Add(prefix);
             listener.Start();
 
-            var serverAccepted = new TaskCompletionSource<WebSocket>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var serverAccepted = new TaskCompletionSource<WebSocket>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             _ = Task.Run(async () =>
             {
                 var context = await listener.GetContextAsync().ConfigureAwait(false);
-                var webSocketContext = await context.AcceptWebSocketAsync(null).ConfigureAwait(false);
+                var webSocketContext = await context
+                    .AcceptWebSocketAsync(null)
+                    .ConfigureAwait(false);
                 serverAccepted.TrySetResult(webSocketContext.WebSocket);
                 var buffer = new byte[128];
                 while (webSocketContext.WebSocket.State == WebSocketState.Open)
                 {
-                    await webSocketContext.WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).ConfigureAwait(false);
+                    await webSocketContext
+                        .WebSocket.ReceiveAsync(
+                            new ArraySegment<byte>(buffer),
+                            CancellationToken.None
+                        )
+                        .ConfigureAwait(false);
                 }
             });
 
             var connectOptions = new ConnectOptions
             {
-                WsOptions = new WsOptions
-                {
-                    KeepAlive = true,
-                    KeepAliveIntervalMs = 50,
-                },
+                WsOptions = new WsOptions { KeepAlive = true, KeepAliveIntervalMs = 50 },
             };
 
-            var transport = await WebSocketTransport.DefaultTransportFactory(
-                new Uri(prefix.Replace("http://", "ws://")),
-                connectOptions,
-                CancellationToken.None).ConfigureAwait(false);
+            var transport = await WebSocketTransport
+                .DefaultTransportFactory(
+                    new Uri(prefix.Replace("http://", "ws://")),
+                    connectOptions,
+                    CancellationToken.None
+                )
+                .ConfigureAwait(false);
 
             var closed = false;
             transport.Closed += (_, _) => closed = true;
@@ -118,15 +133,23 @@ namespace PuppeteerSharp.Tests.TransportTests
                 }
             });
 
-            var connectOptions = new ConnectOptions { WsOptions = new WsOptions { HandshakeTimeout = 100 } };
+            var connectOptions = new ConnectOptions
+            {
+                WsOptions = new WsOptions { HandshakeTimeout = 100 },
+            };
 
             var connection = WebSocketTransport.DefaultTransportFactory(
                 new Uri($"ws://127.0.0.1:{port}"),
                 connectOptions,
-                CancellationToken.None);
+                CancellationToken.None
+            );
 
             var completed = await Task.WhenAny(connection, Task.Delay(5000)).ConfigureAwait(false);
-            Assert.That(completed, Is.SameAs(connection), "The handshake did not time out within 5 seconds.");
+            Assert.That(
+                completed,
+                Is.SameAs(connection),
+                "The handshake did not time out within 5 seconds."
+            );
             Assert.ThrowsAsync<System.TimeoutException>(() => connection);
 
             foreach (var client in accepted)

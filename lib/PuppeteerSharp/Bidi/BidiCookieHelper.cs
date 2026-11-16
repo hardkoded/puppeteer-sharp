@@ -35,8 +35,11 @@ internal static class BidiCookieHelper
     /// <summary>
     /// Converts a BiDi cookie to a PuppeteerSharp cookie.
     /// </summary>
-    public static CookieParam BidiToPuppeteerCookie(BidiCookie bidiCookie, bool returnCompositePartitionKey = false)
-        => new()
+    public static CookieParam BidiToPuppeteerCookie(
+        BidiCookie bidiCookie,
+        bool returnCompositePartitionKey = false
+    ) =>
+        new()
         {
             Name = bidiCookie.Name,
             Value = bidiCookie.Value.Value,
@@ -46,7 +49,9 @@ internal static class BidiCookieHelper
             HttpOnly = bidiCookie.HttpOnly,
             Secure = bidiCookie.Secure,
             SameSite = ConvertSameSiteBidiToPuppeteer(bidiCookie.SameSite),
-            Expires = bidiCookie.EpochExpires.HasValue ? (double)bidiCookie.EpochExpires.Value / 1000 : -1,
+            Expires = bidiCookie.EpochExpires.HasValue
+                ? (double)bidiCookie.EpochExpires.Value / 1000
+                : -1,
             Session = !bidiCookie.EpochExpires.HasValue || bidiCookie.EpochExpires.Value == 0,
             SourceScheme = GetSourceScheme(bidiCookie),
             PartitionKey = GetPartitionKey(bidiCookie, returnCompositePartitionKey),
@@ -57,10 +62,7 @@ internal static class BidiCookieHelper
     /// </summary>
     public static PartialCookie PuppeteerToBidiCookie(CookieParam cookie, string domain)
     {
-        var bidiCookie = new PartialCookie(
-            cookie.Name,
-            BytesValue.FromString(cookie.Value),
-            domain)
+        var bidiCookie = new PartialCookie(cookie.Name, BytesValue.FromString(cookie.Value), domain)
         {
             Path = cookie.Path,
             SameSite = ConvertSameSitePuppeteerToBidi(cookie.SameSite),
@@ -80,18 +82,24 @@ internal static class BidiCookieHelper
         // Convert expiration
         if (cookie.Expires.HasValue && cookie.Expires.Value != -1)
         {
-            bidiCookie.Expires = DateTimeOffset.FromUnixTimeSeconds((long)cookie.Expires.Value).DateTime;
+            bidiCookie.Expires = DateTimeOffset
+                .FromUnixTimeSeconds((long)cookie.Expires.Value)
+                .DateTime;
         }
 
         // Add CDP-specific properties if needed
         if (cookie.SourceScheme.HasValue)
         {
-            bidiCookie.AdditionalData["goog:sourceScheme"] = ConvertSourceSchemeEnumToString(cookie.SourceScheme.Value);
+            bidiCookie.AdditionalData["goog:sourceScheme"] = ConvertSourceSchemeEnumToString(
+                cookie.SourceScheme.Value
+            );
         }
 
         if (cookie.Priority.HasValue)
         {
-            bidiCookie.AdditionalData["goog:priority"] = ConvertPriorityEnumToString(cookie.Priority.Value);
+            bidiCookie.AdditionalData["goog:priority"] = ConvertPriorityEnumToString(
+                cookie.Priority.Value
+            );
         }
 
         if (!string.IsNullOrEmpty(cookie.Url))
@@ -107,10 +115,7 @@ internal static class BidiCookieHelper
     /// </summary>
     public static PartialCookie PuppeteerCookieDataToBidiCookie(CookieData cookie, string domain)
     {
-        var bidiCookie = new PartialCookie(
-            cookie.Name,
-            BytesValue.FromString(cookie.Value),
-            domain)
+        var bidiCookie = new PartialCookie(cookie.Name, BytesValue.FromString(cookie.Value), domain)
         {
             Path = cookie.Path,
             SameSite = ConvertSameSitePuppeteerToBidi(cookie.SameSite),
@@ -128,17 +133,23 @@ internal static class BidiCookieHelper
 
         if (cookie.Expires.HasValue && cookie.Expires.Value != -1)
         {
-            bidiCookie.Expires = DateTimeOffset.FromUnixTimeSeconds((long)cookie.Expires.Value).DateTime;
+            bidiCookie.Expires = DateTimeOffset
+                .FromUnixTimeSeconds((long)cookie.Expires.Value)
+                .DateTime;
         }
 
         if (cookie.SourceScheme.HasValue)
         {
-            bidiCookie.AdditionalData["goog:sourceScheme"] = ConvertSourceSchemeEnumToString(cookie.SourceScheme.Value);
+            bidiCookie.AdditionalData["goog:sourceScheme"] = ConvertSourceSchemeEnumToString(
+                cookie.SourceScheme.Value
+            );
         }
 
         if (cookie.Priority.HasValue)
         {
-            bidiCookie.AdditionalData["goog:priority"] = ConvertPriorityEnumToString(cookie.Priority.Value);
+            bidiCookie.AdditionalData["goog:priority"] = ConvertPriorityEnumToString(
+                cookie.Priority.Value
+            );
         }
 
         return bidiCookie;
@@ -147,7 +158,9 @@ internal static class BidiCookieHelper
     /// <summary>
     /// Converts a CookiePartitionKey to a string partition key for BiDi.
     /// </summary>
-    public static string ConvertCookiesPartitionKeyFromPuppeteerToBiDi(CookiePartitionKey partitionKey)
+    public static string ConvertCookiesPartitionKeyFromPuppeteerToBiDi(
+        CookiePartitionKey partitionKey
+    )
     {
         if (partitionKey == null)
         {
@@ -156,7 +169,9 @@ internal static class BidiCookieHelper
 
         if (partitionKey.HasCrossSiteAncestor == true)
         {
-            throw new PuppeteerException("WebDriver BiDi does not support `HasCrossSiteAncestor` yet.");
+            throw new PuppeteerException(
+                "WebDriver BiDi does not support `HasCrossSiteAncestor` yet."
+            );
         }
 
         return partitionKey.SourceOrigin;
@@ -189,7 +204,8 @@ internal static class BidiCookieHelper
         // https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3
         // A leading dot marks a domain cookie, which also applies to the domain
         // itself, so `.example.com` matches both `example.com` and `a.example.com`.
-        return cookieDomain.StartsWith(".", StringComparison.Ordinal) && $".{urlHostname}".EndsWith(cookieDomain, StringComparison.Ordinal);
+        return cookieDomain.StartsWith(".", StringComparison.Ordinal)
+            && $".{urlHostname}".EndsWith(cookieDomain, StringComparison.Ordinal);
     }
 
     /// <summary>
@@ -271,7 +287,10 @@ internal static class BidiCookieHelper
         };
     }
 
-    private static CookiePartitionKey GetPartitionKey(BidiCookie bidiCookie, bool returnCompositePartitionKey)
+    private static CookiePartitionKey GetPartitionKey(
+        BidiCookie bidiCookie,
+        bool returnCompositePartitionKey
+    )
     {
         if (!bidiCookie.AdditionalData.TryGetValue("goog:partitionKey", out var value))
         {
@@ -290,12 +309,17 @@ internal static class BidiCookieHelper
                 return new CookiePartitionKey { SourceOrigin = jsonElement.GetString() };
             }
 
-            if (jsonElement.ValueKind == JsonValueKind.Object &&
-                jsonElement.TryGetProperty("topLevelSite", out var topLevelSite))
+            if (
+                jsonElement.ValueKind == JsonValueKind.Object
+                && jsonElement.TryGetProperty("topLevelSite", out var topLevelSite)
+            )
             {
                 if (returnCompositePartitionKey)
                 {
-                    var hasCrossSiteAncestor = jsonElement.TryGetProperty("hasCrossSiteAncestor", out var crossSite)
+                    var hasCrossSiteAncestor = jsonElement.TryGetProperty(
+                        "hasCrossSiteAncestor",
+                        out var crossSite
+                    )
                         ? crossSite.GetBoolean()
                         : false;
                     return new CookiePartitionKey

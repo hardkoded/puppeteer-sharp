@@ -35,10 +35,17 @@ namespace PuppeteerSharp.Tooling
         [Option(Required = true, HelpText = "Name of the spec file to use.")]
         public string SpecFile { get; set; }
 
-        [Option(Required = false, HelpText = "The location of the scaffold code. If not present, will output to console.")]
+        [Option(
+            Required = false,
+            HelpText = "The location of the scaffold code. If not present, will output to console."
+        )]
         public string OutputFile { get; set; }
 
-        [Option(Required = false, HelpText = "The namespace of the generated class.", Default = "PuppeteerSharp.Tests")]
+        [Option(
+            Required = false,
+            HelpText = "The namespace of the generated class.",
+            Default = "PuppeteerSharp.Tests"
+        )]
         public string Namespace { get; set; }
     }
 }

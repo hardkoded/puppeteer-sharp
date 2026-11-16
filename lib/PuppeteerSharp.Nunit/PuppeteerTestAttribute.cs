@@ -23,14 +23,18 @@ namespace PuppeteerSharp.Nunit
         private static TestExpectation[] _canaryExpectations;
         private static TestExpectation[] _upstreamExpectations;
 
-        public static readonly bool IsChrome = Environment.GetEnvironmentVariable("BROWSER") != "FIREFOX";
-        public static readonly bool IsCdp = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROTOCOL")) || Environment.GetEnvironmentVariable("PROTOCOL")!.Equals("cdp");
+        public static readonly bool IsChrome =
+            Environment.GetEnvironmentVariable("BROWSER") != "FIREFOX";
+        public static readonly bool IsCdp =
+            string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROTOCOL"))
+            || Environment.GetEnvironmentVariable("PROTOCOL")!.Equals("cdp");
         public static readonly bool IsPipe = Environment.GetEnvironmentVariable("PIPE") == "true";
 
-        public static readonly HeadlessMode Headless =
-            string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HEADLESS_MODE")) ?
-            (System.Diagnostics.Debugger.IsAttached ? HeadlessMode.False : HeadlessMode.True) :
-            GetHeadlessModeFromEnvVar(Environment.GetEnvironmentVariable("HEADLESS_MODE"));
+        public static readonly HeadlessMode Headless = string.IsNullOrEmpty(
+            Environment.GetEnvironmentVariable("HEADLESS_MODE")
+        )
+            ? (System.Diagnostics.Debugger.IsAttached ? HeadlessMode.False : HeadlessMode.True)
+            : GetHeadlessModeFromEnvVar(Environment.GetEnvironmentVariable("HEADLESS_MODE"));
 
         private static HeadlessMode GetHeadlessModeFromEnvVar(string getEnvironmentVariable)
         {
@@ -39,7 +43,9 @@ namespace PuppeteerSharp.Nunit
                 "headless" => HeadlessMode.True,
                 "headful" => HeadlessMode.False,
                 "headless-shell" => HeadlessMode.Shell,
-                _ => throw new ArgumentException("Invalid value for HEADLESS_MODE environment variable"),
+                _ => throw new ArgumentException(
+                    "Invalid value for HEADLESS_MODE environment variable"
+                ),
             };
         }
 
@@ -60,7 +66,8 @@ namespace PuppeteerSharp.Nunit
         /// <param name="fileName"><see cref="FileName"/></param>
         /// <param name="describe"><see cref="Describe"/></param>
         /// <param name="nameOfTest"><see cref="TestName"/></param>
-        public PuppeteerTestAttribute(string fileName, string describe, string nameOfTest) : this(fileName, nameOfTest)
+        public PuppeteerTestAttribute(string fileName, string describe, string nameOfTest)
+            : this(fileName, nameOfTest)
         {
             Describe = describe;
         }
@@ -85,8 +92,8 @@ namespace PuppeteerSharp.Nunit
         /// </summary>
         public string Describe { get; }
 
-        public override string ToString()
-            => Describe == null ? $"[FileName] {TestName}" : $"[{FileName}] {Describe} {TestName}";
+        public override string ToString() =>
+            Describe == null ? $"[FileName] {TestName}" : $"[{FileName}] {Describe} {TestName}";
 
         public void ApplyToTest(Test test)
         {
@@ -98,7 +105,10 @@ namespace PuppeteerSharp.Nunit
             if (ShouldSkipByExpectation(test, out var expectation))
             {
                 test.RunState = RunState.Ignored;
-                test.Properties.Set(global::NUnit.Framework.Internal.PropertyNames.SkipReason, $"Skipped by expectation {expectation.TestIdPattern}");
+                test.Properties.Set(
+                    global::NUnit.Framework.Internal.PropertyNames.SkipReason,
+                    $"Skipped by expectation {expectation.TestIdPattern}"
+                );
             }
         }
 
@@ -110,15 +120,14 @@ namespace PuppeteerSharp.Nunit
                 IsChrome
                     ? TestExpectation.TestExpectationsParameter.Chrome
                     : TestExpectation.TestExpectationsParameter.Firefox,
-
                 IsCdp
                     ? TestExpectation.TestExpectationsParameter.Cdp
                     : TestExpectation.TestExpectationsParameter.WebDriverBiDi,
                 Headless.Equals(HeadlessMode.True)
                     ? TestExpectation.TestExpectationsParameter.Headless
-                    : Headless.Equals(HeadlessMode.False)
-                        ? TestExpectation.TestExpectationsParameter.Headful
-                        : TestExpectation.TestExpectationsParameter.ChromeHeadlessShell
+                : Headless.Equals(HeadlessMode.False)
+                    ? TestExpectation.TestExpectationsParameter.Headful
+                : TestExpectation.TestExpectationsParameter.ChromeHeadlessShell,
             ];
 
             if (IsPipe)
@@ -130,7 +139,10 @@ namespace PuppeteerSharp.Nunit
             var canaryExpectations = GetCanaryExpectations();
             var upstreamExpectations = GetUpstreamExpectations();
             // Join local, canary, and upstream in one variable
-            var allExpectations = localExpectations.Concat(canaryExpectations).Concat(upstreamExpectations).ToArray();
+            var allExpectations = localExpectations
+                .Concat(canaryExpectations)
+                .Concat(upstreamExpectations)
+                .ToArray();
 
             var testIdStr = ToString();
 
@@ -146,9 +158,16 @@ namespace PuppeteerSharp.Nunit
                         // If expectation contains FAIL, SKIP, or TIMEOUT, skip the test.
                         // This handles flaky tests marked as ["FAIL", "PASS"] - we skip them
                         // rather than running and failing CI.
-                        var shouldSkip = expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
-                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
-                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout);
+                        var shouldSkip =
+                            expectation.Expectations.Contains(
+                                TestExpectation.TestExpectationResult.Skip
+                            )
+                            || expectation.Expectations.Contains(
+                                TestExpectation.TestExpectationResult.Fail
+                            )
+                            || expectation.Expectations.Contains(
+                                TestExpectation.TestExpectationResult.Timeout
+                            );
 
                         if (shouldSkip)
                         {
@@ -157,7 +176,11 @@ namespace PuppeteerSharp.Nunit
                         }
 
                         // If expectation contains only PASS, don't skip - run the test
-                        if (expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Pass))
+                        if (
+                            expectation.Expectations.Contains(
+                                TestExpectation.TestExpectationResult.Pass
+                            )
+                        )
                         {
                             output = null;
                             return false;
@@ -172,14 +195,15 @@ namespace PuppeteerSharp.Nunit
 
         private static TestExpectation.TestExpectationPlatform GetCurrentExpectationPlatform()
         {
-            var currentExpectationPlatform =
-                TestExpectation.TestExpectationPlatform.Linux;
+            var currentExpectationPlatform = TestExpectation.TestExpectationPlatform.Linux;
 
             if (RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
             {
                 currentExpectationPlatform = TestExpectation.TestExpectationPlatform.Win32;
             }
-            else if (RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
+            else if (
+                RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux)
+            )
             {
                 currentExpectationPlatform = TestExpectation.TestExpectationPlatform.Linux;
             }
@@ -192,19 +216,24 @@ namespace PuppeteerSharp.Nunit
         }
 
         private static TestExpectation[] GetLocalExpectations() =>
-            _localExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.local.json");
+            _localExpectations ??= LoadExpectationsFromResource(
+                "PuppeteerSharp.Nunit.TestExpectations.TestExpectations.local.json"
+            );
 
         private static TestExpectation[] GetCanaryExpectations() =>
-            _canaryExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.canary.json");
+            _canaryExpectations ??= LoadExpectationsFromResource(
+                "PuppeteerSharp.Nunit.TestExpectations.TestExpectations.canary.json"
+            );
 
         private static TestExpectation[] GetUpstreamExpectations() =>
-            _upstreamExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.upstream.json");
+            _upstreamExpectations ??= LoadExpectationsFromResource(
+                "PuppeteerSharp.Nunit.TestExpectations.TestExpectations.upstream.json"
+            );
 
-        private static readonly JsonSerializerOptions DefaultJsonSerializerOptions =
-            new()
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
+        private static readonly JsonSerializerOptions DefaultJsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
 
         private static TestExpectation[] LoadExpectationsFromResource(string resourceName)
         {
@@ -213,7 +242,10 @@ namespace PuppeteerSharp.Nunit
             using var stream = assembly.GetManifestResourceStream(resourceName);
             using var reader = new StreamReader(stream);
             var fileContent = reader.ReadToEnd();
-            return JsonSerializer.Deserialize<TestExpectation[]>(fileContent, DefaultJsonSerializerOptions);
+            return JsonSerializer.Deserialize<TestExpectation[]>(
+                fileContent,
+                DefaultJsonSerializerOptions
+            );
         }
     }
 }

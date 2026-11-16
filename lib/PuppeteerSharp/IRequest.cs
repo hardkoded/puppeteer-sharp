@@ -166,7 +166,10 @@ namespace PuppeteerSharp
         /// <param name="priority">Optional intercept abort priority. If provided, intercept will be resolved using cooperative handling rules. Otherwise, intercept will be resolved immediately.
         /// IMPORTANT: If you set the priority, you will need to attach Request listener using <see cref="IPage.AddRequestInterceptor"/> instead of <see cref="IPage.Request"/>.</param>
         /// <returns>Task.</returns>
-        Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null);
+        Task AbortAsync(
+            RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed,
+            int? priority = null
+        );
 
         /// <summary>
         /// Fetches the POST data for the request from the browser.

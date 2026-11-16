@@ -7,7 +7,8 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class QueryOneChromiumWebTests : PuppeteerPageBaseTest
     {
-        private const string SetupPageContent = @"
+        private const string SetupPageContent =
+            @"
           <h2 id=""shown"">title</h2>
           <h2 id=""hidden"" aria-hidden=""true"">title</h2>
           <div id=""node1"" aria-labelledby=""node2""></div>
@@ -54,10 +55,21 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 
         private async Task<string[]> GetIdsAsync(IElementHandle[] elements)
         {
-            return await Task.WhenAll(elements.Select(element => element.EvaluateFunctionAsync<string>("element => element.id")));
+            return await Task.WhenAll(
+                elements.Select(element =>
+                    element.EvaluateFunctionAsync<string>("element => element.id")
+                )
+            );
         }
 
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne (Chromium web test)", "should find by name \"foo\"")]
+        [
+            Test,
+            PuppeteerTest(
+                "ariaqueryhandler.spec",
+                "AriaQueryHandler queryOne (Chromium web test)",
+                "should find by name \"foo\""
+            )
+        ]
         public async Task ShouldFindByNameFoo()
         {
             await Page.SetContentAsync(SetupPageContent);
@@ -66,7 +78,14 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(ids, Is.EqualTo(new[] { "node3", "node5", "node6" }));
         }
 
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne (Chromium web test)", "should find by name \"bar\"")]
+        [
+            Test,
+            PuppeteerTest(
+                "ariaqueryhandler.spec",
+                "AriaQueryHandler queryOne (Chromium web test)",
+                "should find by name \"bar\""
+            )
+        ]
         public async Task ShouldFindByNameBar()
         {
             await Page.SetContentAsync(SetupPageContent);
@@ -75,7 +94,14 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(ids, Is.EqualTo(new[] { "node1", "node2", "node8" }));
         }
 
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne (Chromium web test)", "should find treeitem by name")]
+        [
+            Test,
+            PuppeteerTest(
+                "ariaqueryhandler.spec",
+                "AriaQueryHandler queryOne (Chromium web test)",
+                "should find treeitem by name"
+            )
+        ]
         public async Task ShouldFindTreeitemByName()
         {
             await Page.SetContentAsync(SetupPageContent);
@@ -84,7 +110,14 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(ids, Is.EqualTo(new[] { "node30" }));
         }
 
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne (Chromium web test)", "should find by role \"button\"")]
+        [
+            Test,
+            PuppeteerTest(
+                "ariaqueryhandler.spec",
+                "AriaQueryHandler queryOne (Chromium web test)",
+                "should find by role \"button\""
+            )
+        ]
         public async Task ShouldFindByRoleButton()
         {
             await Page.SetContentAsync(SetupPageContent);
@@ -93,7 +126,14 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(ids, Is.EqualTo(new[] { "node5", "node6", "node8", "node10", "node21" }));
         }
 
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne (Chromium web test)", "should find by role \"heading\"")]
+        [
+            Test,
+            PuppeteerTest(
+                "ariaqueryhandler.spec",
+                "AriaQueryHandler queryOne (Chromium web test)",
+                "should find by role \"heading\""
+            )
+        ]
         public async Task ShouldFindByRoleHeading()
         {
             await Page.SetContentAsync(SetupPageContent);
@@ -102,7 +142,14 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(ids, Is.EqualTo(new[] { "shown", "node11", "node13" }));
         }
 
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne (Chromium web test)", "should find both ignored and unignored")]
+        [
+            Test,
+            PuppeteerTest(
+                "ariaqueryhandler.spec",
+                "AriaQueryHandler queryOne (Chromium web test)",
+                "should find both ignored and unignored"
+            )
+        ]
         public async Task ShouldFindBothIgnoredAndUnignored()
         {
             await Page.SetContentAsync(SetupPageContent);

@@ -11,18 +11,27 @@ namespace PupppeterSharpAspNetFrameworkSample.Services
 
         public static async Task<string> GetTextAsync(string url)
         {
-            using var browserFetcher = new BrowserFetcher(new BrowserFetcherOptions()
-            {
-                Path = HostPath
-            });
-            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision).ConfigureAwait(false);
+            using var browserFetcher = new BrowserFetcher(
+                new BrowserFetcherOptions() { Path = HostPath }
+            );
+            await browserFetcher
+                .DownloadAsync(BrowserFetcher.DefaultRevision)
+                .ConfigureAwait(false);
 
-            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions()
-            {
-                Headless = true,
-                TransportFactory = AspNetWebSocketTransport.AspNetTransportFactory,
-                ExecutablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultRevision)
-            }).ConfigureAwait(false))
+            using (
+                var browser = await Puppeteer
+                    .LaunchAsync(
+                        new LaunchOptions()
+                        {
+                            Headless = true,
+                            TransportFactory = AspNetWebSocketTransport.AspNetTransportFactory,
+                            ExecutablePath = browserFetcher.GetExecutablePath(
+                                BrowserFetcher.DefaultRevision
+                            ),
+                        }
+                    )
+                    .ConfigureAwait(false)
+            )
             using (var page = await browser.NewPageAsync().ConfigureAwait(false))
             {
                 var response = await page.GoToAsync(url).ConfigureAwait(false);

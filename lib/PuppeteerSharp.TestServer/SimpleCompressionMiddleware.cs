@@ -30,7 +30,9 @@ namespace PuppeteerSharp.TestServer
             await _next(context);
             using (var stream = new MemoryStream())
             {
-                using (var compressionStream = new GZipStream(stream, CompressionMode.Compress, true))
+                using (
+                    var compressionStream = new GZipStream(stream, CompressionMode.Compress, true)
+                )
                 {
                     bodyWrapperStream.Position = 0;
                     bodyWrapperStream.CopyTo(compressionStream);

@@ -41,16 +41,24 @@ internal class JsonStringEnumMemberConverter<TEnum> : JsonConverterFactory
     public static JsonConverter CreateJsonConverter()
     {
         var nullableType = Nullable.GetUnderlyingType(typeof(TEnum));
-        JsonConverter jsonConverter = nullableType == null ? new EnumMemberConverter<TEnum>() : new NullableEnumMemberConverter<TEnum>();
+        JsonConverter jsonConverter =
+            nullableType == null
+                ? new EnumMemberConverter<TEnum>()
+                : new NullableEnumMemberConverter<TEnum>();
         _jsonConverterCache.TryAdd(typeof(TEnum), jsonConverter);
         return jsonConverter;
     }
 
-    public override bool CanConvert(Type typeToConvert)
-        => typeToConvert.IsEnum || Nullable.GetUnderlyingType(typeToConvert)?.IsEnum == true;
+    public override bool CanConvert(Type typeToConvert) =>
+        typeToConvert.IsEnum || Nullable.GetUnderlyingType(typeToConvert)?.IsEnum == true;
 
-    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-        => _jsonConverterCache.TryGetValue(typeToConvert, out var jsonConverter) ? jsonConverter : CreateJsonConverter();
+    public override JsonConverter CreateConverter(
+        Type typeToConvert,
+        JsonSerializerOptions options
+    ) =>
+        _jsonConverterCache.TryGetValue(typeToConvert, out var jsonConverter)
+            ? jsonConverter
+            : CreateJsonConverter();
 
     private static T? Read<T>(ref Utf8JsonReader reader)
         where T : struct, Enum
@@ -78,7 +86,9 @@ internal class JsonStringEnumMemberConverter<TEnum> : JsonConverterFactory
                 TypeCode.UInt64 => (T)(object)reader.GetUInt64(),
                 TypeCode.UInt16 => (T)(object)reader.GetUInt16(),
                 TypeCode.SByte => (T)(object)reader.GetSByte(),
-                _ => throw new JsonException($"Enum '{typeof(TEnum).Name}' of {enumTypeCode} type is not supported."),
+                _ => throw new JsonException(
+                    $"Enum '{typeof(TEnum).Name}' of {enumTypeCode} type is not supported."
+                ),
             };
         }
 
@@ -101,20 +111,29 @@ internal class JsonStringEnumMemberConverter<TEnum> : JsonConverterFactory
     private class EnumMemberConverter<T> : JsonConverter<T>
         where T : struct, Enum
     {
-        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => Read<T>(ref reader) ?? default;
+        public override T Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options
+        ) => Read<T>(ref reader) ?? default;
 
-        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
-            => Write<T>(writer, value);
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options) =>
+            Write<T>(writer, value);
     }
 
     private class NullableEnumMemberConverter<T> : JsonConverter<T?>
         where T : struct, Enum
     {
-        public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => Read<T>(ref reader);
+        public override T? Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options
+        ) => Read<T>(ref reader);
 
-        public override void Write(Utf8JsonWriter writer, T? value, JsonSerializerOptions options)
-            => Write<T>(writer, value);
+        public override void Write(
+            Utf8JsonWriter writer,
+            T? value,
+            JsonSerializerOptions options
+        ) => Write<T>(writer, value);
     }
 }

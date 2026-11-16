@@ -12,12 +12,10 @@ namespace PuppeteerSharp.Tests.LocatorTests
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
-            await Page
-                .MainFrame
-                .Locator("button")
-                .ClickAsync();
+            await Page.MainFrame.Locator("button").ClickAsync();
 
             var button = await Page.QuerySelectorAsync("button");
             var text = await button.EvaluateFunctionAsync<string>("el => el.innerText");
@@ -29,10 +27,10 @@ namespace PuppeteerSharp.Tests.LocatorTests
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
-            await Page
-                .Locator("button")
+            await Page.Locator("button")
                 .SetEnsureElementIsInTheViewport(false)
                 .SetTimeout(0)
                 .SetVisibility(null)
@@ -51,14 +49,17 @@ namespace PuppeteerSharp.Tests.LocatorTests
         {
             await Page.SetContentAsync("<div id=\"target\">Visible element</div>");
 
-            var waitTask = Page
-                .Locator("#target")
+            var waitTask = Page.Locator("#target")
                 .SetVisibility(VisibilityOption.Hidden)
                 .SetTimeout(5000)
                 .WaitAsync();
 
             await Task.Delay(500);
-            Assert.That(waitTask.IsCompleted, Is.False, "Locator should not resolve while the element is still visible.");
+            Assert.That(
+                waitTask.IsCompleted,
+                Is.False,
+                "Locator should not resolve while the element is still visible."
+            );
 
             await Page.EvaluateFunctionAsync(hideElement);
 

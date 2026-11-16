@@ -192,81 +192,88 @@ namespace PuppeteerSharp.PageAccessibility
         /// Returns <c>null</c> if the frame has navigated to a new document since the snapshot.
         /// </summary>
         /// <returns>An <see cref="IElementHandle"/> for this node, or <c>null</c> if no handle is available.</returns>
-        public Task<IElementHandle> ElementHandleAsync()
-            => ElementHandleFactory != null ? ElementHandleFactory() : Task.FromResult<IElementHandle>(null);
+        public Task<IElementHandle> ElementHandleAsync() =>
+            ElementHandleFactory != null
+                ? ElementHandleFactory()
+                : Task.FromResult<IElementHandle>(null);
 
         /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Exceptions should not be raised in this type of method.")]
-        public bool Equals(SerializedAXNode other)
-            => ReferenceEquals(this, other) ||
-                (
-                    Role == other.Role &&
-                    Name == other.Name &&
-                    Value == other.Value &&
-                    Description == other.Description &&
-                    KeyShortcuts == other.KeyShortcuts &&
-                    RoleDescription == other.RoleDescription &&
-                    ValueText == other.ValueText &&
-                    AutoComplete == other.AutoComplete &&
-                    HasPopup == other.HasPopup &&
-                    Orientation == other.Orientation &&
-                    Busy == other.Busy &&
-                    Live == other.Live &&
-                    Atomic == other.Atomic &&
-                    Relevant == other.Relevant &&
-                    Errormessage == other.Errormessage &&
-                    Details == other.Details &&
-                    Disabled == other.Disabled &&
-                    Expanded == other.Expanded &&
-                    Focused == other.Focused &&
-                    Modal == other.Modal &&
-                    Multiline == other.Multiline &&
-                    Multiselectable == other.Multiselectable &&
-                    Readonly == other.Readonly &&
-                    Required == other.Required &&
-                    Selected == other.Selected &&
-                    Checked == other.Checked &&
-                    Pressed == other.Pressed &&
-                    Level == other.Level &&
-                    ValueMin == other.ValueMin &&
-                    ValueMax == other.ValueMax &&
-                    (Children == other.Children || Children.SequenceEqual(other.Children)));
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "CA1062:Validate arguments of public methods",
+            Justification = "Exceptions should not be raised in this type of method."
+        )]
+        public bool Equals(SerializedAXNode other) =>
+            ReferenceEquals(this, other)
+            || (
+                Role == other.Role
+                && Name == other.Name
+                && Value == other.Value
+                && Description == other.Description
+                && KeyShortcuts == other.KeyShortcuts
+                && RoleDescription == other.RoleDescription
+                && ValueText == other.ValueText
+                && AutoComplete == other.AutoComplete
+                && HasPopup == other.HasPopup
+                && Orientation == other.Orientation
+                && Busy == other.Busy
+                && Live == other.Live
+                && Atomic == other.Atomic
+                && Relevant == other.Relevant
+                && Errormessage == other.Errormessage
+                && Details == other.Details
+                && Disabled == other.Disabled
+                && Expanded == other.Expanded
+                && Focused == other.Focused
+                && Modal == other.Modal
+                && Multiline == other.Multiline
+                && Multiselectable == other.Multiselectable
+                && Readonly == other.Readonly
+                && Required == other.Required
+                && Selected == other.Selected
+                && Checked == other.Checked
+                && Pressed == other.Pressed
+                && Level == other.Level
+                && ValueMin == other.ValueMin
+                && ValueMax == other.ValueMax
+                && (Children == other.Children || Children.SequenceEqual(other.Children))
+            );
 
         /// <inheritdoc/>
         public override bool Equals(object obj) => obj is SerializedAXNode s && Equals(s);
 
         /// <inheritdoc/>
-        public override int GetHashCode()
-            => Role.GetHashCode() ^
-                Name.GetHashCode() ^
-                Value.GetHashCode() ^
-                Description.GetHashCode() ^
-                KeyShortcuts.GetHashCode() ^
-                RoleDescription.GetHashCode() ^
-                ValueText.GetHashCode() ^
-                AutoComplete.GetHashCode() ^
-                HasPopup.GetHashCode() ^
-                Orientation.GetHashCode() ^
-                Busy.GetHashCode() ^
-                Live.GetHashCode() ^
-                Atomic.GetHashCode() ^
-                Relevant.GetHashCode() ^
-                Errormessage.GetHashCode() ^
-                Details.GetHashCode() ^
-                Disabled.GetHashCode() ^
-                Expanded.GetHashCode() ^
-                Focused.GetHashCode() ^
-                Modal.GetHashCode() ^
-                Multiline.GetHashCode() ^
-                Multiselectable.GetHashCode() ^
-                Readonly.GetHashCode() ^
-                Required.GetHashCode() ^
-                Selected.GetHashCode() ^
-                Pressed.GetHashCode() ^
-                Checked.GetHashCode() ^
-                Level.GetHashCode() ^
-                ValueMin.GetHashCode() ^
-                ValueMax.GetHashCode() ^
-                Children.GetHashCode();
+        public override int GetHashCode() =>
+            Role.GetHashCode()
+            ^ Name.GetHashCode()
+            ^ Value.GetHashCode()
+            ^ Description.GetHashCode()
+            ^ KeyShortcuts.GetHashCode()
+            ^ RoleDescription.GetHashCode()
+            ^ ValueText.GetHashCode()
+            ^ AutoComplete.GetHashCode()
+            ^ HasPopup.GetHashCode()
+            ^ Orientation.GetHashCode()
+            ^ Busy.GetHashCode()
+            ^ Live.GetHashCode()
+            ^ Atomic.GetHashCode()
+            ^ Relevant.GetHashCode()
+            ^ Errormessage.GetHashCode()
+            ^ Details.GetHashCode()
+            ^ Disabled.GetHashCode()
+            ^ Expanded.GetHashCode()
+            ^ Focused.GetHashCode()
+            ^ Modal.GetHashCode()
+            ^ Multiline.GetHashCode()
+            ^ Multiselectable.GetHashCode()
+            ^ Readonly.GetHashCode()
+            ^ Required.GetHashCode()
+            ^ Selected.GetHashCode()
+            ^ Pressed.GetHashCode()
+            ^ Checked.GetHashCode()
+            ^ Level.GetHashCode()
+            ^ ValueMin.GetHashCode()
+            ^ ValueMax.GetHashCode()
+            ^ Children.GetHashCode();
     }
 }

@@ -4,7 +4,10 @@ namespace PuppeteerSharp.Input
 {
     internal static class KeyDefinitions
     {
-        private static readonly Dictionary<string, KeyDefinition> Definitions = new Dictionary<string, KeyDefinition>
+        private static readonly Dictionary<string, KeyDefinition> Definitions = new Dictionary<
+            string,
+            KeyDefinition
+        >
         {
             ["0"] = new KeyDefinition
             {
@@ -66,16 +69,8 @@ namespace PuppeteerSharp.Input
                 Key = "9",
                 Code = "Digit9",
             },
-            ["Power"] = new KeyDefinition
-            {
-                Key = "Power",
-                Code = "Power",
-            },
-            ["Eject"] = new KeyDefinition
-            {
-                Key = "Eject",
-                Code = "Eject",
-            },
+            ["Power"] = new KeyDefinition { Key = "Power", Code = "Power" },
+            ["Eject"] = new KeyDefinition { Key = "Eject", Code = "Eject" },
             ["Abort"] = new KeyDefinition
             {
                 KeyCode = 3,
@@ -1012,27 +1007,15 @@ namespace PuppeteerSharp.Input
                 Code = "AltLeft",
                 Location = 1,
             },
-            ["Accept"] = new KeyDefinition
-            {
-                KeyCode = 30,
-                Key = "Accept",
-            },
-            ["ModeChange"] = new KeyDefinition
-            {
-                KeyCode = 31,
-                Key = "ModeChange",
-            },
+            ["Accept"] = new KeyDefinition { KeyCode = 30, Key = "Accept" },
+            ["ModeChange"] = new KeyDefinition { KeyCode = 31, Key = "ModeChange" },
             [" "] = new KeyDefinition
             {
                 KeyCode = 32,
                 Key = " ",
                 Code = "Space",
             },
-            ["Print"] = new KeyDefinition
-            {
-                KeyCode = 42,
-                Key = "Print",
-            },
+            ["Print"] = new KeyDefinition { KeyCode = 42, Key = "Print" },
             ["Execute"] = new KeyDefinition
             {
                 KeyCode = 43,
@@ -1291,37 +1274,17 @@ namespace PuppeteerSharp.Input
                 Key = "'",
                 Code = "Quote",
             },
-            ["Attn"] = new KeyDefinition
-            {
-                KeyCode = 246,
-                Key = "Attn",
-            },
+            ["Attn"] = new KeyDefinition { KeyCode = 246, Key = "Attn" },
             ["CrSel"] = new KeyDefinition
             {
                 KeyCode = 247,
                 Key = "CrSel",
                 Code = "Props",
             },
-            ["ExSel"] = new KeyDefinition
-            {
-                KeyCode = 248,
-                Key = "ExSel",
-            },
-            ["EraseEof"] = new KeyDefinition
-            {
-                KeyCode = 249,
-                Key = "EraseEof",
-            },
-            ["Play"] = new KeyDefinition
-            {
-                KeyCode = 250,
-                Key = "Play",
-            },
-            ["ZoomOut"] = new KeyDefinition
-            {
-                KeyCode = 251,
-                Key = "ZoomOut",
-            },
+            ["ExSel"] = new KeyDefinition { KeyCode = 248, Key = "ExSel" },
+            ["EraseEof"] = new KeyDefinition { KeyCode = 249, Key = "EraseEof" },
+            ["Play"] = new KeyDefinition { KeyCode = 250, Key = "Play" },
+            ["ZoomOut"] = new KeyDefinition { KeyCode = 251, Key = "ZoomOut" },
             [")"] = new KeyDefinition
             {
                 KeyCode = 48,

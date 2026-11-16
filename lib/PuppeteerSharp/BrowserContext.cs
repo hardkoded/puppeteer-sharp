@@ -58,8 +58,14 @@ namespace PuppeteerSharp
         public abstract ITarget[] Targets();
 
         /// <inheritdoc/>
-        public Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
-            => Browser.WaitForTargetAsync((target) => target.BrowserContext == this && predicate(target), options);
+        public Task<ITarget> WaitForTargetAsync(
+            Func<ITarget, bool> predicate,
+            WaitForOptions options = null
+        ) =>
+            Browser.WaitForTargetAsync(
+                (target) => target.BrowserContext == this && predicate(target),
+                options
+            );
 
         /// <inheritdoc />
         public abstract Task<IPage[]> PagesAsync(bool includeAll = false);
@@ -71,10 +77,16 @@ namespace PuppeteerSharp
         public abstract Task CloseAsync();
 
         /// <inheritdoc/>
-        public abstract Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions);
+        public abstract Task OverridePermissionsAsync(
+            string origin,
+            IEnumerable<OverridePermission> permissions
+        );
 
         /// <inheritdoc/>
-        public abstract Task SetPermissionAsync(string origin, params PermissionEntry[] permissions);
+        public abstract Task SetPermissionAsync(
+            string origin,
+            params PermissionEntry[] permissions
+        );
 
         /// <inheritdoc/>
         public abstract Task ClearPermissionOverridesAsync();
@@ -89,72 +101,86 @@ namespace PuppeteerSharp
         public async Task DeleteCookieAsync(params CookieParam[] cookies)
         {
             await SetCookieAsync(
-                cookies.Select(cookie => new CookieData
-                {
-                    Name = cookie.Name,
-                    Value = cookie.Value,
-                    Domain = cookie.Domain,
-                    Path = cookie.Path,
-                    Secure = cookie.Secure,
-                    HttpOnly = cookie.HttpOnly,
-                    SameSite = cookie.SameSite,
-                    Expires = 1,
-                    Priority = cookie.Priority,
-                    SourceScheme = cookie.SourceScheme,
-                    PartitionKey = cookie.PartitionKey,
-                }).ToArray()).ConfigureAwait(false);
+                    cookies
+                        .Select(cookie => new CookieData
+                        {
+                            Name = cookie.Name,
+                            Value = cookie.Value,
+                            Domain = cookie.Domain,
+                            Path = cookie.Path,
+                            Secure = cookie.Secure,
+                            HttpOnly = cookie.HttpOnly,
+                            SameSite = cookie.SameSite,
+                            Expires = 1,
+                            Priority = cookie.Priority,
+                            SourceScheme = cookie.SourceScheme,
+                            PartitionKey = cookie.PartitionKey,
+                        })
+                        .ToArray()
+                )
+                .ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public async Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)
         {
             var cookies = await GetCookiesAsync().ConfigureAwait(false);
-            var cookiesToDelete = cookies.Where(cookie =>
-                filters.Any(filter =>
-                {
-                    if (filter.Name != cookie.Name)
+            var cookiesToDelete = cookies
+                .Where(cookie =>
+                    filters.Any(filter =>
                     {
-                        return false;
-                    }
-
-                    if (filter.Domain != null && filter.Domain != cookie.Domain)
-                    {
-                        return false;
-                    }
-
-                    if (filter.Path != null && filter.Path != cookie.Path)
-                    {
-                        return false;
-                    }
-
-                    if (filter.PartitionKey != null)
-                    {
-                        if (cookie.PartitionKey == null)
+                        if (filter.Name != cookie.Name)
                         {
                             return false;
                         }
 
-                        if (filter.PartitionKey.SourceOrigin != cookie.PartitionKey.SourceOrigin)
+                        if (filter.Domain != null && filter.Domain != cookie.Domain)
                         {
                             return false;
                         }
 
-                        if (filter.PartitionKey.HasCrossSiteAncestor != null &&
-                            filter.PartitionKey.HasCrossSiteAncestor != cookie.PartitionKey.HasCrossSiteAncestor)
+                        if (filter.Path != null && filter.Path != cookie.Path)
                         {
                             return false;
                         }
-                    }
 
-                    if (filter.Url != null &&
-                        Uri.TryCreate(filter.Url, UriKind.Absolute, out var url) &&
-                        (url.Host != cookie.Domain || url.AbsolutePath != cookie.Path))
-                    {
-                        return false;
-                    }
+                        if (filter.PartitionKey != null)
+                        {
+                            if (cookie.PartitionKey == null)
+                            {
+                                return false;
+                            }
 
-                    return true;
-                })).ToArray();
+                            if (
+                                filter.PartitionKey.SourceOrigin != cookie.PartitionKey.SourceOrigin
+                            )
+                            {
+                                return false;
+                            }
+
+                            if (
+                                filter.PartitionKey.HasCrossSiteAncestor != null
+                                && filter.PartitionKey.HasCrossSiteAncestor
+                                    != cookie.PartitionKey.HasCrossSiteAncestor
+                            )
+                            {
+                                return false;
+                            }
+                        }
+
+                        if (
+                            filter.Url != null
+                            && Uri.TryCreate(filter.Url, UriKind.Absolute, out var url)
+                            && (url.Host != cookie.Domain || url.AbsolutePath != cookie.Path)
+                        )
+                        {
+                            return false;
+                        }
+
+                        return true;
+                    })
+                )
+                .ToArray();
             await DeleteCookieAsync(cookiesToDelete).ConfigureAwait(false);
         }
 
@@ -185,14 +211,16 @@ namespace PuppeteerSharp
             var mutex = _pageScreenshotMutex ?? new ScreenshotMutex();
             _pageScreenshotMutex = mutex;
             Interlocked.Increment(ref _screenshotOperationsCount);
-            return await mutex.AcquireAsync(() =>
-            {
-                if (Interlocked.Decrement(ref _screenshotOperationsCount) == 0)
+            return await mutex
+                .AcquireAsync(() =>
                 {
-                    // Remove the mutex to indicate no ongoing screenshot operation.
-                    _pageScreenshotMutex = null;
-                }
-            }).ConfigureAwait(false);
+                    if (Interlocked.Decrement(ref _screenshotOperationsCount) == 0)
+                    {
+                        // Remove the mutex to indicate no ongoing screenshot operation.
+                        _pageScreenshotMutex = null;
+                    }
+                })
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -215,11 +243,13 @@ namespace PuppeteerSharp
 
         internal void OnTargetCreated(TargetChangedArgs args) => TargetCreated?.Invoke(this, args);
 
-        internal void OnTargetDestroyed(TargetChangedArgs args) => TargetDestroyed?.Invoke(this, args);
+        internal void OnTargetDestroyed(TargetChangedArgs args) =>
+            TargetDestroyed?.Invoke(this, args);
 
         internal void OnTargetChanged(TargetChangedArgs args) => TargetChanged?.Invoke(this, args);
 
-        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+        internal void OnRequestServedFromCache(RequestEventArgs e) =>
+            RequestServedFromCache?.Invoke(this, e);
 
         internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
 

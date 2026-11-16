@@ -33,7 +33,8 @@ internal class BidiWebWorker : WebWorker
     private readonly BidiFrame _frame;
     private readonly BidiWorkerRealm _realm;
 
-    private BidiWebWorker(BidiFrame frame, DedicatedWorkerRealm realm) : base(realm.Origin)
+    private BidiWebWorker(BidiFrame frame, DedicatedWorkerRealm realm)
+        : base(realm.Origin)
     {
         _frame = frame;
         _realm = BidiWorkerRealm.From(realm, this);

@@ -37,7 +37,8 @@ public class CdpDialog : Dialog
     /// <param name="type">Type.</param>
     /// <param name="message">Message.</param>
     /// <param name="defaultValue">Default value.</param>
-    public CdpDialog(CDPSession client, DialogType type, string message, string defaultValue) : base(type, message, defaultValue)
+    public CdpDialog(CDPSession client, DialogType type, string message, string defaultValue)
+        : base(type, message, defaultValue)
     {
         _client = client;
         _client.MessageReceived += OnClientMessageReceived;
@@ -45,11 +46,12 @@ public class CdpDialog : Dialog
 
     internal override async Task HandleAsync(bool accept, string text)
     {
-        await _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
-        {
-            Accept = accept,
-            PromptText = text,
-        }).ConfigureAwait(false);
+        await _client
+            .SendAsync(
+                "Page.handleJavaScriptDialog",
+                new PageHandleJavaScriptDialogRequest { Accept = accept, PromptText = text }
+            )
+            .ConfigureAwait(false);
 
         _client.MessageReceived -= OnClientMessageReceived;
     }

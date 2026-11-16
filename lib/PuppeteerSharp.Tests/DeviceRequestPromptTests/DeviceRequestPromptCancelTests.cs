@@ -7,7 +7,14 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptCancelTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should succeed on first call")]
+    [
+        Test,
+        PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.cancel",
+            "should succeed on first call"
+        )
+    ]
     public async Task ShouldSucceedOnFirstCall()
     {
         var client = new MockCDPSession();
@@ -15,12 +22,20 @@ public class DeviceRequestPromptCancelTests : PuppeteerPageBaseTest
         var prompt = new DeviceRequestPrompt(
             client,
             timeoutSettings,
-            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" });
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" }
+        );
 
         await prompt.CancelAsync();
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should fail when canceling prompt twice")]
+    [
+        Test,
+        PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.cancel",
+            "should fail when canceling prompt twice"
+        )
+    ]
     public async Task ShouldFailWhenCancelingPromptTwice()
     {
         var client = new MockCDPSession();
@@ -28,7 +43,8 @@ public class DeviceRequestPromptCancelTests : PuppeteerPageBaseTest
         var prompt = new DeviceRequestPrompt(
             client,
             timeoutSettings,
-            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" });
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" }
+        );
 
         await prompt.CancelAsync();
         Assert.ThrowsAsync<PuppeteerException>(async () => await prompt.CancelAsync());

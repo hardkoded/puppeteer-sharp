@@ -40,7 +40,8 @@ internal class BidiBrowserTarget(BidiBrowser bidiBrowser) : Target
 
     public override Task<IPage> AsPageAsync() => throw new PuppeteerException("Not supported");
 
-    public override Task<ICDPSession> CreateCDPSessionAsync() => throw new PuppeteerException("Not supported");
+    public override Task<ICDPSession> CreateCDPSessionAsync() =>
+        throw new PuppeteerException("Not supported");
 }
 
 #endif

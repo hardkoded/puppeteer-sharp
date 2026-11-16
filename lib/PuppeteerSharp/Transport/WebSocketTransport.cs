@@ -28,7 +28,8 @@ namespace PuppeteerSharp.Transport
         /// <summary>
         /// Gets the default <see cref="TransportTaskScheduler"/>.
         /// </summary>
-        public static readonly TransportTaskScheduler DefaultTransportScheduler = ScheduleTransportTask;
+        public static readonly TransportTaskScheduler DefaultTransportScheduler =
+            ScheduleTransportTask;
 
         private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();
 
@@ -36,7 +37,11 @@ namespace PuppeteerSharp.Transport
         private readonly bool _queueRequests;
         private readonly TaskQueue _socketQueue = new();
 
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed in StopReading() method.")]
+        [SuppressMessage(
+            "Microsoft.Usage",
+            "CA2213:DisposableFieldsShouldBeDisposed",
+            Justification = "False positive, as it is disposed in StopReading() method."
+        )]
         private CancellationTokenSource _readerCancellationSource = new();
 
         /// <summary>
@@ -45,7 +50,11 @@ namespace PuppeteerSharp.Transport
         /// <param name="client">The web socket.</param>
         /// <param name="scheduler">The scheduler to use for long-running tasks.</param>
         /// <param name="queueRequests">Indicates whether requests should be queued.</param>
-        protected WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler, bool queueRequests)
+        protected WebSocketTransport(
+            WebSocket client,
+            TransportTaskScheduler scheduler,
+            bool queueRequests
+        )
         {
             if (scheduler == null)
             {
@@ -75,7 +84,13 @@ namespace PuppeteerSharp.Transport
         /// <inheritdoc />
         public Task SendAsync(byte[] message)
         {
-            Task SendCoreAsync() => _client.SendAsync(new ArraySegment<byte>(message), WebSocketMessageType.Text, true, default);
+            Task SendCoreAsync() =>
+                _client.SendAsync(
+                    new ArraySegment<byte>(message),
+                    WebSocketMessageType.Text,
+                    true,
+                    default
+                );
 
             return _queueRequests ? _socketQueue.Enqueue(SendCoreAsync) : SendCoreAsync();
         }
@@ -85,7 +100,11 @@ namespace PuppeteerSharp.Transport
         /// </summary>
         public void StopReading()
         {
-            var readerCts = Interlocked.CompareExchange(ref _readerCancellationSource, null, _readerCancellationSource);
+            var readerCts = Interlocked.CompareExchange(
+                ref _readerCancellationSource,
+                null,
+                _readerCancellationSource
+            );
             if (readerCts != null)
             {
                 // Asynchronous read operations may still be in progress, so cancel it first and then dispose
@@ -114,7 +133,11 @@ namespace PuppeteerSharp.Transport
             _socketQueue.Dispose();
         }
 
-        private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
+        private static async Task<WebSocket> CreateDefaultWebSocket(
+            Uri url,
+            IConnectionOptions options,
+            CancellationToken cancellationToken
+        )
         {
             var result = new ClientWebSocket();
             ConnectionOptionsHelper.ConfigureWebSocketKeepAlive(result, options.WsOptions);
@@ -127,7 +150,9 @@ namespace PuppeteerSharp.Transport
                 }
             }
 
-            using var handshakeCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            using var handshakeCts = CancellationTokenSource.CreateLinkedTokenSource(
+                cancellationToken
+            );
             if (options.WsOptions?.HandshakeTimeout is int handshakeTimeout)
             {
                 handshakeCts.CancelAfter(handshakeTimeout);
@@ -140,25 +165,40 @@ namespace PuppeteerSharp.Transport
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
                 result.Dispose();
-                throw new TimeoutException($"WebSocket opening handshake timed out after {options.WsOptions.HandshakeTimeout}ms.");
+                throw new TimeoutException(
+                    $"WebSocket opening handshake timed out after {options.WsOptions.HandshakeTimeout}ms."
+                );
             }
 
             return result;
         }
 
-        private static async Task<IConnectionTransport> CreateDefaultTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
+        private static async Task<IConnectionTransport> CreateDefaultTransport(
+            Uri url,
+            IConnectionOptions connectionOptions,
+            CancellationToken cancellationToken
+        )
         {
             var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
-            var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken).ConfigureAwait(false);
-            return new WebSocketTransport(webSocket, DefaultTransportScheduler, connectionOptions.EnqueueTransportMessages);
+            var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken)
+                .ConfigureAwait(false);
+            return new WebSocketTransport(
+                webSocket,
+                DefaultTransportScheduler,
+                connectionOptions.EnqueueTransportMessages
+            );
         }
 
-        private static void ScheduleTransportTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
-            => Task.Factory.StartNew(
+        private static void ScheduleTransportTask(
+            Func<CancellationToken, Task> taskFactory,
+            CancellationToken cancellationToken
+        ) =>
+            Task.Factory.StartNew(
                 () => taskFactory(cancellationToken),
                 cancellationToken,
                 TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
+                TaskScheduler.Default
+            );
 
         /// <summary>
         /// Starts listening the socket.
@@ -178,9 +218,9 @@ namespace PuppeteerSharp.Transport
                     {
                         try
                         {
-                            result = await _client.ReceiveAsync(
-                                new ArraySegment<byte>(buffer),
-                                cancellationToken).ConfigureAwait(false);
+                            result = await _client
+                                .ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken)
+                                .ConfigureAwait(false);
                         }
                         catch (OperationCanceledException)
                         {
@@ -209,14 +249,16 @@ namespace PuppeteerSharp.Transport
                         }
 
                         memoryStream?.Write(buffer, 0, result.Count);
-                    }
-                    while (!result.EndOfMessage);
+                    } while (!result.EndOfMessage);
 
                     MessageReceived?.Invoke(
                         this,
-                        new MessageReceivedEventArgs(memoryStream is null
-                            ? buffer.AsSpan(0, result.Count).ToArray()
-                            : memoryStream.ToArray()));
+                        new MessageReceivedEventArgs(
+                            memoryStream is null
+                                ? buffer.AsSpan(0, result.Count).ToArray()
+                                : memoryStream.ToArray()
+                        )
+                    );
 
                     memoryStream?.Dispose();
                     memoryStream = null;

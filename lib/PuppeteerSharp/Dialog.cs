@@ -74,7 +74,9 @@ namespace PuppeteerSharp
         {
             if (IsHandled)
             {
-                throw new InvalidOperationException("Cannot accept dialog which is already handled!");
+                throw new InvalidOperationException(
+                    "Cannot accept dialog which is already handled!"
+                );
             }
 
             IsHandled = true;
@@ -89,7 +91,9 @@ namespace PuppeteerSharp
         {
             if (IsHandled)
             {
-                throw new InvalidOperationException("Cannot dismiss dialog which is already handled!");
+                throw new InvalidOperationException(
+                    "Cannot dismiss dialog which is already handled!"
+                );
             }
 
             IsHandled = true;

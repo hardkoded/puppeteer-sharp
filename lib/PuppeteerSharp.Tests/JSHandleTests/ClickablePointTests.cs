@@ -9,12 +9,16 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work")]
         public async Task ShouldWork()
         {
-            await Page.EvaluateExpressionAsync(@"document.body.style.padding = '0';
+            await Page.EvaluateExpressionAsync(
+                @"document.body.style.padding = '0';
                 document.body.style.margin = '0';
                 document.body.innerHTML = '<div style=""cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;""></div>';
-                ");
+                "
+            );
 
-            await Page.EvaluateExpressionAsync("new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));");
+            await Page.EvaluateExpressionAsync(
+                "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));"
+            );
 
             var divHandle = await Page.QuerySelectorAsync("div");
 
@@ -31,15 +35,26 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(clickablePoint.Y, Is.EqualTo(30 + 15));
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work for iframes")]
+        [
+            Test,
+            PuppeteerTest(
+                "jshandle.spec",
+                "JSHandle JSHandle.clickablePoint",
+                "should work for iframes"
+            )
+        ]
         public async Task ShouldWorkForIFrames()
         {
-            await Page.EvaluateExpressionAsync(@"document.body.style.padding = '10px';
+            await Page.EvaluateExpressionAsync(
+                @"document.body.style.padding = '10px';
                 document.body.style.margin = '10px';
                 document.body.innerHTML = `<iframe style=""border: none; margin: 0; padding: 0;"" seamless sandbox srcdoc=""<style>* { margin: 0; padding: 0;}</style><div style='cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;' />""></iframe>`
-                ");
+                "
+            );
 
-            await Page.EvaluateExpressionAsync("new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));");
+            await Page.EvaluateExpressionAsync(
+                "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));"
+            );
 
             var frame = await Page.FirstChildFrameAsync();
 

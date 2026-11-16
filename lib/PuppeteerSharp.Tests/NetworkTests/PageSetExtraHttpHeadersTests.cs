@@ -7,19 +7,17 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class PageSetExtraHttpHeadersTests : PuppeteerPageBaseTest
     {
-        public PageSetExtraHttpHeadersTests() : base()
-        {
-        }
+        public PageSetExtraHttpHeadersTests()
+            : base() { }
 
         [Test, PuppeteerTest("network.spec", "network Page.setExtraHTTPHeaders", "should work")]
         public async Task ShouldWork()
         {
-            await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
-            {
-                ["Foo"] = "Bar"
-            });
+            await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string> { ["Foo"] = "Bar" });
 
-            var headerTask = Server.WaitForRequest("/empty.html", request => request.Headers["Foo"]);
+            var headerTask = Server.WaitForRequest("/empty.html", request =>
+                request.Headers["Foo"]
+            );
             await Task.WhenAll(Page.GoToAsync(TestConstants.EmptyPage), headerTask);
 
             Assert.That(headerTask.Result, Is.EqualTo("Bar"));

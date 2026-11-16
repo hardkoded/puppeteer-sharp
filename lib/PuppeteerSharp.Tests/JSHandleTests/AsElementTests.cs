@@ -6,9 +6,8 @@ namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class AsElementTests : PuppeteerPageBaseTest
     {
-        public AsElementTests() : base()
-        {
-        }
+        public AsElementTests()
+            : base() { }
 
         [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should work")]
         public async Task ShouldWork()
@@ -18,7 +17,14 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(element, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return null for non-elements")]
+        [
+            Test,
+            PuppeteerTest(
+                "jshandle.spec",
+                "JSHandle JSHandle.asElement",
+                "should return null for non-elements"
+            )
+        ]
         public async Task ShouldReturnNullForNonElements()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("2");
@@ -26,14 +32,29 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(element, Is.Null);
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return ElementHandle for TextNodes")]
+        [
+            Test,
+            PuppeteerTest(
+                "jshandle.spec",
+                "JSHandle JSHandle.asElement",
+                "should return ElementHandle for TextNodes"
+            )
+        ]
         public async Task ShouldReturnElementHandleForTextNodes()
         {
             await Page.SetContentAsync("<div>ee!</div>");
-            var aHandle = await Page.EvaluateExpressionHandleAsync("document.querySelector('div').firstChild");
+            var aHandle = await Page.EvaluateExpressionHandleAsync(
+                "document.querySelector('div').firstChild"
+            );
             var element = aHandle as IElementHandle;
             Assert.That(element, Is.Not.Null);
-            Assert.That(await Page.EvaluateFunctionAsync<bool>("e => e.nodeType === HTMLElement.TEXT_NODE", element), Is.True);
+            Assert.That(
+                await Page.EvaluateFunctionAsync<bool>(
+                    "e => e.nodeType === HTMLElement.TEXT_NODE",
+                    element
+                ),
+                Is.True
+            );
         }
     }
 }

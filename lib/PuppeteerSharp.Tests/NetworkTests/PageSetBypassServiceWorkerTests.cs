@@ -31,7 +31,10 @@ namespace PuppeteerSharp.Tests.NetworkTests;
 
 public class PageSetBypassServiceWorkerTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("network.spec", "network Page.setBypassServiceWorker", "bypass for network")]
+    [
+        Test,
+        PuppeteerTest("network.spec", "network Page.setBypassServiceWorker", "bypass for network")
+    ]
     public async Task BypassForNetwork()
     {
         var responses = new Dictionary<string, IResponse>();
@@ -44,17 +47,20 @@ public class PageSetBypassServiceWorkerTests : PuppeteerPageBaseTest
             }
         };
 
-        await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
-            WaitUntilNavigation.Networkidle2);
+        await Page.GoToAsync(
+            TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
+            WaitUntilNavigation.Networkidle2
+        );
 
-        await Page.EvaluateFunctionAsync($@"async () => {{
+        await Page.EvaluateFunctionAsync(
+            $@"async () => {{
             return await globalThis.activationPromise;
-        }}");
+        }}"
+        );
 
-        await Page.ReloadAsync(new ReloadOptions()
-        {
-            WaitUntil = [WaitUntilNavigation.Networkidle2],
-        });
+        await Page.ReloadAsync(
+            new ReloadOptions() { WaitUntil = [WaitUntilNavigation.Networkidle2] }
+        );
 
         Assert.That(Page.IsServiceWorkerBypassed, Is.False);
         Assert.That(responses, Has.Count.EqualTo(2));
@@ -64,10 +70,9 @@ public class PageSetBypassServiceWorkerTests : PuppeteerPageBaseTest
         Assert.That(responses["style.css"].FromServiceWorker, Is.True);
 
         await Page.SetBypassServiceWorkerAsync(true);
-        await Page.ReloadAsync(new ReloadOptions()
-        {
-            WaitUntil = [WaitUntilNavigation.Networkidle2],
-        });
+        await Page.ReloadAsync(
+            new ReloadOptions() { WaitUntil = [WaitUntilNavigation.Networkidle2] }
+        );
 
         Assert.That(Page.IsServiceWorkerBypassed, Is.True);
         Assert.That(responses["sw.html"].Status, Is.EqualTo(HttpStatusCode.OK));

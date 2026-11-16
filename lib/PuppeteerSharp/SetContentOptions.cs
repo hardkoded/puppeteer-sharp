@@ -39,11 +39,12 @@ namespace PuppeteerSharp
         /// </summary>
         public CancellationToken? CancellationToken { get; set; }
 
-        internal NavigationOptions ToNavigationOptions() => new()
-        {
-            Timeout = Timeout,
-            WaitUntil = WaitUntil,
-            CancellationToken = CancellationToken,
-        };
+        internal NavigationOptions ToNavigationOptions() =>
+            new()
+            {
+                Timeout = Timeout,
+                WaitUntil = WaitUntil,
+                CancellationToken = CancellationToken,
+            };
     }
 }

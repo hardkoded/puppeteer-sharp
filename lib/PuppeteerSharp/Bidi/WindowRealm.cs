@@ -30,7 +30,9 @@ using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class WindowRealm(BrowsingContext browsingContext, string sandbox = null) : Core.Realm(browsingContext, string.Empty, string.Empty), IDedicatedWorkerOwnerRealm
+internal class WindowRealm(BrowsingContext browsingContext, string sandbox = null)
+    : Core.Realm(browsingContext, string.Empty, string.Empty),
+        IDedicatedWorkerOwnerRealm
 {
     private readonly string _sandbox = sandbox;
     private readonly ConcurrentDictionary<string, DedicatedWorkerRealm> _workers = [];
@@ -84,19 +86,27 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
             return;
         }
 
-        var realm = DedicatedWorkerRealm.From(Context, this, dedicatedWorkerInfo.RealmId, dedicatedWorkerInfo.Origin);
+        var realm = DedicatedWorkerRealm.From(
+            Context,
+            this,
+            dedicatedWorkerInfo.RealmId,
+            dedicatedWorkerInfo.Origin
+        );
         _workers.TryAdd(realm.Id, realm);
         realm.Destroyed += (sender, args) => _workers.TryRemove(realm.Id, out _);
         OnWorker(realm);
     }
 
-    private void OnWorker(DedicatedWorkerRealm realm) => Worker?.Invoke(this, new WorkerRealmEventArgs(realm));
+    private void OnWorker(DedicatedWorkerRealm realm) =>
+        Worker?.Invoke(this, new WorkerRealmEventArgs(realm));
 
     private void OnDedicatedRealmCreated(RealmCreatedEventArgs args)
     {
-        if (args.Type != RealmType.Window ||
-            args.As<WindowRealmInfo>().BrowsingContextId != Context.Id ||
-            args.As<WindowRealmInfo>().Sandbox != _sandbox)
+        if (
+            args.Type != RealmType.Window
+            || args.As<WindowRealmInfo>().BrowsingContextId != Context.Id
+            || args.As<WindowRealmInfo>().Sandbox != _sandbox
+        )
         {
             return;
         }

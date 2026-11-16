@@ -11,9 +11,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="BoundingBox"/> class.
         /// </summary>
-        public BoundingBox()
-        {
-        }
+        public BoundingBox() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BoundingBox"/> class.
@@ -71,19 +69,15 @@ namespace PuppeteerSharp
         /// <param name="obj">The <see cref="PuppeteerSharp.BoundingBox"/> to compare with the current <see cref="T:PuppeteerSharp.BoundingBox"/>.</param>
         /// <returns><c>true</c> if the specified <see cref="PuppeteerSharp.BoundingBox"/> is equal to the current
         /// <see cref="T:PuppeteerSharp.BoundingBox"/>; otherwise, <c>false</c>.</returns>
-        public bool Equals(BoundingBox obj)
-            => obj != null &&
-                obj.X == X &&
-                obj.Y == Y &&
-                obj.Height == Height &&
-                obj.Width == Width;
+        public bool Equals(BoundingBox obj) =>
+            obj != null && obj.X == X && obj.Y == Y && obj.Height == Height && obj.Width == Width;
 
         /// <inheritdoc/>
-        public override int GetHashCode()
-            => X.GetHashCode() * 397
-                ^ Y.GetHashCode() * 397
-                ^ Width.GetHashCode() * 397
-                ^ Height.GetHashCode() * 397;
+        public override int GetHashCode() =>
+            X.GetHashCode() * 397
+            ^ Y.GetHashCode() * 397
+            ^ Width.GetHashCode() * 397
+            ^ Height.GetHashCode() * 397;
 
         internal Clip ToClip()
         {

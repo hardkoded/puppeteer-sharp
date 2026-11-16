@@ -35,7 +35,11 @@ namespace PuppeteerSharp
         /// <param name="message">Message.</param>
         /// <param name="error">Raw error value.</param>
         /// <param name="stackTrace">Stack trace, innermost frame first.</param>
-        public PageErrorEventArgs(string message, object error, IReadOnlyList<ConsoleMessageLocation> stackTrace)
+        public PageErrorEventArgs(
+            string message,
+            object error,
+            IReadOnlyList<ConsoleMessageLocation> stackTrace
+        )
         {
             Message = message;
             Error = error;

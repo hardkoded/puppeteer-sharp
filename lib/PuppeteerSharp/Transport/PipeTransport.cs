@@ -20,7 +20,11 @@ namespace PuppeteerSharp.Transport
         private readonly Stream _pipeRead;
         private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
 
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "Disposed in StopReading/Dispose.")]
+        [SuppressMessage(
+            "Microsoft.Usage",
+            "CA2213:DisposableFieldsShouldBeDisposed",
+            Justification = "Disposed in StopReading/Dispose."
+        )]
         private CancellationTokenSource _readCts = new();
 
         /// <summary>
@@ -52,7 +56,8 @@ namespace PuppeteerSharp.Transport
                 () => ReceiveLoopAsync(_readCts.Token),
                 _readCts.Token,
                 TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
+                TaskScheduler.Default
+            );
         }
 
         /// <inheritdoc/>
@@ -137,7 +142,9 @@ namespace PuppeteerSharp.Transport
                     int bytesRead;
                     try
                     {
-                        bytesRead = await _pipeRead.ReadAsync(readBuffer, 0, readBuffer.Length, cancellationToken).ConfigureAwait(false);
+                        bytesRead = await _pipeRead
+                            .ReadAsync(readBuffer, 0, readBuffer.Length, cancellationToken)
+                            .ConfigureAwait(false);
                     }
                     catch (OperationCanceledException)
                     {
@@ -175,7 +182,10 @@ namespace PuppeteerSharp.Transport
                             {
                                 var messageData = messageBuffer.ToArray();
                                 messageBuffer.SetLength(0);
-                                MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageData));
+                                MessageReceived?.Invoke(
+                                    this,
+                                    new MessageReceivedEventArgs(messageData)
+                                );
                             }
 
                             startIndex = i + 1;

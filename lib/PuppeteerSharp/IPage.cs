@@ -257,7 +257,9 @@ namespace PuppeteerSharp
         /// <summary>
         /// `true` if drag events are being intercepted, `false` otherwise.
         /// </summary>
-        [Obsolete("We no longer support intercepting drag payloads. Use the new drag APIs found on ElementHandle to drag (or just use the Page.Mouse)")]
+        [Obsolete(
+            "We no longer support intercepting drag payloads. Use the new drag APIs found on ElementHandle to drag (or just use the Page.Mouse)"
+        )]
         bool IsDragInterceptionEnabled { get; }
 
         /// <summary>
@@ -281,7 +283,9 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets that target this page was created from.
         /// </summary>
-        [Obsolete("All the functionality provided by the Target should be already exposed by the page itself.")]
+        [Obsolete(
+            "All the functionality provided by the Target should be already exposed by the page itself."
+        )]
         ITarget Target { get; }
 
         /// <summary>
@@ -700,7 +704,10 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <returns>Task.</returns>
-        Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args);
+        Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(
+            string pageFunction,
+            params object[] args
+        );
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
@@ -753,7 +760,10 @@ namespace PuppeteerSharp
         /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, T4, TResult}(string, Func{T1, T2, T3, T4, TResult})"/> survive navigations.
         /// </remarks>
         /// <returns>Task.</returns>
-        Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction);
+        Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(
+            string name,
+            Func<T1, T2, T3, T4, TResult> puppeteerFunction
+        );
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
@@ -770,7 +780,10 @@ namespace PuppeteerSharp
         /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, TResult}(string, Func{T1, T2, T3, TResult})"/> survive navigations.
         /// </remarks>
         /// <returns>Task.</returns>
-        Task ExposeFunctionAsync<T1, T2, T3, TResult>(string name, Func<T1, T2, T3, TResult> puppeteerFunction);
+        Task ExposeFunctionAsync<T1, T2, T3, TResult>(
+            string name,
+            Func<T1, T2, T3, TResult> puppeteerFunction
+        );
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
@@ -786,7 +799,10 @@ namespace PuppeteerSharp
         /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, TResult}(string, Func{T1, T2, TResult})"/> survive navigations.
         /// </remarks>
         /// <returns>Task.</returns>
-        Task ExposeFunctionAsync<T1, T2, TResult>(string name, Func<T1, T2, TResult> puppeteerFunction);
+        Task ExposeFunctionAsync<T1, T2, TResult>(
+            string name,
+            Func<T1, T2, TResult> puppeteerFunction
+        );
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
@@ -860,7 +876,11 @@ namespace PuppeteerSharp
         /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, NavigationOptions)"/>
-        Task<IResponse> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null);
+        Task<IResponse> GoToAsync(
+            string url,
+            int? timeout = null,
+            WaitUntilNavigation[] waitUntil = null
+        );
 
         /// <summary>
         /// Navigates to an url.
@@ -1171,7 +1191,9 @@ namespace PuppeteerSharp
         /// <param name="options">The navigations options.</param>
         /// <returns>Task.</returns>
         /// <seealso cref="IFrame.SetContentAsync(string, NavigationOptions)"/>
-        [System.Obsolete("Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent.")]
+        [System.Obsolete(
+            "Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent."
+        )]
         Task SetContentAsync(string html, NavigationOptions options);
 
         /// <summary>
@@ -1201,7 +1223,9 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <param name="enabled">Interception enabled.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
-        [Obsolete("We no longer support intercepting drag payloads. Use the new drag APIs found on ElementHandle to drag (or just use the Page.Mouse)")]
+        [Obsolete(
+            "We no longer support intercepting drag payloads. Use the new drag APIs found on ElementHandle to drag (or just use the Page.Mouse)"
+        )]
         Task SetDragInterceptionAsync(bool enabled);
 
         /// <summary>
@@ -1315,7 +1339,10 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value.</returns>
         /// <seealso cref="IFrame.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
-        Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null);
+        Task<IJSHandle> WaitForExpressionAsync(
+            string script,
+            WaitForFunctionOptions options = null
+        );
 
         /// <summary>
         /// Waits for a frame.
@@ -1345,7 +1372,10 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching frame was attached to the page.</returns>
         /// <param name="predicate">Function which looks for a matching frame.</param>
         /// <param name="options">Options.</param>
-        public Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null);
+        public Task<IFrame> WaitForFrameAsync(
+            Func<IFrame, bool> predicate,
+            WaitForOptions options = null
+        );
 
         /// <summary>
         /// Waits for a page to open a file picker.
@@ -1382,7 +1412,11 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <c>script</c>.</param>
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value.</returns>
         /// <seealso cref="IFrame.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
-        Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args);
+        Task<IJSHandle> WaitForFunctionAsync(
+            string script,
+            WaitForFunctionOptions options = null,
+            params object[] args
+        );
 
         /// <summary>
         /// Waits for a function to be evaluated to a truthy value.
@@ -1444,7 +1478,10 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching request was made.</returns>
         /// <param name="predicate">Function which looks for a matching request.</param>
         /// <param name="options">Options.</param>
-        Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null);
+        Task<IRequest> WaitForRequestAsync(
+            Func<IRequest, bool> predicate,
+            WaitForOptions options = null
+        );
 
         /// <summary>
         /// Waits for a request.
@@ -1476,7 +1513,10 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="predicate">Function which looks for a matching response.</param>
         /// <param name="options">Options.</param>
-        Task<IResponse> WaitForResponseAsync(Func<IResponse, bool> predicate, WaitForOptions options = null);
+        Task<IResponse> WaitForResponseAsync(
+            Func<IResponse, bool> predicate,
+            WaitForOptions options = null
+        );
 
         /// <summary>
         /// Waits for a response.
@@ -1492,7 +1532,10 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="predicate">Function which looks for a matching response.</param>
         /// <param name="options">Options.</param>
-        Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null);
+        Task<IResponse> WaitForResponseAsync(
+            Func<IResponse, Task<bool>> predicate,
+            WaitForOptions options = null
+        );
 
         /// <summary>
         /// Waits for a response.
@@ -1518,7 +1561,10 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when element specified by selector string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         /// <seealso cref="IFrame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
+        Task<IElementHandle> WaitForSelectorAsync(
+            string selector,
+            WaitForSelectorOptions options = null
+        );
 
         /// <summary>
         /// Creates a locator for the provided selector. See <see cref="Locators.Locator"/> for

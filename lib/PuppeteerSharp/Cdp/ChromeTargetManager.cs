@@ -18,12 +18,19 @@ namespace PuppeteerSharp.Cdp
         private readonly Func<TargetInfo, CDPSession, CDPSession, CdpTarget> _targetFactoryFunc;
         private readonly Func<Target, bool> _targetFilterFunc;
         private readonly ILogger<ChromeTargetManager> _logger;
-        private readonly AsyncDictionaryHelper<string, CdpTarget> _attachedTargetsByTargetId = new("Target {0} not found");
-        private readonly ConcurrentDictionary<string, CdpTarget> _attachedTargetsBySessionId = new();
-        private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
+        private readonly AsyncDictionaryHelper<string, CdpTarget> _attachedTargetsByTargetId = new(
+            "Target {0} not found"
+        );
+        private readonly ConcurrentDictionary<string, CdpTarget> _attachedTargetsBySessionId =
+            new();
+        private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId =
+            new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
         private readonly DisposableActionsStack _subscriptions = new();
-        private readonly ConcurrentDictionary<ICDPSession, DisposableActionsStack> _attachmentSubscriptions = new();
+        private readonly ConcurrentDictionary<
+            ICDPSession,
+            DisposableActionsStack
+        > _attachmentSubscriptions = new();
 
         // IDs of tab targets detected while running the initial Target.setAutoAttach
         // request. These are the targets whose initialization we want to await for
@@ -33,7 +40,8 @@ namespace PuppeteerSharp.Cdp
         // initializeDeferred.
         private readonly ConcurrentSet<string> _targetsIdsForInit = [];
 
-        private readonly ConcurrentDictionary<CDPSession, TargetInfo> _networkConditionsSessions = new();
+        private readonly ConcurrentDictionary<CDPSession, TargetInfo> _networkConditionsSessions =
+            new();
 
         private string[] _blockList;
         private string[] _allowList;
@@ -48,7 +56,8 @@ namespace PuppeteerSharp.Cdp
             Func<TargetInfo, CDPSession, CDPSession, CdpTarget> targetFactoryFunc,
             Func<Target, bool> targetFilterFunc,
             string[] blockList = null,
-            string[] allowList = null)
+            string[] allowList = null
+        )
         {
             if (blockList is { Length: > 0 } && allowList is { Length: > 0 })
             {
@@ -78,38 +87,55 @@ namespace PuppeteerSharp.Cdp
 
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
-        public AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets() => _attachedTargetsByTargetId;
+        public AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets() =>
+            _attachedTargetsByTargetId;
 
         public async Task InitializeAsync()
         {
-            await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
-            {
-                Discover = true,
-                Filter =
-                [
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter() { Type = "tab", Exclude = true, },
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter()
-                ],
-            }).ConfigureAwait(false);
+            await _connection
+                .SendAsync(
+                    "Target.setDiscoverTargets",
+                    new TargetSetDiscoverTargetsRequest
+                    {
+                        Discover = true,
+                        Filter =
+                        [
+                            new TargetSetDiscoverTargetsRequest.DiscoverFilter()
+                            {
+                                Type = "tab",
+                                Exclude = true,
+                            },
+                            new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
+                        ],
+                    }
+                )
+                .ConfigureAwait(false);
 
             // Exclude page targets from connection-level auto-attach so we attach to the
             // owning tab first. The tab session then auto-attaches to its page child via
             // the session-level setAutoAttach below, establishing the browser -> tab ->
             // page session hierarchy. Page._tabId depends on this hierarchy (and Chrome's
             // Extensions.triggerAction rejects targetIds that are not tab targets).
-            await _connection.SendAsync(
-                "Target.setAutoAttach",
-                new TargetSetAutoAttachRequest()
-                {
-                    WaitForDebuggerOnStart = true,
-                    Flatten = true,
-                    AutoAttach = true,
-                    Filter = new[]
+            await _connection
+                .SendAsync(
+                    "Target.setAutoAttach",
+                    new TargetSetAutoAttachRequest()
                     {
-                        new TargetSetDiscoverTargetsRequest.DiscoverFilter() { Type = "page", Exclude = true, },
-                        new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
-                    },
-                }).ConfigureAwait(false);
+                        WaitForDebuggerOnStart = true,
+                        Flatten = true,
+                        AutoAttach = true,
+                        Filter = new[]
+                        {
+                            new TargetSetDiscoverTargetsRequest.DiscoverFilter()
+                            {
+                                Type = "page",
+                                Exclude = true,
+                            },
+                            new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
+                        },
+                    }
+                )
+                .ConfigureAwait(false);
 
             _initialAttachDone = true;
             FinishInitializationIfReady();
@@ -117,14 +143,20 @@ namespace PuppeteerSharp.Cdp
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
-        public IReadOnlyCollection<string> GetDiscoveredTargetIds() => _discoveredTargetsByTargetId.Keys.ToArray();
+        public IReadOnlyCollection<string> GetDiscoveredTargetIds() =>
+            _discoveredTargetsByTargetId.Keys.ToArray();
 
-        public async Task DestroyExtensionServiceWorkerTargetsAsync(string extensionId, IReadOnlyCollection<string> existingTargetIds = null)
+        public async Task DestroyExtensionServiceWorkerTargetsAsync(
+            string extensionId,
+            IReadOnlyCollection<string> existingTargetIds = null
+        )
         {
             var targetIds = _discoveredTargetsByTargetId
-                .Where(kvp => (existingTargetIds == null || existingTargetIds.Contains(kvp.Key)) &&
-                    kvp.Value.Type == TargetType.ServiceWorker &&
-                    kvp.Value.Url.Contains(extensionId))
+                .Where(kvp =>
+                    (existingTargetIds == null || existingTargetIds.Contains(kvp.Key))
+                    && kvp.Value.Type == TargetType.ServiceWorker
+                    && kvp.Value.Url.Contains(extensionId)
+                )
                 .Select(kvp => kvp.Key)
                 .ToList();
 
@@ -133,8 +165,15 @@ namespace PuppeteerSharp.Cdp
                 _ignoredTargets.Add(targetId);
             }
 
-            await Task.WhenAll(targetIds.Select(targetId =>
-                OnTargetDestroyedAsync("Target.targetDestroyed", new TargetDestroyedResponse { TargetId = targetId }))).ConfigureAwait(false);
+            await Task.WhenAll(
+                    targetIds.Select(targetId =>
+                        OnTargetDestroyedAsync(
+                            "Target.targetDestroyed",
+                            new TargetDestroyedResponse { TargetId = targetId }
+                        )
+                    )
+                )
+                .ConfigureAwait(false);
         }
 
         public IEnumerable<ITarget> GetChildTargets(ITarget target) => target.ChildTargets;
@@ -248,14 +287,18 @@ namespace PuppeteerSharp.Cdp
                         depth--;
                         if (depth < 0)
                         {
-                            throw new PuppeteerException($"Invalid URLPattern: '{pattern}'. Unbalanced parentheses.");
+                            throw new PuppeteerException(
+                                $"Invalid URLPattern: '{pattern}'. Unbalanced parentheses."
+                            );
                         }
                     }
                 }
 
                 if (depth != 0)
                 {
-                    throw new PuppeteerException($"Invalid URLPattern: '{pattern}'. Unbalanced parentheses.");
+                    throw new PuppeteerException(
+                        $"Invalid URLPattern: '{pattern}'. Unbalanced parentheses."
+                    );
                 }
             }
         }
@@ -277,11 +320,18 @@ namespace PuppeteerSharp.Cdp
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
-                        _ = OnAttachedToTargetHandlingExceptionsAsync(sender, e.MessageID, e.MessageData.ToObject<TargetAttachedToTargetResponse>());
+                        _ = OnAttachedToTargetHandlingExceptionsAsync(
+                            sender,
+                            e.MessageID,
+                            e.MessageData.ToObject<TargetAttachedToTargetResponse>()
+                        );
                         return;
 
                     case "Target.detachedFromTarget":
-                        OnDetachedFromTarget(sender, e.MessageData.ToObject<TargetDetachedFromTargetResponse>());
+                        OnDetachedFromTarget(
+                            sender,
+                            e.MessageData.ToObject<TargetDetachedFromTargetResponse>()
+                        );
                         return;
 
                     case "Target.targetCreated":
@@ -289,7 +339,10 @@ namespace PuppeteerSharp.Cdp
                         return;
 
                     case "Target.targetDestroyed":
-                        _ = OnTargetDestroyedAsync(e.MessageID, e.MessageData.ToObject<TargetDestroyedResponse>());
+                        _ = OnTargetDestroyedAsync(
+                            e.MessageID,
+                            e.MessageData.ToObject<TargetDestroyedResponse>()
+                        );
                         return;
 
                     case "Target.targetInfoChanged":
@@ -320,13 +373,18 @@ namespace PuppeteerSharp.Cdp
             if (!_attachmentSubscriptions.TryAdd(session, subscriptions))
             {
                 subscriptions.Dispose();
-                throw new PuppeteerException("Attachment listeners already set up for this session.");
+                throw new PuppeteerException(
+                    "Attachment listeners already set up for this session."
+                );
             }
         }
 
         private void RemoveAttachmentListeners(ICDPSession session)
         {
-            if (session != null && _attachmentSubscriptions.TryRemove(session, out var subscriptions))
+            if (
+                session != null
+                && _attachmentSubscriptions.TryRemove(session, out var subscriptions)
+            )
             {
                 subscriptions.Dispose();
             }
@@ -364,7 +422,10 @@ namespace PuppeteerSharp.Cdp
                     // the worker is destroyed.
                     if (_attachedTargetsByTargetId.TryRemove(e.TargetId, out var target))
                     {
-                        TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
+                        TargetGone?.Invoke(
+                            this,
+                            new TargetChangedArgs { Target = target, TargetInfo = targetInfo }
+                        );
                     }
                 }
             }
@@ -378,9 +439,11 @@ namespace PuppeteerSharp.Cdp
         {
             _discoveredTargetsByTargetId[e.TargetInfo.TargetId] = e.TargetInfo;
 
-            if (_ignoredTargets.Contains(e.TargetInfo.TargetId) ||
-                !_attachedTargetsByTargetId.TryGetValue(e.TargetInfo.TargetId, out var target) ||
-                !e.TargetInfo.Attached)
+            if (
+                _ignoredTargets.Contains(e.TargetInfo.TargetId)
+                || !_attachedTargetsByTargetId.TryGetValue(e.TargetInfo.TargetId, out var target)
+                || !e.TargetInfo.Attached
+            )
             {
                 return;
             }
@@ -398,25 +461,33 @@ namespace PuppeteerSharp.Cdp
 
             if (wasInitialized && previousURL != target.Url)
             {
-                TargetChanged?.Invoke(this, new TargetChangedArgs
-                {
-                    Target = target,
-                    TargetInfo = e.TargetInfo,
-                });
+                TargetChanged?.Invoke(
+                    this,
+                    new TargetChangedArgs { Target = target, TargetInfo = e.TargetInfo }
+                );
             }
         }
 
-        private bool IsPageTargetBecomingPrimary(CdpTarget target, TargetInfo newTargetInfo)
-            => !string.IsNullOrEmpty(target.TargetInfo.Subtype) && string.IsNullOrEmpty(newTargetInfo.Subtype);
+        private bool IsPageTargetBecomingPrimary(CdpTarget target, TargetInfo newTargetInfo) =>
+            !string.IsNullOrEmpty(target.TargetInfo.Subtype)
+            && string.IsNullOrEmpty(newTargetInfo.Subtype);
 
-        private bool HasNetworkRules()
-            => (_blockList != null && _blockList.Length > 0) || (_allowList != null && _allowList.Length > 0);
+        private bool HasNetworkRules() =>
+            (_blockList != null && _blockList.Length > 0)
+            || (_allowList != null && _allowList.Length > 0);
 
         // Registers a service worker session that is kept open so that the session is visible to the
         // manager's bookkeeping and the worker target reuses it instead of opening a second one.
-        private void AttachServiceWorkerTarget(TargetInfo targetInfo, CDPSession session, CDPSession parentSession)
+        private void AttachServiceWorkerTarget(
+            TargetInfo targetInfo,
+            CDPSession session,
+            CDPSession parentSession
+        )
         {
-            var isExistingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
+            var isExistingTarget = _attachedTargetsByTargetId.TryGetValue(
+                targetInfo.TargetId,
+                out var target
+            );
             if (!isExistingTarget)
             {
                 target = _targetFactoryFunc(targetInfo, session, parentSession);
@@ -451,12 +522,12 @@ namespace PuppeteerSharp.Cdp
 
                 // We don't use session.Detach() because that dispatches all commands on
                 // the connection instead of the parent session.
-                await parentConnection.SendAsync(
-                    "Target.detachFromTarget",
-                    new TargetDetachFromTargetRequest
-                    {
-                        SessionId = session.Id,
-                    }).ConfigureAwait(false);
+                await parentConnection
+                    .SendAsync(
+                        "Target.detachFromTarget",
+                        new TargetDetachFromTargetRequest { SessionId = session.Id }
+                    )
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -464,8 +535,10 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private CdpTarget GetParentTarget(ICDPConnection parentConnection)
-            => parentConnection is CdpCDPSession parentSession ? parentSession.Target as CdpTarget : null;
+        private CdpTarget GetParentTarget(ICDPConnection parentConnection) =>
+            parentConnection is CdpCDPSession parentSession
+                ? parentSession.Target as CdpTarget
+                : null;
 
         private async Task OnAttachedToTargetAsync(object sender, TargetAttachedToTargetResponse e)
         {
@@ -473,7 +546,8 @@ namespace PuppeteerSharp.Cdp
             var parentSession = sender as CDPSession;
 
             var targetInfo = e.TargetInfo;
-            var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
+            var session = _connection.GetSession(e.SessionId)
+                ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
 
             if (!_connection.IsAutoAttached(targetInfo.TargetId))
             {
@@ -494,8 +568,13 @@ namespace PuppeteerSharp.Cdp
             {
                 // An already exposed worker target proceeds to AttachServiceWorkerTarget even when its
                 // script URL is now disallowed, so the target receives the kept session.
-                if (!IsUrlAllowed(targetInfo.Url) &&
-                    !(HasNetworkRules() && _attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId)))
+                if (
+                    !IsUrlAllowed(targetInfo.Url)
+                    && !(
+                        HasNetworkRules()
+                        && _attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId)
+                    )
+                )
                 {
                     await BlockServiceWorkerRegistrationAsync(session).ConfigureAwait(false);
                     return;
@@ -513,10 +592,15 @@ namespace PuppeteerSharp.Cdp
                     // The rules are dispatched before the worker is resumed so that requests made during
                     // install are covered as well. They are only acknowledged once the worker runs,
                     // so they are awaited after resuming it.
-                    var networkConditionsSetUp = MaybeSetupNetworkBlockListAsync(session, targetInfo);
+                    var networkConditionsSetUp = MaybeSetupNetworkBlockListAsync(
+                        session,
+                        targetInfo
+                    );
                     try
                     {
-                        await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
+                        await session
+                            .SendAsync("Runtime.runIfWaitingForDebugger")
+                            .ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
@@ -524,8 +608,10 @@ namespace PuppeteerSharp.Cdp
                     }
 
                     await networkConditionsSetUp.ConfigureAwait(false);
-                    if (_ignoredTargets.Contains(targetInfo.TargetId) ||
-                        !_discoveredTargetsByTargetId.ContainsKey(targetInfo.TargetId))
+                    if (
+                        _ignoredTargets.Contains(targetInfo.TargetId)
+                        || !_discoveredTargetsByTargetId.ContainsKey(targetInfo.TargetId)
+                    )
                     {
                         return;
                     }
@@ -535,9 +621,11 @@ namespace PuppeteerSharp.Cdp
                 }
 
                 await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
-                if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId) ||
-                    _ignoredTargets.Contains(targetInfo.TargetId) ||
-                    !_discoveredTargetsByTargetId.ContainsKey(targetInfo.TargetId))
+                if (
+                    _attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId)
+                    || _ignoredTargets.Contains(targetInfo.TargetId)
+                    || !_discoveredTargetsByTargetId.ContainsKey(targetInfo.TargetId)
+                )
                 {
                     return;
                 }
@@ -549,7 +637,10 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            var isExistingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
+            var isExistingTarget = _attachedTargetsByTargetId.TryGetValue(
+                targetInfo.TargetId,
+                out var target
+            );
             if (!isExistingTarget)
             {
                 target = _targetFactoryFunc(targetInfo, session, parentSession);
@@ -608,14 +699,19 @@ namespace PuppeteerSharp.Cdp
             try
             {
                 await Task.WhenAll(
-                    session.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
-                    {
-                        WaitForDebuggerOnStart = true,
-                        Flatten = true,
-                        AutoAttach = true,
-                    }),
-                    MaybeSetupNetworkBlockListAsync(session, targetInfo),
-                    session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
+                        session.SendAsync(
+                            "Target.setAutoAttach",
+                            new TargetSetAutoAttachRequest
+                            {
+                                WaitForDebuggerOnStart = true,
+                                Flatten = true,
+                                AutoAttach = true,
+                            }
+                        ),
+                        MaybeSetupNetworkBlockListAsync(session, targetInfo),
+                        session.SendAsync("Runtime.runIfWaitingForDebugger")
+                    )
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -623,7 +719,11 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private async Task OnAttachedToTargetHandlingExceptionsAsync(object sender, string messageId, TargetAttachedToTargetResponse e)
+        private async Task OnAttachedToTargetHandlingExceptionsAsync(
+            object sender,
+            string messageId,
+            TargetAttachedToTargetResponse e
+        )
         {
             try
             {
@@ -702,13 +802,16 @@ namespace PuppeteerSharp.Cdp
                 var paused = e.MessageData.ToObject<FetchRequestPausedResponse>();
                 try
                 {
-                    await session.SendAsync(
-                        "Fetch.failRequest",
-                        new FetchFailRequest
-                        {
-                            RequestId = paused.RequestId,
-                            ErrorReason = "BlockedByClient",
-                        }).ConfigureAwait(false);
+                    await session
+                        .SendAsync(
+                            "Fetch.failRequest",
+                            new FetchFailRequest
+                            {
+                                RequestId = paused.RequestId,
+                                ErrorReason = "BlockedByClient",
+                            }
+                        )
+                        .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -729,10 +832,16 @@ namespace PuppeteerSharp.Cdp
             try
             {
                 await Task.WhenAll(
-                    session.SendAsync(
-                        "Fetch.enable",
-                        new FetchEnableRequest { Patterns = [new FetchEnableRequest.Pattern("*")] }),
-                    session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
+                        session.SendAsync(
+                            "Fetch.enable",
+                            new FetchEnableRequest
+                            {
+                                Patterns = [new FetchEnableRequest.Pattern("*")],
+                            }
+                        ),
+                        session.SendAsync("Runtime.runIfWaitingForDebugger")
+                    )
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -754,9 +863,11 @@ namespace PuppeteerSharp.Cdp
             var tasks = new List<Task>();
             foreach (var targetInfo in _discoveredTargetsByTargetId.Values)
             {
-                if (targetInfo.Type != TargetType.ServiceWorker ||
-                    trackedTargetIds.Contains(targetInfo.TargetId) ||
-                    _ignoredTargets.Contains(targetInfo.TargetId))
+                if (
+                    targetInfo.Type != TargetType.ServiceWorker
+                    || trackedTargetIds.Contains(targetInfo.TargetId)
+                    || _ignoredTargets.Contains(targetInfo.TargetId)
+                )
                 {
                     continue;
                 }
@@ -799,7 +910,11 @@ namespace PuppeteerSharp.Cdp
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        private async Task MaybeSetupNetworkBlockListAsync(CDPSession session, TargetInfo targetInfo, bool forceClear = false)
+        private async Task MaybeSetupNetworkBlockListAsync(
+            CDPSession session,
+            TargetInfo targetInfo,
+            bool forceClear = false
+        )
         {
             var blockList = _blockList;
             var allowList = _allowList;
@@ -817,14 +932,16 @@ namespace PuppeteerSharp.Cdp
             {
                 foreach (var pattern in blockList)
                 {
-                    matchedNetworkConditions.Add(new MatchedNetworkCondition
-                    {
-                        UrlPattern = pattern,
-                        Offline = true,
-                        Latency = 0,
-                        DownloadThroughput = -1,
-                        UploadThroughput = -1,
-                    });
+                    matchedNetworkConditions.Add(
+                        new MatchedNetworkCondition
+                        {
+                            UrlPattern = pattern,
+                            Offline = true,
+                            Latency = 0,
+                            DownloadThroughput = -1,
+                            UploadThroughput = -1,
+                        }
+                    );
                 }
             }
 
@@ -832,29 +949,34 @@ namespace PuppeteerSharp.Cdp
             {
                 foreach (var pattern in allowList)
                 {
-                    matchedNetworkConditions.Add(new MatchedNetworkCondition
-                    {
-                        UrlPattern = pattern,
-                        Offline = false,
-                        Latency = 0,
-                        DownloadThroughput = -1,
-                        UploadThroughput = -1,
-                    });
+                    matchedNetworkConditions.Add(
+                        new MatchedNetworkCondition
+                        {
+                            UrlPattern = pattern,
+                            Offline = false,
+                            Latency = 0,
+                            DownloadThroughput = -1,
+                            UploadThroughput = -1,
+                        }
+                    );
                 }
 
                 // Block everything else
-                matchedNetworkConditions.Add(new MatchedNetworkCondition
-                {
-                    UrlPattern = string.Empty,
-                    Offline = true,
-                    Latency = 0,
-                    DownloadThroughput = -1,
-                    UploadThroughput = -1,
-                });
+                matchedNetworkConditions.Add(
+                    new MatchedNetworkCondition
+                    {
+                        UrlPattern = string.Empty,
+                        Offline = true,
+                        Latency = 0,
+                        DownloadThroughput = -1,
+                        UploadThroughput = -1,
+                    }
+                );
             }
 
             // Workers do not have Network enabled by default; enable it before applying rules.
-            var needsNetwork = targetInfo.Type == TargetType.Worker
+            var needsNetwork =
+                targetInfo.Type == TargetType.Worker
                 || targetInfo.Type == TargetType.ServiceWorker
                 || targetInfo.Type == TargetType.SharedWorker;
 
@@ -864,16 +986,19 @@ namespace PuppeteerSharp.Cdp
                 tasks.Add(session.SendAsync("Network.enable"));
             }
 
-            tasks.Add(session.SendAsync(
-                "Network.emulateNetworkConditionsByRule",
-                new NetworkEmulateNetworkConditionsByRuleRequest
-                {
-                    // 'Offline' at the request level is for legacy blocklist compatibility (deprecated in Chrome 149).
-                    // Blocklist: true. Allowlist: null, so the catch-all offline rule is not overridden.
-                    // No rules: false, to clear any previously applied global offline state.
-                    Offline = hasBlockList ? true : (hasAllowList ? null : false),
-                    MatchedNetworkConditions = matchedNetworkConditions.ToArray(),
-                }));
+            tasks.Add(
+                session.SendAsync(
+                    "Network.emulateNetworkConditionsByRule",
+                    new NetworkEmulateNetworkConditionsByRuleRequest
+                    {
+                        // 'Offline' at the request level is for legacy blocklist compatibility (deprecated in Chrome 149).
+                        // Blocklist: true. Allowlist: null, so the catch-all offline rule is not overridden.
+                        // No rules: false, to clear any previously applied global offline state.
+                        Offline = hasBlockList ? true : (hasAllowList ? null : false),
+                        MatchedNetworkConditions = matchedNetworkConditions.ToArray(),
+                    }
+                )
+            );
 
             try
             {

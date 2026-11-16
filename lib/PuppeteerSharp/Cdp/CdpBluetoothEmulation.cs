@@ -18,11 +18,12 @@ internal class CdpBluetoothEmulation : IBluetoothEmulation
         // perspective, it means disabling the emulation first.
         // https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command
         await _connection.SendAsync("BluetoothEmulation.disable").ConfigureAwait(false);
-        await _connection.SendAsync("BluetoothEmulation.enable", new BluetoothEmulationEnableRequest
-        {
-            State = state,
-            LeSupported = leSupported,
-        }).ConfigureAwait(false);
+        await _connection
+            .SendAsync(
+                "BluetoothEmulation.enable",
+                new BluetoothEmulationEnableRequest { State = state, LeSupported = leSupported }
+            )
+            .ConfigureAwait(false);
     }
 
     public async Task DisableEmulationAsync()
@@ -30,16 +31,21 @@ internal class CdpBluetoothEmulation : IBluetoothEmulation
         await _connection.SendAsync("BluetoothEmulation.disable").ConfigureAwait(false);
     }
 
-    public async Task SimulatePreconnectedPeripheralAsync(PreconnectedPeripheral preconnectedPeripheral)
+    public async Task SimulatePreconnectedPeripheralAsync(
+        PreconnectedPeripheral preconnectedPeripheral
+    )
     {
-        await _connection.SendAsync(
-            "BluetoothEmulation.simulatePreconnectedPeripheral",
-            new BluetoothEmulationSimulatePreconnectedPeripheralRequest
-            {
-                Address = preconnectedPeripheral.Address,
-                Name = preconnectedPeripheral.Name,
-                ManufacturerData = preconnectedPeripheral.ManufacturerData,
-                KnownServiceUuids = preconnectedPeripheral.KnownServiceUuids,
-            }).ConfigureAwait(false);
+        await _connection
+            .SendAsync(
+                "BluetoothEmulation.simulatePreconnectedPeripheral",
+                new BluetoothEmulationSimulatePreconnectedPeripheralRequest
+                {
+                    Address = preconnectedPeripheral.Address,
+                    Name = preconnectedPeripheral.Name,
+                    ManufacturerData = preconnectedPeripheral.ManufacturerData,
+                    KnownServiceUuids = preconnectedPeripheral.KnownServiceUuids,
+                }
+            )
+            .ConfigureAwait(false);
     }
 }

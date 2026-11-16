@@ -1,13 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <RootNamespace>complex_js_objects</RootNamespace>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>complex_js_objects</RootNamespace>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="PuppeteerSharp" Version="9.0.2" />
-  </ItemGroup>
-
+    <ItemGroup>
+        <PackageReference Include="PuppeteerSharp" Version="9.0.2" />
+    </ItemGroup>
 </Project>

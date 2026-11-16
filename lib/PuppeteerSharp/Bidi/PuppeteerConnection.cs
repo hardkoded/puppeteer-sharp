@@ -77,7 +77,10 @@ internal class PuppeteerConnection : BidiConnection
     }
 
     /// <inheritdoc/>
-    protected override Task SendConnectionDataAsync(ReadOnlyMemory<byte> messageBuffer, CancellationToken cancellationToken = default)
+    protected override Task SendConnectionDataAsync(
+        ReadOnlyMemory<byte> messageBuffer,
+        CancellationToken cancellationToken = default
+    )
     {
         // IConnectionTransport.SendAsync takes a byte[], so the buffer has to be copied. The base
         // SendDataAsync has already checked that the connection is active, raised the trace log

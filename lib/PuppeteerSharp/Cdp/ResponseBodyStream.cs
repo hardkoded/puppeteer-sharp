@@ -68,9 +68,12 @@ namespace PuppeteerSharp.Cdp
             NetworkStreamResourceContentResponse response;
             try
             {
-                response = await client.SendAsync<NetworkStreamResourceContentResponse>(
-                    "Network.streamResourceContent",
-                    new NetworkStreamResourceContentRequest { RequestId = requestId }).ConfigureAwait(false);
+                response = await client
+                    .SendAsync<NetworkStreamResourceContentResponse>(
+                        "Network.streamResourceContent",
+                        new NetworkStreamResourceContentRequest { RequestId = requestId }
+                    )
+                    .ConfigureAwait(false);
             }
             catch
             {
@@ -83,16 +86,19 @@ namespace PuppeteerSharp.Cdp
         }
 
         /// <inheritdoc/>
-        public override void Flush()
-        {
-        }
+        public override void Flush() { }
 
         /// <inheritdoc/>
-        public override int Read(byte[] buffer, int offset, int count)
-            => ReadAsync(buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
+        public override int Read(byte[] buffer, int offset, int count) =>
+            ReadAsync(buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
 
         /// <inheritdoc/>
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public override async Task<int> ReadAsync(
+            byte[] buffer,
+            int offset,
+            int count,
+            CancellationToken cancellationToken
+        )
         {
             if (buffer == null)
             {
@@ -142,7 +148,9 @@ namespace PuppeteerSharp.Cdp
                         }
                     }
 
-                    waiter = _waiter = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    waiter = _waiter = new TaskCompletionSource<bool>(
+                        TaskCreationOptions.RunContinuationsAsynchronously
+                    );
                 }
 
                 using (cancellationToken.Register(() => waiter.TrySetCanceled(cancellationToken)))
@@ -153,13 +161,15 @@ namespace PuppeteerSharp.Cdp
         }
 
         /// <inheritdoc/>
-        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) =>
+            throw new NotSupportedException();
 
         /// <inheritdoc/>
         public override void SetLength(long value) => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) =>
+            throw new NotSupportedException();
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
@@ -249,14 +259,20 @@ namespace PuppeteerSharp.Cdp
             {
                 case "Network.dataReceived":
                     var dataReceived = e.MessageData.ToObject<NetworkDataReceivedEventResponse>();
-                    if (dataReceived.RequestId == _requestId && !string.IsNullOrEmpty(dataReceived.Data))
+                    if (
+                        dataReceived.RequestId == _requestId
+                        && !string.IsNullOrEmpty(dataReceived.Data)
+                    )
                     {
                         Enqueue(Convert.FromBase64String(dataReceived.Data));
                     }
 
                     break;
                 case "Network.loadingFinished":
-                    if (e.MessageData.ToObject<LoadingFinishedEventResponse>().RequestId == _requestId)
+                    if (
+                        e.MessageData.ToObject<LoadingFinishedEventResponse>().RequestId
+                        == _requestId
+                    )
                     {
                         Complete(null);
                     }
@@ -266,7 +282,9 @@ namespace PuppeteerSharp.Cdp
                     var loadingFailed = e.MessageData.ToObject<LoadingFailedEventResponse>();
                     if (loadingFailed.RequestId == _requestId)
                     {
-                        var errorText = !string.IsNullOrEmpty(loadingFailed.ErrorText) ? loadingFailed.ErrorText : loadingFailed.BlockedReason;
+                        var errorText = !string.IsNullOrEmpty(loadingFailed.ErrorText)
+                            ? loadingFailed.ErrorText
+                            : loadingFailed.BlockedReason;
                         Complete(new PuppeteerException($"Loading failed: {errorText}"));
                     }
 
@@ -274,8 +292,8 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private void OnDisconnected(object sender, EventArgs e)
-            => Complete(new TargetClosedException("Session closed."));
+        private void OnDisconnected(object sender, EventArgs e) =>
+            Complete(new TargetClosedException("Session closed."));
 
         private void Unsubscribe()
         {

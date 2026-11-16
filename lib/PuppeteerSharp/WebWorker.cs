@@ -124,8 +124,8 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="ExecutionContext.EvaluateExpressionAsync(string)"/>
         /// <returns>Task which resolves to script return value.</returns>
-        public virtual async Task<T> EvaluateExpressionAsync<T>(string script)
-            => await World.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
+        public virtual async Task<T> EvaluateExpressionAsync<T>(string script) =>
+            await World.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
 
         /// <summary>
         /// Executes a function in browser context.
@@ -137,8 +137,8 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public virtual async Task EvaluateFunctionAsync(string script, params object[] args)
-            => await World.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
+        public virtual async Task EvaluateFunctionAsync(string script, params object[] args) =>
+            await World.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
 
         /// <summary>
         /// Executes a function in the context.
@@ -151,8 +151,10 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public virtual async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-            => await World.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
+        public virtual async Task<T> EvaluateFunctionAsync<T>(
+            string script,
+            params object[] args
+        ) => await World.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
 
         /// <summary>
         /// Executes a script in browser context.
@@ -163,8 +165,8 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
         /// <seealso cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/>
-        public virtual async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
-            => await World.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+        public virtual async Task<IJSHandle> EvaluateExpressionHandleAsync(string script) =>
+            await World.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
 
         /// <summary>
         /// Waits for the provided function, <paramref name="script"/>, to return a truthy value when
@@ -174,7 +176,11 @@ namespace PuppeteerSharp
         /// <param name="options">Options for configuring waiting behavior.</param>
         /// <param name="args">Arguments to pass to <paramref name="script"/>.</param>
         /// <returns>A <see cref="Task"/> that resolves to a <see cref="IJSHandle"/> of the truthy value returned by the function.</returns>
-        public virtual Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+        public virtual Task<IJSHandle> WaitForFunctionAsync(
+            string script,
+            WaitForFunctionOptions options = null,
+            params object[] args
+        )
         {
             var opts = options ?? new WaitForFunctionOptions();
 
@@ -201,11 +207,13 @@ namespace PuppeteerSharp
 
         internal virtual Realm GetMainRealm() => World;
 
-        internal void OnExceptionThrown(RemoteExceptionEventArgs e) => ExceptionThrown?.Invoke(this, e);
+        internal void OnExceptionThrown(RemoteExceptionEventArgs e) =>
+            ExceptionThrown?.Invoke(this, e);
 
         internal void OnRequest(RequestEventArgs e) => Request?.Invoke(this, e);
 
-        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+        internal void OnRequestServedFromCache(RequestEventArgs e) =>
+            RequestServedFromCache?.Invoke(this, e);
 
         internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
 

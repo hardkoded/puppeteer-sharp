@@ -56,7 +56,9 @@ namespace PuppeteerSharp
         /// <summary>
         /// Headers that should be sent with connection-related HTTP and WebSocket requests.
         /// </summary>
-        [Obsolete("Use WsOptions.Headers via IConnectionOptions.WsOptions instead. When both are set, WsOptions.Headers wins.")]
+        [Obsolete(
+            "Use WsOptions.Headers via IConnectionOptions.WsOptions instead. When both are set, WsOptions.Headers wins."
+        )]
         Dictionary<string, string> Headers { get; set; }
     }
 }

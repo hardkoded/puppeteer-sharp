@@ -8,29 +8,37 @@ namespace PuppeteerSharp.Tests.CookiesTests
 {
     public class DeleteCookiesTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should delete cookie")]
+        [
+            Test,
+            PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should delete cookie")
+        ]
         public async Task ShouldDeleteCookie()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Name = "cookie1",
-                Value = "1"
-            }, new CookieParam
-            {
-                Name = "cookie2",
-                Value = "2"
-            }, new CookieParam
-            {
-                Name = "cookie3",
-                Value = "3"
-            });
-            Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("cookie1=1; cookie2=2; cookie3=3"));
+            await Page.SetCookieAsync(
+                new CookieParam { Name = "cookie1", Value = "1" },
+                new CookieParam { Name = "cookie2", Value = "2" },
+                new CookieParam { Name = "cookie3", Value = "3" }
+            );
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("document.cookie"),
+                Is.EqualTo("cookie1=1; cookie2=2; cookie3=3")
+            );
             await Page.DeleteCookieAsync(new CookieParam { Name = "cookie2" });
-            Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("cookie1=1; cookie3=3"));
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("document.cookie"),
+                Is.EqualTo("cookie1=1; cookie3=3")
+            );
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should not delete cookie for different domain")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.deleteCookie",
+                "should not delete cookie for different domain"
+            )
+        ]
         public async Task ShouldNotDeleteCookieForDifferentDomain()
         {
             const string cookieDestinationUrl = "https://example.com";
@@ -39,20 +47,20 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             // Set a cookie for the current page.
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Name = cookieName,
-                Value = "local page cookie value",
-            });
+            await Page.SetCookieAsync(
+                new CookieParam { Name = cookieName, Value = "local page cookie value" }
+            );
             Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
 
             // Set a cookie for different domain.
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = cookieDestinationUrl,
-                Name = cookieName,
-                Value = "COOKIE_DESTINATION_URL cookie value",
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = cookieDestinationUrl,
+                    Name = cookieName,
+                    Value = "COOKIE_DESTINATION_URL cookie value",
+                }
+            );
             Assert.That(await Page.GetCookiesAsync(cookieDestinationUrl), Has.Exactly(1).Items);
 
             await Page.DeleteCookieAsync(new CookieParam { Name = cookieName });
@@ -73,7 +81,14 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookies[0].Session, Is.True);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should delete cookie for specified URL")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.deleteCookie",
+                "should delete cookie for specified URL"
+            )
+        ]
         public async Task ShouldDeleteCookieForSpecifiedUrl()
         {
             const string cookieDestinationUrl = "https://example.com";
@@ -82,28 +97,26 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             // Set a cookie for the current page.
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Name = cookieName,
-                Value = "some_cookie_value",
-            });
+            await Page.SetCookieAsync(
+                new CookieParam { Name = cookieName, Value = "some_cookie_value" }
+            );
             Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
 
             // Set a cookie for specified URL.
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = cookieDestinationUrl,
-                Name = cookieName,
-                Value = "another_cookie_value",
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = cookieDestinationUrl,
+                    Name = cookieName,
+                    Value = "another_cookie_value",
+                }
+            );
             Assert.That(await Page.GetCookiesAsync(cookieDestinationUrl), Has.Exactly(1).Items);
 
             // Delete the cookie for specified URL.
-            await Page.DeleteCookieAsync(new CookieParam
-            {
-                Url = cookieDestinationUrl,
-                Name = cookieName,
-            });
+            await Page.DeleteCookieAsync(
+                new CookieParam { Url = cookieDestinationUrl, Name = cookieName }
+            );
 
             // Verify the cookie is deleted for specified URL.
             Assert.That(await Page.GetCookiesAsync(cookieDestinationUrl), Is.Empty);
@@ -122,7 +135,14 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookies[0].Session, Is.True);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should delete cookie for specified URL regardless of the current page")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.deleteCookie",
+                "should delete cookie for specified URL regardless of the current page"
+            )
+        ]
         public async Task ShouldDeleteCookieForSpecifiedUrlRegardlessOfTheCurrentPage()
         {
             const string cookieDestinationUrl = "https://example.com";
@@ -132,30 +152,32 @@ namespace PuppeteerSharp.Tests.CookiesTests
 
             await Page.GoToAsync(url1);
             // Set a cookie for the COOKIE_DESTINATION from URL_1.
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = cookieDestinationUrl,
-                Name = cookieName,
-                Value = "Cookie from URL_1",
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = cookieDestinationUrl,
+                    Name = cookieName,
+                    Value = "Cookie from URL_1",
+                }
+            );
             Assert.That(await Page.GetCookiesAsync(cookieDestinationUrl), Has.Exactly(1).Items);
 
             await Page.GoToAsync(url2);
             // Set a cookie for the COOKIE_DESTINATION from URL_2.
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = cookieDestinationUrl,
-                Name = cookieName,
-                Value = "Cookie from URL_2",
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = cookieDestinationUrl,
+                    Name = cookieName,
+                    Value = "Cookie from URL_2",
+                }
+            );
             Assert.That(await Page.GetCookiesAsync(cookieDestinationUrl), Has.Exactly(1).Items);
 
             // Delete the cookie for the COOKIE_DESTINATION from URL_2.
-            await Page.DeleteCookieAsync(new CookieParam
-            {
-                Name = cookieName,
-                Url = cookieDestinationUrl,
-            });
+            await Page.DeleteCookieAsync(
+                new CookieParam { Name = cookieName, Url = cookieDestinationUrl }
+            );
 
             // Expect the cookie for the COOKIE_DESTINATION from URL_2 is deleted.
             Assert.That(await Page.GetCookiesAsync(cookieDestinationUrl), Is.Empty);
@@ -166,29 +188,46 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(await Page.GetCookiesAsync(cookieDestinationUrl), Is.Empty);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should only delete cookie from the default partition if partitionkey is not specified")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.deleteCookie",
+                "should only delete cookie from the default partition if partitionkey is not specified"
+            )
+        ]
         public async Task ShouldOnlyDeleteCookieFromTheDefaultPartitionIfPartitionkeyIsNotSpecified()
         {
             var url = new Uri(TestConstants.EmptyPage);
             await Page.GoToAsync(url.ToString());
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = url.ToString(),
-                Name = "partitionCookie",
-                Value = "partition",
-                Secure = true,
-                PartitionKey = new CookiePartitionKey { SourceOrigin = url.GetLeftPart(UriPartial.Authority) },
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = url.ToString(),
+                    Name = "partitionCookie",
+                    Value = "partition",
+                    Secure = true,
+                    PartitionKey = new CookiePartitionKey
+                    {
+                        SourceOrigin = url.GetLeftPart(UriPartial.Authority),
+                    },
+                }
+            );
             Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
-            await Page.DeleteCookieAsync(new CookieParam
-            {
-                Url = url.ToString(),
-                Name = "partitionCookie",
-            });
+            await Page.DeleteCookieAsync(
+                new CookieParam { Url = url.ToString(), Name = "partitionCookie" }
+            );
             Assert.That(await Page.GetCookiesAsync(), Is.Empty);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should delete cookie with partition key if partition key is specified")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.deleteCookie",
+                "should delete cookie with partition key if partition key is specified"
+            )
+        ]
         public async Task ShouldDeleteCookieWithPartitionKeyIfPartitionKeyIsSpecified()
         {
             var url = new Uri(TestConstants.EmptyPage);
@@ -196,46 +235,61 @@ namespace PuppeteerSharp.Tests.CookiesTests
             var origin = TestConstants.IsChrome
                 ? url.GetComponents(UriComponents.Scheme | UriComponents.Host, UriFormat.UriEscaped)
                 : url.GetLeftPart(UriPartial.Authority);
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = url.ToString(),
-                Name = "partitionCookie",
-                Value = "partition",
-                Secure = true,
-                PartitionKey = new CookiePartitionKey { SourceOrigin = origin },
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = url.ToString(),
+                    Name = "partitionCookie",
+                    Value = "partition",
+                    Secure = true,
+                    PartitionKey = new CookiePartitionKey { SourceOrigin = origin },
+                }
+            );
             Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
-            await Page.DeleteCookieAsync(new CookieParam
-            {
-                Url = url.ToString(),
-                Name = "partitionCookie",
-                PartitionKey = new CookiePartitionKey { SourceOrigin = origin },
-            });
+            await Page.DeleteCookieAsync(
+                new CookieParam
+                {
+                    Url = url.ToString(),
+                    Name = "partitionCookie",
+                    PartitionKey = new CookiePartitionKey { SourceOrigin = origin },
+                }
+            );
             Assert.That(await Page.GetCookiesAsync(), Is.Empty);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should delete cookie from the page partition if the page uses the default port")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.deleteCookie",
+                "should delete cookie from the page partition if the page uses the default port"
+            )
+        ]
         public async Task ShouldDeleteCookieFromThePagePartitionIfThePageUsesTheDefaultPort()
         {
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
             {
-                await e.Request.RespondAsync(new ResponseData
-                {
-                    Status = System.Net.HttpStatusCode.OK,
-                    ContentType = "text/html",
-                    Body = "<!DOCTYPE html>",
-                });
+                await e.Request.RespondAsync(
+                    new ResponseData
+                    {
+                        Status = System.Net.HttpStatusCode.OK,
+                        ContentType = "text/html",
+                        Body = "<!DOCTYPE html>",
+                    }
+                );
             };
             await Page.GoToAsync("https://example.com/");
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = "https://example.com/",
-                Name = "partitionCookie",
-                Value = "partition",
-                Secure = true,
-                PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.com" },
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = "https://example.com/",
+                    Name = "partitionCookie",
+                    Value = "partition",
+                    Secure = true,
+                    PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.com" },
+                }
+            );
             Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
             await Page.DeleteCookieAsync(new CookieParam { Name = "partitionCookie" });
             Assert.That(await Page.GetCookiesAsync(), Is.Empty);

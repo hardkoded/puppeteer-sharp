@@ -11,9 +11,7 @@ namespace PuppeteerSharp
     {
         private bool _moved;
 
-        internal JSHandle()
-        {
-        }
+        internal JSHandle() { }
 
         /// <inheritdoc/>
         public bool Disposed { get; protected set; }
@@ -25,19 +23,23 @@ namespace PuppeteerSharp
         internal Frame Frame => Realm.Environment as Frame;
 
         /// <inheritdoc/>
-        public virtual Task<IJSHandle> GetPropertyAsync(string propertyName)
-            => EvaluateFunctionHandleAsync(
+        public virtual Task<IJSHandle> GetPropertyAsync(string propertyName) =>
+            EvaluateFunctionHandleAsync(
                 @"(object, propertyName) => {
                         return object[propertyName];
                     }",
-                propertyName);
+                propertyName
+            );
 
         /// <inheritdoc/>
         public virtual async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
         {
-            var propertyNames = await EvaluateFunctionAsync<string[]>(@"object => {
+            var propertyNames = await EvaluateFunctionAsync<string[]>(
+                    @"object => {
                     return Object.keys(object ?? {});
-                }").ConfigureAwait(false);
+                }"
+                )
+                .ConfigureAwait(false);
 
             var dic = new Dictionary<string, IJSHandle>();
 
@@ -54,7 +56,8 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public async Task<object> JsonValueAsync() => await JsonValueAsync<object>().ConfigureAwait(false);
+        public async Task<object> JsonValueAsync() =>
+            await JsonValueAsync<object>().ConfigureAwait(false);
 
         /// <inheritdoc/>
         public abstract Task<T> JsonValueAsync<T>();
@@ -70,7 +73,10 @@ namespace PuppeteerSharp
         public abstract ValueTask DisposeAsync();
 
         /// <inheritdoc/>
-        public Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
+        public Task<IJSHandle> EvaluateFunctionHandleAsync(
+            string pageFunction,
+            params object[] args
+        )
         {
             return Realm.EvaluateFunctionHandleAsync(pageFunction, [this, .. args]);
         }
@@ -79,7 +85,8 @@ namespace PuppeteerSharp
         public async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
         {
             var adoptedThis = await Realm.AdoptHandleAsync(this).ConfigureAwait(false);
-            return await Realm.EvaluateFunctionAsync<JsonElement?>(script, [adoptedThis, .. args])
+            return await Realm
+                .EvaluateFunctionAsync<JsonElement?>(script, [adoptedThis, .. args])
                 .ConfigureAwait(false);
         }
 

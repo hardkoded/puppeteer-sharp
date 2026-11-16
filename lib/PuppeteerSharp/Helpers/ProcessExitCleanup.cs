@@ -16,7 +16,10 @@ namespace PuppeteerSharp.Helpers
     internal static class ProcessExitCleanup
     {
         private static readonly object Gate = new();
-        private static readonly Dictionary<IProcessExitEmitter, CleanupState> ProcessExitCleanupEntries = new();
+        private static readonly Dictionary<
+            IProcessExitEmitter,
+            CleanupState
+        > ProcessExitCleanupEntries = new();
 
         /// <summary>
         /// Registers synchronous cleanup of <paramref name="userDataDir"/> on process exit.
@@ -28,7 +31,8 @@ namespace PuppeteerSharp.Helpers
         public static Action Register(
             string userDataDir,
             Action<Exception> logError = null,
-            IProcessExitEmitter processEmitter = null)
+            IProcessExitEmitter processEmitter = null
+        )
         {
             if (string.IsNullOrEmpty(userDataDir))
             {

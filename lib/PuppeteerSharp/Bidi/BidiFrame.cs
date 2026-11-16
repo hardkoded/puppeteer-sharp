@@ -47,7 +47,11 @@ public class BidiFrame : Frame
 
     private BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
-        Client = new BidiCdpSession(this, parentPage?.BidiBrowser?.LoggerFactory ?? parentFrame?.BidiPage?.BidiBrowser?.LoggerFactory);
+        Client = new BidiCdpSession(
+            this,
+            parentPage?.BidiBrowser?.LoggerFactory
+                ?? parentFrame?.BidiPage?.BidiBrowser?.LoggerFactory
+        );
         Logger = Client.LoggerFactory.CreateLogger<Frame>();
         ParentPage = parentPage;
         ParentFrame = parentFrame;
@@ -56,14 +60,20 @@ public class BidiFrame : Frame
         _realms = new Realms(
 #pragma warning disable CA2000
             BidiFrameRealm.From(browsingContext.DefaultRealm, this),
-            BidiFrameRealm.From(browsingContext.CreateWindowRealm($"__puppeteer_internal_{new Random().Next(0, 10000)}"), this));
+            BidiFrameRealm.From(
+                browsingContext.CreateWindowRealm(
+                    $"__puppeteer_internal_{new Random().Next(0, 10000)}"
+                ),
+                this
+            )
+        );
 #pragma warning restore CA2000
     }
 
     /// <inheritdoc />
     public override IReadOnlyCollection<IFrame> ChildFrames =>
-        BrowsingContext.Children
-            .Select(child => _frames.TryGetValue(child, out var frame) ? frame : null)
+        BrowsingContext
+            .Children.Select(child => _frames.TryGetValue(child, out var frame) ? frame : null)
             .Where(frame => frame is not null)
             .Cast<IFrame>()
             .ToList();
@@ -115,10 +125,15 @@ public class BidiFrame : Frame
             throw new ArgumentNullException(nameof(options));
         }
 
-        if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
-            string.IsNullOrEmpty(options.Content))
+        if (
+            string.IsNullOrEmpty(options.Url)
+            && string.IsNullOrEmpty(options.Path)
+            && string.IsNullOrEmpty(options.Content)
+        )
         {
-            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+            throw new ArgumentException(
+                "Provide options with a `Url`, `Path` or `Content` property"
+            );
         }
 
         var content = options.Content;
@@ -129,8 +144,9 @@ public class BidiFrame : Frame
             content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
         }
 
-        var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
-            @"async (puppeteerUtil, url, id, type, content) => {
+        var handle = await IsolatedRealm
+            .EvaluateFunctionHandleAsync(
+                @"async (puppeteerUtil, url, id, type, content) => {
                   const createDeferredPromise = puppeteerUtil.createDeferredPromise;
                   const promise = createDeferredPromise();
                   let element;
@@ -165,13 +181,18 @@ public class BidiFrame : Frame
                   await promise;
                   return element;
                 }",
-            new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
-            options.Url,
-            options.Id,
-            options.Type,
-            content).ConfigureAwait(false);
+                new LazyArg(async context =>
+                    await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                ),
+                options.Url,
+                options.Id,
+                options.Type,
+                content
+            )
+            .ConfigureAwait(false);
 
-        return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
+        return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false))
+            as IElementHandle;
     }
 
     /// <inheritdoc />
@@ -182,7 +203,10 @@ public class BidiFrame : Frame
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
         // Setup load event listeners before setting content to avoid race conditions
-        var (waitForLoadTask, cleanupLoadListeners) = SetupLoadEventListeners(options, requireCommit: false);
+        var (waitForLoadTask, cleanupLoadListeners) = SetupLoadEventListeners(
+            options,
+            requireCommit: false
+        );
         var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
 
         try
@@ -194,26 +218,37 @@ public class BidiFrame : Frame
                     document.write(html);
                     document.close();
                 }",
-                html);
+                html
+            );
 
             if (options?.CancellationToken is { } evaluateCancellationToken)
             {
-                var evaluateCancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                using var evaluateRegistration = evaluateCancellationToken.Register(() => evaluateCancellationTcs.TrySetCanceled(evaluateCancellationToken));
-                await Task.WhenAny(evaluateTask, evaluateCancellationTcs.Task).ConfigureAwait(false);
+                var evaluateCancellationTcs = new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
+                using var evaluateRegistration = evaluateCancellationToken.Register(() =>
+                    evaluateCancellationTcs.TrySetCanceled(evaluateCancellationToken)
+                );
+                await Task.WhenAny(evaluateTask, evaluateCancellationTcs.Task)
+                    .ConfigureAwait(false);
                 evaluateCancellationToken.ThrowIfCancellationRequested();
             }
 
             await evaluateTask.ConfigureAwait(false);
 
-            var waitTask = Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
-                timeout,
-                t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"));
+            var waitTask = Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask)
+                .WithTimeout(timeout, t => new TimeoutException(
+                    $"Navigation timeout of {t.TotalMilliseconds} ms exceeded"
+                ));
 
             if (options?.CancellationToken is { } cancellationToken)
             {
-                var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                using var registration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+                var cancellationTcs = new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
+                using var registration = cancellationToken.Register(() =>
+                    cancellationTcs.TrySetCanceled(cancellationToken)
+                );
                 await Task.WhenAny(waitTask, cancellationTcs.Task).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
             }
@@ -246,7 +281,11 @@ public class BidiFrame : Frame
             }
             catch (Exception ex)
             {
-                throw RewriteNavigationError(ex, url, options?.Timeout ?? TimeoutSettings.NavigationTimeout);
+                throw RewriteNavigationError(
+                    ex,
+                    url,
+                    options?.Timeout ?? TimeoutSettings.NavigationTimeout
+                );
             }
 
             // For same-document navigations, there's no response
@@ -261,13 +300,16 @@ public class BidiFrame : Frame
         {
             // - If any task fails/is canceled, immediately throw (don't wait for other tasks)
             // - If all tasks succeed, return when all have completed
-            await new[] { waitForNavigationTask, navigationTask }.WhenAllFailFast().ConfigureAwait(false);
+            await new[] { waitForNavigationTask, navigationTask }
+                .WhenAllFailFast()
+                .ConfigureAwait(false);
         }
         catch (NavigationException)
         {
             throw;
         }
-        catch (OperationCanceledException) when (options?.CancellationToken?.IsCancellationRequested == true)
+        catch (OperationCanceledException)
+            when (options?.CancellationToken?.IsCancellationRequested == true)
         {
             // Caller cancellation surfaces as cancellation, not as a navigation error
             throw;
@@ -279,7 +321,11 @@ public class BidiFrame : Frame
         }
         catch (Exception ex)
         {
-            throw RewriteNavigationError(ex, url, options?.Timeout ?? TimeoutSettings.NavigationTimeout);
+            throw RewriteNavigationError(
+                ex,
+                url,
+                options?.Timeout ?? TimeoutSettings.NavigationTimeout
+            );
         }
 
         // End navigation mode and clear the request events tracker after navigation completes.
@@ -299,34 +345,44 @@ public class BidiFrame : Frame
         // Create a cancellation token that will trigger timeout for the ENTIRE operation
         // This ensures all nested waits (including the initial navigation/historyUpdated wait) are bounded
         // A timeout of 0 means "no timeout" (infinite wait), so we don't set a timeout in that case
-        using var timeoutCts = timeout > 0
-            ? new CancellationTokenSource(TimeSpan.FromMilliseconds(timeout))
-            : new CancellationTokenSource();
+        using var timeoutCts =
+            timeout > 0
+                ? new CancellationTokenSource(TimeSpan.FromMilliseconds(timeout))
+                : new CancellationTokenSource();
         var timeoutToken = timeoutCts.Token;
 
         // Caller cancellation must reach the inner waits (so their handlers are released), but it must not
         // go through timeoutCts, which is reported as a timeout. Mirrors upstream raceWith(timeout, fromAbortSignal).
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
             timeoutToken,
-            options?.CancellationToken ?? CancellationToken.None);
+            options?.CancellationToken ?? CancellationToken.None
+        );
         var waitToken = linkedCts.Token;
 
         // Setup frame detachment handler at the outer level to race with the entire navigation
-        var frameDetachedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var frameDetachedTcs = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
 
         void OnFrameDetached(object sender, ClosedEventArgs args)
         {
-            frameDetachedTcs.TrySetException(new PuppeteerException("Navigating frame was detached"));
+            frameDetachedTcs.TrySetException(
+                new PuppeteerException("Navigating frame was detached")
+            );
         }
 
         BrowsingContext.Closed += OnFrameDetached;
 
         // Register timeout to also complete the frame detached task to unblock any waits
         // Only register if we have a timeout (timeout > 0)
-        CancellationTokenRegistration? timeoutRegistration = timeout > 0
-            ? timeoutToken.Register(() =>
-                frameDetachedTcs.TrySetException(new TimeoutException($"Navigation timeout of {timeout}ms exceeded")))
-            : null;
+        CancellationTokenRegistration? timeoutRegistration =
+            timeout > 0
+                ? timeoutToken.Register(() =>
+                    frameDetachedTcs.TrySetException(
+                        new TimeoutException($"Navigation timeout of {timeout}ms exceeded")
+                    )
+                )
+                : null;
 
         // Setup load event listeners BEFORE waiting for navigation to avoid race conditions
         // This ensures we capture Load/DOMContentLoaded events even if they fire quickly after navigation starts
@@ -337,8 +393,12 @@ public class BidiFrame : Frame
             async Task<Navigation> WaitForEventNavigationAsync(CancellationToken cancellationToken)
             {
                 // Wait for navigation or history updated event
-                var navigationTcs = new TaskCompletionSource<Navigation>(TaskCreationOptions.RunContinuationsAsynchronously);
-                var historyUpdatedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var navigationTcs = new TaskCompletionSource<Navigation>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
+                var historyUpdatedTcs = new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
 
                 void OnNavigation(object sender, BrowserContextNavigationEventArgs args)
                 {
@@ -358,13 +418,22 @@ public class BidiFrame : Frame
                 BrowsingContext.HistoryUpdated += OnHistoryUpdated;
 
                 // Create a task that completes when cancellation is requested (timeout)
-                var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                using var cancellationRegistration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+                var cancellationTcs = new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
+                using var cancellationRegistration = cancellationToken.Register(() =>
+                    cancellationTcs.TrySetCanceled(cancellationToken)
+                );
 
                 try
                 {
                     // Race between navigation, historyUpdated, and timeout
-                    var completedTask = await Task.WhenAny(navigationTcs.Task, historyUpdatedTcs.Task, cancellationTcs.Task).ConfigureAwait(false);
+                    var completedTask = await Task.WhenAny(
+                            navigationTcs.Task,
+                            historyUpdatedTcs.Task,
+                            cancellationTcs.Task
+                        )
+                        .ConfigureAwait(false);
 
                     // Check if we timed out - throw TimeoutException so RewriteNavigationError
                     // can convert it to NavigationException
@@ -396,15 +465,20 @@ public class BidiFrame : Frame
 
                     // Collect child frames for detachment tracking
                     var childFrames = ChildFrames.Cast<BidiFrame>().ToList();
-                    var childFrameDetachedTasks = childFrames.Select(frame =>
-                    {
-                        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                        void OnClosed(object sender, ClosedEventArgs args) => tcs.TrySetResult(true);
-                        frame.BrowsingContext.Closed += OnClosed;
+                    var childFrameDetachedTasks = childFrames
+                        .Select(frame =>
+                        {
+                            var tcs = new TaskCompletionSource<bool>(
+                                TaskCreationOptions.RunContinuationsAsynchronously
+                            );
+                            void OnClosed(object sender, ClosedEventArgs args) =>
+                                tcs.TrySetResult(true);
+                            frame.BrowsingContext.Closed += OnClosed;
 
-                        cleanups.Add(() => frame.BrowsingContext.Closed -= OnClosed);
-                        return tcs.Task;
-                    }).ToList();
+                            cleanups.Add(() => frame.BrowsingContext.Closed -= OnClosed);
+                            return tcs.Task;
+                        })
+                        .ToList();
 
                     // Setup fragment, failed, and aborted event handlers
                     Task<bool> waitForFragmentTask;
@@ -414,19 +488,26 @@ public class BidiFrame : Frame
                     }
                     else
                     {
-                        var fragmentTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                        void OnFragment(object sender, NavigationEventArgs args) => fragmentTcs.TrySetResult(true);
+                        var fragmentTcs = new TaskCompletionSource<bool>(
+                            TaskCreationOptions.RunContinuationsAsynchronously
+                        );
+                        void OnFragment(object sender, NavigationEventArgs args) =>
+                            fragmentTcs.TrySetResult(true);
                         navigation.Fragment += OnFragment;
                         waitForFragmentTask = fragmentTcs.Task;
                         cleanups.Add(() => navigation.Fragment -= OnFragment);
                     }
 
-                    var failedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    var failedTcs = new TaskCompletionSource<bool>(
+                        TaskCreationOptions.RunContinuationsAsynchronously
+                    );
                     navigation.Failed += OnFailed;
                     var waitForFailedTask = failedTcs.Task;
                     cleanups.Add(() => navigation.Failed -= OnFailed);
 
-                    var abortedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    var abortedTcs = new TaskCompletionSource<bool>(
+                        TaskCreationOptions.RunContinuationsAsynchronously
+                    );
                     navigation.Aborted += OnAborted;
                     var waitForAbortedTask = abortedTcs.Task;
                     cleanups.Add(() => navigation.Aborted -= OnAborted);
@@ -442,27 +523,35 @@ public class BidiFrame : Frame
                                 await Task.WhenAll(childFrameDetachedTasks).ConfigureAwait(false);
                             }
                         },
-                        cancellationToken);
+                        cancellationToken
+                    );
 
                     // Race between (load+childFrames) and fragment/failed/aborted and timeout
                     // Any of these events can complete the navigation
                     var navCompletedTask = await Task.WhenAny(
-                        waitForLoadAndChildFramesTask,
-                        waitForFragmentTask,
-                        waitForFailedTask,
-                        waitForAbortedTask,
-                        cancellationTcs.Task).ConfigureAwait(false);
+                            waitForLoadAndChildFramesTask,
+                            waitForFragmentTask,
+                            waitForFailedTask,
+                            waitForAbortedTask,
+                            cancellationTcs.Task
+                        )
+                        .ConfigureAwait(false);
 
                     cancellationToken.ThrowIfCancellationRequested();
 
                     // If navigation failed or was aborted, don't wait for request - navigation is done
-                    var navigationEnded = navCompletedTask == waitForFailedTask || navCompletedTask == waitForAbortedTask;
+                    var navigationEnded =
+                        navCompletedTask == waitForFailedTask
+                        || navCompletedTask == waitForAbortedTask;
 
                     // Wait for request to be created if we don't have one yet and navigation hasn't ended
                     if (navigation.Request == null && !navigationEnded)
                     {
-                        var requestCreatedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                        void OnRequestCreated(object sender, Core.RequestEventArgs args) => requestCreatedTcs.TrySetResult(true);
+                        var requestCreatedTcs = new TaskCompletionSource<bool>(
+                            TaskCreationOptions.RunContinuationsAsynchronously
+                        );
+                        void OnRequestCreated(object sender, Core.RequestEventArgs args) =>
+                            requestCreatedTcs.TrySetResult(true);
 
                         navigation.RequestCreated += OnRequestCreated;
 
@@ -470,7 +559,8 @@ public class BidiFrame : Frame
                         // If it doesn't happen, it means this is a cached/history navigation
                         var requestCreatedTask = requestCreatedTcs.Task;
                         var delay = Task.Delay(1000, cancellationToken);
-                        await Task.WhenAny(requestCreatedTask, delay, cancellationTcs.Task).ConfigureAwait(false);
+                        await Task.WhenAny(requestCreatedTask, delay, cancellationTcs.Task)
+                            .ConfigureAwait(false);
 
                         navigation.RequestCreated -= OnRequestCreated;
                         cancellationToken.ThrowIfCancellationRequested();
@@ -479,14 +569,17 @@ public class BidiFrame : Frame
                     // Wait for request completion if navigation has a request and navigation hasn't ended
                     if (navigation.Request != null && !navigationEnded)
                     {
-                        await WaitForRequestFinishedAsync(navigation.Request, cancellationToken).ConfigureAwait(false);
+                        await WaitForRequestFinishedAsync(navigation.Request, cancellationToken)
+                            .ConfigureAwait(false);
                     }
 
                     return navigation;
 
-                    void OnAborted(object sender, NavigationEventArgs args) => abortedTcs.TrySetResult(true);
+                    void OnAborted(object sender, NavigationEventArgs args) =>
+                        abortedTcs.TrySetResult(true);
 
-                    void OnFailed(object sender, NavigationEventArgs args) => failedTcs.TrySetResult(true);
+                    void OnFailed(object sender, NavigationEventArgs args) =>
+                        failedTcs.TrySetResult(true);
                 }
                 finally
                 {
@@ -506,7 +599,9 @@ public class BidiFrame : Frame
             var waitForResponse = new Func<Task<IResponse>>(async () =>
             {
                 // Use WhenAllFailFast to fail immediately if any task fails (like Promise.all in JS)
-                await new[] { waitForEventNavigationTask, waitForNetworkIdleTask }.WhenAllFailFast().ConfigureAwait(false);
+                await new[] { waitForEventNavigationTask, waitForNetworkIdleTask }
+                    .WhenAllFailFast()
+                    .ConfigureAwait(false);
                 var navigation = waitForEventNavigationTask.Result;
 
                 // Navigation might be null
@@ -543,7 +638,11 @@ public class BidiFrame : Frame
                     if (bidiRequest.Response == null)
                     {
                         // Create the response directly since the Success event was missed
-                        var response = BidiHttpResponse.From(lastRequest.Response, bidiRequest, BidiPage.BidiBrowser.CdpSupported);
+                        var response = BidiHttpResponse.From(
+                            lastRequest.Response,
+                            bidiRequest,
+                            BidiPage.BidiBrowser.CdpSupported
+                        );
                         return response;
                     }
 
@@ -561,8 +660,12 @@ public class BidiFrame : Frame
             if (options?.CancellationToken.HasValue == true)
             {
                 var userCancellationToken = options.CancellationToken.Value;
-                var userCancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                userCancellationToken.Register(() => userCancellationTcs.TrySetCanceled(userCancellationToken));
+                var userCancellationTcs = new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
+                userCancellationToken.Register(() =>
+                    userCancellationTcs.TrySetCanceled(userCancellationToken)
+                );
                 tasksToRace.Add(userCancellationTcs.Task);
             }
 
@@ -596,8 +699,9 @@ public class BidiFrame : Frame
             return null;
         }
 
-        var nodes = await parentFrame.BrowsingContext.LocateNodesAsync(
-            new WebDriverBiDi.BrowsingContext.ContextLocator(Id)).ConfigureAwait(false);
+        var nodes = await parentFrame
+            .BrowsingContext.LocateNodesAsync(new WebDriverBiDi.BrowsingContext.ContextLocator(Id))
+            .ConfigureAwait(false);
 
         var node = nodes.FirstOrDefault();
         if (node == null)
@@ -609,10 +713,14 @@ public class BidiFrame : Frame
     }
 
     /// <inheritdoc />
-    public override IReadOnlyList<Realm> ExtensionRealms()
-        => throw new NotSupportedException("ExtensionRealms is not supported in WebDriver BiDi.");
+    public override IReadOnlyList<Realm> ExtensionRealms() =>
+        throw new NotSupportedException("ExtensionRealms is not supported in WebDriver BiDi.");
 
-    internal static BidiFrame From(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
+    internal static BidiFrame From(
+        BidiPage parentPage,
+        BidiFrame parentFrame,
+        BrowsingContext browsingContext
+    )
     {
         parentFrame = new BidiFrame(parentPage, parentFrame, browsingContext);
         parentFrame.Initialize();
@@ -629,10 +737,14 @@ public class BidiFrame : Frame
     {
         if (_exposedFunctions.ContainsKey(name))
         {
-            throw new PuppeteerException($"Failed to add page binding with name {name}: globalThis['{name}'] already exists!");
+            throw new PuppeteerException(
+                $"Failed to add page binding with name {name}: globalThis['{name}'] already exists!"
+            );
         }
 
-        var exposable = await ExposableFunction.FromAsync(this, name, puppeteerFunction).ConfigureAwait(false);
+        var exposable = await ExposableFunction
+            .FromAsync(this, name, puppeteerFunction)
+            .ConfigureAwait(false);
         _exposedFunctions[name] = exposable;
     }
 
@@ -645,7 +757,9 @@ public class BidiFrame : Frame
     {
         if (!_exposedFunctions.TryRemove(name, out var exposedFunction))
         {
-            throw new PuppeteerException($"Failed to remove page binding with name {name}: globalThis['{name}'] does not exist!");
+            throw new PuppeteerException(
+                $"Failed to remove page binding with name {name}: globalThis['{name}'] does not exist!"
+            );
         }
 
         await exposedFunction.DisposeAsync().ConfigureAwait(false);
@@ -653,20 +767,24 @@ public class BidiFrame : Frame
 
     internal async Task SetFilesAsync(BidiElementHandle element, string[] files)
     {
-        await BrowsingContext.SetFilesAsync(
-            element.Value.As<NodeRemoteValue>().ToSharedReference(),
-            files).ConfigureAwait(false);
+        await BrowsingContext
+            .SetFilesAsync(element.Value.As<NodeRemoteValue>().ToSharedReference(), files)
+            .ConfigureAwait(false);
     }
 
-    internal async Task<IList<NodeRemoteValue>> LocateNodesAsync(BidiElementHandle element, BidiLocator locator)
+    internal async Task<IList<NodeRemoteValue>> LocateNodesAsync(
+        BidiElementHandle element,
+        BidiLocator locator
+    )
     {
-        return await BrowsingContext.LocateNodesAsync(
-            locator,
-            [element.Value.As<NodeRemoteValue>().ToSharedReference()]).ConfigureAwait(false);
+        return await BrowsingContext
+            .LocateNodesAsync(locator, [element.Value.As<NodeRemoteValue>().ToSharedReference()])
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager() => throw new System.NotImplementedException();
+    protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager() =>
+        throw new System.NotImplementedException();
 
     private static ConsoleType ConvertConsoleMessageLevel(string method)
     {
@@ -696,7 +814,9 @@ public class BidiFrame : Frame
         };
     }
 
-    private static ConsoleMessageLocation GetStackTraceLocation(WebDriverBiDi.Script.StackTrace stackTrace)
+    private static ConsoleMessageLocation GetStackTraceLocation(
+        WebDriverBiDi.Script.StackTrace stackTrace
+    )
     {
         if (stackTrace?.CallFrames?.Count > 0)
         {
@@ -713,17 +833,21 @@ public class BidiFrame : Frame
         return null;
     }
 
-    private static IList<ConsoleMessageLocation> GetStackTrace(WebDriverBiDi.Script.StackTrace stackTrace)
+    private static IList<ConsoleMessageLocation> GetStackTrace(
+        WebDriverBiDi.Script.StackTrace stackTrace
+    )
     {
         if (stackTrace?.CallFrames?.Count > 0)
         {
-            return stackTrace.CallFrames.Select(callFrame => new ConsoleMessageLocation
-            {
-                URL = callFrame.Url,
-                LineNumber = (int)callFrame.LineNumber,
-                ColumnNumber = (int)callFrame.ColumnNumber,
-                FunctionName = callFrame.FunctionName,
-            }).ToList();
+            return stackTrace
+                .CallFrames.Select(callFrame => new ConsoleMessageLocation
+                {
+                    URL = callFrame.Url,
+                    LineNumber = (int)callFrame.LineNumber,
+                    ColumnNumber = (int)callFrame.ColumnNumber,
+                    FunctionName = callFrame.FunctionName,
+                })
+                .ToList();
         }
 
         return [];
@@ -742,8 +866,10 @@ public class BidiFrame : Frame
         }
 
         // Parse both URLs to compare their non-fragment parts
-        if (!Uri.TryCreate(currentUrl, UriKind.Absolute, out var currentUri) ||
-            !Uri.TryCreate(targetUrl, UriKind.Absolute, out var targetUri))
+        if (
+            !Uri.TryCreate(currentUrl, UriKind.Absolute, out var currentUri)
+            || !Uri.TryCreate(targetUrl, UriKind.Absolute, out var targetUri)
+        )
         {
             return false;
         }
@@ -756,14 +882,25 @@ public class BidiFrame : Frame
         // It's a same-document navigation if:
         // 1. The non-fragment parts are identical
         // 2. The target URL has a fragment (otherwise it would be a regular navigation)
-        return string.Equals(currentWithoutFragment, targetWithoutFragment, StringComparison.Ordinal)
-            && !string.IsNullOrEmpty(targetUri.Fragment);
+        return string.Equals(
+                currentWithoutFragment,
+                targetWithoutFragment,
+                StringComparison.Ordinal
+            ) && !string.IsNullOrEmpty(targetUri.Fragment);
     }
 
-    private PuppeteerException RewriteNavigationError(Exception ex, string url, int timeoutSettingsNavigationTimeout)
+    private PuppeteerException RewriteNavigationError(
+        Exception ex,
+        string url,
+        int timeoutSettingsNavigationTimeout
+    )
     {
         return ex is TimeoutException
-            ? new NavigationException($"Navigation timeout of {timeoutSettingsNavigationTimeout} ms exceeded", url, ex)
+            ? new NavigationException(
+                $"Navigation timeout of {timeoutSettingsNavigationTimeout} ms exceeded",
+                url,
+                ex
+            )
             : new PuppeteerException("Navigation failed: " + ex.Message, ex);
     }
 
@@ -771,7 +908,10 @@ public class BidiFrame : Frame
     /// Sets up load event listeners early to avoid race conditions.
     /// Returns a task that completes when all load events fire, and a cleanup action.
     /// </summary>
-    private (Task WaitTask, Action Cleanup) SetupLoadEventListeners(NavigationOptions options, bool requireCommit = true)
+    private (Task WaitTask, Action Cleanup) SetupLoadEventListeners(
+        NavigationOptions options,
+        bool requireCommit = true
+    )
     {
         var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
@@ -783,13 +923,16 @@ public class BidiFrame : Frame
         // previous document (e.g. the error page of a failed navigation), so ignore them.
         // Content set through document.write does not commit a navigation, so it skips the gate.
         var committed = requireCommit ? 0 : 1;
-        void OnNavigationCommitted(object sender, EventArgs args) => Interlocked.Exchange(ref committed, 1);
+        void OnNavigationCommitted(object sender, EventArgs args) =>
+            Interlocked.Exchange(ref committed, 1);
         BrowsingContext.NavigationCommitted += OnNavigationCommitted;
         cleanupActions.Add(() => BrowsingContext.NavigationCommitted -= OnNavigationCommitted);
 
         if (waitUntil.Contains(WaitUntilNavigation.Load))
         {
-            var loadTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var loadTcs = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             void OnLoad(object sender, EventArgs args)
             {
                 if (Volatile.Read(ref committed) == 1)
@@ -805,7 +948,9 @@ public class BidiFrame : Frame
 
         if (waitUntil.Contains(WaitUntilNavigation.DOMContentLoaded))
         {
-            var domContentLoadedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var domContentLoadedTcs = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             void OnDomContentLoaded(object sender, EventArgs args)
             {
                 if (Volatile.Read(ref committed) == 1)
@@ -819,11 +964,13 @@ public class BidiFrame : Frame
             cleanupActions.Add(() => BrowsingContext.DomContentLoaded -= OnDomContentLoaded);
         }
 
-        var waitTask = tasks.Count > 0
-            ? Task.WhenAll(tasks).WithTimeout(
-                timeout,
-                t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"))
-            : Task.CompletedTask;
+        var waitTask =
+            tasks.Count > 0
+                ? Task.WhenAll(tasks)
+                    .WithTimeout(timeout, t => new TimeoutException(
+                        $"Navigation timeout of {t.TotalMilliseconds} ms exceeded"
+                    ))
+                : Task.CompletedTask;
 
         void Cleanup()
         {
@@ -846,7 +993,10 @@ public class BidiFrame : Frame
         page.OnFrameNavigatedSameDocument(new FrameEventArgs(this));
     }
 
-    private async Task WaitForNetworkIdleAsync(NavigationOptions options, CancellationToken cancellationToken)
+    private async Task WaitForNetworkIdleAsync(
+        NavigationOptions options,
+        CancellationToken cancellationToken
+    )
     {
         var waitUntil = options?.WaitUntil ?? [WaitUntilNavigation.Load];
 
@@ -873,23 +1023,32 @@ public class BidiFrame : Frame
             return;
         }
 
-        var networkIdleTask = BidiPage.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions
-        {
-            IdleTime = 500,
-            Timeout = options?.Timeout ?? TimeoutSettings.Timeout,
-            Concurrency = concurrency.Value,
-            CancellationToken = cancellationToken,
-        });
+        var networkIdleTask = BidiPage.WaitForNetworkIdleAsync(
+            new WaitForNetworkIdleOptions
+            {
+                IdleTime = 500,
+                Timeout = options?.Timeout ?? TimeoutSettings.Timeout,
+                Concurrency = concurrency.Value,
+                CancellationToken = cancellationToken,
+            }
+        );
 
         // Race with cancellation token
-        var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        using var registration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+        var cancellationTcs = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+        using var registration = cancellationToken.Register(() =>
+            cancellationTcs.TrySetCanceled(cancellationToken)
+        );
 
         await Task.WhenAny(networkIdleTask, cancellationTcs.Task).ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
     }
 
-    private async Task WaitForRequestFinishedAsync(Request request, CancellationToken cancellationToken)
+    private async Task WaitForRequestFinishedAsync(
+        Request request,
+        CancellationToken cancellationToken
+    )
     {
         if (request == null)
         {
@@ -906,29 +1065,47 @@ public class BidiFrame : Frame
         // If this is a redirect, recursively wait for the redirect to complete
         if (request.LastRedirect != null)
         {
-            await WaitForRequestFinishedAsync(request.LastRedirect, cancellationToken).ConfigureAwait(false);
+            await WaitForRequestFinishedAsync(request.LastRedirect, cancellationToken)
+                .ConfigureAwait(false);
             return;
         }
 
         // Wait for success, error, or redirect events
-        var successTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var errorTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var redirectTcs = new TaskCompletionSource<Request>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var successTcs = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+        var errorTcs = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+        var redirectTcs = new TaskCompletionSource<Request>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+        var cancellationTcs = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
 
         void OnSuccess(object sender, ResponseEventArgs args) => successTcs.TrySetResult(true);
         void OnError(object sender, Core.ErrorEventArgs args) => errorTcs.TrySetResult(true);
-        void OnRedirect(object sender, Core.RequestEventArgs args) => redirectTcs.TrySetResult(args.Request);
+        void OnRedirect(object sender, Core.RequestEventArgs args) =>
+            redirectTcs.TrySetResult(args.Request);
 
         request.Success += OnSuccess;
         request.Error += OnError;
         request.Redirect += OnRedirect;
 
-        using var registration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+        using var registration = cancellationToken.Register(() =>
+            cancellationTcs.TrySetCanceled(cancellationToken)
+        );
 
         try
         {
-            var completedTask = await Task.WhenAny(successTcs.Task, errorTcs.Task, redirectTcs.Task, cancellationTcs.Task).ConfigureAwait(false);
+            var completedTask = await Task.WhenAny(
+                    successTcs.Task,
+                    errorTcs.Task,
+                    redirectTcs.Task,
+                    cancellationTcs.Task
+                )
+                .ConfigureAwait(false);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -936,7 +1113,8 @@ public class BidiFrame : Frame
             if (completedTask == redirectTcs.Task)
             {
                 var redirectRequest = await redirectTcs.Task.ConfigureAwait(false);
-                await WaitForRequestFinishedAsync(redirectRequest, cancellationToken).ConfigureAwait(false);
+                await WaitForRequestFinishedAsync(redirectRequest, cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
         finally
@@ -955,7 +1133,9 @@ public class BidiFrame : Frame
         // Related: https://bugzilla.mozilla.org/show_bug.cgi?id=1846601
         try
         {
-            await BrowsingContext.NavigateAsync(url, WebDriverBiDi.BrowsingContext.ReadinessState.Interactive).ConfigureAwait(false);
+            await BrowsingContext
+                .NavigateAsync(url, WebDriverBiDi.BrowsingContext.ReadinessState.Interactive)
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -1005,9 +1185,7 @@ public class BidiFrame : Frame
             // Use fire-and-forget pattern to avoid async event handler issues
             foreach (var kvp in _exposedFunctions)
             {
-                _ = kvp.Value.DisposeAsync().AsTask().ContinueWith(
-                    _ => { },
-                    TaskScheduler.Default);
+                _ = kvp.Value.DisposeAsync().AsTask().ContinueWith(_ => { }, TaskScheduler.Default);
             }
 
             _exposedFunctions.Clear();
@@ -1024,8 +1202,9 @@ public class BidiFrame : Frame
             // This ensures that the first request (with user handlers) is processed
             // before any duplicate requests (e.g., Firefox BiDi speculative loading),
             // preventing duplicates from racing to the server without proper headers.
-            _ = BidiPage.RequestInterceptionQueue.Enqueue(
-                () => httpRequest.FinalizeInterceptionsAsync());
+            _ = BidiPage.RequestInterceptionQueue.Enqueue(() =>
+                httpRequest.FinalizeInterceptionsAsync()
+            );
         };
 
         BrowsingContext.Navigation += (sender, args) =>
@@ -1055,7 +1234,9 @@ public class BidiFrame : Frame
         {
             OnLoadingStarted();
             ((Page)Page).OnDOMContentLoaded();
-            ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+            ((Page)Page).OnFrameNavigated(
+                new FrameNavigatedEventArgs(this, NavigationType.Navigation)
+            );
             ((Page)Page).OnFrameNavigatedNewDocument(new FrameEventArgs(this));
         };
 
@@ -1082,26 +1263,39 @@ public class BidiFrame : Frame
                 }
 
                 var consoleArgs = args.Arguments;
-                var handleArgs = consoleArgs?.Select(arg => ((BidiFrameRealm)MainRealm).CreateHandle(arg)).ToArray() ?? [];
+                var handleArgs = consoleArgs
+                    ?.Select(arg => ((BidiFrameRealm)MainRealm).CreateHandle(arg))
+                    .ToArray()
+                    ?? [];
 
                 var logEntryText = args.Text;
 
                 var text = string.Join(
-                    " ",
-                    handleArgs.Select(arg =>
-                    {
-                        if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
+                        " ",
+                        handleArgs.Select(arg =>
                         {
-                            return BidiDeserializer.Deserialize(jsHandle.RemoteValue) ?? (jsHandle.RemoteValue.Type == RemoteValueType.Undefined ? "undefined" : "null");
-                        }
+                            if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
+                            {
+                                return BidiDeserializer.Deserialize(jsHandle.RemoteValue)
+                                    ?? (
+                                        jsHandle.RemoteValue.Type == RemoteValueType.Undefined
+                                            ? "undefined"
+                                            : "null"
+                                    );
+                            }
 
-                        if (arg is BidiJSHandle { RemoteValue.Type: RemoteValueType.Error } && !string.IsNullOrEmpty(logEntryText))
-                        {
-                            return (object)logEntryText.Split('\n')[0];
-                        }
+                            if (
+                                arg is BidiJSHandle { RemoteValue.Type: RemoteValueType.Error }
+                                && !string.IsNullOrEmpty(logEntryText)
+                            )
+                            {
+                                return (object)logEntryText.Split('\n')[0];
+                            }
 
-                        return arg.ToString();
-                    })).Trim();
+                            return arg.ToString();
+                        })
+                    )
+                    .Trim();
 
                 var location = GetStackTraceLocation(args.StackTrace);
                 var stackTrace = GetStackTrace(args.StackTrace);
@@ -1112,7 +1306,8 @@ public class BidiFrame : Frame
                     handleArgs,
                     location,
                     stackTrace,
-                    frame: this);
+                    frame: this
+                );
 
                 BidiPage.OnConsole(new ConsoleEventArgs(consoleMessage));
             }
@@ -1125,8 +1320,14 @@ public class BidiFrame : Frame
                     return;
                 }
 
-                BidiPage.OnPageError(BidiRemoteException.CreatePageError(args.Text, args.StackTrace));
-                BidiPage.OnExceptionThrown(new RemoteExceptionEventArgs(BidiRemoteException.Create(args.Text, args.StackTrace)));
+                BidiPage.OnPageError(
+                    BidiRemoteException.CreatePageError(args.Text, args.StackTrace)
+                );
+                BidiPage.OnExceptionThrown(
+                    new RemoteExceptionEventArgs(
+                        BidiRemoteException.Create(args.Text, args.StackTrace)
+                    )
+                );
             }
         };
 

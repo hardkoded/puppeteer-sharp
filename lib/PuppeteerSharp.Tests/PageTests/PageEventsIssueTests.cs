@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.PageTests;
 
 public class PageEventsIssueTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("page.spec", "Page Page.Events.Issue", "should emit issue event when CSP violation occurs")]
+    [
+        Test,
+        PuppeteerTest(
+            "page.spec",
+            "Page Page.Events.Issue",
+            "should emit issue event when CSP violation occurs"
+        )
+    ]
     public async Task ShouldEmitIssueEventWhenCspViolationOccurs()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
@@ -21,7 +28,14 @@ public class PageEventsIssueTests : PuppeteerPageBaseTest
         Assert.That(issue.Code, Is.EqualTo("ContentSecurityPolicyIssue"));
     }
 
-    [Test, PuppeteerTest("page.spec", "Page Page.Events.Issue", "should emit issue event from cross-origin iframe")]
+    [
+        Test,
+        PuppeteerTest(
+            "page.spec",
+            "Page Page.Events.Issue",
+            "should emit issue event from cross-origin iframe"
+        )
+    ]
     public async Task ShouldEmitIssueEventFromCrossOriginIframe()
     {
         await Page.GoToAsync(TestConstants.EmptyPage);
@@ -41,7 +55,9 @@ public class PageEventsIssueTests : PuppeteerPageBaseTest
         var frame = await Page.WaitForFrameAsync(crossOriginUrl);
         Assert.That(frame, Is.Not.Null);
 
-        await frame.AddScriptTagAsync(new AddTagOptions { Content = "console.log(\"CSP test in iframe\")" });
+        await frame.AddScriptTagAsync(
+            new AddTagOptions { Content = "console.log(\"CSP test in iframe\")" }
+        );
 
         var issue = await cspIssueTask.Task;
         Assert.That(issue, Is.Not.Null);
@@ -57,7 +73,14 @@ public class PageEventsIssueDisabledTests : PuppeteerPageBaseTest
         DefaultOptions.IssuesEnabled = false;
     }
 
-    [Test, PuppeteerTest("page.spec", "Page Page.Events.Issue when issues are disabled", "should be able to connect and disable issues")]
+    [
+        Test,
+        PuppeteerTest(
+            "page.spec",
+            "Page Page.Events.Issue when issues are disabled",
+            "should be able to connect and disable issues"
+        )
+    ]
     public async Task ShouldBeAbleToConnectAndDisableIssues()
     {
         var issueEmitted = false;

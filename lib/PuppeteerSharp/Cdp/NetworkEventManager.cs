@@ -7,17 +7,30 @@ namespace PuppeteerSharp.Cdp
 {
     internal class NetworkEventManager
     {
-        private readonly ConcurrentDictionary<string, StoredRequestWillBeSent> _requestWillBeSentMap = new();
-        private readonly ConcurrentDictionary<string, FetchRequestPausedResponse> _requestPausedMap = new();
+        private readonly ConcurrentDictionary<
+            string,
+            StoredRequestWillBeSent
+        > _requestWillBeSentMap = new();
+        private readonly ConcurrentDictionary<
+            string,
+            FetchRequestPausedResponse
+        > _requestPausedMap = new();
         private readonly ConcurrentDictionary<string, CDPSession> _requestPausedClientMap = new();
         private readonly ConcurrentDictionary<string, CdpHttpRequest> _httpRequestsMap = new();
-        private readonly ConcurrentDictionary<string, QueuedEventGroup> _queuedEventGroupMap = new();
-        private readonly ConcurrentDictionary<string, List<RedirectInfo>> _queuedRedirectInfoMap = new();
-        private readonly ConcurrentDictionary<string, List<RequestWillBeSentExtraInfoResponse>> _requestWillBeSentExtraInfoMap = new();
-        private readonly ConcurrentDictionary<string, List<ResponseReceivedExtraInfoResponse>> _responseReceivedExtraInfoMap = new();
+        private readonly ConcurrentDictionary<string, QueuedEventGroup> _queuedEventGroupMap =
+            new();
+        private readonly ConcurrentDictionary<string, List<RedirectInfo>> _queuedRedirectInfoMap =
+            new();
+        private readonly ConcurrentDictionary<
+            string,
+            List<RequestWillBeSentExtraInfoResponse>
+        > _requestWillBeSentExtraInfoMap = new();
+        private readonly ConcurrentDictionary<
+            string,
+            List<ResponseReceivedExtraInfoResponse>
+        > _responseReceivedExtraInfoMap = new();
 
-        public int NumRequestsInProgress
-            => _httpRequestsMap.Values.Count(r => r.Response == null);
+        public int NumRequestsInProgress => _httpRequestsMap.Values.Count(r => r.Response == null);
 
         internal void Forget(string requestId)
         {
@@ -67,14 +80,16 @@ namespace PuppeteerSharp.Cdp
             return ids;
         }
 
-        internal List<RequestWillBeSentExtraInfoResponse> RequestExtraInfo(string networkRequestId)
-            => _requestWillBeSentExtraInfoMap.GetOrAdd(networkRequestId, static _ => new());
+        internal List<RequestWillBeSentExtraInfoResponse> RequestExtraInfo(
+            string networkRequestId
+        ) => _requestWillBeSentExtraInfoMap.GetOrAdd(networkRequestId, static _ => new());
 
-        internal List<ResponseReceivedExtraInfoResponse> ResponseExtraInfo(string networkRequestId)
-            => _responseReceivedExtraInfoMap.GetOrAdd(networkRequestId, static _ => new());
+        internal List<ResponseReceivedExtraInfoResponse> ResponseExtraInfo(
+            string networkRequestId
+        ) => _responseReceivedExtraInfoMap.GetOrAdd(networkRequestId, static _ => new());
 
-        internal void QueueRedirectInfo(string fetchRequestId, RedirectInfo redirectInfo)
-            => QueuedRedirectInfo(fetchRequestId).Add(redirectInfo);
+        internal void QueueRedirectInfo(string fetchRequestId, RedirectInfo redirectInfo) =>
+            QueuedRedirectInfo(fetchRequestId).Add(redirectInfo);
 
         internal RedirectInfo TakeQueuedRedirectInfo(string fetchRequestId)
         {
@@ -102,7 +117,11 @@ namespace PuppeteerSharp.Cdp
             return result;
         }
 
-        internal void StoreRequestWillBeSent(string networkRequestId, RequestWillBeSentResponse e, CDPSession client)
+        internal void StoreRequestWillBeSent(
+            string networkRequestId,
+            RequestWillBeSentResponse e,
+            CDPSession client
+        )
         {
             var stored = new StoredRequestWillBeSent { Event = e, Client = client };
             _requestWillBeSentMap.AddOrUpdate(networkRequestId, stored, (_, _) => stored);
@@ -114,8 +133,8 @@ namespace PuppeteerSharp.Cdp
             return result;
         }
 
-        internal void ForgetRequestWillBeSent(string networkRequestId)
-            => _requestWillBeSentMap.TryRemove(networkRequestId, out _);
+        internal void ForgetRequestWillBeSent(string networkRequestId) =>
+            _requestWillBeSentMap.TryRemove(networkRequestId, out _);
 
         /// <summary>
         /// With request interception enabled, Network.loadingFailed can arrive before
@@ -126,7 +145,11 @@ namespace PuppeteerSharp.Cdp
         /// <param name="networkRequestId">The network request id.</param>
         /// <param name="e">The loading failed event.</param>
         /// <param name="client">The session that reported the failure.</param>
-        internal void StoreLoadingFailedBeforeRequest(string networkRequestId, LoadingFailedEventResponse e, CDPSession client)
+        internal void StoreLoadingFailedBeforeRequest(
+            string networkRequestId,
+            LoadingFailedEventResponse e,
+            CDPSession client
+        )
         {
             if (_requestWillBeSentMap.TryGetValue(networkRequestId, out var stored))
             {
@@ -146,7 +169,11 @@ namespace PuppeteerSharp.Cdp
             _requestPausedClientMap.TryRemove(networkRequestId, out _);
         }
 
-        internal void StoreRequestPaused(string networkRequestId, FetchRequestPausedResponse e, CDPSession client)
+        internal void StoreRequestPaused(
+            string networkRequestId,
+            FetchRequestPausedResponse e,
+            CDPSession client
+        )
         {
             _requestPausedMap.AddOrUpdate(networkRequestId, e, (_, _) => e);
             _requestPausedClientMap.AddOrUpdate(networkRequestId, client, (_, _) => client);
@@ -164,14 +191,14 @@ namespace PuppeteerSharp.Cdp
             return result;
         }
 
-        internal void StoreRequest(string networkRequestId, CdpHttpRequest request)
-            => _httpRequestsMap.AddOrUpdate(networkRequestId, request, (_, _) => request);
+        internal void StoreRequest(string networkRequestId, CdpHttpRequest request) =>
+            _httpRequestsMap.AddOrUpdate(networkRequestId, request, (_, _) => request);
 
-        internal void ForgetRequest(string requestId)
-            => _httpRequestsMap.TryRemove(requestId, out _);
+        internal void ForgetRequest(string requestId) =>
+            _httpRequestsMap.TryRemove(requestId, out _);
 
-        internal void QueuedEventGroup(string networkRequestId, QueuedEventGroup group)
-            => _queuedEventGroupMap.AddOrUpdate(networkRequestId, group, (_, _) => group);
+        internal void QueuedEventGroup(string networkRequestId, QueuedEventGroup group) =>
+            _queuedEventGroupMap.AddOrUpdate(networkRequestId, group, (_, _) => group);
 
         internal QueuedEventGroup GetQueuedEventGroup(string networkRequestId)
         {
@@ -180,10 +207,10 @@ namespace PuppeteerSharp.Cdp
         }
 
         // Puppeteer doesn't have this. but it seems that .NET needs this to avoid race conditions
-        internal void ForgetQueuedEventGroup(string networkRequestId)
-            => _queuedEventGroupMap.TryRemove(networkRequestId, out _);
+        internal void ForgetQueuedEventGroup(string networkRequestId) =>
+            _queuedEventGroupMap.TryRemove(networkRequestId, out _);
 
-        private List<RedirectInfo> QueuedRedirectInfo(string fetchRequestId)
-            => _queuedRedirectInfoMap.GetOrAdd(fetchRequestId, static _ => new());
+        private List<RedirectInfo> QueuedRedirectInfo(string fetchRequestId) =>
+            _queuedRedirectInfoMap.GetOrAdd(fetchRequestId, static _ => new());
     }
 }

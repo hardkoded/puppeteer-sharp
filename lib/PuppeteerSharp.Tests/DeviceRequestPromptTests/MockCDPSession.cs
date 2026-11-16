@@ -32,8 +32,12 @@ public class MockCDPSession : ICDPSession
 {
     public event EventHandler<MessageEventArgs> MessageReceived;
 
-    public Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
-        => SendAsync<JsonElement?>(method, args, options);
+    public Task<JsonElement?> SendAsync(
+        string method,
+        object args = null,
+        bool waitForCallback = true,
+        CommandOptions options = null
+    ) => SendAsync<JsonElement?>(method, args, options);
 
     public Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
     {
@@ -52,17 +56,14 @@ public class MockCDPSession : ICDPSession
     public ILoggerFactory LoggerFactory { get; }
     public string Id { get; } = "1";
     public TargetType TargetType { get; }
+
     public Task DetachAsync() => Task.CompletedTask;
 
-    public void Close(string closeReason)
-    {
+    public void Close(string closeReason) { }
 
-    }
-
-    internal void OnMessage(ConnectionResponse obj)
-        => MessageReceived?.Invoke(this, new MessageEventArgs
-        {
-            MessageID = obj.Method,
-            MessageData = (JsonElement)obj.Params,
-        });
+    internal void OnMessage(ConnectionResponse obj) =>
+        MessageReceived?.Invoke(
+            this,
+            new MessageEventArgs { MessageID = obj.Method, MessageData = (JsonElement)obj.Params }
+        );
 }

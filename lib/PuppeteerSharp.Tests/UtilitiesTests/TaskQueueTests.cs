@@ -101,6 +101,9 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         private static SemaphoreSlim GetSemaphore(TaskQueue queue) =>
-            (SemaphoreSlim)typeof(TaskQueue).GetField("_semaphore", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(queue);
+            (SemaphoreSlim)
+                typeof(TaskQueue)
+                    .GetField("_semaphore", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetValue(queue);
     }
 }

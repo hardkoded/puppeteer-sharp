@@ -5,7 +5,8 @@ using WebDriverBiDi;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal sealed class StartScreencastCommandParameters : CommandParameters<StartScreencastCommandResult>
+internal sealed class StartScreencastCommandParameters
+    : CommandParameters<StartScreencastCommandResult>
 {
     public StartScreencastCommandParameters(string contextId)
     {

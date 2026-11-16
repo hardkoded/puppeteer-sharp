@@ -18,7 +18,9 @@ namespace PuppeteerSharp.Tests.PageTests
 
                 await Page.RemoveExposedFunctionAsync("compute");
             }
-            Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)"));
+            Assert.ThrowsAsync<EvaluationFailedException>(() =>
+                Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)")
+            );
         }
     }
 }

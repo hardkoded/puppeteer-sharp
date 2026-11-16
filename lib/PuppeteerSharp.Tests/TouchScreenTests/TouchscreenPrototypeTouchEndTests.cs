@@ -1,4 +1,3 @@
-
 // * MIT License
 //  *
 //  * Copyright (c) Dario Kondratiuk
@@ -29,7 +28,14 @@ namespace PuppeteerSharp.Tests.TouchScreenTests;
 
 public class TouchscreenPrototypeTouchEndTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.touchEnd", "should throw when ending touch through Touchscreeen that was already ended")]
+    [
+        Test,
+        PuppeteerTest(
+            "touchscreen.spec",
+            "Touchscreen Touchscreen.prototype.touchEnd",
+            "should throw when ending touch through Touchscreeen that was already ended"
+        )
+    ]
     public async Task ShouldThrowWhenEndingTouchThroughTouchscreenThatWasAlreadyEnded()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/input/touchscreen.html");

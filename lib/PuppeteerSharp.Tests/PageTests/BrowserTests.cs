@@ -5,11 +5,18 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class BrowserTests : PuppeteerPageBaseTest
     {
-        public BrowserTests() : base()
-        {
-        }
+        public BrowserTests()
+            : base() { }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.browser", "should return the correct browser instance")]
-        public void ShouldReturnTheCorrectBrowserInstance() => Assert.That(Page.Browser, Is.SameAs(Browser));
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.browser",
+                "should return the correct browser instance"
+            )
+        ]
+        public void ShouldReturnTheCorrectBrowserInstance() =>
+            Assert.That(Page.Browser, Is.SameAs(Browser));
     }
 }

@@ -6,18 +6,36 @@ namespace PuppeteerSharp.Tests.FrameTests
 {
     public class FrameEvaluateTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("frame.spec", "Frame specs Frame.evaluate", "should throw for detached frames")]
+        [
+            Test,
+            PuppeteerTest(
+                "frame.spec",
+                "Frame specs Frame.evaluate",
+                "should throw for detached frames"
+            )
+        ]
         public async Task ShouldThrowForDetachedFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var frame = await Page.FirstChildFrameAsync();
             await FrameUtils.DetachFrameAsync(Page, "frame1");
-            var exception = Assert.ThrowsAsync<PuppeteerException>(
-                () => frame.EvaluateExpressionAsync("5 * 8"));
-            Assert.That(exception.Message, Does.Contain("Execution Context is not available in detached frame"));
+            var exception = Assert.ThrowsAsync<PuppeteerException>(() =>
+                frame.EvaluateExpressionAsync("5 * 8")
+            );
+            Assert.That(
+                exception.Message,
+                Does.Contain("Execution Context is not available in detached frame")
+            );
         }
 
-        [Test, PuppeteerTest("frame.spec", "Frame specs Frame.evaluate", "allows readonly array to be an argument")]
+        [
+            Test,
+            PuppeteerTest(
+                "frame.spec",
+                "Frame specs Frame.evaluate",
+                "allows readonly array to be an argument"
+            )
+        ]
         public async Task AllowsReadonlyArrayToBeAnArgument()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

@@ -13,37 +13,60 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
             var requestTask = Page.WaitForRequestAsync((request) => !TestUtils.IsFavicon(request));
-            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
+            await Page.EvaluateExpressionHandleAsync(
+                "fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})"
+            );
             var request = await requestTask.WithTimeout();
             Assert.That(request, Is.Not.Null);
             Assert.That(request.PostData, Is.EqualTo("{\"foo\":\"bar\"}"));
         }
 
-        [Test, PuppeteerTest("Puppeteer-Sharp", "network Request.postData", "should work plain text")]
+        [
+            Test,
+            PuppeteerTest("Puppeteer-Sharp", "network Request.postData", "should work plain text")
+        ]
         public async Task ShouldWorkPlainText()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
             var requestTask = Page.WaitForRequestAsync((request) => !TestUtils.IsFavicon(request));
-            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: 'Hello, world!'})");
+            await Page.EvaluateExpressionHandleAsync(
+                "fetch('./post', { method: 'POST', body: 'Hello, world!'})"
+            );
             var request = await requestTask.WithTimeout();
             Assert.That(request, Is.Not.Null);
             Assert.That(await request.FetchPostDataAsync(), Is.EqualTo("Hello, world!"));
         }
 
-        [Test, PuppeteerTest("Puppeteer-Sharp", "network Request.postData", "should work with low surrogate")]
+        [
+            Test,
+            PuppeteerTest(
+                "Puppeteer-Sharp",
+                "network Request.postData",
+                "should work with low surrogate"
+            )
+        ]
         public async Task ShouldWorkWithLowSurrogate()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
             var requestTask = Page.WaitForRequestAsync((request) => !TestUtils.IsFavicon(request));
-            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: 'Hello, world!\uDD71'})");
+            await Page.EvaluateExpressionHandleAsync(
+                "fetch('./post', { method: 'POST', body: 'Hello, world!\uDD71'})"
+            );
             var request = await requestTask.WithTimeout();
             Assert.That(request, Is.Not.Null);
             Assert.That(await request.FetchPostDataAsync(), Is.EqualTo("Hello, world!\uFFFD"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.postData", "should be |undefined| when there is no post data")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.postData",
+                "should be |undefined| when there is no post data"
+            )
+        ]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -56,12 +79,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
             var requestTask = Page.WaitForRequestAsync((request) => !TestUtils.IsFavicon(request));
-            await Page.EvaluateExpressionHandleAsync(@"fetch('./post', {
+            await Page.EvaluateExpressionHandleAsync(
+                @"fetch('./post', {
                 method: 'POST',
                 body:new Blob([JSON.stringify({foo: 'bar'})], {
                   type: 'application/json',
                 }),
-            })");
+            })"
+            );
             var request = await requestTask.WithTimeout();
             Assert.That(request, Is.Not.Null);
             Assert.That(request.PostData, Is.Null);

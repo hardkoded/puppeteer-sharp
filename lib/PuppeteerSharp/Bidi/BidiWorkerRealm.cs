@@ -40,7 +40,11 @@ internal class BidiWorkerRealm : BidiRealm
     private IJSHandle _puppeteerUtil;
 
     private BidiWorkerRealm(DedicatedWorkerRealm realm, BidiWebWorker worker)
-        : base(realm, worker.TimeoutSettings, worker.Frame.Client.LoggerFactory.CreateLogger<BidiRealm>())
+        : base(
+            realm,
+            worker.TimeoutSettings,
+            worker.Frame.Client.LoggerFactory.CreateLogger<BidiRealm>()
+        )
     {
         _realm = realm;
         _worker = worker;
@@ -61,23 +65,29 @@ internal class BidiWorkerRealm : BidiRealm
     {
         var scriptInjector = _realm.Session.ScriptInjector;
 
-        await _puppeteerUtilQueue.Enqueue(async () =>
-        {
-            if (_puppeteerUtil == null)
+        await _puppeteerUtilQueue
+            .Enqueue(async () =>
             {
-                await scriptInjector.InjectAsync(
-                    async (script) =>
-                    {
-                        if (_puppeteerUtil != null)
-                        {
-                            await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
-                        }
+                if (_puppeteerUtil == null)
+                {
+                    await scriptInjector
+                        .InjectAsync(
+                            async (script) =>
+                            {
+                                if (_puppeteerUtil != null)
+                                {
+                                    await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
+                                }
 
-                        _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
-                    },
-                    _puppeteerUtil == null).ConfigureAwait(false);
-            }
-        }).ConfigureAwait(false);
+                                _puppeteerUtil = await EvaluateExpressionHandleAsync(script)
+                                    .ConfigureAwait(false);
+                            },
+                            _puppeteerUtil == null
+                        )
+                        .ConfigureAwait(false);
+                }
+            })
+            .ConfigureAwait(false);
 
         return _puppeteerUtil;
     }
@@ -95,30 +105,31 @@ internal class BidiWorkerRealm : BidiRealm
         _realm.Log += OnLog;
     }
 
-    private static ConsoleType ConvertConsoleMessageLevel(string method) => method switch
-    {
-        "group" => ConsoleType.StartGroup,
-        "groupCollapsed" => ConsoleType.StartGroupCollapsed,
-        "groupEnd" => ConsoleType.EndGroup,
-        "log" => ConsoleType.Log,
-        "debug" => ConsoleType.Debug,
-        "info" => ConsoleType.Info,
-        "error" => ConsoleType.Error,
-        "warn" => ConsoleType.Warning,
-        "dir" => ConsoleType.Dir,
-        "dirxml" => ConsoleType.Dirxml,
-        "table" => ConsoleType.Table,
-        "trace" => ConsoleType.Trace,
-        "clear" => ConsoleType.Clear,
-        "assert" => ConsoleType.Assert,
-        "profile" => ConsoleType.Profile,
-        "profileEnd" => ConsoleType.ProfileEnd,
-        "count" => ConsoleType.Count,
-        "timeEnd" => ConsoleType.TimeEnd,
-        "verbose" => ConsoleType.Verbose,
-        "timeStamp" => ConsoleType.Timestamp,
-        _ => ConsoleType.Log,
-    };
+    private static ConsoleType ConvertConsoleMessageLevel(string method) =>
+        method switch
+        {
+            "group" => ConsoleType.StartGroup,
+            "groupCollapsed" => ConsoleType.StartGroupCollapsed,
+            "groupEnd" => ConsoleType.EndGroup,
+            "log" => ConsoleType.Log,
+            "debug" => ConsoleType.Debug,
+            "info" => ConsoleType.Info,
+            "error" => ConsoleType.Error,
+            "warn" => ConsoleType.Warning,
+            "dir" => ConsoleType.Dir,
+            "dirxml" => ConsoleType.Dirxml,
+            "table" => ConsoleType.Table,
+            "trace" => ConsoleType.Trace,
+            "clear" => ConsoleType.Clear,
+            "assert" => ConsoleType.Assert,
+            "profile" => ConsoleType.Profile,
+            "profileEnd" => ConsoleType.ProfileEnd,
+            "count" => ConsoleType.Count,
+            "timeEnd" => ConsoleType.TimeEnd,
+            "verbose" => ConsoleType.Verbose,
+            "timeStamp" => ConsoleType.Timestamp,
+            _ => ConsoleType.Log,
+        };
 
     private static ConsoleMessageLocation GetStackTraceLocation(StackTrace stackTrace)
     {
@@ -141,13 +152,15 @@ internal class BidiWorkerRealm : BidiRealm
     {
         if (stackTrace?.CallFrames?.Count > 0)
         {
-            return stackTrace.CallFrames.Select(callFrame => new ConsoleMessageLocation
-            {
-                URL = callFrame.Url,
-                LineNumber = (int)callFrame.LineNumber,
-                ColumnNumber = (int)callFrame.ColumnNumber,
-                FunctionName = callFrame.FunctionName,
-            }).ToList();
+            return stackTrace
+                .CallFrames.Select(callFrame => new ConsoleMessageLocation
+                {
+                    URL = callFrame.Url,
+                    LineNumber = (int)callFrame.LineNumber,
+                    ColumnNumber = (int)callFrame.ColumnNumber,
+                    FunctionName = callFrame.FunctionName,
+                })
+                .ToList();
         }
 
         return [];
@@ -158,7 +171,9 @@ internal class BidiWorkerRealm : BidiRealm
         var page = (BidiPage)_worker.Frame.Page;
         if (args.Type == "javascript")
         {
-            var exception = new RemoteExceptionEventArgs(BidiRemoteException.Create(args.Text, args.StackTrace));
+            var exception = new RemoteExceptionEventArgs(
+                BidiRemoteException.Create(args.Text, args.StackTrace)
+            );
             _worker.OnExceptionThrown(exception);
 
             // Match CDP: exceptions in dedicated workers are also reported on the page that owns the worker.
@@ -173,37 +188,57 @@ internal class BidiWorkerRealm : BidiRealm
         }
 
         var context = (BrowserContext)page.BrowserContext;
-        if (!_worker.HasConsoleListeners
+        if (
+            !_worker.HasConsoleListeners
             && !page.HasConsoleListeners
             && !context.HasConsoleListeners
-            && !context.Browser.HasConsoleListeners)
+            && !context.Browser.HasConsoleListeners
+        )
         {
             return;
         }
 
-        var handleArgs = args.Arguments?.Select(arg => (IJSHandle)CreateHandle(arg)).ToArray() ?? [];
+        var handleArgs = args.Arguments?.Select(arg => (IJSHandle)CreateHandle(arg)).ToArray()
+            ?? [];
 
         var logEntryText = args.Text;
         var text = string.Join(
-            " ",
-            handleArgs.Select(arg =>
-            {
-                if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
+                " ",
+                handleArgs.Select(arg =>
                 {
-                    return BidiDeserializer.Deserialize(jsHandle.RemoteValue) ?? (jsHandle.RemoteValue.Type == RemoteValueType.Undefined ? "undefined" : "null");
-                }
+                    if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
+                    {
+                        return BidiDeserializer.Deserialize(jsHandle.RemoteValue)
+                            ?? (
+                                jsHandle.RemoteValue.Type == RemoteValueType.Undefined
+                                    ? "undefined"
+                                    : "null"
+                            );
+                    }
 
-                if (arg is BidiJSHandle { RemoteValue.Type: RemoteValueType.Error } && !string.IsNullOrEmpty(logEntryText))
-                {
-                    return (object)logEntryText.Split('\n')[0];
-                }
+                    if (
+                        arg is BidiJSHandle { RemoteValue.Type: RemoteValueType.Error }
+                        && !string.IsNullOrEmpty(logEntryText)
+                    )
+                    {
+                        return (object)logEntryText.Split('\n')[0];
+                    }
 
-                return arg.ToString();
-            })).Trim();
+                    return arg.ToString();
+                })
+            )
+            .Trim();
 
         var location = GetStackTraceLocation(args.StackTrace);
         var stackTrace = GetStackTrace(args.StackTrace);
-        var consoleMessage = new ConsoleMessage(ConvertConsoleMessageLevel(args.Method), text, handleArgs, location, stackTrace, worker: _worker);
+        var consoleMessage = new ConsoleMessage(
+            ConvertConsoleMessageLevel(args.Method),
+            text,
+            handleArgs,
+            location,
+            stackTrace,
+            worker: _worker
+        );
         var consoleEventArgs = new ConsoleEventArgs(consoleMessage);
         _worker.OnConsole(consoleEventArgs);
         page.OnConsole(consoleEventArgs);

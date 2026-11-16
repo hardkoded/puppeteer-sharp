@@ -78,19 +78,25 @@ internal class UserContext : IDisposable
         }
 
         IsDisposed = true;
-        _reason ??= "User context already closed, probably because the browser disconnected/closed.";
+        _reason ??=
+            "User context already closed, probably because the browser disconnected/closed.";
         OnClosed();
         GC.SuppressFinalize(this);
     }
 
-    public async Task<BrowsingContext> CreateBrowserContextAsync(CreateType contextType, bool? background = null)
+    public async Task<BrowsingContext> CreateBrowserContextAsync(
+        CreateType contextType,
+        bool? background = null
+    )
     {
         var createParams = new CreateCommandParameters(contextType)
         {
             UserContextId = Id,
             IsCreatedInBackground = background,
         };
-        var result = await Session.Driver.BrowsingContext.CreateAsync(createParams).ConfigureAwait(false);
+        var result = await Session
+            .Driver.BrowsingContext.CreateAsync(createParams)
+            .ConfigureAwait(false);
 
         if (_browsingContexts.TryGetValue(result.BrowsingContextId, out var browsingContext))
         {
@@ -105,11 +111,13 @@ internal class UserContext : IDisposable
             null,
             result.BrowsingContextId,
             "about:blank",
-            null);
+            null
+        );
 
         if (_browsingContexts.TryAdd(browsingContext.Id, browsingContext))
         {
-            browsingContext.Closed += (sender, args) => _browsingContexts.TryRemove(browsingContext.Id, out _);
+            browsingContext.Closed += (sender, args) =>
+                _browsingContexts.TryRemove(browsingContext.Id, out _);
             OnBrowsingContext(browsingContext);
         }
         else
@@ -125,7 +133,9 @@ internal class UserContext : IDisposable
     {
         try
         {
-            await Session.Driver.Browser.RemoveUserContextAsync(new RemoveUserContextCommandParameters(Id)).ConfigureAwait(false);
+            await Session
+                .Driver.Browser.RemoveUserContextAsync(new RemoveUserContextCommandParameters(Id))
+                .ConfigureAwait(false);
         }
         finally
         {
@@ -135,41 +145,51 @@ internal class UserContext : IDisposable
 
     public async Task<BidiCookie[]> GetCookiesAsync(string sourceOrigin = null)
     {
-        var result = await Session.Driver.Storage.GetCookiesAsync(
-            new GetCookiesCommandParameters
-            {
-                Partition = new StorageKeyPartitionDescriptor
+        var result = await Session
+            .Driver.Storage.GetCookiesAsync(
+                new GetCookiesCommandParameters
                 {
-                    UserContextId = Id,
-                    SourceOrigin = sourceOrigin,
-                },
-            }).ConfigureAwait(false);
+                    Partition = new StorageKeyPartitionDescriptor
+                    {
+                        UserContextId = Id,
+                        SourceOrigin = sourceOrigin,
+                    },
+                }
+            )
+            .ConfigureAwait(false);
         return result.Cookies.ToArray();
     }
 
     public async Task SetCookieAsync(PartialCookie cookie, string sourceOrigin = null)
     {
-        await Session.Driver.Storage.SetCookieAsync(
-            new SetCookieCommandParameters(cookie)
-            {
-                Partition = new StorageKeyPartitionDescriptor
+        await Session
+            .Driver.Storage.SetCookieAsync(
+                new SetCookieCommandParameters(cookie)
                 {
-                    SourceOrigin = sourceOrigin,
-                    UserContextId = Id,
-                },
-            }).ConfigureAwait(false);
+                    Partition = new StorageKeyPartitionDescriptor
+                    {
+                        SourceOrigin = sourceOrigin,
+                        UserContextId = Id,
+                    },
+                }
+            )
+            .ConfigureAwait(false);
     }
 
     public async Task SetPermissionsAsync(
         string origin,
         string permissionName,
-        BidiPermissionState state)
+        BidiPermissionState state
+    )
     {
-        await Session.Driver.Permissions.SetPermissionAsync(
-            new SetPermissionCommandParameters(permissionName, state, origin)
-            {
-                UserContextId = Id,
-            }).ConfigureAwait(false);
+        await Session
+            .Driver.Permissions.SetPermissionAsync(
+                new SetPermissionCommandParameters(permissionName, state, origin)
+                {
+                    UserContextId = Id,
+                }
+            )
+            .ConfigureAwait(false);
     }
 
     private void Initialize()
@@ -198,16 +218,19 @@ internal class UserContext : IDisposable
             info.BrowsingContextId,
             info.Url,
             info.OriginalOpener,
-            info.ClientWindowId);
+            info.ClientWindowId
+        );
 
         _browsingContexts.TryAdd(browsingContext.Id, browsingContext);
 
-        browsingContext.Closed += (sender, args) => _browsingContexts.TryRemove(browsingContext.Id, out _);
+        browsingContext.Closed += (sender, args) =>
+            _browsingContexts.TryRemove(browsingContext.Id, out _);
 
         OnBrowsingContext(browsingContext);
     }
 
-    private void OnBrowsingContext(BrowsingContext browsingContext) => BrowsingContextCreated?.Invoke(this, new BidiBrowsingContextEventArgs(browsingContext));
+    private void OnBrowsingContext(BrowsingContext browsingContext) =>
+        BrowsingContextCreated?.Invoke(this, new BidiBrowsingContextEventArgs(browsingContext));
 
     private void Dispose(string reason)
     {

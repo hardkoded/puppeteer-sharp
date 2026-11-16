@@ -11,9 +11,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
 {
     public class CSSCoverageTests : PuppeteerPageBaseTest
     {
-        public CSSCoverageTests() : base()
-        {
-        }
+        public CSSCoverageTests()
+            : base() { }
 
         [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work")]
         public async Task ShouldWork()
@@ -23,19 +22,26 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
             Assert.That(coverage[0].Url, Does.Contain("/csscoverage/simple.html"));
-            Assert.That(coverage[0].Ranges, Is.EqualTo(new CoverageEntryRange[]
-            {
-                new CoverageEntryRange
-                {
-                    Start = 1,
-                    End = 22
-                }
-            }));
+            Assert.That(
+                coverage[0].Ranges,
+                Is.EqualTo(
+                    new CoverageEntryRange[]
+                    {
+                        new CoverageEntryRange { Start = 1, End = 22 },
+                    }
+                )
+            );
             var range = coverage[0].Ranges[0];
-            Assert.That(coverage[0].Text.Substring(range.Start, range.End - range.Start), Is.EqualTo("div { color: green; }"));
+            Assert.That(
+                coverage[0].Text.Substring(range.Start, range.End - range.Start),
+                Is.EqualTo("div { color: green; }")
+            );
         }
 
-        [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should report sourceURLs")]
+        [
+            Test,
+            PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should report sourceURLs")
+        ]
         public async Task ShouldReportSourceUrls()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -47,7 +53,14 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.That(coverage[0].Url, Is.EqualTo("nicename.css"));
         }
 
-        [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should report multiple stylesheets")]
+        [
+            Test,
+            PuppeteerTest(
+                "coverage.spec",
+                "Coverage specs CSSCoverage",
+                "should report multiple stylesheets"
+            )
+        ]
         public async Task ShouldReportMultipleStylesheets()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -59,7 +72,14 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.That(orderedList.ElementAt(1).Url, Does.Contain("/csscoverage/stylesheet2.css"));
         }
 
-        [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should report stylesheets that have no coverage")]
+        [
+            Test,
+            PuppeteerTest(
+                "coverage.spec",
+                "Coverage specs CSSCoverage",
+                "should report stylesheets that have no coverage"
+            )
+        ]
         public async Task ShouldReportStylesheetsThatHaveNoCoverage()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -71,7 +91,14 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.That(entry.Ranges, Is.Empty);
         }
 
-        [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work with media queries")]
+        [
+            Test,
+            PuppeteerTest(
+                "coverage.spec",
+                "Coverage specs CSSCoverage",
+                "should work with media queries"
+            )
+        ]
         public async Task ShouldWorkWithMediaQueries()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -80,25 +107,30 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
             Assert.That(entry.Url, Does.Contain("/csscoverage/media.html"));
-            Assert.That(coverage[0].Ranges, Is.EqualTo(new CoverageEntryRange[]
-            {
-                new CoverageEntryRange
-                {
-                    Start = 8,
-                    End = 15
-                },
-                new CoverageEntryRange
-                {
-                    Start = 17,
-                    End = 38
-                }
-            }));
+            Assert.That(
+                coverage[0].Ranges,
+                Is.EqualTo(
+                    new CoverageEntryRange[]
+                    {
+                        new CoverageEntryRange { Start = 8, End = 15 },
+                        new CoverageEntryRange { Start = 17, End = 38 },
+                    }
+                )
+            );
         }
 
-        [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work with complicated usecases")]
+        [
+            Test,
+            PuppeteerTest(
+                "coverage.spec",
+                "Coverage specs CSSCoverage",
+                "should work with complicated usecases"
+            )
+        ]
         public async Task ShouldWorkWithComplicatedUsecases()
         {
-            const string involved = @"[
+            const string involved =
+                @"[
               {
                 ""Url"": ""http://localhost:<PORT>/csscoverage/involved.html"",
                 ""Ranges"": [
@@ -126,14 +158,27 @@ namespace PuppeteerSharp.Tests.CoverageTests
                 new JsonSerializerOptions()
                 {
                     Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                    WriteIndented = true
-                });
+                    WriteIndented = true,
+                }
+            );
             Assert.That(
-                Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @":\d{4,5}\/", ":<PORT>/"),
-                Is.EqualTo(TestUtils.CompressText(involved)));
+                Regex.Replace(
+                    TestUtils.CompressText(coverageAsJsonString),
+                    @":\d{4,5}\/",
+                    ":<PORT>/"
+                ),
+                Is.EqualTo(TestUtils.CompressText(involved))
+            );
         }
 
-        [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work with empty stylesheets")]
+        [
+            Test,
+            PuppeteerTest(
+                "coverage.spec",
+                "Coverage specs CSSCoverage",
+                "should work with empty stylesheets"
+            )
+        ]
         public async Task ShouldWorkWithEmptyStylesheets()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -143,26 +188,40 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.That(coverage[0].Text, Is.EqualTo(string.Empty));
         }
 
-        [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should ignore injected stylesheets")]
+        [
+            Test,
+            PuppeteerTest(
+                "coverage.spec",
+                "Coverage specs CSSCoverage",
+                "should ignore injected stylesheets"
+            )
+        ]
         public async Task ShouldIgnoreInjectedStylesheets()
         {
             await Page.Coverage.StartCSSCoverageAsync();
-            await Page.AddStyleTagAsync(new AddTagOptions
-            {
-                Content = "body { margin: 10px;}"
-            });
+            await Page.AddStyleTagAsync(new AddTagOptions { Content = "body { margin: 10px;}" });
             // trigger style recalc
-            var margin = await Page.EvaluateExpressionAsync<string>("window.getComputedStyle(document.body).margin");
+            var margin = await Page.EvaluateExpressionAsync<string>(
+                "window.getComputedStyle(document.body).margin"
+            );
             Assert.That(margin, Is.EqualTo("10px"));
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.That(coverage, Is.Empty);
         }
 
-        [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work with a recently loaded stylesheet")]
+        [
+            Test,
+            PuppeteerTest(
+                "coverage.spec",
+                "Coverage specs CSSCoverage",
+                "should work with a recently loaded stylesheet"
+            )
+        ]
         public async Task ShouldWorkWithArRecentlyLoadedStylesheet()
         {
             await Page.Coverage.StartCSSCoverageAsync();
-            await Page.EvaluateFunctionAsync(@"async url => {
+            await Page.EvaluateFunctionAsync(
+                @"async url => {
                 document.body.textContent = 'hello, world';
 
                 const link = document.createElement('link');
@@ -170,7 +229,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
                 link.href = url;
                 document.head.appendChild(link);
                 await new Promise(x => link.onload = x);
-            }", TestConstants.ServerUrl + "/csscoverage/stylesheet1.css");
+            }",
+                TestConstants.ServerUrl + "/csscoverage/stylesheet1.css"
+            );
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
         }

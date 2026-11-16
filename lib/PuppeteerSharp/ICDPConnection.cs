@@ -37,6 +37,11 @@ namespace PuppeteerSharp
         /// <param name="options">The options.</param>
         /// <returns>The task.</returns>
         /// <exception cref="PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
-        Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null);
+        Task<JsonElement?> SendAsync(
+            string method,
+            object args = null,
+            bool waitForCallback = true,
+            CommandOptions options = null
+        );
     }
 }

@@ -18,7 +18,9 @@ namespace PuppeteerSharp.Helpers
                 return new Guard(this, onRelease);
             }
 
-            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var tcs = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             _acquirers.Enqueue(tcs);
             await tcs.Task.ConfigureAwait(false);
             return new Guard(this, onRelease);

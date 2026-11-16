@@ -16,10 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             try
             {
-                var recording = await Page.RecordAsync(new RecordOptions
-                {
-                    Path = filePath,
-                });
+                var recording = await Page.RecordAsync(new RecordOptions { Path = filePath });
 
                 await Page.GoToAsync("data:text/html,<input>");
                 var input = await Page.WaitForSelectorAsync("input");
@@ -41,14 +38,30 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("ScreenRecording.test", "ScreenRecording", "should validate options")]
         public async Task ShouldValidateOptions()
         {
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.RecordAsync(new RecordOptions { MaxWidth = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.RecordAsync(new RecordOptions { MaxWidth = -10 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.RecordAsync(new RecordOptions { MaxHeight = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.RecordAsync(new RecordOptions { MaxHeight = -10 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.RecordAsync(new RecordOptions { FrameRate = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.RecordAsync(new RecordOptions { FrameRate = -5 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.RecordAsync(new RecordOptions { Fps = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.RecordAsync(new RecordOptions { Fps = -5 }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.RecordAsync(new RecordOptions { MaxWidth = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.RecordAsync(new RecordOptions { MaxWidth = -10 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.RecordAsync(new RecordOptions { MaxHeight = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.RecordAsync(new RecordOptions { MaxHeight = -10 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.RecordAsync(new RecordOptions { FrameRate = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.RecordAsync(new RecordOptions { FrameRate = -5 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.RecordAsync(new RecordOptions { Fps = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.RecordAsync(new RecordOptions { Fps = -5 })
+            );
         }
     }
 }

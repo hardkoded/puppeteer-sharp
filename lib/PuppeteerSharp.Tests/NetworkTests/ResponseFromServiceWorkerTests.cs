@@ -9,18 +9,31 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseFromServiceWorkerTests : PuppeteerPageBaseTest
     {
-        public ResponseFromServiceWorkerTests() : base()
-        {
-        }
+        public ResponseFromServiceWorkerTests()
+            : base() { }
 
-        [Test, PuppeteerTest("network.spec", "network Response.fromServiceWorker", "should return |false| for non-service-worker content")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.fromServiceWorker",
+                "should return |false| for non-service-worker content"
+            )
+        ]
         public async Task ShouldReturnFalseForNonServiceWorkerContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(response.FromServiceWorker, Is.False);
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.fromServiceWorker", "Response.fromServiceWorker")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.fromServiceWorker",
+                "Response.fromServiceWorker"
+            )
+        ]
         public async Task ResponseFromServiceWorker()
         {
             var responses = new Dictionary<string, IResponse>();
@@ -31,8 +44,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
                     responses[e.Response.Url.Split('/').Last()] = e.Response;
                 }
             };
-            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
-                waitUntil: new[] { WaitUntilNavigation.Networkidle2 });
+            await Page.GoToAsync(
+                TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html",
+                waitUntil: new[] { WaitUntilNavigation.Networkidle2 }
+            );
             await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
             await Page.ReloadAsync();
 

@@ -32,8 +32,14 @@ namespace PuppeteerSharp.Helpers
             this Task task,
             int? milliseconds = null,
             Func<TimeSpan, Exception> exceptionFactory = null,
-            CancellationToken cancellationToken = default)
-            => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds ?? DefaultTimeout), exceptionFactory, cancellationToken);
+            CancellationToken cancellationToken = default
+        ) =>
+            WithTimeout(
+                task,
+                TimeSpan.FromMilliseconds(milliseconds ?? DefaultTimeout),
+                exceptionFactory,
+                cancellationToken
+            );
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
@@ -49,11 +55,13 @@ namespace PuppeteerSharp.Helpers
             this Task task,
             TimeSpan timeout,
             Func<TimeSpan, Exception> exceptionFactory = null,
-            CancellationToken cancellationToken = default)
-            => task.WithTimeout(
+            CancellationToken cancellationToken = default
+        ) =>
+            task.WithTimeout(
                 () => throw (exceptionFactory ?? _defaultExceptionFactory)(timeout),
                 timeout,
-                cancellationToken);
+                cancellationToken
+            );
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
@@ -69,8 +77,14 @@ namespace PuppeteerSharp.Helpers
             this Task task,
             Func<Task> timeoutAction,
             int milliseconds = 1_000,
-            CancellationToken cancellationToken = default)
-            => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds), cancellationToken);
+            CancellationToken cancellationToken = default
+        ) =>
+            WithTimeout(
+                task,
+                timeoutAction,
+                TimeSpan.FromMilliseconds(milliseconds),
+                cancellationToken
+            );
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
@@ -82,7 +96,12 @@ namespace PuppeteerSharp.Helpers
         /// <param name="timeoutAction">Action to be executed on Timeout.</param>
         /// <param name="timeout">The timeout period.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public static async Task WithTimeout(this Task task, Func<Task> timeoutAction, TimeSpan timeout, CancellationToken cancellationToken)
+        public static async Task WithTimeout(
+            this Task task,
+            Func<Task> timeoutAction,
+            TimeSpan timeout,
+            CancellationToken cancellationToken
+        )
         {
             if (task == null)
             {
@@ -117,8 +136,11 @@ namespace PuppeteerSharp.Helpers
         /// <param name="timeoutAction">Action to be executed on Timeout.</param>
         /// <param name="milliseconds">Milliseconds timeout.</param>
         /// <typeparam name="T">Return type.</typeparam>
-        public static Task<T> WithTimeout<T>(this Task<T> task, Action timeoutAction, int milliseconds = 1_000)
-            => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds));
+        public static Task<T> WithTimeout<T>(
+            this Task<T> task,
+            Action timeoutAction,
+            int milliseconds = 1_000
+        ) => WithTimeout(task, timeoutAction, TimeSpan.FromMilliseconds(milliseconds));
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
@@ -130,7 +152,11 @@ namespace PuppeteerSharp.Helpers
         /// <param name="timeoutAction">Action to be executed on Timeout.</param>
         /// <param name="timeout">The timeout period.</param>
         /// <typeparam name="T">Return type.</typeparam>
-        public static async Task<T> WithTimeout<T>(this Task<T> task, Action timeoutAction, TimeSpan timeout)
+        public static async Task<T> WithTimeout<T>(
+            this Task<T> task,
+            Action timeoutAction,
+            TimeSpan timeout
+        )
         {
             if (task == null)
             {
@@ -161,8 +187,16 @@ namespace PuppeteerSharp.Helpers
         /// <param name="milliseconds">Milliseconds timeout.</param>
         /// <param name="exceptionFactory">Optional timeout exception factory.</param>
         /// <typeparam name="T">Task return type.</typeparam>
-        public static Task<T> WithTimeout<T>(this Task<T> task, int? milliseconds = null, Func<TimeSpan, Exception> exceptionFactory = null)
-            => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds ?? DefaultTimeout), exceptionFactory);
+        public static Task<T> WithTimeout<T>(
+            this Task<T> task,
+            int? milliseconds = null,
+            Func<TimeSpan, Exception> exceptionFactory = null
+        ) =>
+            WithTimeout(
+                task,
+                TimeSpan.FromMilliseconds(milliseconds ?? DefaultTimeout),
+                exceptionFactory
+            );
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
@@ -174,7 +208,11 @@ namespace PuppeteerSharp.Helpers
         /// <param name="timeout">The timeout period.</param>
         /// <param name="exceptionFactory">Optional timeout exception factory.</param>
         /// <typeparam name="T">Task return type.</typeparam>
-        public static async Task<T> WithTimeout<T>(this Task<T> task, TimeSpan timeout, Func<TimeSpan, Exception> exceptionFactory = null)
+        public static async Task<T> WithTimeout<T>(
+            this Task<T> task,
+            TimeSpan timeout,
+            Func<TimeSpan, Exception> exceptionFactory = null
+        )
         {
             if (task == null)
             {
@@ -226,15 +264,26 @@ namespace PuppeteerSharp.Helpers
                 return false;
             }
 
-            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var tcs = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             using var cancellationToken = new CancellationTokenSource(timeout);
-            using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+            using (
+                cancellationToken.Token.Register(
+                    s => ((TaskCompletionSource<bool>)s).TrySetResult(true),
+                    tcs
+                )
+            )
             {
                 return tcs.Task == await Task.WhenAny(task, tcs.Task).ConfigureAwait(false);
             }
         }
 
-        private static async Task<bool> TimeoutTask(Task task, TimeSpan timeout, CancellationToken cancellationToken)
+        private static async Task<bool> TimeoutTask(
+            Task task,
+            TimeSpan timeout,
+            CancellationToken cancellationToken
+        )
         {
             if (timeout <= TimeSpan.Zero)
             {
@@ -242,11 +291,20 @@ namespace PuppeteerSharp.Helpers
                 return false;
             }
 
-            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var tcs = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+            using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(
+                cancellationToken
+            );
             linkedCancellationToken.CancelAfter(timeout);
 
-            using (linkedCancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+            using (
+                linkedCancellationToken.Token.Register(
+                    s => ((TaskCompletionSource<bool>)s).TrySetResult(true),
+                    tcs
+                )
+            )
             {
                 return tcs.Task == await Task.WhenAny(task, tcs.Task).ConfigureAwait(false);
             }

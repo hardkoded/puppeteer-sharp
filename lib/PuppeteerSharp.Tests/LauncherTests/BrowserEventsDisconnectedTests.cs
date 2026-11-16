@@ -6,21 +6,36 @@ namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class BrowserEventsDisconnectedTests : PuppeteerBrowserBaseTest
     {
-        public BrowserEventsDisconnectedTests() : base()
-        {
-        }
+        public BrowserEventsDisconnectedTests()
+            : base() { }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Browser.Events.disconnected", "should be emitted when: browser gets closed, disconnected or underlying websocket gets closed")]
+        [
+            Test,
+            PuppeteerTest(
+                "launcher.spec",
+                "Launcher specs Browser.Events.disconnected",
+                "should be emitted when: browser gets closed, disconnected or underlying websocket gets closed"
+            )
+        ]
         public async Task ShouldEmittedWhenBrowserGetsClosedDisconnectedOrUnderlyingWebsocketGetsClosed()
         {
-            var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+            var originalBrowser = await Puppeteer.LaunchAsync(
+                TestConstants.DefaultBrowserOptions(),
+                TestConstants.LoggerFactory
+            );
             var connectOptions = new ConnectOptions
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
                 Protocol = ((Browser)Browser).Protocol,
             };
-            var remoteBrowser1 = await Puppeteer.ConnectAsync(connectOptions, TestConstants.LoggerFactory);
-            var remoteBrowser2 = await Puppeteer.ConnectAsync(connectOptions, TestConstants.LoggerFactory);
+            var remoteBrowser1 = await Puppeteer.ConnectAsync(
+                connectOptions,
+                TestConstants.LoggerFactory
+            );
+            var remoteBrowser2 = await Puppeteer.ConnectAsync(
+                connectOptions,
+                TestConstants.LoggerFactory
+            );
 
             var disconnectedOriginal = 0;
             var disconnectedRemote1 = 0;

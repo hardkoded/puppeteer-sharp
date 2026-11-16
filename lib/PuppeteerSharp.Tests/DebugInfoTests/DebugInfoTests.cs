@@ -22,9 +22,11 @@ namespace PuppeteerSharp.Tests.DebugInfoTests
 
             Assert.That(Browser.DebugInfo.PendingProtocolErrors, Is.Empty);
 
-            var promise = Page.EvaluateFunctionAsync(@"() => new Promise(resolve => {
+            var promise = Page.EvaluateFunctionAsync(
+                @"() => new Promise(resolve => {
                 window.resolve = resolve;
-            })");
+            })"
+            );
 
             try
             {

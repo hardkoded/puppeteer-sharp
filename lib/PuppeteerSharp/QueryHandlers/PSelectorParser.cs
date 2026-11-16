@@ -23,7 +23,12 @@ namespace PuppeteerSharp.QueryHandlers
         /// </summary>
         /// <param name="selector">The selector string to parse.</param>
         /// <returns>A tuple of (selectorList, isPureCSS, hasPseudoClasses, hasAria).</returns>
-        internal static (string JsonSelector, bool IsPureCSS, bool HasPseudoClasses, bool HasAria) Parse(string selector)
+        internal static (
+            string JsonSelector,
+            bool IsPureCSS,
+            bool HasPseudoClasses,
+            bool HasAria
+        ) Parse(string selector)
         {
             if (string.IsNullOrEmpty(selector))
             {
@@ -54,7 +59,12 @@ namespace PuppeteerSharp.QueryHandlers
                 var ch = selector[i];
 
                 // Check for deep combinators >>>> and >>>
-                if (ch == '>' && i + 2 < selector.Length && selector[i + 1] == '>' && selector[i + 2] == '>')
+                if (
+                    ch == '>'
+                    && i + 2 < selector.Length
+                    && selector[i + 1] == '>'
+                    && selector[i + 2] == '>'
+                )
                 {
                     isPureCSS = false;
 
@@ -113,7 +123,11 @@ namespace PuppeteerSharp.QueryHandlers
                 }
 
                 // Check for pseudo-classes (for hasPseudoClasses flag)
-                if (ch == ':' && (i + 1 >= selector.Length || selector[i + 1] != ':') && (i == 0 || selector[i - 1] != ':'))
+                if (
+                    ch == ':'
+                    && (i + 1 >= selector.Length || selector[i + 1] != ':')
+                    && (i == 0 || selector[i - 1] != ':')
+                )
                 {
                     hasPseudoClasses = true;
 
@@ -122,7 +136,10 @@ namespace PuppeteerSharp.QueryHandlers
                     i++;
 
                     // Consume the pseudo-class name
-                    while (i < selector.Length && (char.IsLetterOrDigit(selector[i]) || selector[i] == '-'))
+                    while (
+                        i < selector.Length
+                        && (char.IsLetterOrDigit(selector[i]) || selector[i] == '-')
+                    )
                     {
                         cssBuffer.Append(selector[i]);
                         i++;
@@ -205,7 +222,10 @@ namespace PuppeteerSharp.QueryHandlers
             return (json, false, hasPseudoClasses, hasAria);
         }
 
-        private static void FlushCssBuffer(System.Text.StringBuilder buffer, List<object> compoundSelector)
+        private static void FlushCssBuffer(
+            System.Text.StringBuilder buffer,
+            List<object> compoundSelector
+        )
         {
             if (buffer.Length > 0)
             {
@@ -237,7 +257,11 @@ namespace PuppeteerSharp.QueryHandlers
         private static PseudoElementMatch? MatchPseudoElement(string selector, int start)
         {
             // Must start with ::
-            if (start + 1 >= selector.Length || selector[start] != ':' || selector[start + 1] != ':')
+            if (
+                start + 1 >= selector.Length
+                || selector[start] != ':'
+                || selector[start + 1] != ':'
+            )
             {
                 return null;
             }
@@ -316,7 +340,12 @@ namespace PuppeteerSharp.QueryHandlers
             return ConsumeBracketed(selector, start, '(', ')');
         }
 
-        private static (string Text, int EndIndex) ConsumeBracketed(string selector, int start, char open, char close)
+        private static (string Text, int EndIndex) ConsumeBracketed(
+            string selector,
+            int start,
+            char open,
+            char close
+        )
         {
             var depth = 0;
             var i = start;

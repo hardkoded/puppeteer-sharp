@@ -14,7 +14,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Page = await Context.NewPageAsync();
         }
 
-        [Test, PuppeteerTest("defaultbrowsercontext.spec", "DefaultBrowserContext", "page.cookies() should work")]
+        [
+            Test,
+            PuppeteerTest(
+                "defaultbrowsercontext.spec",
+                "DefaultBrowserContext",
+                "page.cookies() should work"
+            )
+        ]
         public async Task PageGetCookiesAsyncShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -32,16 +39,19 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(cookie.Session, Is.True);
         }
 
-        [Test, PuppeteerTest("defaultbrowsercontext.spec", "DefaultBrowserContext", "page.setCookie() should work")]
+        [
+            Test,
+            PuppeteerTest(
+                "defaultbrowsercontext.spec",
+                "DefaultBrowserContext",
+                "page.setCookie() should work"
+            )
+        ]
         public async Task PageSetCookiesAsyncShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Name = "username",
-                Value = "John Doe"
-            });
+            await Page.SetCookieAsync(new CookieParam { Name = "username", Value = "John Doe" });
 
             var cookie = (await Page.GetCookiesAsync()).First();
             Assert.That(cookie.Name, Is.EqualTo("username"));
@@ -55,29 +65,32 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(cookie.Session, Is.True);
         }
 
-        [Test, PuppeteerTest("defaultbrowsercontext.spec", "DefaultBrowserContext", "page.deleteCookie() should work")]
+        [
+            Test,
+            PuppeteerTest(
+                "defaultbrowsercontext.spec",
+                "DefaultBrowserContext",
+                "page.deleteCookie() should work"
+            )
+        ]
         public async Task PageDeleteCookieAsyncShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             await Page.SetCookieAsync(
-                new CookieParam
-                {
-                    Name = "cookie1",
-                    Value = "1"
-                },
-                new CookieParam
-                {
-                    Name = "cookie2",
-                    Value = "2"
-                });
+                new CookieParam { Name = "cookie1", Value = "1" },
+                new CookieParam { Name = "cookie2", Value = "2" }
+            );
 
-            Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("cookie1=1; cookie2=2"));
-            await Page.DeleteCookieAsync(new CookieParam
-            {
-                Name = "cookie2"
-            });
-            Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("cookie1=1"));
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("document.cookie"),
+                Is.EqualTo("cookie1=1; cookie2=2")
+            );
+            await Page.DeleteCookieAsync(new CookieParam { Name = "cookie2" });
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("document.cookie"),
+                Is.EqualTo("cookie1=1")
+            );
 
             var cookie = (await Page.GetCookiesAsync()).First();
             Assert.That(cookie.Name, Is.EqualTo("cookie1"));

@@ -4,9 +4,8 @@ namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue1878 : PuppeteerBrowserContextBaseTest
     {
-        public Issue1878() : base()
-        {
-        }
+        public Issue1878()
+            : base() { }
 
         public async Task MultiplePagesShouldNotShareSameScreenshotTaskQueue()
         {
@@ -14,16 +13,19 @@ namespace PuppeteerSharp.Tests.Issues
             using (var page = await Context.NewPageAsync())
             {
                 var html = "...some html..";
-                await page.GoToAsync($"data:text/html,{html}", new NavigationOptions
-                {
-                    WaitUntil = new[]
+                await page.GoToAsync(
+                    $"data:text/html,{html}",
+                    new NavigationOptions
                     {
-                        WaitUntilNavigation.DOMContentLoaded,
-                        WaitUntilNavigation.Load,
-                        WaitUntilNavigation.Networkidle0,
-                        WaitUntilNavigation.Networkidle2
+                        WaitUntil = new[]
+                        {
+                            WaitUntilNavigation.DOMContentLoaded,
+                            WaitUntilNavigation.Load,
+                            WaitUntilNavigation.Networkidle0,
+                            WaitUntilNavigation.Networkidle2,
+                        },
                     }
-                });
+                );
 
                 await page.ScreenshotAsync("...some path...");
             }
@@ -32,16 +34,19 @@ namespace PuppeteerSharp.Tests.Issues
             using (var page = await Context.NewPageAsync())
             {
                 var html = "...some html...";
-                await page.GoToAsync($"data:text/html,{html}", new NavigationOptions
-                {
-                    WaitUntil = new[]
+                await page.GoToAsync(
+                    $"data:text/html,{html}",
+                    new NavigationOptions
                     {
-                        WaitUntilNavigation.DOMContentLoaded,
-                        WaitUntilNavigation.Load,
-                        WaitUntilNavigation.Networkidle0,
-                        WaitUntilNavigation.Networkidle2
+                        WaitUntil = new[]
+                        {
+                            WaitUntilNavigation.DOMContentLoaded,
+                            WaitUntilNavigation.Load,
+                            WaitUntilNavigation.Networkidle0,
+                            WaitUntilNavigation.Networkidle2,
+                        },
                     }
-                });
+                );
 
                 await page.ScreenshotAsync("...some path..."); //<- will throw because Browser TaskQueue is disposed when 1st Page is disposed
             }

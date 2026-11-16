@@ -32,7 +32,8 @@ namespace PuppeteerSharp.Bidi.Core;
 /// <summary>
 /// Represents a user prompt (dialog) in a browsing context.
 /// </summary>
-internal class UserPrompt(BrowsingContext browsingContext, UserPromptOpenedEventArgs info) : IDisposable
+internal class UserPrompt(BrowsingContext browsingContext, UserPromptOpenedEventArgs info)
+    : IDisposable
 {
     private string _reason;
     private UserPromptClosedEventArgs _result;
@@ -57,7 +58,10 @@ internal class UserPrompt(BrowsingContext browsingContext, UserPromptOpenedEvent
         get
         {
             // If the prompt has a handler configured (auto-accept/dismiss), it's considered handled
-            if (Info.Handler == UserPromptHandlerType.Accept || Info.Handler == UserPromptHandlerType.Dismiss)
+            if (
+                Info.Handler == UserPromptHandlerType.Accept
+                || Info.Handler == UserPromptHandlerType.Dismiss
+            )
             {
                 return true;
             }
@@ -97,11 +101,15 @@ internal class UserPrompt(BrowsingContext browsingContext, UserPromptOpenedEvent
             throw new PuppeteerException($"User prompt already closed: {_reason}");
         }
 
-        await browsingContext.Session.Driver.BrowsingContext.HandleUserPromptAsync(new HandleUserPromptCommandParameters(browsingContext.Id)
-        {
-            Accept = accept,
-            UserText = userText,
-        }).ConfigureAwait(false);
+        await browsingContext
+            .Session.Driver.BrowsingContext.HandleUserPromptAsync(
+                new HandleUserPromptCommandParameters(browsingContext.Id)
+                {
+                    Accept = accept,
+                    UserText = userText,
+                }
+            )
+            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -109,7 +117,8 @@ internal class UserPrompt(BrowsingContext browsingContext, UserPromptOpenedEvent
     /// </summary>
     public void Dispose()
     {
-        _reason ??= "User prompt already closed, probably because the associated browsing context was destroyed.";
+        _reason ??=
+            "User prompt already closed, probably because the associated browsing context was destroyed.";
         GC.SuppressFinalize(this);
     }
 

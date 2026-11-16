@@ -15,9 +15,7 @@ namespace PuppeteerSharp.Helpers
         private Action _unregisterProcessExitCleanup;
 
         public TempDirectory()
-            : this(PathHelper.Combine(PathHelper.GetTempPath(), PathHelper.GetRandomFileName()))
-        {
-        }
+            : this(PathHelper.Combine(PathHelper.GetTempPath(), PathHelper.GetRandomFileName())) { }
 
         private TempDirectory(string path)
         {

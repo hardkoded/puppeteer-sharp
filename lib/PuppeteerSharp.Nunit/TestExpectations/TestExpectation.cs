@@ -36,8 +36,8 @@ public class TestExpectation
         get
         {
             var patternRegExString = TestIdPattern
-                // Replace `*` with non special character
-                .Replace("*", "--STAR--");
+            // Replace `*` with non special character
+            .Replace("*", "--STAR--");
 
             // Escape special characters https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
             patternRegExString = Regex.Escape(patternRegExString);
@@ -59,10 +59,17 @@ public class TestExpectation
     [JsonConverter(typeof(JsonStringEnumMemberConverter<TestExpectationResult>))]
     public enum TestExpectationResult
     {
-        [EnumMember(Value = "FAIL")] Fail,
-        [EnumMember(Value = "PASS")] Pass,
-        [EnumMember(Value = "SKIP")] Skip,
-        [EnumMember(Value = "TIMEOUT")] Timeout,
+        [EnumMember(Value = "FAIL")]
+        Fail,
+
+        [EnumMember(Value = "PASS")]
+        Pass,
+
+        [EnumMember(Value = "SKIP")]
+        Skip,
+
+        [EnumMember(Value = "TIMEOUT")]
+        Timeout,
     }
 
     [JsonConverter(typeof(JsonStringEnumMemberConverter<TestExpectationsParameter>))]
@@ -70,18 +77,25 @@ public class TestExpectation
     {
         [EnumMember(Value = "firefox")]
         Firefox,
+
         [EnumMember(Value = "chrome")]
         Chrome,
+
         [EnumMember(Value = "webDriverBiDi")]
         WebDriverBiDi,
+
         [EnumMember(Value = "cdp")]
         Cdp,
+
         [EnumMember(Value = "chrome-headless-shell")]
         ChromeHeadlessShell,
+
         [EnumMember(Value = "headless")]
         Headless,
+
         [EnumMember(Value = "headful")]
         Headful,
+
         [EnumMember(Value = "pipe")]
         Pipe,
     }
@@ -91,8 +105,10 @@ public class TestExpectation
     {
         [EnumMember(Value = "darwin")]
         Darwin,
+
         [EnumMember(Value = "linux")]
         Linux,
+
         [EnumMember(Value = "win32")]
         Win32,
     }

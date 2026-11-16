@@ -1,4 +1,3 @@
-
 // * MIT License
 //  *
 //  * Copyright (c) Darío Kondratiuk
@@ -31,7 +30,14 @@ namespace PuppeteerSharp.Tests.TouchScreenTests;
 
 public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.touchMove", "should throw if no touch was started")]
+    [
+        Test,
+        PuppeteerTest(
+            "touchscreen.spec",
+            "Touchscreen Touchscreen.prototype.touchMove",
+            "should throw if no touch was started"
+        )
+    ]
     public async Task ShouldThrowIfNoTouchWasStarted()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/input/touchscreen.html");
@@ -44,7 +50,14 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
         Assert.That(exception.Message, Does.Contain("Must start a new Touch first"));
     }
 
-    [Test, PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.touchMove", "should work with two touches")]
+    [
+        Test,
+        PuppeteerTest(
+            "touchscreen.spec",
+            "Touchscreen Touchscreen.prototype.touchMove",
+            "should work with two touches"
+        )
+    ]
     public async Task ShouldWorkWithTwoTouches()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/input/touchscreen.html");
@@ -56,151 +69,164 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
         var result = await Page.EvaluateExpressionAsync<TouchEvent[]>("allEvents");
 
         Assert.That(
-            JsonSerializer.Serialize(result), Is.EqualTo(JsonSerializer.Serialize(new[]
-            {
-                new TouchEvent()
-                {
-                    Type = "pointerdown",
-                    X = 0,
-                    Y = 0,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchstart",
-                    ChangedTouches = new[]
+            JsonSerializer.Serialize(result),
+            Is.EqualTo(
+                JsonSerializer.Serialize(
+                    new[]
                     {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 0,
-                            ClientY = 0,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerdown",
+                            X = 0,
+                            Y = 0,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 0,
-                            ClientY = 0,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchstart",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 0,
+                                    ClientY = 0,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 0,
+                                    ClientY = 0,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointerdown",
-                    X = 30,
-                    Y = 10,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchstart",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 30,
-                            ClientY = 10,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerdown",
+                            X = 30,
+                            Y = 10,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 0,
-                            ClientY = 0,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchstart",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 30,
+                                    ClientY = 10,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 0,
+                                    ClientY = 0,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 30,
+                                    ClientY = 10,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 30,
-                            ClientY = 10,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointermove",
+                            X = 15,
+                            Y = 15,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointermove",
-                    X = 15,
-                    Y = 15,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchmove",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 15,
-                            ClientY = 15,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchmove",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 15,
+                                    ClientY = 15,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 15,
+                                    ClientY = 15,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 30,
+                                    ClientY = 10,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 15,
-                            ClientY = 15,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 30,
-                            ClientY = 10,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    },
-                },
-            })));
+                    }
+                )
+            )
+        );
     }
 
-    [Test, PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.touchMove", "should work")]
+    [
+        Test,
+        PuppeteerTest(
+            "touchscreen.spec",
+            "Touchscreen Touchscreen.prototype.touchMove",
+            "should work"
+        )
+    ]
     public async Task ShouldWork()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/input/touchscreen.html");
@@ -214,247 +240,260 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
         var result = await Page.EvaluateExpressionAsync<TouchEvent[]>("allEvents");
 
         Assert.That(
-            JsonSerializer.Serialize(result), Is.EqualTo(JsonSerializer.Serialize(new[]
-            {
-                new TouchEvent()
-                {
-                    Type = "pointerdown",
-                    X = 0,
-                    Y= 0,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type ="touchstart",
-                    ChangedTouches = new[]
+            JsonSerializer.Serialize(result),
+            Is.EqualTo(
+                JsonSerializer.Serialize(
+                    new[]
                     {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 0,
-                            ClientY = 0,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerdown",
+                            X = 0,
+                            Y = 0,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 0,
-                            ClientY = 0,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchstart",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 0,
+                                    ClientY = 0,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 0,
+                                    ClientY = 0,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "pointermove",
+                            X = 15,
+                            Y = 15,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "touchmove",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 15,
+                                    ClientY = 15,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 15,
+                                    ClientY = 15,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "pointermove",
+                            X = 31,
+                            Y = 30,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "touchmove",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 31,
+                                    ClientY = 30,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 31,
+                                    ClientY = 30,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "pointermove",
+                            X = 50,
+                            Y = 45,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "touchmove",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 45,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 45,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "pointermove",
+                            X = 80,
+                            Y = 50,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "touchmove",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 80,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 80,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "pointerup",
+                            X = 80,
+                            Y = 50,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
+                        },
+                        new TouchEvent()
+                        {
+                            Type = "touchend",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 80,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
                     }
-                },
-                new TouchEvent()
-                {
-                    Type = "pointermove",
-                    X = 15,
-                    Y = 15,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type ="touchmove",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 15,
-                            ClientY = 15,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 15,
-                            ClientY = 15,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    }
-                },
-                new TouchEvent()
-                {
-                    Type = "pointermove",
-                    X = 31,
-                    Y = 30,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type ="touchmove",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 31,
-                            ClientY = 30,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 31,
-                            ClientY = 30,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    }
-                },
-                new TouchEvent()
-                {
-                    Type = "pointermove",
-                    X = 50,
-                    Y = 45,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type ="touchmove",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 50,
-                            ClientY = 45,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 50,
-                            ClientY = 45,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    }
-                },
-                new TouchEvent()
-                {
-                    Type = "pointermove",
-                    X = 80,
-                    Y = 50,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type ="touchmove",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 80,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 80,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    }
-                },
-                new TouchEvent()
-                {
-                    Type = "pointerup",
-                    X = 80,
-                    Y = 50,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type ="touchend",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 80,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    },
-                },
-            })));
+                )
+            )
+        );
     }
 
-    [Test, PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.touchMove", "should work when moving touches separately")]
+    [
+        Test,
+        PuppeteerTest(
+            "touchscreen.spec",
+            "Touchscreen Touchscreen.prototype.touchMove",
+            "should work when moving touches separately"
+        )
+    ]
     public async Task ShouldWorkWhenMovingTouchesSeparately()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/input/touchscreen.html");
@@ -469,263 +508,276 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
         var result = await Page.EvaluateExpressionAsync<TouchEvent[]>("allEvents");
 
         Assert.That(
-            JsonSerializer.Serialize(result), Is.EqualTo(JsonSerializer.Serialize(new[]
-            {
-                new TouchEvent()
-                {
-                    Type = "pointerdown",
-                    X = 20,
-                    Y = 20,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchstart",
-                    ChangedTouches = new[]
+            JsonSerializer.Serialize(result),
+            Is.EqualTo(
+                JsonSerializer.Serialize(
+                    new[]
                     {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 20,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerdown",
+                            X = 20,
+                            Y = 20,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 20,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchstart",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 20,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 20,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointermove",
-                    X = 50,
-                    Y = 10,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchmove",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 10,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointermove",
+                            X = 50,
+                            Y = 10,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 10,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchmove",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 10,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 10,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointerdown",
-                    X = 20,
-                    Y = 50,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchstart",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerdown",
+                            X = 20,
+                            Y = 50,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 10,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchstart",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 10,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointermove",
+                            X = 50,
+                            Y = 50,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointermove",
-                    X = 50,
-                    Y = 50,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchmove",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchmove",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 10,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 10,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerup",
+                            X = 50,
+                            Y = 50,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchend",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 10,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointerup",
-                    X = 50,
-                    Y = 50,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchend",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerup",
+                            X = 50,
+                            Y = 10,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 10,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchend",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 10,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointerup",
-                    X = 50,
-                    Y = 10,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchend",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 50,
-                            ClientY = 10,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    },
-                },
-            })));
+                    }
+                )
+            )
+        );
     }
 
-    [Test, PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.touchMove", "should work with three touches")]
+    [
+        Test,
+        PuppeteerTest(
+            "touchscreen.spec",
+            "Touchscreen Touchscreen.prototype.touchMove",
+            "should work with three touches"
+        )
+    ]
     public async Task ShouldWorkWithThreeTouches()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/input/touchscreen.html");
@@ -740,278 +792,284 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
         var result = await Page.EvaluateExpressionAsync<TouchEvent[]>("allEvents");
 
         Assert.That(
-            JsonSerializer.Serialize(result), Is.EqualTo(JsonSerializer.Serialize(new[]
-            {
-                new TouchEvent()
-                {
-                    Type = "pointerdown",
-                    X = 50,
-                    Y = 50,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchstart",
-                    ChangedTouches = new[]
+            JsonSerializer.Serialize(result),
+            Is.EqualTo(
+                JsonSerializer.Serialize(
+                    new[]
                     {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerdown",
+                            X = 50,
+                            Y = 50,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 50,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchstart",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 50,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointermove",
-                    X = 50,
-                    Y = 100,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchmove",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 100,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointermove",
+                            X = 50,
+                            Y = 100,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 100,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchmove",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 100,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 100,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointerdown",
-                    X = 20,
-                    Y = 20,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchstart",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 20,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerdown",
+                            X = 20,
+                            Y = 20,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 100,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchstart",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 20,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 100,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 20,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 20,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerup",
+                            X = 50,
+                            Y = 100,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointerup",
-                    X = 50,
-                    Y = 100,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchend",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 50,
-                            ClientY = 100,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchend",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 50,
+                                    ClientY = 100,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 20,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 20,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointerdown",
+                            X = 20,
+                            Y = 100,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointerdown",
-                    X = 20,
-                    Y = 100,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchstart",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 100,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchstart",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 100,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 20,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 100,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 20,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "pointermove",
+                            X = 60,
+                            Y = 100,
+                            Width = 1,
+                            Height = 1,
+                            AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
+                            AzimuthAngle = 0,
+                            Pressure = 0.5m,
+                            PointerType = "touch",
+                            TiltX = 0,
+                            TiltY = 0,
+                            Twist = 0,
                         },
-                        new TouchEvent.Detail()
+                        new TouchEvent()
                         {
-                            ClientX = 20,
-                            ClientY = 100,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
+                            Type = "touchmove",
+                            ChangedTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 60,
+                                    ClientY = 100,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
+                            ActiveTouches = new[]
+                            {
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 20,
+                                    ClientY = 20,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                                new TouchEvent.Detail()
+                                {
+                                    ClientX = 60,
+                                    ClientY = 100,
+                                    RadiusX = 0.5m,
+                                    RadiusY = 0.5m,
+                                    Force = 0.5m,
+                                },
+                            },
                         },
-                    },
-                },
-                new TouchEvent()
-                {
-                    Type = "pointermove",
-                    X = 60,
-                    Y = 100,
-                    Width = 1,
-                    Height = 1,
-                    AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
-                    AzimuthAngle = 0,
-                    Pressure = 0.5m,
-                    PointerType = "touch",
-                    TiltX = 0,
-                    TiltY = 0,
-                    Twist = 0,
-                },
-                new TouchEvent()
-                {
-                    Type = "touchmove",
-                    ChangedTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 60,
-                            ClientY = 100,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    },
-                    ActiveTouches = new[]
-                    {
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 20,
-                            ClientY = 20,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                        new TouchEvent.Detail()
-                        {
-                            ClientX = 60,
-                            ClientY = 100,
-                            RadiusX = 0.5m,
-                            RadiusY = 0.5m,
-                            Force = 0.5m,
-                        },
-                    },
-                },
-            })));
+                    }
+                )
+            )
+        );
     }
 }

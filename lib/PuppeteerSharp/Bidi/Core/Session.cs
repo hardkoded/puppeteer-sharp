@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
-
 #if !CDP_ONLY
 
 using WebDriverBiDi;
@@ -38,7 +37,8 @@ namespace PuppeteerSharp.Bidi.Core;
 
 internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 {
-    private readonly ConcurrentSet<WebDriverBiDi.BrowsingContext.NavigationEventArgs> _fragmentSeen = new();
+    private readonly ConcurrentSet<WebDriverBiDi.BrowsingContext.NavigationEventArgs> _fragmentSeen =
+        new();
 
     public event EventHandler<SessionEndArgs> Ended;
 
@@ -88,7 +88,11 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     internal ScriptInjector ScriptInjector => ScriptInjector.Default;
 
-    public static async Task<Session> FromAsync(BiDiDriver driver, NewCommandParameters capabilities, ILoggerFactory loggerFactory)
+    public static async Task<Session> FromAsync(
+        BiDiDriver driver,
+        NewCommandParameters capabilities,
+        ILoggerFactory loggerFactory
+    )
     {
         var result = await driver.Session.NewSessionAsync(capabilities).ConfigureAwait(false);
         var session = new Session(driver, result);
@@ -96,9 +100,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         return session;
     }
 
-    public void Dispose()
-    {
-    }
+    public void Dispose() { }
 
     public async Task SubscribeAsync(string[] events, string[] contexts = null)
     {
@@ -110,11 +112,13 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     /// Re-emits a log entry that was received before listeners were attached.
     /// </summary>
     /// <param name="entry">The log entry.</param>
-    internal void ReplayLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs entry) => LogEntryAdded?.Invoke(this, entry);
+    internal void ReplayLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs entry) =>
+        LogEntryAdded?.Invoke(this, entry);
 
     internal virtual void OnEnded(SessionEndArgs e) => Ended?.Invoke(this, e);
 
-    internal virtual void OnBrowsingContextContextCreated(BrowsingContextEventArgs e) => BrowsingContextContextCreated?.Invoke(this, e);
+    internal virtual void OnBrowsingContextContextCreated(BrowsingContextEventArgs e) =>
+        BrowsingContextContextCreated?.Invoke(this, e);
 
     private async Task InitializeAsync()
     {
@@ -127,7 +131,9 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Driver.BrowsingContext.OnFragmentNavigated.AddObserver(OnFragmentNavigated);
         Driver.BrowsingContext.OnNavigationFailed.AddObserver(OnBrowsingContextNavigationFailed);
         Driver.BrowsingContext.OnNavigationAborted.AddObserver(OnBrowsingContextNavigationAborted);
-        Driver.BrowsingContext.OnNavigationCommitted.AddObserver(OnBrowsingContextNavigationCommitted);
+        Driver.BrowsingContext.OnNavigationCommitted.AddObserver(
+            OnBrowsingContextNavigationCommitted
+        );
         Driver.BrowsingContext.OnHistoryUpdated.AddObserver(OnBrowsingContextHistoryUpdated);
         Driver.Network.OnBeforeRequestSent.AddObserver(OnBeforeRequestSent);
         Driver.Network.OnAuthRequired.AddObserver(OnNetworkAuthRequired);
@@ -152,41 +158,68 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         OnBrowsingContextFragmentNavigated(info);
     }
 
-    private void OnNetworkResponseCompleted(ResponseCompletedEventArgs obj) => NetworkResponseComplete?.Invoke(this, obj);
+    private void OnNetworkResponseCompleted(ResponseCompletedEventArgs obj) =>
+        NetworkResponseComplete?.Invoke(this, obj);
 
-    private void OnNetworkResponseStarted(ResponseStartedEventArgs obj) => NetworkResponseStarted?.Invoke(this, obj);
+    private void OnNetworkResponseStarted(ResponseStartedEventArgs obj) =>
+        NetworkResponseStarted?.Invoke(this, obj);
 
-    private void OnNetworkFetchError(FetchErrorEventArgs obj) => NetworkFetchError?.Invoke(this, obj);
+    private void OnNetworkFetchError(FetchErrorEventArgs obj) =>
+        NetworkFetchError?.Invoke(this, obj);
 
-    private void OnNetworkAuthRequired(AuthRequiredEventArgs obj) => NetworkAuthRequired?.Invoke(this, obj);
+    private void OnNetworkAuthRequired(AuthRequiredEventArgs obj) =>
+        NetworkAuthRequired?.Invoke(this, obj);
 
-    private void OnBeforeRequestSent(BeforeRequestSentEventArgs obj) => NetworkBeforeRequestSent?.Invoke(this, obj);
+    private void OnBeforeRequestSent(BeforeRequestSentEventArgs obj) =>
+        NetworkBeforeRequestSent?.Invoke(this, obj);
 
-    private void OnBrowsingContextNavigationAborted(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextNavigationAborted?.Invoke(this, obj);
+    private void OnBrowsingContextNavigationAborted(
+        WebDriverBiDi.BrowsingContext.NavigationEventArgs obj
+    ) => BrowsingContextNavigationAborted?.Invoke(this, obj);
 
-    private void OnBrowsingContextNavigationFailed(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextNavigationFailed?.Invoke(this, obj);
+    private void OnBrowsingContextNavigationFailed(
+        WebDriverBiDi.BrowsingContext.NavigationEventArgs obj
+    ) => BrowsingContextNavigationFailed?.Invoke(this, obj);
 
-    private void OnBrowsingContextNavigationCommitted(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextNavigationCommitted?.Invoke(this, obj);
+    private void OnBrowsingContextNavigationCommitted(
+        WebDriverBiDi.BrowsingContext.NavigationEventArgs obj
+    ) => BrowsingContextNavigationCommitted?.Invoke(this, obj);
 
-    private void OnBrowsingContextFragmentNavigated(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextFragmentNavigated?.Invoke(this, obj);
+    private void OnBrowsingContextFragmentNavigated(
+        WebDriverBiDi.BrowsingContext.NavigationEventArgs obj
+    ) => BrowsingContextFragmentNavigated?.Invoke(this, obj);
 
-    private void OnBrowsingContextHistoryUpdated(WebDriverBiDi.BrowsingContext.HistoryUpdatedEventArgs obj) => BrowsingContextHistoryUpdated?.Invoke(this, obj);
+    private void OnBrowsingContextHistoryUpdated(
+        WebDriverBiDi.BrowsingContext.HistoryUpdatedEventArgs obj
+    ) => BrowsingContextHistoryUpdated?.Invoke(this, obj);
 
-    private void OnBrowsingContextNavigationStarted(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextNavigationStarted?.Invoke(this, obj);
+    private void OnBrowsingContextNavigationStarted(
+        WebDriverBiDi.BrowsingContext.NavigationEventArgs obj
+    ) => BrowsingContextNavigationStarted?.Invoke(this, obj);
 
-    private void OnBrowsingContextLoad(WebDriverBiDi.BrowsingContext.NavigationEventArgs arg) => BrowsingContextLoad?.Invoke(this, arg);
+    private void OnBrowsingContextLoad(WebDriverBiDi.BrowsingContext.NavigationEventArgs arg) =>
+        BrowsingContextLoad?.Invoke(this, arg);
 
-    private void OnBrowsingContextDomContentLoaded(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextDomContentLoaded?.Invoke(this, obj);
+    private void OnBrowsingContextDomContentLoaded(
+        WebDriverBiDi.BrowsingContext.NavigationEventArgs obj
+    ) => BrowsingContextDomContentLoaded?.Invoke(this, obj);
 
-    private void OnBrowsingContextContextDestroyed(BrowsingContextEventArgs obj) => BrowsingContextContextDestroyed?.Invoke(this, obj);
+    private void OnBrowsingContextContextDestroyed(BrowsingContextEventArgs obj) =>
+        BrowsingContextContextDestroyed?.Invoke(this, obj);
 
-    private void OnBrowsingContextUserPromptOpened(WebDriverBiDi.BrowsingContext.UserPromptOpenedEventArgs obj) => BrowsingContextUserPromptOpened?.Invoke(this, obj);
+    private void OnBrowsingContextUserPromptOpened(
+        WebDriverBiDi.BrowsingContext.UserPromptOpenedEventArgs obj
+    ) => BrowsingContextUserPromptOpened?.Invoke(this, obj);
 
-    private void OnBrowsingContextUserPromptClosed(WebDriverBiDi.BrowsingContext.UserPromptClosedEventArgs obj) => BrowsingContextUserPromptClosed?.Invoke(this, obj);
+    private void OnBrowsingContextUserPromptClosed(
+        WebDriverBiDi.BrowsingContext.UserPromptClosedEventArgs obj
+    ) => BrowsingContextUserPromptClosed?.Invoke(this, obj);
 
-    private void OnLogEntryAdded(WebDriverBiDi.Log.EntryAddedEventArgs obj) => LogEntryAdded?.Invoke(this, obj);
+    private void OnLogEntryAdded(WebDriverBiDi.Log.EntryAddedEventArgs obj) =>
+        LogEntryAdded?.Invoke(this, obj);
 
-    private void OnInputFileDialogOpened(FileDialogOpenedEventArgs obj) => InputFileDialogOpened?.Invoke(this, obj);
+    private void OnInputFileDialogOpened(FileDialogOpenedEventArgs obj) =>
+        InputFileDialogOpened?.Invoke(this, obj);
 }
 
 #endif

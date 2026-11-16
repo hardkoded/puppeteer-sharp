@@ -31,17 +31,18 @@ namespace PuppeteerSharp
 
             Options = options ?? throw new ArgumentNullException(nameof(options));
 
-            Process = new Process
-            {
-                EnableRaisingEvents = true,
-            };
+            Process = new Process { EnableRaisingEvents = true };
             Process.StartInfo.UseShellExecute = false;
             Process.StartInfo.CreateNoWindow = true;
             Process.StartInfo.FileName = executable;
             Process.StartInfo.RedirectStandardError = true;
             ExecutablePath = executable;
 
-            SetEnvVariables(Process.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
+            SetEnvVariables(
+                Process.StartInfo.Environment,
+                options.Env,
+                Environment.GetEnvironmentVariables()
+            );
 
             // Always capture stderr so launch diagnostics (ProcessSingleton, Missing X
             // server, etc.) are available even when Pipe=true, matching upstream
@@ -69,9 +70,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets Base endpoint.
         /// </summary>
-        public string EndPoint => StartCompletionSource.Task.IsCompleted
-            ? StartCompletionSource.Task.Result
-            : null;
+        public string EndPoint =>
+            StartCompletionSource.Task.IsCompleted ? StartCompletionSource.Task.Result : null;
 
         /// <summary>
         /// Indicates whether Base process is exiting.
@@ -90,9 +90,11 @@ namespace PuppeteerSharp
 
         internal StateManager StateManager { get; }
 
-        internal TaskCompletionSource<bool> ExitCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<bool> ExitCompletionSource { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal TaskCompletionSource<string> StartCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<string> StartCompletionSource { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal LaunchOptions Options { get; }
 
@@ -127,9 +129,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
         /// <returns>Task which resolves when the process is exited or killed.</returns>
-        public Task EnsureExitAsync(TimeSpan? timeout) => timeout.HasValue
-            ? StateManager.CurrentState.ExitAsync(this, timeout.Value)
-            : StateManager.CurrentState.KillAsync(this);
+        public Task EnsureExitAsync(TimeSpan? timeout) =>
+            timeout.HasValue
+                ? StateManager.CurrentState.ExitAsync(this, timeout.Value)
+                : StateManager.CurrentState.KillAsync(this);
 
         /// <summary>
         /// Asynchronously kills Base process.
@@ -148,12 +151,15 @@ namespace PuppeteerSharp
             if (timeout.HasValue)
             {
                 var taskCompleted = true;
-                await ExitCompletionSource.Task.WithTimeout(
-                    () =>
-                    {
-                        taskCompleted = false;
-                    },
-                    timeout.Value).ConfigureAwait(false);
+                await ExitCompletionSource
+                    .Task.WithTimeout(
+                        () =>
+                        {
+                            taskCompleted = false;
+                        },
+                        timeout.Value
+                    )
+                    .ConfigureAwait(false);
                 return taskCompleted;
             }
 
@@ -167,8 +173,8 @@ namespace PuppeteerSharp
         /// Also unregisters any process-exit cleanup fallback.
         /// </summary>
         /// <returns>A task that completes when cleanup finishes.</returns>
-        internal Task CleanTempUserDataDirAsync()
-            => TempUserDataDir is { } tempUserDataDir
+        internal Task CleanTempUserDataDirAsync() =>
+            TempUserDataDir is { } tempUserDataDir
                 ? tempUserDataDir.DeleteAsync()
                 : Task.CompletedTask;
 
@@ -189,7 +195,8 @@ namespace PuppeteerSharp
                     .DeleteAsync()
                     .ContinueWith(
                         t => ExitCompletionSource.TrySetResult(true),
-                        TaskScheduler.Default);
+                        TaskScheduler.Default
+                    );
             }
             else
             {
@@ -203,7 +210,11 @@ namespace PuppeteerSharp
         /// <param name="environment">The environment.</param>
         /// <param name="customEnv">The customEnv.</param>
         /// <param name="realEnv">The realEnv.</param>
-        protected static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
+        protected static void SetEnvVariables(
+            IDictionary<string, string> environment,
+            IDictionary<string, string> customEnv,
+            IDictionary realEnv
+        )
         {
             if (environment == null)
             {
@@ -243,9 +254,7 @@ namespace PuppeteerSharp
             }
 
             _recentLogs.Enqueue(e.Data);
-            while (_recentLogs.Count > MaxRecentLogLines && _recentLogs.TryDequeue(out _))
-            {
-            }
+            while (_recentLogs.Count > MaxRecentLogLines && _recentLogs.TryDequeue(out _)) { }
         }
     }
 }

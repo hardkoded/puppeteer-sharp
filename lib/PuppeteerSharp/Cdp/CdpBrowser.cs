@@ -42,7 +42,11 @@ public class CdpBrowser : Browser
     private readonly Dictionary<string, Extension> _extensions = new();
     private readonly bool _issuesEnabled;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "Disposed in Detach().")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Microsoft.Usage",
+        "CA2213:DisposableFieldsShouldBeDisposed",
+        Justification = "Disposed in Detach()."
+    )]
     private readonly DisposableActionsStack _subscriptions = new();
     private bool _hasNetworkRestrictions;
     private Task _closeTask;
@@ -61,7 +65,8 @@ public class CdpBrowser : Browser
         bool networkEnabled = true,
         bool issuesEnabled = true,
         string[] blockList = null,
-        string[] allowList = null)
+        string[] allowList = null
+    )
     {
         BrowserType = browser;
         DefaultViewport = defaultViewport;
@@ -73,24 +78,35 @@ public class CdpBrowser : Browser
         _issuesEnabled = issuesEnabled;
         var targetFilterCallback = targetFilter ?? (_ => true);
         _logger = Connection.LoggerFactory.CreateLogger<Browser>();
-        IsPageTargetFunc =
-            isPageTargetFunc ??
-            (target => target.Type is TargetType.Page or TargetType.BackgroundPage or TargetType.Webview);
+        IsPageTargetFunc = isPageTargetFunc
+            ?? (
+                target =>
+                    target.Type
+                        is TargetType.Page
+                            or TargetType.BackgroundPage
+                            or TargetType.Webview
+            );
 
         DefaultContext = new CdpBrowserContext(Connection, this, null);
         _contexts = new ConcurrentDictionary<string, CdpBrowserContext>(
-            contextIds.Select(contextId =>
-                new KeyValuePair<string, CdpBrowserContext>(contextId, new(Connection, this, contextId))));
+            contextIds.Select(contextId => new KeyValuePair<string, CdpBrowserContext>(
+                contextId,
+                new(Connection, this, contextId)
+            ))
+        );
 
-        _hasNetworkRestrictions = (blockList != null && blockList.Length > 0) || (allowList != null && allowList.Length > 0);
+        _hasNetworkRestrictions =
+            (blockList != null && blockList.Length > 0)
+            || (allowList != null && allowList.Length > 0);
         Connection.RejectEmulateNetworkConditionsCalls = _hasNetworkRestrictions;
 
         if (browser == SupportedBrowser.Firefox)
         {
             TargetManager = new FirefoxTargetManager(
-                    connection,
-                    CreateTarget,
-                    targetFilterCallback);
+                connection,
+                CreateTarget,
+                targetFilterCallback
+            );
         }
         else
         {
@@ -99,7 +115,8 @@ public class CdpBrowser : Browser
                 CreateTarget,
                 targetFilterCallback,
                 blockList,
-                allowList);
+                allowList
+            );
         }
     }
 
@@ -118,10 +135,8 @@ public class CdpBrowser : Browser
     }
 
     /// <inheritdoc />
-    public override DebugInfo DebugInfo => new()
-    {
-        PendingProtocolErrors = Connection.GetPendingProtocolErrors(),
-    };
+    public override DebugInfo DebugInfo =>
+        new() { PendingProtocolErrors = Connection.GetPendingProtocolErrors() };
 
     internal ITargetManager TargetManager { get; }
 
@@ -130,21 +145,20 @@ public class CdpBrowser : Browser
     internal override ProtocolType Protocol => ProtocolType.Cdp;
 
     /// <inheritdoc/>
-    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) => DefaultContext.NewPageAsync(options);
+    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) =>
+        DefaultContext.NewPageAsync(options);
 
     /// <inheritdoc/>
-    public override ITarget[] Targets()
-        => TargetManager.GetAvailableTargets().Values
-            .Where(IsTargetExposed)
-            .ToArray();
+    public override ITarget[] Targets() =>
+        TargetManager.GetAvailableTargets().Values.Where(IsTargetExposed).ToArray();
 
     /// <inheritdoc/>
-    public override async Task<string> GetVersionAsync()
-        => (await GetVersionResponseAsync().ConfigureAwait(false)).Product;
+    public override async Task<string> GetVersionAsync() =>
+        (await GetVersionResponseAsync().ConfigureAwait(false)).Product;
 
     /// <inheritdoc/>
-    public override async Task<string> GetUserAgentAsync()
-        => (await GetVersionResponseAsync().ConfigureAwait(false)).UserAgent;
+    public override async Task<string> GetUserAgentAsync() =>
+        (await GetVersionResponseAsync().ConfigureAwait(false)).UserAgent;
 
     /// <inheritdoc/>
     public override void Disconnect()
@@ -157,15 +171,23 @@ public class CdpBrowser : Browser
     public override Task CloseAsync() => _closeTask ??= CloseCoreAsync();
 
     /// <inheritdoc/>
-    public override async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
+    public override async Task<IBrowserContext> CreateBrowserContextAsync(
+        BrowserContextOptions options = null
+    )
     {
-        var response = await Connection.SendAsync<CreateBrowserContextResponse>(
-            "Target.createBrowserContext",
-            new TargetCreateBrowserContextRequest
-            {
-                ProxyServer = options?.ProxyServer,
-                ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? Array.Empty<string>()),
-            }).ConfigureAwait(false);
+        var response = await Connection
+            .SendAsync<CreateBrowserContextResponse>(
+                "Target.createBrowserContext",
+                new TargetCreateBrowserContextRequest
+                {
+                    ProxyServer = options?.ProxyServer,
+                    ProxyBypassList = string.Join(
+                        ",",
+                        options?.ProxyBypassList ?? Array.Empty<string>()
+                    ),
+                }
+            )
+            .ConfigureAwait(false);
         var context = new CdpBrowserContext(Connection, this, response.BrowserContextId);
 
         if (options?.DownloadBehavior != null)
@@ -183,52 +205,88 @@ public class CdpBrowser : Browser
     /// <inheritdoc/>
     public override async Task<WindowBounds> GetWindowBoundsAsync(string windowId)
     {
-        var response = await Connection.SendAsync<BrowserGetWindowBoundsResponse>(
-            "Browser.getWindowBounds",
-            new BrowserGetWindowBoundsRequest { WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture) }).ConfigureAwait(false);
+        var response = await Connection
+            .SendAsync<BrowserGetWindowBoundsResponse>(
+                "Browser.getWindowBounds",
+                new BrowserGetWindowBoundsRequest
+                {
+                    WindowId = int.Parse(
+                        windowId,
+                        System.Globalization.CultureInfo.InvariantCulture
+                    ),
+                }
+            )
+            .ConfigureAwait(false);
         return response.Bounds;
     }
 
     /// <inheritdoc/>
     public override async Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds)
     {
-        await Connection.SendAsync(
-            "Browser.setWindowBounds",
-            new BrowserSetWindowBoundsRequest
-            {
-                WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture),
-                Bounds = windowBounds,
-            }).ConfigureAwait(false);
+        await Connection
+            .SendAsync(
+                "Browser.setWindowBounds",
+                new BrowserSetWindowBoundsRequest
+                {
+                    WindowId = int.Parse(
+                        windowId,
+                        System.Globalization.CultureInfo.InvariantCulture
+                    ),
+                    Bounds = windowBounds,
+                }
+            )
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public override async Task<ScreenInfo[]> ScreensAsync()
     {
-        var response = await Connection.SendAsync<EmulationGetScreenInfosResponse>("Emulation.getScreenInfos").ConfigureAwait(false);
+        var response = await Connection
+            .SendAsync<EmulationGetScreenInfosResponse>("Emulation.getScreenInfos")
+            .ConfigureAwait(false);
         return response.ScreenInfos;
     }
 
     /// <inheritdoc/>
     public override async Task<ScreenInfo> AddScreenAsync(AddScreenParams @params)
     {
-        var response = await Connection.SendAsync<EmulationAddScreenResponse>("Emulation.addScreen", @params).ConfigureAwait(false);
+        var response = await Connection
+            .SendAsync<EmulationAddScreenResponse>("Emulation.addScreen", @params)
+            .ConfigureAwait(false);
         return response.ScreenInfo;
     }
 
     /// <inheritdoc/>
     public override async Task RemoveScreenAsync(string screenId)
     {
-        await Connection.SendAsync("Emulation.removeScreen", new EmulationRemoveScreenRequest { ScreenId = screenId }).ConfigureAwait(false);
+        await Connection
+            .SendAsync(
+                "Emulation.removeScreen",
+                new EmulationRemoveScreenRequest { ScreenId = screenId }
+            )
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public override async Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null)
+    public override async Task<string> InstallExtensionAsync(
+        string path,
+        ExtensionInstallOptions options = null
+    )
     {
         var existingTargetIds = TargetManager.GetDiscoveredTargetIds();
-        var response = await Connection.SendAsync<ExtensionsLoadUnpackedResponse>(
-            "Extensions.loadUnpacked",
-            new ExtensionsLoadUnpackedRequest { Path = path, EnableInIncognito = options?.EnabledInIncognito ?? false }).ConfigureAwait(false);
-        await TargetManager.DestroyExtensionServiceWorkerTargetsAsync(response.Id, existingTargetIds).ConfigureAwait(false);
+        var response = await Connection
+            .SendAsync<ExtensionsLoadUnpackedResponse>(
+                "Extensions.loadUnpacked",
+                new ExtensionsLoadUnpackedRequest
+                {
+                    Path = path,
+                    EnableInIncognito = options?.EnabledInIncognito ?? false,
+                }
+            )
+            .ConfigureAwait(false);
+        await TargetManager
+            .DestroyExtensionServiceWorkerTargetsAsync(response.Id, existingTargetIds)
+            .ConfigureAwait(false);
         _extensions.Remove(response.Id);
         return response.Id;
     }
@@ -236,7 +294,9 @@ public class CdpBrowser : Browser
     /// <inheritdoc/>
     public override async Task UninstallExtensionAsync(string id)
     {
-        await Connection.SendAsync("Extensions.uninstall", new ExtensionsUninstallRequest { Id = id }).ConfigureAwait(false);
+        await Connection
+            .SendAsync("Extensions.uninstall", new ExtensionsUninstallRequest { Id = id })
+            .ConfigureAwait(false);
         await TargetManager.DestroyExtensionServiceWorkerTargetsAsync(id).ConfigureAwait(false);
         _extensions.Remove(id);
     }
@@ -244,7 +304,8 @@ public class CdpBrowser : Browser
     /// <inheritdoc/>
     public override async Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync()
     {
-        var response = await Connection.SendAsync<ExtensionsGetExtensionsResponse>("Extensions.getExtensions")
+        var response = await Connection
+            .SendAsync<ExtensionsGetExtensionsResponse>("Extensions.getExtensions")
             .ConfigureAwait(false);
 
         var extensionsMap = new Dictionary<string, Extension>();
@@ -257,7 +318,14 @@ public class CdpBrowser : Browser
             }
             else
             {
-                extensionsMap[info.Id] = new CdpExtension(info.Id, info.Version, info.Name, info.Path, info.Enabled, this);
+                extensionsMap[info.Id] = new CdpExtension(
+                    info.Id,
+                    info.Version,
+                    info.Name,
+                    info.Path,
+                    info.Enabled,
+                    this
+                );
             }
         }
 
@@ -280,18 +348,34 @@ public class CdpBrowser : Browser
 
         if (_hasNetworkRestrictions)
         {
-            throw new PuppeteerException("PWA APIs are not supported when network restrictions are configured.");
+            throw new PuppeteerException(
+                "PWA APIs are not supported when network restrictions are configured."
+            );
         }
 
-        await Connection.SendAsync(
-            "PWA.install",
-            new PWAInstallRequest { ManifestId = options.ManifestId, InstallUrlOrBundleUrl = options.InstallUrlOrBundleUrl }).ConfigureAwait(false);
+        await Connection
+            .SendAsync(
+                "PWA.install",
+                new PWAInstallRequest
+                {
+                    ManifestId = options.ManifestId,
+                    InstallUrlOrBundleUrl = options.InstallUrlOrBundleUrl,
+                }
+            )
+            .ConfigureAwait(false);
 
         if (options.DisplayMode.HasValue)
         {
-            await Connection.SendAsync(
-                "PWA.changeAppUserSettings",
-                new PWAChangeAppUserSettingsRequest { ManifestId = options.ManifestId, DisplayMode = options.DisplayMode }).ConfigureAwait(false);
+            await Connection
+                .SendAsync(
+                    "PWA.changeAppUserSettings",
+                    new PWAChangeAppUserSettingsRequest
+                    {
+                        ManifestId = options.ManifestId,
+                        DisplayMode = options.DisplayMode,
+                    }
+                )
+                .ConfigureAwait(false);
         }
 
         return options.ManifestId;
@@ -307,10 +391,14 @@ public class CdpBrowser : Browser
 
         if (_hasNetworkRestrictions)
         {
-            throw new PuppeteerException("PWA APIs are not supported when network restrictions are configured.");
+            throw new PuppeteerException(
+                "PWA APIs are not supported when network restrictions are configured."
+            );
         }
 
-        await Connection.SendAsync("PWA.uninstall", new PWAUninstallRequest { ManifestId = options.ManifestId }).ConfigureAwait(false);
+        await Connection
+            .SendAsync("PWA.uninstall", new PWAUninstallRequest { ManifestId = options.ManifestId })
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -323,28 +411,38 @@ public class CdpBrowser : Browser
 
         if (_hasNetworkRestrictions)
         {
-            throw new PuppeteerException("PWA APIs are not supported when network restrictions are configured.");
+            throw new PuppeteerException(
+                "PWA APIs are not supported when network restrictions are configured."
+            );
         }
 
         // `PWA.launch` resolves with the id of the launched *tab* target. Tab targets sit above page targets
         // in the target hierarchy and are not exposed through Targets(), so the returned id can't be awaited
         // directly.
-        var response = await Connection.SendAsync<PWALaunchResponse>(
-            "PWA.launch",
-            new PWALaunchRequest { ManifestId = options.ManifestId, Url = options.Url }).ConfigureAwait(false);
+        var response = await Connection
+            .SendAsync<PWALaunchResponse>(
+                "PWA.launch",
+                new PWALaunchRequest { ManifestId = options.ManifestId, Url = options.Url }
+            )
+            .ConfigureAwait(false);
 
-        var target = (CdpTarget)await WaitForTargetAsync(
-            candidate =>
-            {
-                var tab = TargetManager.GetAvailableTargets().GetValueOrDefault(response.TargetId);
-                if (tab?.Type != TargetType.Tab)
-                {
-                    return false;
-                }
+        var target = (CdpTarget)
+            await WaitForTargetAsync(
+                    candidate =>
+                    {
+                        var tab = TargetManager
+                            .GetAvailableTargets()
+                            .GetValueOrDefault(response.TargetId);
+                        if (tab?.Type != TargetType.Tab)
+                        {
+                            return false;
+                        }
 
-                return TargetManager.GetChildTargets(tab).Contains(candidate);
-            },
-            new WaitForOptions { Timeout = options.Timeout }).ConfigureAwait(false);
+                        return TargetManager.GetChildTargets(tab).Contains(candidate);
+                    },
+                    new WaitForOptions { Timeout = options.Timeout }
+                )
+                .ConfigureAwait(false);
 
         // The child page target can be discovered (and match the predicate above) before CDP has reported
         // its real navigated URL, which would otherwise be picked up here with page.Url still empty. Wait
@@ -355,7 +453,9 @@ public class CdpBrowser : Browser
         var page = await target.PageAsync().ConfigureAwait(false);
         if (page == null)
         {
-            throw new PuppeteerException($"Failed to create a page for the launched PWA (manifestId = {options.ManifestId})");
+            throw new PuppeteerException(
+                $"Failed to create a page for the launched PWA (manifestId = {options.ManifestId})"
+            );
         }
 
         // target.InitializedTask only guarantees the Target domain reported a URL. page.Url is populated by
@@ -366,8 +466,10 @@ public class CdpBrowser : Browser
         if (string.IsNullOrEmpty(page.Url))
         {
             await page.WaitForFrameAsync(
-                frame => frame == page.MainFrame && !string.IsNullOrEmpty(frame.Url),
-                new WaitForOptions { Timeout = options.Timeout }).ConfigureAwait(false);
+                    frame => frame == page.MainFrame && !string.IsNullOrEmpty(frame.Url),
+                    new WaitForOptions { Timeout = options.Timeout }
+                )
+                .ConfigureAwait(false);
         }
 
         return page;
@@ -383,14 +485,23 @@ public class CdpBrowser : Browser
 
         if (_hasNetworkRestrictions)
         {
-            throw new PuppeteerException("PWA APIs are not supported when network restrictions are configured.");
+            throw new PuppeteerException(
+                "PWA APIs are not supported when network restrictions are configured."
+            );
         }
 
-        var response = await Connection.SendAsync<PWAGetOsAppStateResponse>(
-            "PWA.getOsAppState",
-            new PWAGetOsAppStateRequest { ManifestId = options.ManifestId }).ConfigureAwait(false);
+        var response = await Connection
+            .SendAsync<PWAGetOsAppStateResponse>(
+                "PWA.getOsAppState",
+                new PWAGetOsAppStateRequest { ManifestId = options.ManifestId }
+            )
+            .ConfigureAwait(false);
 
-        return new PWAState { BadgeCount = response.BadgeCount, FileHandlers = response.FileHandlers };
+        return new PWAState
+        {
+            BadgeCount = response.BadgeCount,
+            FileHandlers = response.FileHandlers,
+        };
     }
 
     /// <inheritdoc/>
@@ -399,7 +510,9 @@ public class CdpBrowser : Browser
         await TargetManager.SetNetworkConditionsAsync(restrictions).ConfigureAwait(false);
 
         // Only update the state once the target manager accepted the new restrictions.
-        _hasNetworkRestrictions = restrictions?.BlockList is { Length: > 0 } || restrictions?.Allowlist is { Length: > 0 };
+        _hasNetworkRestrictions =
+            restrictions?.BlockList is { Length: > 0 }
+            || restrictions?.Allowlist is { Length: > 0 };
         Connection.RejectEmulateNetworkConditionsCalls = _hasNetworkRestrictions;
     }
 
@@ -419,7 +532,8 @@ public class CdpBrowser : Browser
         bool issuesEnabled = true,
         string[] blockList = null,
         string[] allowList = null,
-        DownloadBehavior downloadBehavior = null)
+        DownloadBehavior downloadBehavior = null
+    )
     {
         var browser = new CdpBrowser(
             browserToCreate,
@@ -434,7 +548,8 @@ public class CdpBrowser : Browser
             networkEnabled,
             issuesEnabled,
             blockList,
-            allowList);
+            allowList
+        );
 
         try
         {
@@ -442,14 +557,20 @@ public class CdpBrowser : Browser
 
             if (acceptInsecureCerts)
             {
-                await connection.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest { Ignore = true })
+                await connection
+                    .SendAsync(
+                        "Security.setIgnoreCertificateErrors",
+                        new SecuritySetIgnoreCertificateErrorsRequest { Ignore = true }
+                    )
                     .ConfigureAwait(false);
             }
 
             await browser.AttachAsync().ConfigureAwait(false);
             if (downloadBehavior != null)
             {
-                await ((CdpBrowserContext)browser.DefaultContext).SetDownloadBehaviorAsync(downloadBehavior).ConfigureAwait(false);
+                await ((CdpBrowserContext)browser.DefaultContext)
+                    .SetDownloadBehaviorAsync(downloadBehavior)
+                    .ConfigureAwait(false);
             }
 
             return browser;
@@ -465,7 +586,10 @@ public class CdpBrowser : Browser
 
     internal override bool IsIssuesEnabled() => _issuesEnabled;
 
-    internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
+    internal async Task<IPage> CreatePageInContextAsync(
+        string contextId,
+        CreatePageOptions options = null
+    )
     {
         var hasTargets = Array.Exists(Targets(), t => t.BrowserContext.Id == contextId);
         var windowBounds = options?.Type == CreatePageType.Window ? options.WindowBounds : null;
@@ -489,48 +613,68 @@ public class CdpBrowser : Browser
             // We don't have this code in upstream.
             // Puppeteer sends a number if the contextId is a number, even if the typing says that it should be a string.
             // It seems that firefox ignores the contextId if it's not a number. Which is what Firefox sent back.
-            createTargetRequest.BrowserContextId = int.TryParse(contextId, out var contextIdAsNumber)
+            createTargetRequest.BrowserContextId = int.TryParse(
+                contextId,
+                out var contextIdAsNumber
+            )
                 ? contextIdAsNumber
                 : contextId;
         }
 
-        var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
-            .ConfigureAwait(false)).TargetId;
+        var targetId = (
+            await Connection
+                .SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
+                .ConfigureAwait(false)
+        ).TargetId;
 
-        var target = await WaitForTargetAsync(t => ((CdpTarget)t).TargetId == targetId).ConfigureAwait(false) as CdpTarget;
+        var target =
+            await WaitForTargetAsync(t => ((CdpTarget)t).TargetId == targetId).ConfigureAwait(false)
+            as CdpTarget;
         await target!.InitializedTask.ConfigureAwait(false);
         return await target.PageAsync().ConfigureAwait(false);
     }
 
     internal async Task<IPage> CreateDevToolsPageAsync(string pageTargetId)
     {
-        var openDevToolsResponse = await Connection.SendAsync<TargetCreateTargetResponse>(
-            "Target.openDevTools",
-            new TargetActivateTargetRequest { TargetId = pageTargetId }).ConfigureAwait(false);
+        var openDevToolsResponse = await Connection
+            .SendAsync<TargetCreateTargetResponse>(
+                "Target.openDevTools",
+                new TargetActivateTargetRequest { TargetId = pageTargetId }
+            )
+            .ConfigureAwait(false);
 
-        return await GetDevToolsTargetPageAsync(openDevToolsResponse.TargetId).ConfigureAwait(false);
+        return await GetDevToolsTargetPageAsync(openDevToolsResponse.TargetId)
+            .ConfigureAwait(false);
     }
 
     internal async Task<IPage> GetDevToolsTargetPageAsync(string devtoolsTargetId)
     {
-        var target = await WaitForTargetAsync(
-            t => ((CdpTarget)t).TargetId == devtoolsTargetId).ConfigureAwait(false) as CdpTarget;
+        var target =
+            await WaitForTargetAsync(t => ((CdpTarget)t).TargetId == devtoolsTargetId)
+                .ConfigureAwait(false) as CdpTarget;
 
         if (target == null)
         {
-            throw new PuppeteerException($"Missing target for DevTools page (id = {devtoolsTargetId})");
+            throw new PuppeteerException(
+                $"Missing target for DevTools page (id = {devtoolsTargetId})"
+            );
         }
 
-        var initialized = await target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success;
+        var initialized =
+            await target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success;
         if (!initialized)
         {
-            throw new PuppeteerException($"Failed to create target for DevTools page (id = {devtoolsTargetId})");
+            throw new PuppeteerException(
+                $"Failed to create target for DevTools page (id = {devtoolsTargetId})"
+            );
         }
 
         var page = await target.PageAsync().ConfigureAwait(false);
         if (page == null)
         {
-            throw new PuppeteerException($"Failed to create a DevTools Page for target (id = {devtoolsTargetId})");
+            throw new PuppeteerException(
+                $"Failed to create a DevTools Page for target (id = {devtoolsTargetId})"
+            );
         }
 
         return page;
@@ -538,33 +682,41 @@ public class CdpBrowser : Browser
 
     internal async Task<string> HasDevToolsTargetAsync(string pageTargetId)
     {
-        var response = await Connection.SendAsync<TargetCreateTargetResponse>(
-            "Target.getDevToolsTarget",
-            new TargetActivateTargetRequest { TargetId = pageTargetId }).ConfigureAwait(false);
+        var response = await Connection
+            .SendAsync<TargetCreateTargetResponse>(
+                "Target.getDevToolsTarget",
+                new TargetActivateTargetRequest { TargetId = pageTargetId }
+            )
+            .ConfigureAwait(false);
         return response.TargetId;
     }
 
     internal async Task DisposeContextAsync(string contextId)
     {
-        await Connection.SendAsync("Target.disposeBrowserContext", new TargetDisposeBrowserContextRequest
-        {
-            BrowserContextId = contextId,
-        }).ConfigureAwait(false);
+        await Connection
+            .SendAsync(
+                "Target.disposeBrowserContext",
+                new TargetDisposeBrowserContextRequest { BrowserContextId = contextId }
+            )
+            .ConfigureAwait(false);
         _contexts.TryRemove(contextId, out var _);
     }
 
-    private static bool IsTargetExposed(CdpTarget target)
-        => target.Type != TargetType.Tab && string.IsNullOrEmpty(target.TargetInfo.Subtype);
+    private static bool IsTargetExposed(CdpTarget target) =>
+        target.Type != TargetType.Tab && string.IsNullOrEmpty(target.TargetInfo.Subtype);
 
     private static bool IsDevToolsPageTarget(string url)
     {
-        return url?.StartsWith("devtools://devtools/bundled/devtools_app.html", StringComparison.OrdinalIgnoreCase) == true;
+        return url?.StartsWith(
+                "devtools://devtools/bundled/devtools_app.html",
+                StringComparison.OrdinalIgnoreCase
+            ) == true;
     }
 
     // The version is not expected to change, so cache it and only call Browser.getVersion once.
     // This also avoids repeated calls when using Puppeteer with untrusted sessions.
-    private Task<BrowserGetVersionResponse> GetVersionResponseAsync()
-        => _versionTask ??= Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion");
+    private Task<BrowserGetVersionResponse> GetVersionResponseAsync() =>
+        _versionTask ??= Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion");
 
     private Task AttachAsync()
     {
@@ -577,7 +729,9 @@ public class CdpBrowser : Browser
         TargetManager.TargetChanged += OnTargetChanged;
         _subscriptions.Defer(() => TargetManager.TargetChanged -= OnTargetChanged);
         TargetManager.TargetDiscovered += TargetManager_TargetDiscovered;
-        _subscriptions.Defer(() => TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered);
+        _subscriptions.Defer(() =>
+            TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered
+        );
         return TargetManager.InitializeAsync();
     }
 
@@ -587,7 +741,11 @@ public class CdpBrowser : Browser
         TargetManager.Dispose();
     }
 
-    private CdpTarget CreateTarget(TargetInfo targetInfo, CDPSession session, CDPSession parentSession)
+    private CdpTarget CreateTarget(
+        TargetInfo targetInfo,
+        CDPSession session,
+        CDPSession parentSession
+    )
     {
         var browserContextId = targetInfo.BrowserContextId;
 
@@ -596,7 +754,8 @@ public class CdpBrowser : Browser
             context = (CdpBrowserContext)DefaultContext;
         }
 
-        Task<CDPSession> CreateSession(bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
+        Task<CDPSession> CreateSession(bool isAutoAttachEmulated) =>
+            Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
 
         var otherTarget = new CdpOtherTarget(
             targetInfo,
@@ -604,7 +763,8 @@ public class CdpBrowser : Browser
             context,
             TargetManager,
             CreateSession,
-            ScreenshotTaskQueue);
+            ScreenshotTaskQueue
+        );
 
         if (IsDevToolsPageTarget(targetInfo.Url))
         {
@@ -615,7 +775,8 @@ public class CdpBrowser : Browser
                 TargetManager,
                 CreateSession,
                 DefaultViewport,
-                ScreenshotTaskQueue);
+                ScreenshotTaskQueue
+            );
         }
 
         if (IsPageTargetFunc(otherTarget))
@@ -627,10 +788,14 @@ public class CdpBrowser : Browser
                 TargetManager,
                 CreateSession,
                 DefaultViewport,
-                ScreenshotTaskQueue);
+                ScreenshotTaskQueue
+            );
         }
 
-        if (targetInfo.Type == TargetType.ServiceWorker || targetInfo.Type == TargetType.SharedWorker)
+        if (
+            targetInfo.Type == TargetType.ServiceWorker
+            || targetInfo.Type == TargetType.SharedWorker
+        )
         {
             return new CdpWorkerTarget(
                 targetInfo,
@@ -638,7 +803,8 @@ public class CdpBrowser : Browser
                 context,
                 TargetManager,
                 CreateSession,
-                this.ScreenshotTaskQueue);
+                this.ScreenshotTaskQueue
+            );
         }
 
         return otherTarget;
@@ -687,14 +853,15 @@ public class CdpBrowser : Browser
         }
         catch (Exception ex)
         {
-            var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
+            var message =
+                $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
             _logger.ErrorWithException(ex, message);
             Connection.Close(message);
         }
     }
 
-    private void TargetManager_TargetDiscovered(object sender, TargetChangedArgs e)
-        => OnTargetDiscovered(e);
+    private void TargetManager_TargetDiscovered(object sender, TargetChangedArgs e) =>
+        OnTargetDiscovered(e);
 
     private void OnTargetChanged(object sender, TargetChangedArgs e)
     {
@@ -722,7 +889,9 @@ public class CdpBrowser : Browser
                 return;
             }
 
-            if ((await target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
+            if (
+                (await target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success
+            )
             {
                 var args = new TargetChangedArgs(e.Target);
                 OnTargetDestroyed(args);
@@ -731,7 +900,8 @@ public class CdpBrowser : Browser
         }
         catch (Exception ex)
         {
-            var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
+            var message =
+                $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
             _logger.ErrorWithException(ex, message);
             Connection.Close(message);
         }
@@ -756,7 +926,8 @@ public class CdpBrowser : Browser
         }
         catch (Exception ex)
         {
-            var message = $"Browser failed to process Target Available. {ex.Message}. {ex.StackTrace}";
+            var message =
+                $"Browser failed to process Target Available. {ex.Message}. {ex.StackTrace}";
             _logger.ErrorWithException(ex, message);
         }
     }

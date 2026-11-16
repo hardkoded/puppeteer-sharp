@@ -30,11 +30,9 @@ namespace PuppeteerSharp
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             if (Options.BufferForEnumeration != false)
             {
-                _channel = Channel.CreateUnbounded<byte[]>(new UnboundedChannelOptions
-                {
-                    SingleReader = false,
-                    SingleWriter = true,
-                });
+                _channel = Channel.CreateUnbounded<byte[]>(
+                    new UnboundedChannelOptions { SingleReader = false, SingleWriter = true }
+                );
             }
         }
 
@@ -113,14 +111,20 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         /// <exception cref="InvalidOperationException">Buffering for enumeration was disabled when the recording was created.</exception>
-        public IAsyncEnumerator<byte[]> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        public IAsyncEnumerator<byte[]> GetAsyncEnumerator(
+            CancellationToken cancellationToken = default
+        )
         {
             if (_channel == null)
             {
-                throw new InvalidOperationException("Recording enumeration is disabled. Set RecordOptions.BufferForEnumeration to true to enumerate recording chunks.");
+                throw new InvalidOperationException(
+                    "Recording enumeration is disabled. Set RecordOptions.BufferForEnumeration to true to enumerate recording chunks."
+                );
             }
 
-            return _channel.Reader.ReadAllAsync(cancellationToken).GetAsyncEnumerator(cancellationToken);
+            return _channel
+                .Reader.ReadAllAsync(cancellationToken)
+                .GetAsyncEnumerator(cancellationToken);
         }
 
         /// <inheritdoc/>

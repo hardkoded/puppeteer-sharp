@@ -36,7 +36,11 @@ public class BidiDialog : Dialog
     private readonly UserPrompt _prompt;
 
     private BidiDialog(UserPrompt prompt)
-        : base(ConvertDialogType(prompt.Info.PromptType), prompt.Info.Message, prompt.Info.DefaultValue ?? string.Empty)
+        : base(
+            ConvertDialogType(prompt.Info.PromptType),
+            prompt.Info.Message,
+            prompt.Info.DefaultValue ?? string.Empty
+        )
     {
         _prompt = prompt;
 

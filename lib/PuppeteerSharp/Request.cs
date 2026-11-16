@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
-    public abstract class Request<TResponse>
-        : IRequest, IInterceptableRequest
+    public abstract class Request<TResponse> : IRequest, IInterceptableRequest
         where TResponse : IResponse
     {
         /// <inheritdoc/>
@@ -69,20 +68,11 @@ namespace PuppeteerSharp
 
         internal List<IRequest> RedirectChainList { get; init; }
 
-        internal abstract Payload ContinueRequestOverrides
-        {
-            get;
-        }
+        internal abstract Payload ContinueRequestOverrides { get; }
 
-        internal abstract ResponseData ResponseForRequest
-        {
-            get;
-        }
+        internal abstract ResponseData ResponseForRequest { get; }
 
-        internal abstract RequestAbortErrorCode AbortErrorReason
-        {
-            get;
-        }
+        internal abstract RequestAbortErrorCode AbortErrorReason { get; }
 
         internal bool FromMemoryCache { get; set; }
 
@@ -95,7 +85,8 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task AbortAsync(
             RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed,
-            int? priority = null);
+            int? priority = null
+        );
 
         /// <inheritdoc />
         public abstract Task<string> FetchPostDataAsync();
@@ -104,8 +95,8 @@ namespace PuppeteerSharp
         public abstract Task<byte[]> ContentAsync();
 
         /// <inheritdoc/>
-        void IInterceptableRequest.EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
-            => EnqueueInterceptionActionCore(pendingHandler);
+        void IInterceptableRequest.EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler) =>
+            EnqueueInterceptionActionCore(pendingHandler);
 
         internal abstract Task FinalizeInterceptionsAsync();
 

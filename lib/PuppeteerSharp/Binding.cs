@@ -11,7 +11,13 @@ namespace PuppeteerSharp
 {
     internal class Binding
     {
-        public Binding(string name, Delegate fn, string initSource, bool ownsArguments = false, bool ownsResult = false)
+        public Binding(
+            string name,
+            Delegate fn,
+            string initSource,
+            bool ownsArguments = false,
+            bool ownsResult = false
+        )
         {
             Name = name;
             Function = fn;
@@ -40,7 +46,8 @@ namespace PuppeteerSharp
             ExecutionContext context,
             int id,
             object[] args,
-            bool isTrivial)
+            bool isTrivial
+        )
         {
             var garbage = new List<Task>();
             var ownedHandles = new List<IJSHandle>();
@@ -51,12 +58,15 @@ namespace PuppeteerSharp
                 if (!isTrivial)
                 {
                     // Getting non-trivial arguments.
-                    var handles = await context.EvaluateFunctionHandleAsync(
-                        @"(name, seq) => {
+                    var handles = await context
+                        .EvaluateFunctionHandleAsync(
+                            @"(name, seq) => {
                             return globalThis[name].args.get(seq);
                         }",
-                        cdpName,
-                        id).ConfigureAwait(false);
+                            cdpName,
+                            id
+                        )
+                        .ConfigureAwait(false);
 
                     try
                     {
@@ -101,7 +111,9 @@ namespace PuppeteerSharp
                 }
 
                 const string taskResultPropertyName = "Result";
-                var result = await BindingUtils.ExecuteBindingAsync(Function, args).ConfigureAwait(false);
+                var result = await BindingUtils
+                    .ExecuteBindingAsync(Function, args)
+                    .ConfigureAwait(false);
                 if (result is Task taskResult)
                 {
                     await taskResult.ConfigureAwait(false);
@@ -109,7 +121,10 @@ namespace PuppeteerSharp
                     if (taskResult.GetType().IsGenericType)
                     {
                         // the task is already awaited and therefore the call to property Result will not deadlock
-                        result = taskResult.GetType().GetProperty(taskResultPropertyName)?.GetValue(taskResult);
+                        result = taskResult
+                            .GetType()
+                            .GetProperty(taskResultPropertyName)
+                            ?.GetValue(taskResult);
                     }
                 }
 
@@ -118,15 +133,18 @@ namespace PuppeteerSharp
                     ownedHandles.Add(resultHandle);
                 }
 
-                await context.EvaluateFunctionAsync(
-                    @"(name, seq, result) => {
+                await context
+                    .EvaluateFunctionAsync(
+                        @"(name, seq, result) => {
                         const callbacks = globalThis[name].callbacks;
                         callbacks.get(seq).resolve(result);
                         callbacks.delete(seq);
                     }",
-                    cdpName,
-                    id,
-                    result).ConfigureAwait(false);
+                        cdpName,
+                        id,
+                        result
+                    )
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -138,18 +156,21 @@ namespace PuppeteerSharp
 
                 try
                 {
-                    await context.EvaluateFunctionAsync(
-                        @"(name, seq, message, stack) => {
+                    await context
+                        .EvaluateFunctionAsync(
+                            @"(name, seq, message, stack) => {
                         const error = new Error(message);
                         error.stack = stack;
                         const callbacks = globalThis[name].callbacks;
                         callbacks.get(seq).reject(error);
                         callbacks.delete(seq);
                     }",
-                        cdpName,
-                        id,
-                        ex.Message,
-                        ex.StackTrace).ConfigureAwait(false);
+                            cdpName,
+                            id,
+                            ex.Message,
+                            ex.StackTrace
+                        )
+                        .ConfigureAwait(false);
                 }
                 catch (Exception cleanupException)
                 {

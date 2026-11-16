@@ -6,11 +6,13 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsErrorTests : PuppeteerPageBaseTest
     {
-        public PageEventsErrorTests() : base()
-        {
-        }
+        public PageEventsErrorTests()
+            : base() { }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.error", "should throw when page crashes")]
+        [
+            Test,
+            PuppeteerTest("page.spec", "Page Page.Events.error", "should throw when page crashes")
+        ]
         public async Task ShouldThrowWhenPageCrashes()
         {
             // Waiter must be registered before GoToAsync — a fast chrome://crash can
@@ -25,9 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Page.Error += EventHandler;
 
             var crashUrl = TestConstants.IsChrome ? "chrome://crash" : "about:crashcontent";
-            await Task.WhenAll(
-                errorTask.Task,
-                Page.GoToAsync(crashUrl).ContinueWith(_ => { }));
+            await Task.WhenAll(errorTask.Task, Page.GoToAsync(crashUrl).ContinueWith(_ => { }));
 
             Assert.That(await errorTask.Task, Is.EqualTo("Page crashed!"));
         }

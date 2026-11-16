@@ -21,7 +21,9 @@ namespace PuppeteerSharp.Helpers
 
         internal async Task<TValue> GetItemAsync(TKey key)
         {
-            var tcs = new TaskCompletionSource<TValue>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var tcs = new TaskCompletionSource<TValue>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             _pendingRequests.Add(key, tcs);
 
             if (_dictionary.TryGetValue(key, out var item))
@@ -30,15 +32,23 @@ namespace PuppeteerSharp.Helpers
                 return item;
             }
 
-            return await tcs.Task.WithTimeout(
-                new Action(() =>
-                    throw new PuppeteerException(string.Format(CultureInfo.CurrentCulture, _timeoutMessage, key))),
-                1000).ConfigureAwait(false);
+            return await tcs
+                .Task.WithTimeout(
+                    new Action(() =>
+                        throw new PuppeteerException(
+                            string.Format(CultureInfo.CurrentCulture, _timeoutMessage, key)
+                        )
+                    ),
+                    1000
+                )
+                .ConfigureAwait(false);
         }
 
         internal async Task<TValue> TryGetItemAsync(TKey key)
         {
-            var tcs = new TaskCompletionSource<TValue>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var tcs = new TaskCompletionSource<TValue>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             _pendingRequests.Add(key, tcs);
 
             if (_dictionary.TryGetValue(key, out var item))
@@ -72,13 +82,11 @@ namespace PuppeteerSharp.Helpers
             _pendingRequests.Clear();
         }
 
-        internal TValue GetValueOrDefault(TKey key)
-            => _dictionary.GetValue(key);
+        internal TValue GetValueOrDefault(TKey key) => _dictionary.GetValue(key);
 
-        internal bool TryGetValue(TKey key, out TValue value)
-            => _dictionary.TryGetValue(key, out value);
+        internal bool TryGetValue(TKey key, out TValue value) =>
+            _dictionary.TryGetValue(key, out value);
 
-        internal bool ContainsKey(TKey key)
-            => _dictionary.ContainsKey(key);
+        internal bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
     }
 }

@@ -25,6 +25,4 @@ using System;
 namespace PuppeteerSharp.Helpers.Json;
 
 [AttributeUsage(AttributeTargets.Enum)]
-internal class JsonStringIgnoreAttribute() : Attribute
-{
-}
+internal class JsonStringIgnoreAttribute() : Attribute { }

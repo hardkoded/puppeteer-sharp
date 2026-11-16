@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.PrerenderTests;
 
 public class ViaFrameTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("prerender.spec", "Prerender via frame", "can navigate to a prerendered page via input")]
+    [
+        Test,
+        PuppeteerTest(
+            "prerender.spec",
+            "Prerender via frame",
+            "can navigate to a prerendered page via input"
+        )
+    ]
     public async Task CanNavigateToAPrerenderedPageViaInput()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");
@@ -18,17 +25,26 @@ public class ViaFrameTests : PuppeteerPageBaseTest
 
         var mainFrame = Page.MainFrame;
         var link = await mainFrame.WaitForSelectorAsync("a");
-        await Task.WhenAll(
-            mainFrame.WaitForNavigationAsync(),
-            link.ClickAsync()
-        );
+        await Task.WhenAll(mainFrame.WaitForNavigationAsync(), link.ClickAsync());
 
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
-        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.querySelector('div')?.innerText"), Is.EqualTo("true"));
+        Assert.That(
+            await mainFrame.EvaluateExpressionAsync<string>(
+                "document.querySelector('div')?.innerText"
+            ),
+            Is.EqualTo("true")
+        );
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
     }
 
-    [Test, PuppeteerTest("prerender.spec", "Prerender via frame", "can navigate to a prerendered page via Puppeteer")]
+    [
+        Test,
+        PuppeteerTest(
+            "prerender.spec",
+            "Prerender via frame",
+            "can navigate to a prerendered page via Puppeteer"
+        )
+    ]
     public async Task CanNavigateToAPrerenderedPageViaPuppeteer()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");
@@ -39,7 +55,12 @@ public class ViaFrameTests : PuppeteerPageBaseTest
         var mainFrame = Page.MainFrame;
         await mainFrame.GoToAsync(TestConstants.ServerUrl + "/prerender/target.html");
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
-        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.querySelector('div')?.innerText"), Is.EqualTo("false"));
+        Assert.That(
+            await mainFrame.EvaluateExpressionAsync<string>(
+                "document.querySelector('div')?.innerText"
+            ),
+            Is.EqualTo("false")
+        );
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
     }
 }

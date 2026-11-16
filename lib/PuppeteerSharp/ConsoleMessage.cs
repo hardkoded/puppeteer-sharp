@@ -24,7 +24,8 @@ namespace PuppeteerSharp
             ConsoleMessageLocation location = null,
             IList<ConsoleMessageLocation> stackTrace = null,
             IFrame frame = null,
-            WebWorker worker = null)
+            WebWorker worker = null
+        )
         {
             Type = type;
             Text = text;

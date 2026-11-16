@@ -64,10 +64,14 @@ internal static class HttpUtils
 
         foreach (var header in headers)
         {
-            if (header.Key.IndexOfAny(['\r', '\n']) != -1 || (header.Value?.IndexOfAny(['\r', '\n']) ?? -1) != -1)
+            if (
+                header.Key.IndexOfAny(['\r', '\n']) != -1
+                || (header.Value?.IndexOfAny(['\r', '\n']) ?? -1) != -1
+            )
             {
                 throw new PuppeteerException(
-                    $"Invalid header: CRLF characters are not allowed in header names or values (header: \"{header.Key}\").");
+                    $"Invalid header: CRLF characters are not allowed in header names or values (header: \"{header.Key}\")."
+                );
             }
         }
     }

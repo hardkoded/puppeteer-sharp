@@ -29,7 +29,8 @@ namespace PuppeteerSharp.BrowserData
 
             baseUrl ??= channel switch
             {
-                FirefoxChannel.Nightly => "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central",
+                FirefoxChannel.Nightly =>
+                    "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central",
                 FirefoxChannel.DevEdition => "https://archive.mozilla.org/pub/devedition/releases",
                 FirefoxChannel.Beta or FirefoxChannel.Stable or FirefoxChannel.Esr =>
                     "https://archive.mozilla.org/pub/firefox/releases",
@@ -38,8 +39,12 @@ namespace PuppeteerSharp.BrowserData
 
             return channel switch
             {
-                FirefoxChannel.Nightly => $"{baseUrl}/{string.Join("/", ResolveDownloadPath(platform, resolvedBuildId))}",
-                FirefoxChannel.DevEdition or FirefoxChannel.Beta or FirefoxChannel.Stable or FirefoxChannel.Esr =>
+                FirefoxChannel.Nightly =>
+                    $"{baseUrl}/{string.Join("/", ResolveDownloadPath(platform, resolvedBuildId))}",
+                FirefoxChannel.DevEdition
+                or FirefoxChannel.Beta
+                or FirefoxChannel.Stable
+                or FirefoxChannel.Esr =>
                     $"{baseUrl}/{resolvedBuildId}/{GetPlatformNameForUrl(platform)}/en-US/{GetArchive(platform, resolvedBuildId)}",
                 _ => throw new ArgumentException("Invalid buildId"),
             };
@@ -63,7 +68,9 @@ namespace PuppeteerSharp.BrowserData
             }
 
             var version = await JsonUtils
-                .GetAsync<Dictionary<string, string>>("https://product-details.mozilla.org/1.0/firefox_versions.json")
+                .GetAsync<Dictionary<string, string>>(
+                    "https://product-details.mozilla.org/1.0/firefox_versions.json"
+                )
                 .ConfigureAwait(false);
 
             if (!version.TryGetValue(versionKey, out var buildId))
@@ -88,7 +95,8 @@ namespace PuppeteerSharp.BrowserData
                             "Firefox Nightly.app",
                             "Contents",
                             "MacOS",
-                            "firefox"),
+                            "firefox"
+                        ),
                         Platform.Linux or Platform.LinuxArm64 => Path.Combine("firefox", "firefox"),
                         Platform.Win32 or Platform.Win64 => Path.Combine("firefox", "firefox.exe"),
                         _ => throw new ArgumentException("Invalid platform", nameof(platform)),
@@ -100,7 +108,8 @@ namespace PuppeteerSharp.BrowserData
                             "Firefox.app",
                             "Contents",
                             "MacOS",
-                            "firefox"),
+                            "firefox"
+                        ),
                         Platform.Linux or Platform.LinuxArm64 => Path.Combine("firefox", "firefox"),
                         Platform.Win32 or Platform.Win64 => Path.Combine("core", "firefox.exe"),
                         _ => throw new ArgumentException("Invalid platform", nameof(platform)),
@@ -108,7 +117,10 @@ namespace PuppeteerSharp.BrowserData
             }
         }
 
-        internal static void CreateProfile(string tempUserDataDirectory, Dictionary<string, object> preferences)
+        internal static void CreateProfile(
+            string tempUserDataDirectory,
+            Dictionary<string, object> preferences
+        )
         {
             tempUserDataDirectory = tempUserDataDirectory.Unquote();
 
@@ -122,13 +134,19 @@ namespace PuppeteerSharp.BrowserData
             SyncPreferences(defaultPreferences, tempUserDataDirectory);
         }
 
-        private static void SyncPreferences(Dictionary<string, object> defaultPreferences, string tempUserDataDirectory)
+        private static void SyncPreferences(
+            Dictionary<string, object> defaultPreferences,
+            string tempUserDataDirectory
+        )
         {
             var prefsPath = Path.Combine(tempUserDataDirectory, "prefs.js");
             var userPath = Path.Combine(tempUserDataDirectory, "user.js");
             var lines = string.Join(
                 "\n",
-                defaultPreferences.Select(i => $"user_pref(\"{EscapeJsonString(i.Key)}\", {SerializePreferenceValue(i.Value)});"));
+                defaultPreferences.Select(i =>
+                    $"user_pref(\"{EscapeJsonString(i.Key)}\", {SerializePreferenceValue(i.Value)});"
+                )
+            );
 
             BackupFile(userPath);
             BackupFile(prefsPath);
@@ -136,8 +154,8 @@ namespace PuppeteerSharp.BrowserData
             File.WriteAllText(prefsPath, string.Empty);
         }
 
-        private static string SerializePreferenceValue(object value)
-            => value switch
+        private static string SerializePreferenceValue(object value) =>
+            value switch
             {
                 string s => $"\"{EscapeJsonString(s)}\"",
                 bool b => b ? "true" : "false",
@@ -145,8 +163,8 @@ namespace PuppeteerSharp.BrowserData
                 _ => value?.ToString() ?? "null",
             };
 
-        private static string EscapeJsonString(string s)
-            => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        private static string EscapeJsonString(string s) =>
+            s.Replace("\\", "\\\\").Replace("\"", "\\\"");
 
         private static void BackupFile(string userPath)
         {
@@ -160,7 +178,9 @@ namespace PuppeteerSharp.BrowserData
         private static (FirefoxChannel Channel, string BuildId) ParseBuildId(string buildId)
         {
             // Iterate through all the FirefoxChannel enum values as string
-            foreach (var value in EnumHelper.GetValues<FirefoxChannel>().Select(v => v.ToValueString()))
+            foreach (
+                var value in EnumHelper.GetValues<FirefoxChannel>().Select(v => v.ToValueString())
+            )
             {
                 if (buildId.StartsWith(value, StringComparison.OrdinalIgnoreCase))
                 {
@@ -172,11 +192,11 @@ namespace PuppeteerSharp.BrowserData
             return (FirefoxChannel.Stable, buildId);
         }
 
-        private static string[] ResolveDownloadPath(Platform platform, string buildId)
-            => [GetArchiveNightly(platform, buildId)];
+        private static string[] ResolveDownloadPath(Platform platform, string buildId) =>
+            [GetArchiveNightly(platform, buildId)];
 
-        private static string GetPlatformNameForUrl(Platform platform)
-            => platform switch
+        private static string GetPlatformNameForUrl(Platform platform) =>
+            platform switch
             {
                 Platform.Linux => "linux-x86_64",
                 Platform.LinuxArm64 => "linux-aarch64",
@@ -186,8 +206,8 @@ namespace PuppeteerSharp.BrowserData
                 _ => throw new PuppeteerException($"Unknown platform: {platform}"),
             };
 
-        private static string GetFirefoxPlatform(Platform platform)
-            => platform switch
+        private static string GetFirefoxPlatform(Platform platform) =>
+            platform switch
             {
                 Platform.Linux or Platform.LinuxArm64 => "linux",
                 Platform.MacOS => "mac",
@@ -197,13 +217,16 @@ namespace PuppeteerSharp.BrowserData
                 _ => throw new PuppeteerException($"Unknown platform: {platform}"),
             };
 
-        private static string GetArchiveNightly(Platform platform, string buildId)
-            => platform switch
+        private static string GetArchiveNightly(Platform platform, string buildId) =>
+            platform switch
             {
-                Platform.LinuxArm64 => $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}-aarch64.tar.{GetFormat(buildId)}",
-                Platform.Linux => $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}-x86_64.tar.{GetFormat(buildId)}",
+                Platform.LinuxArm64 =>
+                    $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}-aarch64.tar.{GetFormat(buildId)}",
+                Platform.Linux =>
+                    $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}-x86_64.tar.{GetFormat(buildId)}",
                 Platform.MacOS or Platform.MacOSArm64 => $"firefox-{buildId}.en-US.mac.dmg",
-                Platform.Win32 or Platform.Win64 => $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}.zip",
+                Platform.Win32 or Platform.Win64 =>
+                    $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}.zip",
                 _ => throw new PuppeteerException($"Unknown platform: {platform}"),
             };
 
@@ -213,17 +236,19 @@ namespace PuppeteerSharp.BrowserData
             return majorVersion >= 135 ? "xz" : "bz2";
         }
 
-        private static string GetArchive(Platform platform, string buildId)
-            => platform switch
+        private static string GetArchive(Platform platform, string buildId) =>
+            platform switch
             {
-                Platform.Linux or Platform.LinuxArm64 => $"firefox-{buildId}.tar.{GetFormat(buildId)}",
+                Platform.Linux or Platform.LinuxArm64 =>
+                    $"firefox-{buildId}.tar.{GetFormat(buildId)}",
                 Platform.MacOS or Platform.MacOSArm64 => $"Firefox {buildId}.dmg",
-                Platform.Win32 or Platform.Win64 =>
-                    $"Firefox Setup {buildId}.exe",
+                Platform.Win32 or Platform.Win64 => $"Firefox Setup {buildId}.exe",
                 _ => throw new PuppeteerException($"Unknown platform: {platform}"),
             };
 
-        private static Dictionary<string, object> GetDefaultPreferences(Dictionary<string, object> preferences)
+        private static Dictionary<string, object> GetDefaultPreferences(
+            Dictionary<string, object> preferences
+        )
         {
             const string server = "dummy.test";
             var prefs = new Dictionary<string, object>()
@@ -248,7 +273,8 @@ namespace PuppeteerSharp.BrowserData
 
                 // Prevent various error message on the console
                 // jest-puppeteer asserts that no error message is emitted by the console
-                ["browser.contentblocking.features.standard"] = "-tp,tpPrivate,cookieBehavior0,-cm,-fp",
+                ["browser.contentblocking.features.standard"] =
+                    "-tp,tpPrivate,cookieBehavior0,-cm,-fp",
 
                 // Enable the dump function: which sends messages to the system
                 // console
@@ -315,7 +341,8 @@ namespace PuppeteerSharp.BrowserData
                 ["browser.warnOnQuit"] = false,
 
                 // Defensively disable data reporting systems
-                ["datareporting.healthreport.documentServerURI"] = $"http://{server}/dummy/healthreport/",
+                ["datareporting.healthreport.documentServerURI"] =
+                    $"http://{server}/dummy/healthreport/",
                 ["datareporting.healthreport.logging.consoleEnabled"] = false,
                 ["datareporting.healthreport.service.enabled"] = false,
                 ["datareporting.healthreport.service.firstRun"] = false,

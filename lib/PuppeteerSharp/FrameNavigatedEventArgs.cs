@@ -13,7 +13,11 @@ public record FrameNavigatedEventArgs
     /// <param name="frame">Frame.</param>
     /// <param name="type">Navigation type.</param>
     /// <param name="navigatedWithinDocument">Whether this is a within-document navigation.</param>
-    internal FrameNavigatedEventArgs(IFrame frame, NavigationType type, bool navigatedWithinDocument = false)
+    internal FrameNavigatedEventArgs(
+        IFrame frame,
+        NavigationType type,
+        bool navigatedWithinDocument = false
+    )
     {
         Frame = frame;
         Type = type;

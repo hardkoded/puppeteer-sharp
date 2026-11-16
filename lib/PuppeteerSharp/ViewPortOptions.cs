@@ -8,11 +8,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default Viewport.
         /// </summary>
-        public static ViewPortOptions Default => new()
-        {
-            Width = 800,
-            Height = 600,
-        };
+        public static ViewPortOptions Default => new() { Width = 800, Height = 600 };
 
         /// <summary>
         /// Gets or sets the width.

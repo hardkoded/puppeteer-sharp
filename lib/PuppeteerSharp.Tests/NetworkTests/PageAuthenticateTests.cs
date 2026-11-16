@@ -15,50 +15,50 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             Server.SetAuth("/empty.html", "user", "pass");
 
-            await Page.AuthenticateAsync(new Credentials
-            {
-                Username = "user",
-                Password = "pass"
-            });
+            await Page.AuthenticateAsync(new Credentials { Username = "user", Password = "pass" });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should fail if wrong credentials")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Page.authenticate",
+                "should fail if wrong credentials"
+            )
+        ]
         public async Task ShouldFailIfWrongCredentials()
         {
             Server.SetAuth("/empty.html", "user2", "pass2");
 
-            await Page.AuthenticateAsync(new Credentials
-            {
-                Username = "foo",
-                Password = "bar"
-            });
+            await Page.AuthenticateAsync(new Credentials { Username = "foo", Password = "bar" });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should allow disable authentication")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Page.authenticate",
+                "should allow disable authentication"
+            )
+        ]
         public async Task ShouldAllowDisableAuthentication()
         {
             Server.SetAuth("/empty.html", "user3", "pass3");
 
-            await Page.AuthenticateAsync(new Credentials
-            {
-                Username = "user3",
-                Password = "pass3"
-            });
+            await Page.AuthenticateAsync(
+                new Credentials { Username = "user3", Password = "pass3" }
+            );
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
 
-            await Page.AuthenticateAsync(new Credentials()
-            {
-                Username = "",
-                Password = ""
-            });
+            await Page.AuthenticateAsync(new Credentials() { Username = "", Password = "" });
 
             try
             {
@@ -74,7 +74,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
-        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should work with interception")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Page.authenticate",
+                "should work with interception"
+            )
+        ]
         public async Task ShouldWorkWithInterception()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -83,16 +90,19 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 await e.Request.ContinueAsync();
             };
             Server.SetAuth("/empty.html", "user", "pass");
-            await Page.AuthenticateAsync(new Credentials
-            {
-                Username = "user",
-                Password = "pass"
-            });
+            await Page.AuthenticateAsync(new Credentials { Username = "user", Password = "pass" });
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should error if authentication is required but not enabled")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Page.authenticate",
+                "should error if authentication is required but not enabled"
+            )
+        ]
         public async Task ShouldErrorIfAuthenticationIsRequiredButNotEnabled()
         {
             Server.SetAuth("/empty.html", "user", "pass");
@@ -111,26 +121,23 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             }
 
-            await Page.AuthenticateAsync(new Credentials
-            {
-                Username = "user",
-                Password = "pass"
-            });
+            await Page.AuthenticateAsync(new Credentials { Username = "user", Password = "pass" });
             response = await Page.ReloadAsync();
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should not disable caching")]
+        [
+            Test,
+            PuppeteerTest("network.spec", "network Page.authenticate", "should not disable caching")
+        ]
         public async Task ShouldNotDisableCaching()
         {
             Server.SetAuth("/cached/one-style.css", "user4", "pass4");
             Server.SetAuth("/cached/one-style.html", "user4", "pass4");
 
-            await Page.AuthenticateAsync(new Credentials
-            {
-                Username = "user4",
-                Password = "pass4"
-            });
+            await Page.AuthenticateAsync(
+                new Credentials { Username = "user4", Password = "pass4" }
+            );
 
             var responses = new Dictionary<string, IResponse>();
             Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
@@ -144,7 +151,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(responses["one-style.css"].FromCache, Is.True);
         }
 
-        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should not disable caching for stylesheet")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Page.authenticate",
+                "should not disable caching for stylesheet"
+            )
+        ]
         public async Task ShouldNotDisableCachingForStylesheet()
         {
             var user = "user4-stylesheet;";
@@ -152,11 +166,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.SetAuth("/cached/one-style.css", user, pass);
             Server.SetAuth("/cached/one-style.html", user, pass);
 
-            await Page.AuthenticateAsync(new Credentials
-            {
-                Username = user,
-                Password = pass
-            });
+            await Page.AuthenticateAsync(new Credentials { Username = user, Password = pass });
 
             var responses = new Dictionary<string, IResponse>();
             Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
@@ -170,7 +180,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(responses["one-style.html"].FromCache, Is.False);
         }
 
-        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should not disable caching for script")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Page.authenticate",
+                "should not disable caching for script"
+            )
+        ]
         public async Task ShouldNotDisableCachingForScript()
         {
             var user = "user4-script;";
@@ -178,11 +195,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.SetAuth("/cached/one-script.js", user, pass);
             Server.SetAuth("/cached/one-script.html", user, pass);
 
-            await Page.AuthenticateAsync(new Credentials
-            {
-                Username = user,
-                Password = pass
-            });
+            await Page.AuthenticateAsync(new Credentials { Username = user, Password = pass });
 
             var responses = new Dictionary<string, IResponse>();
             Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
@@ -192,7 +205,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             Assert.That(responses["one-script.js"].Status, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(responses["one-script.js"].FromCache, Is.True);
-            Assert.That(responses["one-script.html"].Status, Is.EqualTo(HttpStatusCode.NotModified));
+            Assert.That(
+                responses["one-script.html"].Status,
+                Is.EqualTo(HttpStatusCode.NotModified)
+            );
             Assert.That(responses["one-script.html"].FromCache, Is.False);
         }
     }

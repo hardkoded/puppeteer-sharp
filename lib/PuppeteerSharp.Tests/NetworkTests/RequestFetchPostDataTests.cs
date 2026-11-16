@@ -8,7 +8,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestFetchPostDataTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("network.spec", "network Request.fetchPostData", "should work for intercepted form submissions")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.fetchPostData",
+                "should work for intercepted form submissions"
+            )
+        ]
         public async Task ShouldWorkForInterceptedFormSubmissions()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -27,7 +34,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             await Task.WhenAll(
                 Page.WaitForNavigationAsync(),
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = '/post';
@@ -37,12 +45,21 @@ namespace PuppeteerSharp.Tests.NetworkTests
                     form.append(input);
                     document.body.append(form);
                     form.submit();
-                }"));
+                }"
+                )
+            );
 
             Assert.That(postData, Is.EqualTo("foo=bar"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.fetchPostData", "should work for intercepted form submissions in cooperative mode")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.fetchPostData",
+                "should work for intercepted form submissions in cooperative mode"
+            )
+        ]
         public async Task ShouldWorkForInterceptedFormSubmissionsInCooperativeMode()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -66,7 +83,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             await Task.WhenAll(
                 Page.WaitForNavigationAsync(),
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = '/post';
@@ -76,7 +94,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
                     form.append(input);
                     document.body.append(form);
                     form.submit();
-                }"));
+                }"
+                )
+            );
 
             Assert.That(postData, Is.EqualTo("foo=bar"));
         }
@@ -87,14 +107,23 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
             var requestTask = Page.WaitForRequestAsync(request => !TestUtils.IsFavicon(request));
-            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
+            await Page.EvaluateExpressionHandleAsync(
+                "fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})"
+            );
             var request = await requestTask.WithTimeout();
             Assert.That(request, Is.Not.Null);
             Assert.That(request.HasPostData, Is.True);
             Assert.That(await request.FetchPostDataAsync(), Is.EqualTo("{\"foo\":\"bar\"}"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.fetchPostData", "should be |undefined| when there is no post data")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.fetchPostData",
+                "should be |undefined| when there is no post data"
+            )
+        ]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -102,31 +131,45 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(await response.Request.FetchPostDataAsync(), Is.Null);
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.fetchPostData", "should work with blobs")]
+        [
+            Test,
+            PuppeteerTest("network.spec", "network Request.fetchPostData", "should work with blobs")
+        ]
         public async Task ShouldWorkWithBlobs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
             var requestTask = Page.WaitForRequestAsync(request => !TestUtils.IsFavicon(request));
-            await Page.EvaluateExpressionHandleAsync(@"fetch('./post', {
+            await Page.EvaluateExpressionHandleAsync(
+                @"fetch('./post', {
                 method: 'POST',
                 body: new Blob([JSON.stringify({foo: 'bar'})], {
                   type: 'application/json',
                 }),
-            })");
+            })"
+            );
             var request = await requestTask.WithTimeout();
             Assert.That(request, Is.Not.Null);
             Assert.That(request.HasPostData, Is.True);
             Assert.That(await request.FetchPostDataAsync(), Is.EqualTo("{\"foo\":\"bar\"}"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.fetchPostData", "should work with binary post data")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.fetchPostData",
+                "should work with binary post data"
+            )
+        ]
         public async Task ShouldWorkWithBinaryPostData()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
             var requestTask = Page.WaitForRequestAsync(request => !TestUtils.IsFavicon(request));
-            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: new Uint8Array([104, 101, 108, 108, 111, 0, 255]) })");
+            await Page.EvaluateExpressionHandleAsync(
+                "fetch('./post', { method: 'POST', body: new Uint8Array([104, 101, 108, 108, 111, 0, 255]) })"
+            );
             var request = await requestTask.WithTimeout();
             Assert.That(request, Is.Not.Null);
             Assert.That(request.HasPostData, Is.True);

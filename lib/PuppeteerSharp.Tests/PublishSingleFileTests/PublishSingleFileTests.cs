@@ -11,7 +11,9 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
         {
             var tempPath = Path.GetTempPath();
             var actualFilePath = Path.Combine(tempPath, $"google.jpg");
-            var actualWindowsBinary = DotnetPublishSingleFile("PuppeteerSharp.Tests.SingleFileDeployment");
+            var actualWindowsBinary = DotnetPublishSingleFile(
+                "PuppeteerSharp.Tests.SingleFileDeployment"
+            );
 
             DeleteIfExists(actualFilePath);
 
@@ -24,8 +26,8 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
-                    WorkingDirectory = tempPath
-                }
+                    WorkingDirectory = tempPath,
+                },
             };
 
             process.Start();
@@ -40,7 +42,11 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
 
             Assert.That(isExited, Is.True);
 
-            Assert.That(File.Exists(actualFilePath), Is.True, $"StdOut: {outputResult}\nStdErr: {errorResult}\n");
+            Assert.That(
+                File.Exists(actualFilePath),
+                Is.True,
+                $"StdOut: {outputResult}\nStdErr: {errorResult}\n"
+            );
         }
 
         private static string GetStreamOutput(StreamReader stream)
@@ -62,13 +68,14 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = $"publish {absolutePath} --configuration Release -p:PublishSingleFile=true --self-contained false --use-current-runtime -o ./publish",
+                    Arguments =
+                        $"publish {absolutePath} --configuration Release -p:PublishSingleFile=true --self-contained false --use-current-runtime -o ./publish",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
-                    WorkingDirectory = absolutePath
-                }
+                    WorkingDirectory = absolutePath,
+                },
             };
             process.Start();
 

@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-
 #if !CDP_ONLY
 
 using WebDriverBiDi.Script;
@@ -45,8 +44,10 @@ internal static class BidiDeserializer
             StringRemoteValue s => s.Value,
             BooleanRemoteValue b => (object)b.Value,
             NumberRemoteValue n => (object)n.Value,
-            ValueHoldingRemoteValue v when value.Type == RemoteValueType.BigInt =>
-                v.ValueObject != null ? Convert.ToInt64(v.ValueObject, CultureInfo.InvariantCulture) : null,
+            ValueHoldingRemoteValue v when value.Type == RemoteValueType.BigInt => v.ValueObject
+            != null
+                ? Convert.ToInt64(v.ValueObject, CultureInfo.InvariantCulture)
+                : null,
             _ => null,
         };
     }
@@ -96,9 +97,7 @@ internal static class BidiDeserializer
                     ? Convert.ToInt64(vhBigInt.ValueObject, CultureInfo.InvariantCulture)
                     : null;
             case RemoteValueType.Boolean:
-                return value is BooleanRemoteValue b
-                    ? (object)b.Value
-                    : null;
+                return value is BooleanRemoteValue b ? (object)b.Value : null;
             default:
                 return value is ValueHoldingRemoteValue vh ? vh.ValueObject : null;
         }

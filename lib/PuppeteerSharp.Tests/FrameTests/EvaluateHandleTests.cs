@@ -6,9 +6,8 @@ namespace PuppeteerSharp.Tests.FrameTests
 {
     public class EvaluateHandleTests : PuppeteerPageBaseTest
     {
-        public EvaluateHandleTests() : base()
-        {
-        }
+        public EvaluateHandleTests()
+            : base() { }
 
         [Test, PuppeteerTest("frame.spec", "Frame specs Frame.evaluateHandle", "should work")]
         public async Task ShouldWork()

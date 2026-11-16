@@ -13,7 +13,10 @@ namespace PuppeteerSharp.Cdp;
 public partial class CdpHttpResponse : Response<CdpHttpRequest>
 {
 #if NETSTANDARD2_0
-    private static readonly Regex _extraInfoLines = new(@"[^ ]* [^ ]* (?<text>.*)", RegexOptions.Multiline);
+    private static readonly Regex _extraInfoLines = new(
+        @"[^ ]* [^ ]* (?<text>.*)",
+        RegexOptions.Multiline
+    );
 #endif
     private readonly bool _fromDiskCache;
     private byte[] _buffer;
@@ -22,7 +25,8 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
     internal CdpHttpResponse(
         CdpHttpRequest request,
         ResponsePayload responseMessage,
-        ResponseReceivedExtraInfoResponse extraInfo)
+        ResponseReceivedExtraInfoResponse extraInfo
+    )
     {
         Request = request;
         Status = extraInfo != null ? extraInfo.StatusCode : responseMessage.Status;
@@ -61,7 +65,8 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
     /// <inheritdoc/>
     public override long EncodedDataLength => _encodedDataLength;
 
-    internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; } =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     /// <summary>
     /// Returns a Task which resolves to a buffer with response body.
@@ -77,10 +82,12 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
             {
                 // Use CDPSession from corresponding request to retrieve body, as its client
                 // might have been updated (e.g. for an adopted OOPIF).
-                var response = await Request.Client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new NetworkGetResponseBodyRequest
-                {
-                    RequestId = Request.Id,
-                }).ConfigureAwait(false);
+                var response = await Request
+                    .Client.SendAsync<NetworkGetResponseBodyResponse>(
+                        "Network.getResponseBody",
+                        new NetworkGetResponseBodyRequest { RequestId = Request.Id }
+                    )
+                    .ConfigureAwait(false);
 
                 _buffer = response.Base64Encoded
                     ? Convert.FromBase64String(response.Body)
@@ -106,7 +113,9 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
         try
         {
             // Use CDPSession from corresponding request, as its client might have been updated (e.g. for an adopted OOPIF).
-            return await ResponseBodyStream.CreateAsync(Request.Client, Request.Id).ConfigureAwait(false);
+            return await ResponseBodyStream
+                .CreateAsync(Request.Client, Request.Id)
+                .ConfigureAwait(false);
         }
         catch (MessageException ex) when (ex.Message.Contains("already finished loading"))
         {

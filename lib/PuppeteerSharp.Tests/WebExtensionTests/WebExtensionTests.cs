@@ -10,11 +10,26 @@ namespace PuppeteerSharp.Tests.WebExtensionTests
 {
     public class WebExtensionTests : PuppeteerBaseTest
     {
-        private static readonly string _extensionPath = Path.Combine(AppContext.BaseDirectory, "Assets", "simple-extension");
-        private static readonly string _extensionFirefoxPath = Path.Combine(AppContext.BaseDirectory, "Assets", "simple-extension-firefox");
+        private static readonly string _extensionPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "simple-extension"
+        );
+        private static readonly string _extensionFirefoxPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "simple-extension-firefox"
+        );
         private const string ExpectedId = "mbljndkcfjhaffohbnmoedabegpolpmd";
 
-        [Test, PuppeteerTest("webExtension.spec", "webExtension", "can install and uninstall an extension")]
+        [
+            Test,
+            PuppeteerTest(
+                "webExtension.spec",
+                "webExtension",
+                "can install and uninstall an extension"
+            )
+        ]
         public async Task CanInstallAndUninstallAnExtension()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -28,7 +43,8 @@ namespace PuppeteerSharp.Tests.WebExtensionTests
 
             await using var browser = await Puppeteer.LaunchAsync(
                 options,
-                TestConstants.LoggerFactory);
+                TestConstants.LoggerFactory
+            );
 
             var id = await browser.InstallExtensionAsync(extensionPath);
 

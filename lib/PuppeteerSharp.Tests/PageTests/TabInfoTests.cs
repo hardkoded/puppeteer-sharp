@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class TabInfoTests : PuppeteerBrowserContextBaseTest
     {
-        [Test, PuppeteerTest("page.test", "Page Page.tabInfo", "should return the tab index and active state")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.test",
+                "Page Page.tabInfo",
+                "should return the tab index and active state"
+            )
+        ]
         public async Task ShouldReturnTheTabIndexAndActiveState()
         {
             var page1 = await Context.NewPageAsync();

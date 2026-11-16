@@ -7,7 +7,14 @@ namespace PuppeteerSharp.Tests.CoverageTests
 {
     public class JSResetOnNavigationTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("coverage.spec", "Coverage specs resetOnNavigation", "should NOT report scripts across navigations when enabled")]
+        [
+            Test,
+            PuppeteerTest(
+                "coverage.spec",
+                "Coverage specs resetOnNavigation",
+                "should NOT report scripts across navigations when enabled"
+            )
+        ]
         public async Task ShouldNotReportScriptsAcrossNavigationsWhenEnabled()
         {
             await Page.Coverage.StartJSCoverageAsync();

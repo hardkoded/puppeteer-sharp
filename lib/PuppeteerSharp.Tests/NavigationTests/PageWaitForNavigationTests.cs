@@ -17,14 +17,24 @@ namespace PuppeteerSharp.Tests.NavigationTests
             var waitForNavigationResult = Page.WaitForNavigationAsync();
             await Task.WhenAll(
                 waitForNavigationResult,
-                Page.EvaluateFunctionAsync("url => window.location.href = url", TestConstants.ServerUrl + "/grid.html")
+                Page.EvaluateFunctionAsync(
+                    "url => window.location.href = url",
+                    TestConstants.ServerUrl + "/grid.html"
+                )
             );
             var response = await waitForNavigationResult;
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(response.Url, Does.Contain("grid.html"));
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with both domcontentloaded and load")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.waitForNavigation",
+                "should work with both domcontentloaded and load"
+            )
+        ]
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();
@@ -32,20 +42,22 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             var waitForRequestTask = Server.WaitForRequest("/one-style.css");
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
-            var domContentLoadedTask = Page.WaitForNavigationAsync(new NavigationOptions
-            {
-                WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded }
-            });
+            var domContentLoadedTask = Page.WaitForNavigationAsync(
+                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded } }
+            );
 
             var bothFired = false;
-            var bothFiredTask = Page.WaitForNavigationAsync(new NavigationOptions
-            {
-                WaitUntil = new[]
-                {
-                    WaitUntilNavigation.Load,
-                    WaitUntilNavigation.DOMContentLoaded
-                }
-            }).ContinueWith(_ => bothFired = true);
+            var bothFiredTask = Page.WaitForNavigationAsync(
+                    new NavigationOptions
+                    {
+                        WaitUntil = new[]
+                        {
+                            WaitUntilNavigation.Load,
+                            WaitUntilNavigation.DOMContentLoaded,
+                        },
+                    }
+                )
+                .ContinueWith(_ => bothFired = true);
 
             await waitForRequestTask.WithTimeout(5_000);
             await domContentLoadedTask.WithTimeout();
@@ -55,63 +67,87 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await navigationTask.WithTimeout();
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with clicking on anchor links")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.waitForNavigation",
+                "should work with clicking on anchor links"
+            )
+        ]
         public async Task ShouldWorkWithClickingOnAnchorLinks()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetContentAsync("<a href='#foobar'>foobar</a>");
             var navigationTask = Page.WaitForNavigationAsync();
-            await Task.WhenAll(
-                navigationTask,
-                Page.ClickAsync("a")
-            );
+            await Task.WhenAll(navigationTask, Page.ClickAsync("a"));
             Assert.That(await navigationTask, Is.Null);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage + "#foobar"));
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with history.pushState()")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.waitForNavigation",
+                "should work with history.pushState()"
+            )
+        ]
         public async Task ShouldWorkWithHistoryPushState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
               <a onclick='javascript:pushState()'>SPA</a>
               <script>
                 function pushState() { history.pushState({}, '', 'wow.html') }
               </script>
-            ");
-            var navigationTask = Page.WaitForNavigationAsync();
-            await Task.WhenAll(
-                navigationTask,
-                Page.ClickAsync("a")
+            "
             );
+            var navigationTask = Page.WaitForNavigationAsync();
+            await Task.WhenAll(navigationTask, Page.ClickAsync("a"));
             Assert.That(await navigationTask, Is.Null);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/wow.html"));
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with history.replaceState()")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.waitForNavigation",
+                "should work with history.replaceState()"
+            )
+        ]
         public async Task ShouldWorkWithHistoryReplaceState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
               <a onclick='javascript:pushState()'>SPA</a>
               <script>
                 function pushState() { history.pushState({}, '', 'replaced.html') }
               </script>
-            ");
-            var navigationTask = Page.WaitForNavigationAsync();
-            await Task.WhenAll(
-                navigationTask,
-                Page.ClickAsync("a")
+            "
             );
+            var navigationTask = Page.WaitForNavigationAsync();
+            await Task.WhenAll(navigationTask, Page.ClickAsync("a"));
             Assert.That(await navigationTask, Is.Null);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/replaced.html"));
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with DOM history.back()/history.forward()")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.waitForNavigation",
+                "should work with DOM history.back()/history.forward()"
+            )
+        ]
         public async Task ShouldWorkWithDOMHistoryBackAndHistoryForward()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
               <a id=back onclick='javascript:goBack()'>back</a>
               <a id=forward onclick='javascript:goForward()'>forward</a>
               <script>
@@ -120,25 +156,27 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 history.pushState({}, '', '/first.html');
                 history.pushState({}, '', '/second.html');
               </script>
-            ");
+            "
+            );
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/second.html"));
             var navigationTask = Page.WaitForNavigationAsync();
-            await Task.WhenAll(
-                navigationTask,
-                Page.ClickAsync("a#back")
-            );
+            await Task.WhenAll(navigationTask, Page.ClickAsync("a#back"));
             Assert.That(await navigationTask, Is.Null);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/first.html"));
             navigationTask = Page.WaitForNavigationAsync();
-            await Task.WhenAll(
-                navigationTask,
-                Page.ClickAsync("a#forward")
-            );
+            await Task.WhenAll(navigationTask, Page.ClickAsync("a#forward"));
             Assert.That(await navigationTask, Is.Null);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/second.html"));
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work when subframe issues window.stop()")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.waitForNavigation",
+                "should work when subframe issues window.stop()"
+            )
+        ]
         public async Task ShouldWorkWhenSubframeIssuesWindowStop()
         {
             Server.SetRoute("/frames/style.css", _ => Task.CompletedTask);
@@ -153,21 +191,23 @@ namespace PuppeteerSharp.Tests.NavigationTests
             };
 
             var frame = await frameAttachedTaskSource.Task;
-            await Task.WhenAll(
-                frame.EvaluateFunctionAsync("() => window.stop()"),
-                navigationTask
-            );
+            await Task.WhenAll(frame.EvaluateFunctionAsync("() => window.stop()"), navigationTask);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should be cancellable")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.waitForNavigation",
+                "should be cancellable"
+            )
+        ]
         public async Task ShouldBeCancellable()
         {
             using var cts = new CancellationTokenSource();
-            var task = Page.WaitForNavigationAsync(new NavigationOptions
-            {
-                CancellationToken = cts.Token,
-                Timeout = 5_000,
-            });
+            var task = Page.WaitForNavigationAsync(
+                new NavigationOptions { CancellationToken = cts.Token, Timeout = 5_000 }
+            );
 
             cts.Cancel();
 
@@ -184,14 +224,22 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(caughtException, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should reject at once when the signal is already aborted")]
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.waitForNavigation",
+                "should reject at once when the signal is already aborted"
+            )
+        ]
         public void ShouldRejectAtOnceWhenTheSignalIsAlreadyAborted()
         {
             using var cts = new CancellationTokenSource();
             cts.Cancel();
 
-            Assert.ThrowsAsync<OperationCanceledException>(() => Page.WaitForNavigationAsync(
-                new NavigationOptions { CancellationToken = cts.Token }));
+            Assert.ThrowsAsync<OperationCanceledException>(() =>
+                Page.WaitForNavigationAsync(new NavigationOptions { CancellationToken = cts.Token })
+            );
         }
     }
 }

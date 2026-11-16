@@ -6,47 +6,68 @@ namespace PuppeteerSharp.Tests.InputTests
 {
     public class InputTests : PuppeteerPageBaseTest
     {
-        public InputTests() : base()
-        {
-        }
+        public InputTests()
+            : base() { }
 
-        [Test, PuppeteerTest("input.spec", "input tests ElementHandle.uploadFile", "should upload the file")]
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests ElementHandle.uploadFile",
+                "should upload the file"
+            )
+        ]
         public async Task ShouldUploadTheFile()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
             var filePath = TestConstants.FileToUpload;
             var input = await Page.QuerySelectorAsync("input");
-            await input.EvaluateFunctionAsync(@"e => {
+            await input.EvaluateFunctionAsync(
+                @"e => {
                 window._inputEvents = [];
                 e.addEventListener('change', ev => window._inputEvents.push(ev.type));
                 e.addEventListener('input', ev => window._inputEvents.push(ev.type));
-            }");
+            }"
+            );
             await input.UploadFileAsync(filePath);
             Assert.That(
                 await input.EvaluateFunctionAsync<string>("e => e.files[0].name"),
-                Is.EqualTo("file-to-upload.txt"));
+                Is.EqualTo("file-to-upload.txt")
+            );
             Assert.That(
                 await input.EvaluateFunctionAsync<string>("e => e.files[0].type"),
-                Is.EqualTo("text/plain"));
+                Is.EqualTo("text/plain")
+            );
             Assert.That(
                 await Page.EvaluateFunctionAsync<string[]>("() => window._inputEvents"),
-                Is.EqualTo(new[] { "input", "change" }));
+                Is.EqualTo(new[] { "input", "change" })
+            );
         }
 
-        [Test, PuppeteerTest("input.spec", "input tests ElementHandle.uploadFile", "should read the file")]
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests ElementHandle.uploadFile",
+                "should read the file"
+            )
+        ]
         public async Task ShouldReadTheFile()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");
             var filePath = TestConstants.FileToUpload;
             var input = await Page.QuerySelectorAsync("input");
-            await input.EvaluateFunctionAsync(@"e => {
+            await input.EvaluateFunctionAsync(
+                @"e => {
                 window._inputEvents = [];
                 e.addEventListener('change', ev => window._inputEvents.push(ev.type));
                 e.addEventListener('input', ev => window._inputEvents.push(ev.type));
-            }");
+            }"
+            );
             await input.UploadFileAsync(filePath);
             Assert.That(
-                await input.EvaluateFunctionAsync<string>(@"e => {
+                await input.EvaluateFunctionAsync<string>(
+                    @"e => {
                     const file = e.files[0];
                     if (!file) {
                         throw new Error('No file found');
@@ -57,8 +78,10 @@ namespace PuppeteerSharp.Tests.InputTests
                     });
                     reader.readAsText(file);
                     return promise.then(() => reader.result);
-                }"),
-                Is.EqualTo("contents of the file"));
+                }"
+                ),
+                Is.EqualTo("contents of the file")
+            );
         }
     }
 }

@@ -7,11 +7,16 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptTests : PuppeteerPageBaseTest
 {
-    public DeviceRequestPromptTests() : base()
+    public DeviceRequestPromptTests()
+        : base()
     {
         DefaultOptions = TestConstants.DefaultBrowserOptions();
         DefaultOptions.AcceptInsecureCerts = true;
-        DefaultOptions.Args = [.. DefaultOptions.Args, "--enable-features=WebBluetoothNewPermissionsBackend"];
+        DefaultOptions.Args =
+        [
+            .. DefaultOptions.Args,
+            "--enable-features=WebBluetoothNewPermissionsBackend",
+        ];
     }
 
     [Test, PuppeteerTest("device-request-prompt.spec", "device request prompt", "does not crash")]
@@ -31,10 +36,9 @@ public class DeviceRequestPromptTests : PuppeteerPageBaseTest
     public void CanBeAborted()
     {
         using var cts = new CancellationTokenSource();
-        var task = Page.WaitForDevicePromptAsync(new WaitForOptions
-        {
-            CancellationToken = cts.Token,
-        });
+        var task = Page.WaitForDevicePromptAsync(
+            new WaitForOptions { CancellationToken = cts.Token }
+        );
 
         cts.Cancel();
 

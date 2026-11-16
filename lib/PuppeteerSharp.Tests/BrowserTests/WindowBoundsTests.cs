@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class WindowBoundsTests : PuppeteerBrowserContextBaseTest
     {
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.get|setWindowBounds", "should get and set browser window bounds")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.get|setWindowBounds",
+                "should get and set browser window bounds"
+            )
+        ]
         public async Task ShouldGetAndSetBrowserWindowBounds()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -22,11 +29,9 @@ namespace PuppeteerSharp.Tests.BrowserTests
                 Width = 800,
                 Height = 600,
             };
-            var page = await context.NewPageAsync(new CreatePageOptions
-            {
-                Type = CreatePageType.Window,
-                WindowBounds = initialBounds,
-            });
+            var page = await context.NewPageAsync(
+                new CreatePageOptions { Type = CreatePageType.Window, WindowBounds = initialBounds }
+            );
 
             var windowId = await page.WindowIdAsync();
             var bounds = await browser.GetWindowBoundsAsync(windowId);
@@ -50,7 +55,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             Assert.That(newBounds.Height, Is.EqualTo(1200));
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.get|setWindowBounds", "should set and get browser window maximized state")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.get|setWindowBounds",
+                "should set and get browser window maximized state"
+            )
+        ]
         public async Task ShouldSetAndGetBrowserWindowMaximizedState()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -60,30 +72,37 @@ namespace PuppeteerSharp.Tests.BrowserTests
             var context = await browser.CreateBrowserContextAsync();
 
             // Add a secondary screen.
-            var screenInfo = await browser.AddScreenAsync(new AddScreenParams
-            {
-                Left = 800,
-                Top = 0,
-                Width = 1600,
-                Height = 1200,
-            });
+            var screenInfo = await browser.AddScreenAsync(
+                new AddScreenParams
+                {
+                    Left = 800,
+                    Top = 0,
+                    Width = 1600,
+                    Height = 1200,
+                }
+            );
 
             // Open a window on the secondary screen.
-            var page = await context.NewPageAsync(new CreatePageOptions
-            {
-                Type = CreatePageType.Window,
-                WindowBounds = new WindowBounds
+            var page = await context.NewPageAsync(
+                new CreatePageOptions
                 {
-                    Left = screenInfo.AvailLeft + 50,
-                    Top = screenInfo.AvailTop + 50,
-                    Width = screenInfo.AvailWidth - 100,
-                    Height = screenInfo.AvailHeight - 100,
-                },
-            });
+                    Type = CreatePageType.Window,
+                    WindowBounds = new WindowBounds
+                    {
+                        Left = screenInfo.AvailLeft + 50,
+                        Top = screenInfo.AvailTop + 50,
+                        Width = screenInfo.AvailWidth - 100,
+                        Height = screenInfo.AvailHeight - 100,
+                    },
+                }
+            );
 
             // Maximize the created window.
             var windowId = await page.WindowIdAsync();
-            await browser.SetWindowBoundsAsync(windowId, new WindowBounds { WindowState = WindowState.Maximized });
+            await browser.SetWindowBoundsAsync(
+                windowId,
+                new WindowBounds { WindowState = WindowState.Maximized }
+            );
 
             // Expect the maximized window to fill the entire screen's available area.
             var bounds = await browser.GetWindowBoundsAsync(windowId);

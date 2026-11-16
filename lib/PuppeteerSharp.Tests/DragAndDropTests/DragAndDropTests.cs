@@ -6,9 +6,8 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
 {
     public class DragAndDropTests : PuppeteerPageBaseTest
     {
-        public DragAndDropTests() : base()
-        {
-        }
+        public DragAndDropTests()
+            : base() { }
 
         [Test, PuppeteerTest("drag-and-drop.spec", "Drag n' Drop", "should drop")]
         public async Task ShouldDrop()
@@ -58,12 +57,20 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             Assert.That(await GetDragStateAsync(), Is.EqualTo(1234));
         }
 
-        [Test, PuppeteerTest("drag-and-drop.spec", "Drag n' Drop", "should release the mouse button when the drop fails")]
+        [
+            Test,
+            PuppeteerTest(
+                "drag-and-drop.spec",
+                "Drag n' Drop",
+                "should release the mouse button when the drop fails"
+            )
+        ]
         public async Task ShouldReleaseTheMouseButtonWhenTheDropFails()
         {
             // The page re-renders while the drag is in flight, which detaches the
             // dragged node, as a reactive list would. The drop then fails.
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
               <div id=""drag"">drag me</div>
               <div id=""drop"">drop here</div>
               <script>
@@ -77,7 +84,8 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
                   drag.replaceWith(drag.cloneNode(true));
                 });
               </script>
-            ");
+            "
+            );
 
             var draggable = await Page.QuerySelectorAsync("#drag");
             Assert.That(draggable, Is.Not.Null);
@@ -92,7 +100,8 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             // The drag pressed the mouse button down. If the failed drop leaves it
             // pressed, every later mouse event still carries it, and the next click
             // fires twice.
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
               globalThis.buttons = undefined;
               document.addEventListener(
                 'mousemove',
@@ -101,16 +110,18 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
                 },
                 { once: true },
               );
-            }");
+            }"
+            );
             await Page.Mouse.MoveAsync(20, 20);
 
             Assert.That(
                 await Page.EvaluateFunctionAsync<int?>("() => globalThis.buttons"),
-                Is.EqualTo(0));
+                Is.EqualTo(0)
+            );
         }
 
-        private Task<int> GetDragStateAsync()
-            => Page.QuerySelectorAsync("#drag-state").EvaluateFunctionAsync<int>("element => parseInt(element.innerHTML, 10)");
+        private Task<int> GetDragStateAsync() =>
+            Page.QuerySelectorAsync("#drag-state")
+                .EvaluateFunctionAsync<int>("element => parseInt(element.innerHTML, 10)");
     }
 }
-

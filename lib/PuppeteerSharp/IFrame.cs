@@ -62,7 +62,9 @@ namespace PuppeteerSharp
         /// Gets the frame's name attribute as specified in the tag
         /// If the name is empty, returns the id attribute instead.
         /// </summary>
-        [Obsolete("Use (await frame.FrameElementAsync()).EvaluateFunctionAsync<string>(\"frame => frame.name\") instead.")]
+        [Obsolete(
+            "Use (await frame.FrameElementAsync()).EvaluateFunctionAsync<string>(\"frame => frame.name\") instead."
+        )]
         string Name { get; }
 
         /// <summary>
@@ -231,7 +233,11 @@ namespace PuppeteerSharp
         /// property.</param>
         /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
-        Task<IResponse> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null);
+        Task<IResponse> GoToAsync(
+            string url,
+            int? timeout = null,
+            WaitUntilNavigation[] waitUntil = null
+        );
 
         /// <summary>
         /// Navigates to an url.
@@ -318,7 +324,9 @@ namespace PuppeteerSharp
         /// <param name="options">The options.</param>
         /// <returns>Task.</returns>
         /// <seealso cref="IPage.SetContentAsync(string, NavigationOptions)"/>
-        [System.Obsolete("Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent.")]
+        [System.Obsolete(
+            "Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent."
+        )]
         Task SetContentAsync(string html, NavigationOptions options);
 
         /// <summary>
@@ -371,7 +379,11 @@ namespace PuppeteerSharp
         /// <returns>A task that resolves when the <c>script</c> returns a truthy value.</returns>
         /// <seealso cref="IPage.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
-        Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args);
+        Task<IJSHandle> WaitForFunctionAsync(
+            string script,
+            WaitForFunctionOptions options,
+            params object[] args
+        );
 
         /// <summary>
         /// This resolves when the frame navigates to a new URL or reloads.
@@ -405,7 +417,10 @@ namespace PuppeteerSharp
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         /// <seealso cref="IPage.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
-        Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
+        Task<IElementHandle> WaitForSelectorAsync(
+            string selector,
+            WaitForSelectorOptions options = null
+        );
 
         /// <summary>
         /// Creates a locator for the provided selector. See <see cref="Locators.Locator"/> for

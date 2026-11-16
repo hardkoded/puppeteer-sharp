@@ -10,9 +10,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseBufferTests : PuppeteerPageBaseTest
     {
-        public ResponseBufferTests() : base()
-        {
-        }
+        public ResponseBufferTests()
+            : base() { }
 
         [Test, PuppeteerTest("network.spec", "network Response.buffer", "should work")]
         public async Task ShouldWork()
@@ -22,7 +21,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(await response.BufferAsync(), Is.EqualTo(imageBuffer));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.buffer", "should work with compression")]
+        [
+            Test,
+            PuppeteerTest("network.spec", "network Response.buffer", "should work with compression")
+        ]
         public async Task ShouldWorkWithCompression()
         {
             Server.EnableGzip("/pptr.png");
@@ -31,7 +33,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(await response.BufferAsync(), Is.EqualTo(imageBuffer));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.buffer", "should throw if the response does not have a body")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.buffer",
+                "should throw if the response does not have a body"
+            )
+        ]
         public async Task ShouldThrowIfTheResponseDoesNotHaveABody()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/empty.html");
@@ -45,16 +54,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             var url = TestConstants.CrossProcessHttpPrefix + "/test.html";
             var responseTask = Page.WaitForResponseAsync(response =>
-                response.Request.Method == HttpMethod.Options && response.Url == url);
+                response.Request.Method == HttpMethod.Options && response.Url == url
+            );
 
             // Trigger a request with a preflight.
-            await Page.EvaluateFunctionAsync(@"async (src) => {
+            await Page.EvaluateFunctionAsync(
+                @"async (src) => {
                 const response = await fetch(src, {
                     method: 'POST',
                     headers: { 'x-ping': 'pong' },
                 });
                 return response;
-            }", url);
+            }",
+                url
+            );
 
             var response = await responseTask;
             Assert.ThrowsAsync<BufferException>(async () => await response.BufferAsync());

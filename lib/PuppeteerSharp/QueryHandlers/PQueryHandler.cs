@@ -4,11 +4,13 @@ namespace PuppeteerSharp.QueryHandlers
     {
         internal PQueryHandler()
         {
-            QuerySelector = @"(element, selector, {pQuerySelector}) => {
+            QuerySelector =
+                @"(element, selector, {pQuerySelector}) => {
                 return pQuerySelector(element, selector);
             }";
 
-            QuerySelectorAll = @"(element, selector, {pQuerySelectorAll}) => {
+            QuerySelectorAll =
+                @"(element, selector, {pQuerySelectorAll}) => {
                 return pQuerySelectorAll(element, selector);
             }";
         }

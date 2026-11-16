@@ -7,14 +7,23 @@ namespace PuppeteerSharp.Tests.InterventionHeadersTests;
 
 public class InterventionHeadersTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("interventionHeaders.spec", "Page.setRequestInterception", "should work with intervention headers")]
+    [
+        Test,
+        PuppeteerTest(
+            "interventionHeaders.spec",
+            "Page.setRequestInterception",
+            "should work with intervention headers"
+        )
+    ]
     public async Task ShouldWorkWithInterventionHeaders()
     {
-        Server.SetRoute("/intervention", context => context.Response.WriteAsync($@"
+        Server.SetRoute("/intervention", context => context.Response.WriteAsync(
+                $@"
           <script>
             document.write('<script src=""{TestConstants.CrossProcessHttpPrefix}/intervention.js"">' + '</scr' + 'ipt>');
           </script>
-        "));
+        "
+            ));
         Server.SetRedirect("/intervention.js", "/redirect.js");
 
         var redirectRequested = false;
@@ -44,4 +53,3 @@ public class InterventionHeadersTests : PuppeteerPageBaseTest
         }
     }
 }
-

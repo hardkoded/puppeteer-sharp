@@ -49,7 +49,9 @@ namespace PuppeteerSharp.Tooling
             var directoryInfo = new DirectoryInfo(options.SpecFileLocations);
             if (!directoryInfo.Exists)
             {
-                throw new ArgumentException($"The location ({directoryInfo.FullName}) specified does not exist.");
+                throw new ArgumentException(
+                    $"The location ({directoryInfo.FullName}) specified does not exist."
+                );
             }
 
             // let's map the test cases from the spec files
@@ -61,31 +63,62 @@ namespace PuppeteerSharp.Tooling
             var totalTests = 0;
 
             List<PuppeteerTestAttribute> missingTests = [];
-            List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = [];
+            List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps =
+            [];
 
-            var attributes = new ScreenshotHelper().GetType().Assembly.DefinedTypes.SelectMany(
-                type => type.GetMethods().SelectMany(method => method.GetCustomAttributes<PuppeteerTestAttribute>()));
+            var attributes = new ScreenshotHelper()
+                .GetType()
+                .Assembly.DefinedTypes.SelectMany(type =>
+                    type.GetMethods()
+                        .SelectMany(method => method.GetCustomAttributes<PuppeteerTestAttribute>())
+                );
 
             foreach (var x in _testPairs)
             {
                 totalTests++;
 
                 // a test can either be a full match, a partial (i.e. just the test name) or no match
-                var potentialMatch = attributes.Where(atx => string.Equals(x.TestName, atx.TestName, StringComparison.InvariantCultureIgnoreCase))
-                                            .Where(atx => string.Equals(x.Describe, atx.Describe, StringComparison.InvariantCultureIgnoreCase));
+                var potentialMatch = attributes
+                    .Where(atx =>
+                        string.Equals(
+                            x.TestName,
+                            atx.TestName,
+                            StringComparison.InvariantCultureIgnoreCase
+                        )
+                    )
+                    .Where(atx =>
+                        string.Equals(
+                            x.Describe,
+                            atx.Describe,
+                            StringComparison.InvariantCultureIgnoreCase
+                        )
+                    );
                 if (!potentialMatch.Any())
                 {
                     noMatches++;
                     missingTests.Add(x);
                 }
-                else if (potentialMatch.Any(atx => string.Equals(x.TrimmedName, atx.TrimmedName, StringComparison.InvariantCultureIgnoreCase)))
+                else if (
+                    potentialMatch.Any(atx =>
+                        string.Equals(
+                            x.TrimmedName,
+                            atx.TrimmedName,
+                            StringComparison.InvariantCultureIgnoreCase
+                        )
+                    )
+                )
                 {
                     fullMatches++;
                     continue;
                 }
                 else
                 {
-                    invalidMaps.Add(new KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>(x, potentialMatch.ToList()));
+                    invalidMaps.Add(
+                        new KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>(
+                            x,
+                            potentialMatch.ToList()
+                        )
+                    );
                     potentialMatches++;
                 }
             }
@@ -95,7 +128,9 @@ namespace PuppeteerSharp.Tooling
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"Total tests found by name, but not by file: {potentialMatches}/{totalTests}.");
+            Console.WriteLine(
+                $"Total tests found by name, but not by file: {potentialMatches}/{totalTests}."
+            );
             Console.ResetColor();
 
             foreach (var invalidTest in invalidMaps)
@@ -116,10 +151,16 @@ namespace PuppeteerSharp.Tooling
                 Console.WriteLine($"{invalidTest}");
             }
 
-            Console.WriteLine($"Found/Mismatched/Missing: {fullMatches}/{potentialMatches}/{noMatches} out of {totalTests}");
+            Console.WriteLine(
+                $"Found/Mismatched/Missing: {fullMatches}/{potentialMatches}/{noMatches} out of {totalTests}"
+            );
         }
 
-        private static void MapTestsCases(DirectoryInfo directoryInfo, IdentifyMissingTestsOptions options, string basePath)
+        private static void MapTestsCases(
+            DirectoryInfo directoryInfo,
+            IdentifyMissingTestsOptions options,
+            string basePath
+        )
         {
             // get the sub-directories
             if (options.Recursive)
@@ -134,12 +175,16 @@ namespace PuppeteerSharp.Tooling
             {
                 if (!fileInfo.FullName.Contains("experimental"))
                 {
-                    ScaffoldTest.FindTestsInFile(
-                        fileInfo.FullName,
-                        (testDescribe, testName) =>
-                        {
-                            _testPairs.Add(new PuppeteerTestAttribute(Path.GetFileNameWithoutExtension(fileInfo.FullName), testDescribe, testName));
-                        });
+                    ScaffoldTest.FindTestsInFile(fileInfo.FullName, (testDescribe, testName) =>
+                    {
+                        _testPairs.Add(
+                            new PuppeteerTestAttribute(
+                                Path.GetFileNameWithoutExtension(fileInfo.FullName),
+                                testDescribe,
+                                testName
+                            )
+                        );
+                    });
                 }
             }
         }

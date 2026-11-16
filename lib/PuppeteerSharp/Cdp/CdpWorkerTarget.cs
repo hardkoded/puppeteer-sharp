@@ -17,10 +17,16 @@ namespace PuppeteerSharp.Cdp
             BrowserContext context,
             ITargetManager targetManager,
             Func<bool, Task<CDPSession>> sessionFactory,
-            TaskQueue screenshotTaskQueue)
-            : base(targetInfo, (CdpCDPSession)session, (CdpBrowserContext)context, targetManager, sessionFactory, screenshotTaskQueue)
-        {
-        }
+            TaskQueue screenshotTaskQueue
+        )
+            : base(
+                targetInfo,
+                (CdpCDPSession)session,
+                (CdpBrowserContext)context,
+                targetManager,
+                sessionFactory,
+                screenshotTaskQueue
+            ) { }
 
         /// <inheritdoc/>
         public override Task<WebWorker> WorkerAsync()
@@ -32,11 +38,7 @@ namespace PuppeteerSharp.Cdp
         private async Task<WebWorker> WorkerInternalAsync()
         {
             var client = Session ?? await SessionFactory(false).ConfigureAwait(false);
-            var worker = new CdpWebWorker(
-                client,
-                this,
-                (_, _, _) => Task.CompletedTask,
-                _ => { });
+            var worker = new CdpWebWorker(client, this, (_, _, _) => Task.CompletedTask, _ => { });
 
             // Service and shared workers are not owned by a page, so their console messages are bubbled up
             // to the browser context and the browser here.

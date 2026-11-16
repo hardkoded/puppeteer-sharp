@@ -183,8 +183,10 @@ namespace PuppeteerSharp.Locators
         public async Task<IJSHandle> WaitHandleAsync(LocatorActionOptions options = null)
         {
             return await RunWithRetryAsync(
-                ct => WaitHandleCoreAsync(options, ct),
-                options?.CancellationToken ?? default).ConfigureAwait(false);
+                    ct => WaitHandleCoreAsync(options, ct),
+                    options?.CancellationToken ?? default
+                )
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -248,7 +250,8 @@ namespace PuppeteerSharp.Locators
                     await handle.ClickAsync(clickOptions).ConfigureAwait(false);
                 },
                 true,
-                options?.CancellationToken ?? default);
+                options?.CancellationToken ?? default
+            );
         }
 
         /// <summary>
@@ -261,7 +264,8 @@ namespace PuppeteerSharp.Locators
             return PerformActionAsync(
                 async (handle, ct) => await handle.HoverAsync().ConfigureAwait(false),
                 false,
-                options?.CancellationToken ?? default);
+                options?.CancellationToken ?? default
+            );
         }
 
         /// <summary>
@@ -274,16 +278,20 @@ namespace PuppeteerSharp.Locators
             return PerformActionAsync(
                 async (handle, ct) =>
                 {
-                    await handle.EvaluateFunctionAsync(
-                        @"(el, scrollTop, scrollLeft) => {
+                    await handle
+                        .EvaluateFunctionAsync(
+                            @"(el, scrollTop, scrollLeft) => {
                             if (scrollTop !== undefined) { el.scrollTop = scrollTop; }
                             if (scrollLeft !== undefined) { el.scrollLeft = scrollLeft; }
                         }",
-                        options?.ScrollTop,
-                        options?.ScrollLeft).ConfigureAwait(false);
+                            options?.ScrollTop,
+                            options?.ScrollLeft
+                        )
+                        .ConfigureAwait(false);
                 },
                 false,
-                options?.CancellationToken ?? default);
+                options?.CancellationToken ?? default
+            );
         }
 
         /// <summary>
@@ -297,8 +305,9 @@ namespace PuppeteerSharp.Locators
             return PerformActionAsync(
                 async (handle, ct) =>
                 {
-                    var inputType = await handle.EvaluateFunctionAsync<string>(
-                        @"(el, newValue) => {
+                    var inputType = await handle
+                        .EvaluateFunctionAsync<string>(
+                            @"(el, newValue) => {
                             if (el instanceof HTMLSelectElement) {
                                 if (!Array.from(el.options).some(option => option.value === newValue)) {
                                     throw new Error(`Element has no option with the value ""${newValue}"".`);
@@ -329,7 +338,9 @@ namespace PuppeteerSharp.Locators
                             if (el.isContentEditable) return 'contenteditable';
                             return 'unknown';
                         }",
-                        value).ConfigureAwait(false);
+                            value
+                        )
+                        .ConfigureAwait(false);
 
                     switch (inputType)
                     {
@@ -340,8 +351,9 @@ namespace PuppeteerSharp.Locators
                         case "typeable-input":
                             if (value.Length < TypingThreshold)
                             {
-                                var textToType = await handle.EvaluateFunctionAsync<string>(
-                                    @"(input, newValue) => {
+                                var textToType = await handle
+                                    .EvaluateFunctionAsync<string>(
+                                        @"(input, newValue) => {
                                         const currentValue = input.isContentEditable ? input.innerText : input.value;
                                         if (newValue.length <= currentValue.length || !newValue.startsWith(currentValue)) {
                                             if (input.isContentEditable) { input.innerText = ''; } else { input.value = ''; }
@@ -352,7 +364,9 @@ namespace PuppeteerSharp.Locators
                                         else { input.value = ''; input.value = originalValue; }
                                         return newValue.substring(originalValue.length);
                                     }",
-                                    value).ConfigureAwait(false);
+                                        value
+                                    )
+                                    .ConfigureAwait(false);
                                 if (!string.IsNullOrEmpty(textToType))
                                 {
                                     await handle.TypeAsync(textToType).ConfigureAwait(false);
@@ -372,7 +386,8 @@ namespace PuppeteerSharp.Locators
                     }
                 },
                 true,
-                options?.CancellationToken ?? default);
+                options?.CancellationToken ?? default
+            );
         }
 
         /// <summary>
@@ -394,12 +409,16 @@ namespace PuppeteerSharp.Locators
         /// <param name="options">Optional action options.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that resolves to a handle for the located element.</returns>
-        internal abstract Task<IJSHandle> WaitHandleCoreAsync(LocatorActionOptions options, CancellationToken cancellationToken);
+        internal abstract Task<IJSHandle> WaitHandleCoreAsync(
+            LocatorActionOptions options,
+            CancellationToken cancellationToken
+        );
 
         private static async Task WaitForStableBoundingBoxAsync(IElementHandle handle)
         {
-            var result = await handle.EvaluateFunctionAsync<bool>(
-                @"(element) => {
+            var result = await handle
+                .EvaluateFunctionAsync<bool>(
+                    @"(element) => {
                     return new Promise(resolve => {
                         window.requestAnimationFrame(() => {
                             const rect1 = element.getBoundingClientRect();
@@ -412,7 +431,9 @@ namespace PuppeteerSharp.Locators
                             });
                         });
                     });
-                }").ConfigureAwait(false);
+                }"
+                )
+                .ConfigureAwait(false);
 
             if (!result)
             {
@@ -423,8 +444,9 @@ namespace PuppeteerSharp.Locators
         private static async Task FillDirectlyAsync(IElementHandle handle, string value)
         {
             await handle.FocusAsync().ConfigureAwait(false);
-            await handle.EvaluateFunctionAsync(
-                @"(input, value) => {
+            await handle
+                .EvaluateFunctionAsync(
+                    @"(input, value) => {
                     const element = input;
                     const currentValue = element.isContentEditable
                         ? element.innerText
@@ -440,66 +462,75 @@ namespace PuppeteerSharp.Locators
                     element.dispatchEvent(new Event('input', {bubbles: true}));
                     element.dispatchEvent(new Event('change', {bubbles: true}));
                 }",
-                value).ConfigureAwait(false);
+                    value
+                )
+                .ConfigureAwait(false);
         }
 
         private async Task PerformActionAsync(
             Func<IElementHandle, CancellationToken, Task> action,
             bool waitForEnabled,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             await RunWithRetryAsync(
-                async ct =>
-                {
-                    var handle = await WaitHandleCoreAsync(null, ct).ConfigureAwait(false);
-                    var elementHandle = handle as IElementHandle;
-
-                    if (elementHandle == null)
+                    async ct =>
                     {
-                        if (handle != null)
+                        var handle = await WaitHandleCoreAsync(null, ct).ConfigureAwait(false);
+                        var elementHandle = handle as IElementHandle;
+
+                        if (elementHandle == null)
+                        {
+                            if (handle != null)
+                            {
+                                await handle.DisposeAsync().ConfigureAwait(false);
+                            }
+
+                            throw new PuppeteerException("Locator did not resolve to an element.");
+                        }
+
+                        try
+                        {
+                            if (EnsureElementIsInTheViewport)
+                            {
+                                var isInViewport = await elementHandle
+                                    .IsIntersectingViewportAsync()
+                                    .ConfigureAwait(false);
+                                if (!isInViewport)
+                                {
+                                    await elementHandle.ScrollIntoViewAsync().ConfigureAwait(false);
+                                }
+                            }
+
+                            if (WaitForStableBoundingBox)
+                            {
+                                await WaitForStableBoundingBoxAsync(elementHandle)
+                                    .ConfigureAwait(false);
+                            }
+
+                            if (waitForEnabled && WaitForEnabled)
+                            {
+                                await WaitForEnabledAsync(elementHandle).ConfigureAwait(false);
+                            }
+
+                            await action(elementHandle, ct).ConfigureAwait(false);
+                            return handle;
+                        }
+                        catch
                         {
                             await handle.DisposeAsync().ConfigureAwait(false);
+                            throw;
                         }
-
-                        throw new PuppeteerException("Locator did not resolve to an element.");
-                    }
-
-                    try
-                    {
-                        if (EnsureElementIsInTheViewport)
-                        {
-                            var isInViewport = await elementHandle.IsIntersectingViewportAsync().ConfigureAwait(false);
-                            if (!isInViewport)
-                            {
-                                await elementHandle.ScrollIntoViewAsync().ConfigureAwait(false);
-                            }
-                        }
-
-                        if (WaitForStableBoundingBox)
-                        {
-                            await WaitForStableBoundingBoxAsync(elementHandle).ConfigureAwait(false);
-                        }
-
-                        if (waitForEnabled && WaitForEnabled)
-                        {
-                            await WaitForEnabledAsync(elementHandle).ConfigureAwait(false);
-                        }
-
-                        await action(elementHandle, ct).ConfigureAwait(false);
-                        return handle;
-                    }
-                    catch
-                    {
-                        await handle.DisposeAsync().ConfigureAwait(false);
-                        throw;
-                    }
-                },
-                cancellationToken).ConfigureAwait(false);
+                    },
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
         }
 
         private async Task<IJSHandle> RunWithRetryAsync(
             Func<CancellationToken, Task<IJSHandle>> operation,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             // timeoutCts/linkedCts still give each attempt a token that aborts in-flight CDP calls
             // promptly on timeout, which RetryAndRaceWithSignalAndTimer's own timeout branch (below)
@@ -510,12 +541,13 @@ namespace PuppeteerSharp.Locators
             // most one RetryDelay before the combinator's own timer wins the race and produces the real
             // TimeoutException. Acceptable: it only affects Timeout()-vs-Timeout() jitter, never allows
             // retries to continue indefinitely past the deadline.
-            using var timeoutCts = Timeout > 0
-                ? new CancellationTokenSource(Timeout)
-                : new CancellationTokenSource();
+            using var timeoutCts =
+                Timeout > 0 ? new CancellationTokenSource(Timeout) : new CancellationTokenSource();
 
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
-                timeoutCts.Token, cancellationToken);
+                timeoutCts.Token,
+                cancellationToken
+            );
 
             var linkedToken = linkedCts.Token;
 
@@ -527,7 +559,8 @@ namespace PuppeteerSharp.Locators
                         Timeout > 0 ? TimeSpan.FromMilliseconds(Timeout) : TimeSpan.Zero,
                         causeFactory: null,
                         retryDelay: TimeSpan.FromMilliseconds(RetryDelay),
-                        cancellationToken)
+                        cancellationToken
+                    )
                     .ConfigureAwait(false);
             }
             catch (TimeoutException)
@@ -547,13 +580,16 @@ namespace PuppeteerSharp.Locators
 
         private async Task WaitForEnabledAsync(IElementHandle handle)
         {
-            var isEnabled = await handle.EvaluateFunctionAsync<bool>(
-                @"(element) => {
+            var isEnabled = await handle
+                .EvaluateFunctionAsync<bool>(
+                    @"(element) => {
                     if ('disabled' in element && typeof element.disabled === 'boolean') {
                         return !element.disabled;
                     }
                     return true;
-                }").ConfigureAwait(false);
+                }"
+                )
+                .ConfigureAwait(false);
 
             if (!isEnabled)
             {
