@@ -1,0 +1,279 @@
+---
+title: v25.17.0 and v25.17.1
+description: Combined release notes for Puppeteer Sharp 25.17.0 and 25.17.1, released November 13, 2026.
+sidebar:
+  label: v25.17
+  order: 1
+---
+
+Combined notes for Puppeteer Sharp 25.17.0 and 25.17.1, both released on November 13, 2026. The public API tracks [Puppeteer 25.17.0](https://github.com/puppeteer/puppeteer/releases/tag/puppeteer-v25.17.0). Target frameworks are unchanged: `netstandard2.0`, `net8.0`, and `net10.0`.
+
+**Install 25.17.1.** NuGet does not list 25.17.0. On November 16, 2026, [PuppeteerSharp 25.17.0](https://www.nuget.org/packages/PuppeteerSharp/25.17.0) reported that the version was not found and showed 25.17.1 instead. The package history jumps from 25.15.0 to 25.17.1. There is no `v25.16.0` tag.
+
+```bash
+dotnet add package PuppeteerSharp --version 25.17.1
+```
+
+The browsers downloaded by default move from Chrome 155.0.8059.84 to Chrome 157.0.8103.78, and from Firefox 158.0 (`stable_158.0`) to Firefox 160.0 (`stable_160.0`). Puppeteer 25.17.0 itself rolled Chrome to 157.0.8103.38. This package includes the later roll to 157.0.8103.78 ([#3747](https://github.com/hardkoded/puppeteer-sharp/pull/3747)), after 156.0.8078.47 ([#3635](https://github.com/hardkoded/puppeteer-sharp/pull/3635)) and 157.0.8103.50 ([#3665](https://github.com/hardkoded/puppeteer-sharp/pull/3665)). Firefox 158.0.1 landed in between ([#3652](https://github.com/hardkoded/puppeteer-sharp/pull/3652)) and was then rolled to 160.0 ([#3715](https://github.com/hardkoded/puppeteer-sharp/pull/3715)).
+
+The docs moved from DocFX on GitHub Pages to this Starlight site ([#3655](https://github.com/hardkoded/puppeteer-sharp/pull/3655), [#3656](https://github.com/hardkoded/puppeteer-sharp/pull/3656), [#3657](https://github.com/hardkoded/puppeteer-sharp/pull/3657)). Guides start at [Docs](/docs/).
+
+## v25.17.0
+
+### Stream a response, and read its encoded size
+
+[`IResponse.StreamAsync`](/api/PuppeteerSharp/IResponse/) returns a `Stream` of the body, with chunks delivered as they arrive ([#3666](https://github.com/hardkoded/puppeteer-sharp/pull/3666)). Call it from the `Response` event, while the body is still loading. If loading has already finished, the stream contains the whole body as one chunk. If loading fails, a later read throws `PuppeteerException`.
+
+`StreamAsync` is a CDP method. On WebDriver BiDi it returns a faulted task with `NotSupportedException` and the message `Response.StreamAsync is not supported in WebDriver BiDi.` Use `BufferAsync` or `TextAsync` on BiDi.
+
+[`EncodedDataLength`](/api/PuppeteerSharp/IResponse/) is the number of bytes received for the request over the network ([#3670](https://github.com/hardkoded/puppeteer-sharp/pull/3670)). During the `Response` event it only covers bytes received up to the response headers. Read it in a `RequestFinished` handler, or after `BufferAsync`, for the full encoded size (headers plus the compressed body). A request that fails after the response arrives does not update the value. When the browser reports no size, including `data:` and `file:` URLs, the value stays 0. On BiDi the property is the bytes received, and a negative report is stored as 0.
+
+```csharp
+page.Response += async (_, e) =>
+{
+    using var body = await e.Response.StreamAsync();
+    var buffer = new byte[8192];
+    int read;
+    while ((read = await body.ReadAsync(buffer, 0, buffer.Length)) > 0)
+    {
+        // Process `read` bytes from `buffer`.
+    }
+};
+
+page.RequestFinished += (_, e) =>
+{
+    var encodedBytes = e.Request.Response?.EncodedDataLength;
+};
+```
+
+### Read the raw POST body
+
+[`IRequest.ContentAsync`](/api/PuppeteerSharp/IRequest/) returns the unmodified POST bytes, or null when the request has no body or the browser cannot return it ([#3637](https://github.com/hardkoded/puppeteer-sharp/pull/3637)). `PostData` is the string already known to the client. `FetchPostDataAsync` decodes `ContentAsync` as UTF-8.
+
+```csharp
+page.Request += async (_, e) =>
+{
+    if (!e.Request.HasPostData)
+    {
+        return;
+    }
+
+    byte[] bytes = await e.Request.ContentAsync();
+};
+```
+
+### Request, response, and console events on the browser
+
+[`IBrowser`](/api/PuppeteerSharp/IBrowser/) and [`IBrowserContext`](/api/PuppeteerSharp/IBrowserContext/) raise the same network and console events as a page:
+
+- `Request`, `RequestFinished`, `RequestFailed`, and `RequestServedFromCache` ([#3667](https://github.com/hardkoded/puppeteer-sharp/pull/3667), [#3672](https://github.com/hardkoded/puppeteer-sharp/pull/3672))
+- `Response` ([#3672](https://github.com/hardkoded/puppeteer-sharp/pull/3672))
+- `Console` ([#3673](https://github.com/hardkoded/puppeteer-sharp/pull/3673)), including console messages from dedicated workers ([#3674](https://github.com/hardkoded/puppeteer-sharp/pull/3674))
+
+`Request` handlers receive `RequestEventArgs`. `Response` handlers receive `ResponseCreatedEventArgs`. `Console` handlers receive `ConsoleEventArgs`. `IRequest` now exposes `Page` and `Worker` ([#3675](https://github.com/hardkoded/puppeteer-sharp/pull/3675)). `ConsoleMessage` exposes `Page`, `Frame`, and `Worker` ([#3682](https://github.com/hardkoded/puppeteer-sharp/pull/3682)).
+
+```csharp
+browser.Request += (_, e) =>
+    Console.WriteLine($"{e.Request.Method} {e.Request.Url}");
+
+browser.Response += (_, e) =>
+    Console.WriteLine($"{(int)e.Response.Status} {e.Response.Url}");
+
+browser.Console += (_, e) =>
+    Console.WriteLine(e.Message.Text);
+
+IBrowserContext context = browser.DefaultContext;
+context.Request += (_, e) =>
+    Console.WriteLine(e.Request.Url);
+```
+
+`IRequest.Method` is an `HttpMethod`. `IResponse.Status` is an `HttpStatusCode`.
+
+### ExceptionThrown and RemoteException
+
+[`IPage.ExceptionThrown`](/api/PuppeteerSharp/IPage/) and [`WebWorker.ExceptionThrown`](/api/PuppeteerSharp/WebWorker/) report an uncaught exception as a [`RemoteException`](/api/PuppeteerSharp/RemoteException/) ([#3744](https://github.com/hardkoded/puppeteer-sharp/pull/3744)). 25.17.0 implements this for CDP. The event args type is `RemoteExceptionEventArgs`, and the exception is `e.Exception`.
+
+`Text` is the browser's rendering of the thrown value, for example `Error: boom`, without the stack. `Name` is `Error`, `TypeError`, `SyntaxError`, `AbortError`, or an empty string when the thrown value is not an error. `StackTrace` is the call frames, innermost first, each as a `ConsoleMessageLocation`. `Location` is the first frame, or the top-level coordinates for a syntax error. `Handle` is the live remote value when CDP can expose one.
+
+The handle is disposed as soon as the event has been dispatched, and every handler shares that same handle. Call `Move()` synchronously inside the handler to keep it, then dispose it.
+
+```csharp
+page.ExceptionThrown += (_, e) =>
+{
+    RemoteException exception = e.Exception;
+    Console.WriteLine($"{exception.Name}: {exception.Text}");
+
+    IJSHandle handle = exception.Handle?.Move();
+    handle?.Dispose();
+};
+```
+
+`PageError` is still raised. `ExceptionThrown` is the event to use for the structured exception.
+
+### Extra arguments for Locator.Filter and Locator.Map
+
+[`Locator.Filter`](/api/PuppeteerSharp.Locators/Locator/) and `Locator.Map` take a JavaScript function and then extra arguments ([#3671](https://github.com/hardkoded/puppeteer-sharp/pull/3671)). The element is the function's first parameter. Serializable values and handles in `args` are forwarded after it. The predicate retries until it returns true. `Map` transforms the element; `WaitAsync<T>()` reads the mapped value.
+
+```csharp
+IJSHandle expected = await page.EvaluateExpressionHandleAsync("'true'");
+
+await page.Locator("div")
+    .Filter(
+        "(element, attr, value) => element.getAttribute(attr) === value",
+        "clickable",
+        expected)
+    .HoverAsync();
+
+string label = await page.Locator("button")
+    .Map("(element, name) => element.getAttribute(name)", "aria-label")
+    .WaitAsync<string>();
+```
+
+### Download behavior on launch and connect
+
+[`LaunchOptions`](/api/PuppeteerSharp/LaunchOptions/) and [`ConnectOptions`](/api/PuppeteerSharp/ConnectOptions/) accept a [`DownloadBehavior`](/api/PuppeteerSharp/DownloadBehavior/) ([#3679](https://github.com/hardkoded/puppeteer-sharp/pull/3679)). `Policy` is a `DownloadPolicy`: `Deny`, `Allow`, `AllowAndName`, or `Default`. `DownloadPath` is required for `Allow` and `AllowAndName`. `AllowAndName` names every file from its download GUID.
+
+```csharp
+await using IBrowser browser = await Puppeteer.LaunchAsync(new LaunchOptions
+{
+    DownloadBehavior = new DownloadBehavior
+    {
+        Policy = DownloadPolicy.Allow,
+        DownloadPath = "/tmp/downloads",
+    },
+});
+```
+
+`Puppeteer.ConnectAsync` takes the same object on `ConnectOptions`.
+
+### Screen recording without an enumeration buffer
+
+[`RecordOptions.BufferForEnumeration`](/api/PuppeteerSharp/RecordOptions/) controls whether recording chunks are kept for `await foreach` ([#3662](https://github.com/hardkoded/puppeteer-sharp/pull/3662)). The default, null or true, buffers them. Set it to false when the recording only goes to `Path` or to a pipe, so an unread queue does not retain the video. `GetAsyncEnumerator` then throws `InvalidOperationException`.
+
+```csharp
+await using ScreenRecording recording = await page.RecordAsync(new RecordOptions
+{
+    Path = "session.webm",
+    BufferForEnumeration = false,
+});
+
+await page.GoToAsync("https://example.com");
+await recording.StopAsync();
+```
+
+### DomContentLoaded and NavigationStart metrics
+
+[`Page.MetricsAsync`](/api/PuppeteerSharp/Page/) returns a `Dictionary<string, decimal>` that now includes `DomContentLoaded` and `NavigationStart` ([#3669](https://github.com/hardkoded/puppeteer-sharp/pull/3669)). Both names are listed on `Page.SupportedMetrics`. The values are the Chrome performance metrics of those names.
+
+```csharp
+Dictionary<string, decimal> metrics = await page.MetricsAsync();
+decimal domContentLoaded = metrics["DomContentLoaded"];
+decimal navigationStart = metrics["NavigationStart"];
+```
+
+## v25.17.1
+
+### FrameNavigatedSameDocument and FrameNavigatedNewDocument
+
+[`IPage`](/api/PuppeteerSharp/IPage/) raises `FrameNavigatedSameDocument` and `FrameNavigatedNewDocument` after `FrameNavigated` ([#3749](https://github.com/hardkoded/puppeteer-sharp/pull/3749)). Both are `EventHandler<FrameEventArgs>`. Same-document navigation is a fragment change or a History API update. New-document navigation loads a new document. `FrameEventArgs.Frame` is the frame. `FrameNavigated` still uses `FrameNavigatedEventArgs`.
+
+```csharp
+page.FrameNavigatedSameDocument += (_, e) =>
+    Console.WriteLine($"Same document: {e.Frame.Url}");
+
+page.FrameNavigatedNewDocument += (_, e) =>
+    Console.WriteLine($"New document: {e.Frame.Url}");
+```
+
+### ExceptionThrown on WebDriver BiDi
+
+`ExceptionThrown` is also raised for WebDriver BiDi ([#3748](https://github.com/hardkoded/puppeteer-sharp/pull/3748)). BiDi does not expose the exception name or a remote object, so `RemoteException.Name` is an empty string and `RemoteException.Handle` is null. `Text` and `StackTrace` still come from the JavaScript log entry. Do not call `Move()` on a BiDi exception's handle.
+
+### Already cancelled tokens
+
+An already cancelled token is honored immediately. The call throws `OperationCanceledException` and does not perform the operation.
+
+[`WaitForFunctionAsync`](/api/PuppeteerSharp/IPage/), `GoToAsync`, `GoBackAsync`, `GoForwardAsync`, `ReloadAsync`, and `WaitForNavigationAsync` check the token before they start ([#3763](https://github.com/hardkoded/puppeteer-sharp/pull/3763)). `SetContentAsync` does the same and leaves the existing HTML in place ([#3765](https://github.com/hardkoded/puppeteer-sharp/pull/3765)).
+
+Pass the token on `WaitForFunctionOptions`, `NavigationOptions`, or `ReloadOptions`. For `SetContentAsync`, use `SetContentOptions`. The `NavigationOptions` overload of `SetContentAsync` is obsolete.
+
+```csharp
+using var cts = new CancellationTokenSource();
+cts.Cancel();
+
+await page.WaitForFunctionAsync(
+    "() => false",
+    new WaitForFunctionOptions { CancellationToken = cts.Token });
+
+await page.GoToAsync(
+    "https://example.com",
+    new NavigationOptions { CancellationToken = cts.Token });
+
+await page.SetContentAsync(
+    "<p>Hello</p>",
+    new SetContentOptions { CancellationToken = cts.Token });
+```
+
+### NuGet Trusted Publishing
+
+Package publish uses [NuGet Trusted Publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing) ([#3752](https://github.com/hardkoded/puppeteer-sharp/pull/3752)). The GitHub Actions workflow requests an OIDC token (`id-token: write`), logs in to nuget.org, and pushes with the short-lived API key from that login. The workflow no longer reads a stored `NUGET_API_KEY` secret.
+
+## Behavior changes
+
+### CR or LF in headers throws
+
+A header name or value that contains a carriage return or a line feed throws `PuppeteerException`. The message starts with `Invalid header: CRLF characters are not allowed in header names or values`.
+
+`SetExtraHttpHeadersAsync` validates extra headers ([#3683](https://github.com/hardkoded/puppeteer-sharp/pull/3683)). `ContinueAsync` validates header overrides on both CDP and WebDriver BiDi ([#3728](https://github.com/hardkoded/puppeteer-sharp/pull/3728)).
+
+### Chrome default arguments
+
+`--disable-field-trial-config` is no longer one of the default Chrome arguments ([#3720](https://github.com/hardkoded/puppeteer-sharp/pull/3720)). Add `--disable-field-trial-config` to `LaunchOptions.Args` when a launch still needs it.
+
+### Locator.FillAsync rejects some values
+
+`Locator.FillAsync` does not change a read-only `textarea`, or a read-only `input` whose type is `text`, `search`, `url`, `tel`, `email`, `password`, `number`, `date`, `month`, `week`, `time`, or `datetime-local` ([#3646](https://github.com/hardkoded/puppeteer-sharp/pull/3646)). It also refuses a non-empty value that the input type does not accept: a probe input of that type ends up empty, which covers values such as `abc` in a `number` input or `noon` in a `time` input. A `select` whose options do not contain the value is refused the same way.
+
+The page function throws `Element is read-only.` or `Element did not accept the value`. The locator retries that failure, so the call ends in `TimeoutException` and the previous value stays. Read-only `color` and `range` inputs are still filled. A field that becomes writable while `FillAsync` is retrying can still receive the value.
+
+### DeleteMatchingCookiesAsync honors domain, path, URL, and partition
+
+The method is [`DeleteMatchingCookiesAsync`](/api/PuppeteerSharp/IBrowser/) on `IBrowser` and `IBrowserContext` ([#3645](https://github.com/hardkoded/puppeteer-sharp/pull/3645)). Each [`DeleteCookiesRequest`](/api/PuppeteerSharp/DeleteCookiesRequest/) matches `Name`, and also honors `Domain`, `Path`, `Url`, and `PartitionKey` when they are set.
+
+`Domain` and `Path` must equal the cookie's domain and path. An absolute `Url` matches only when its host equals the cookie domain and its absolute path equals the cookie path. `PartitionKey` matches `SourceOrigin`, and matches `HasCrossSiteAncestor` when the filter sets that flag. A filter with a partition key does not delete a cookie that has no partition key.
+
+```csharp
+await context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
+{
+    Name = "session",
+    Domain = "example.com",
+    Path = "/",
+});
+```
+
+### PDF sizes use CSS length ratios
+
+Paper width, height, and margins convert with the CSS absolute-length ratios, on CDP and on WebDriver BiDi ([#3647](https://github.com/hardkoded/puppeteer-sharp/pull/3647)):
+
+| Unit | Pixels |
+| --- | --- |
+| `px` | 1 |
+| `in` | 96 |
+| `cm` | 96 / 2.54 |
+| `mm` | 96 / 25.4 |
+| `pt` | 96 / 72 |
+| `pc` | 16 |
+
+`pt` and `pc` are new. Centimeters and millimeters previously used the rounded factors 37.8 and 3.78.
+
+### Accessibility element handles after navigation
+
+[`SerializedAXNode.ElementHandleAsync`](/api/PuppeteerSharp.PageAccessibility/SerializedAXNode/) returns null after a navigation when the frame's loader id no longer matches the snapshot ([#3650](https://github.com/hardkoded/puppeteer-sharp/pull/3650)). The stored backend node id can belong to a different node in the new document, so the method returns null instead of adopting that node.
+
+## Links
+
+- [GitHub release v25.17.0](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v25.17.0)
+- [GitHub release v25.17.1](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v25.17.1)
+- [Compare v25.15.0 with v25.17.0](https://github.com/hardkoded/puppeteer-sharp/compare/v25.15.0...v25.17.0)
+- [Compare v25.17.0 with v25.17.1](https://github.com/hardkoded/puppeteer-sharp/compare/v25.17.0...v25.17.1)
+- [PuppeteerSharp on NuGet](https://www.nuget.org/packages/PuppeteerSharp/25.17.1)

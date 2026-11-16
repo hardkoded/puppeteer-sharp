@@ -17,6 +17,9 @@
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+# The pattern above also matches the Starlight release notes.
+!docs-site/src/content/docs/releases/
+!docs-site/src/content/docs/releases/**
 x64/
 x86/
 bld/
