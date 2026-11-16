@@ -22,7 +22,7 @@ The docs moved from DocFX on GitHub Pages to this Starlight site ([#3655](https:
 
 ### Stream a response, and read its encoded size
 
-[`IResponse.StreamAsync`](/api/PuppeteerSharp/IResponse/) returns a `Stream` of the body, with chunks delivered as they arrive ([#3666](https://github.com/hardkoded/puppeteer-sharp/pull/3666)). Call it from the `Response` event, while the body is still loading. If loading has already finished, the stream contains the whole body as one chunk. A redirect also raises `Response`, and `StreamAsync` then throws `PuppeteerException` (`Response body is unavailable for redirect responses`). A failed load throws `PuppeteerException` from a later read. The handler is not awaited, so catch those failures inside it.
+[`IResponse.StreamAsync`](/api/PuppeteerSharp/IResponse/) returns a `Stream` of the body, with chunks delivered as they arrive ([#3666](https://github.com/hardkoded/puppeteer-sharp/pull/3666)). Call it from the `Response` event, while the body is still loading. If loading has already finished, the stream is a buffer of the whole body. Read until the stream ends. Each read still returns at most the buffer you pass. A redirect also raises `Response`, and `StreamAsync` then throws `PuppeteerException` (`Response body is unavailable for redirect responses`). A failed load throws `PuppeteerException` from a later read. The handler is not awaited, so catch those failures inside it.
 
 `StreamAsync` is a CDP method. On WebDriver BiDi it returns a faulted task with `NotSupportedException` and the message `Response.StreamAsync is not supported in WebDriver BiDi.` Use `BufferAsync` or `TextAsync` on BiDi.
 
