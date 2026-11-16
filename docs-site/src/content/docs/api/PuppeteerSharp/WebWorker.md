@@ -56,7 +56,7 @@ The CDP session client the WebWorker belongs to.
 
 **Value:** [ICDPSession](/api/PuppeteerSharp/ICDPSession/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L52)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L106)
 
 <a id="PuppeteerSharp_WebWorker_Url_"></a>
 <a id="PuppeteerSharp_WebWorker_Url"></a>
@@ -73,7 +73,7 @@ Gets the Worker URL.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — Worker URL.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L47)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L101)
 
 ## Events
 
@@ -112,6 +112,112 @@ dispatched. Call [Move()](/api/PuppeteerSharp/IJSHandle/#PuppeteerSharp_IJSHandl
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L41)
 
+<a id="PuppeteerSharp_WebWorker_Request"></a>
+
+### Request
+
+
+```csharp
+public event EventHandler<RequestEventArgs> Request
+```
+
+
+Emitted when the worker issues a request. Contains a [IRequest](/api/PuppeteerSharp/IRequest/).
+
+**Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
+
+Only supported with CDP. With WebDriver BiDi these events are never emitted.
+
+&lt;p&gt;
+For service workers and shared workers, network events are only delivered once a [WebWorker](./)
+instance exists, i.e. after [WorkerAsync()](/api/PuppeteerSharp/ITarget/#PuppeteerSharp_ITarget_WorkerAsync) has been called. Requests issued before that,
+such as requests made while a service worker starts up, are not reported.
+&lt;/p&gt;
+&lt;p&gt;
+Listeners are bound to this worker instance: if the worker is terminated and restarted (e.g. an idle
+extension service worker), a new [WebWorker](./) is created and listeners must be re-attached.
+&lt;/p&gt;
+&lt;p&gt;
+Requests issued by service workers and shared workers cannot be intercepted:
+`ContinueAsync`, `AbortAsync` and `RespondAsync` throw.
+&lt;/p&gt;
+
+This API is experimental.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L63)
+
+<a id="PuppeteerSharp_WebWorker_RequestFailed"></a>
+
+### RequestFailed
+
+
+```csharp
+public event EventHandler<RequestEventArgs> RequestFailed
+```
+
+
+Emitted when a request issued by the worker fails. Contains a [IRequest](/api/PuppeteerSharp/IRequest/).
+
+**Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
+
+The same delivery rules as for [Request](#PuppeteerSharp_WebWorker_Request) apply. This API is experimental.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L87)
+
+<a id="PuppeteerSharp_WebWorker_RequestFinished"></a>
+
+### RequestFinished
+
+
+```csharp
+public event EventHandler<RequestEventArgs> RequestFinished
+```
+
+
+Emitted when a request issued by the worker finishes successfully. Contains a [IRequest](/api/PuppeteerSharp/IRequest/).
+
+**Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
+
+The same delivery rules as for [Request](#PuppeteerSharp_WebWorker_Request) apply. This API is experimental.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L95)
+
+<a id="PuppeteerSharp_WebWorker_RequestServedFromCache"></a>
+
+### RequestServedFromCache
+
+
+```csharp
+public event EventHandler<RequestEventArgs> RequestServedFromCache
+```
+
+
+Emitted when a request issued by the worker is served from cache. Contains a [IRequest](/api/PuppeteerSharp/IRequest/).
+
+**Value:** [EventHandler&lt;RequestEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
+
+The same delivery rules as for [Request](#PuppeteerSharp_WebWorker_Request) apply. This API is experimental.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L71)
+
+<a id="PuppeteerSharp_WebWorker_Response"></a>
+
+### Response
+
+
+```csharp
+public event EventHandler<ResponseCreatedEventArgs> Response
+```
+
+
+Emitted when a response is received for a request issued by the worker. Contains a [IResponse](/api/PuppeteerSharp/IResponse/).
+
+**Value:** [EventHandler&lt;ResponseCreatedEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
+
+The same delivery rules as for [Request](#PuppeteerSharp_WebWorker_Request) apply. This API is experimental.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L79)
+
 ## Methods
 
 <a id="PuppeteerSharp_WebWorker_CloseAsync_"></a>
@@ -129,7 +235,7 @@ Closes the worker.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that completes when the worker is closed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L146)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L200)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionAsync__1_System_String_"></a>
@@ -160,7 +266,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L73)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L127)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionHandleAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionHandleAsync_System_String_"></a>
@@ -185,7 +291,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L112)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L166)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateFunctionAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_EvaluateFunctionAsync_System_String_System_Object___"></a>
@@ -212,7 +318,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L86)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L140)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateFunctionAsync__1_System_String_System_Object___"></a>
 
@@ -244,7 +350,7 @@ Executes a function in the context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L100)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L154)
 
 <a id="PuppeteerSharp_WebWorker_WaitForFunctionAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___"></a>
@@ -270,4 +376,4 @@ evaluated in the worker's context.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of the truthy value returned by the function.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L123)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L177)

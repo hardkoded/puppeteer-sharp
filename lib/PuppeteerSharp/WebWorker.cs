@@ -41,6 +41,60 @@ namespace PuppeteerSharp
         public event EventHandler<RemoteExceptionEventArgs> ExceptionThrown;
 
         /// <summary>
+        /// Emitted when the worker issues a request. Contains a <see cref="IRequest"/>.
+        /// </summary>
+        /// <remarks>
+        /// Only supported with CDP. With WebDriver BiDi these events are never emitted.
+        /// <para>
+        /// For service workers and shared workers, network events are only delivered once a <see cref="WebWorker"/>
+        /// instance exists, i.e. after <see cref="ITarget.WorkerAsync"/> has been called. Requests issued before that,
+        /// such as requests made while a service worker starts up, are not reported.
+        /// </para>
+        /// <para>
+        /// Listeners are bound to this worker instance: if the worker is terminated and restarted (e.g. an idle
+        /// extension service worker), a new <see cref="WebWorker"/> is created and listeners must be re-attached.
+        /// </para>
+        /// <para>
+        /// Requests issued by service workers and shared workers cannot be intercepted:
+        /// <c>ContinueAsync</c>, <c>AbortAsync</c> and <c>RespondAsync</c> throw.
+        /// </para>
+        /// This API is experimental.
+        /// </remarks>
+        public event EventHandler<RequestEventArgs> Request;
+
+        /// <summary>
+        /// Emitted when a request issued by the worker is served from cache. Contains a <see cref="IRequest"/>.
+        /// </summary>
+        /// <remarks>
+        /// The same delivery rules as for <see cref="Request"/> apply. This API is experimental.
+        /// </remarks>
+        public event EventHandler<RequestEventArgs> RequestServedFromCache;
+
+        /// <summary>
+        /// Emitted when a response is received for a request issued by the worker. Contains a <see cref="IResponse"/>.
+        /// </summary>
+        /// <remarks>
+        /// The same delivery rules as for <see cref="Request"/> apply. This API is experimental.
+        /// </remarks>
+        public event EventHandler<ResponseCreatedEventArgs> Response;
+
+        /// <summary>
+        /// Emitted when a request issued by the worker fails. Contains a <see cref="IRequest"/>.
+        /// </summary>
+        /// <remarks>
+        /// The same delivery rules as for <see cref="Request"/> apply. This API is experimental.
+        /// </remarks>
+        public event EventHandler<RequestEventArgs> RequestFailed;
+
+        /// <summary>
+        /// Emitted when a request issued by the worker finishes successfully. Contains a <see cref="IRequest"/>.
+        /// </summary>
+        /// <remarks>
+        /// The same delivery rules as for <see cref="Request"/> apply. This API is experimental.
+        /// </remarks>
+        public event EventHandler<RequestEventArgs> RequestFinished;
+
+        /// <summary>
         /// Gets the Worker URL.
         /// </summary>
         /// <value>Worker URL.</value>
@@ -148,6 +202,16 @@ namespace PuppeteerSharp
         internal virtual Realm GetMainRealm() => World;
 
         internal void OnExceptionThrown(RemoteExceptionEventArgs e) => ExceptionThrown?.Invoke(this, e);
+
+        internal void OnRequest(RequestEventArgs e) => Request?.Invoke(this, e);
+
+        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+
+        internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
+
+        internal void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
+
+        internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
 
         internal void OnConsole(ConsoleEventArgs e) => Console?.Invoke(this, e);
     }

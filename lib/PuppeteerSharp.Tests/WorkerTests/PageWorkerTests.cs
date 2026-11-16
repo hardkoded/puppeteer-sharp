@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
@@ -120,6 +121,136 @@ namespace PuppeteerSharp.Tests.WorkerTests
             await failedTcs.Task.WithTimeout();
 
             Assert.That(request.FailureText, Is.EqualTo("net::ERR_ABORTED"));
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests on the worker")]
+        public async Task ShouldReportNetworkRequestsOnTheWorker()
+        {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Worker network request events are only implemented for CDP.");
+            }
+
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
+
+            var url = TestConstants.ServerUrl + "/one-style.css";
+            var requestTask = WaitForWorkerRequestAsync(worker, url);
+            var responseTask = WaitForWorkerResponseAsync(worker, url);
+            var finishedTask = WaitForWorkerRequestFinishedAsync(worker, url);
+            await worker.EvaluateFunctionAsync("async url => { await (await fetch(url)).text(); }", url);
+            var request = await requestTask.WithTimeout();
+            var response = await responseTask.WithTimeout();
+            var finished = await finishedTask.WithTimeout();
+
+            Assert.That(request.Worker, Is.SameAs(worker));
+            Assert.That(request.Frame, Is.Null);
+            Assert.That(request.Page, Is.Null);
+            Assert.That(response.Request, Is.SameAs(request));
+            Assert.That(response.Status, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(finished, Is.SameAs(request));
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests on the worker only for its own requests")]
+        public async Task ShouldReportNetworkRequestsOnTheWorkerOnlyForItsOwnRequests()
+        {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Worker network request events are only implemented for CDP.");
+            }
+
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
+
+            var workerRequests = new System.Collections.Concurrent.ConcurrentQueue<string>();
+            worker.Request += (_, e) => workerRequests.Enqueue(e.Request.Url);
+
+            await Task.WhenAll(
+                Page.WaitForRequestAsync(TestConstants.EmptyPage),
+                Page.EvaluateFunctionAsync("url => fetch(url)", TestConstants.EmptyPage));
+            var workerUrl = TestConstants.ServerUrl + "/one-style.css";
+            var finishedTask = WaitForWorkerRequestFinishedAsync(worker, workerUrl);
+            await worker.EvaluateFunctionAsync("async url => { await (await fetch(url)).text(); }", workerUrl);
+            await finishedTask.WithTimeout();
+
+            // Not an exact match: the worker's own script request may still be
+            // reported after the listener is attached.
+            Assert.That(workerRequests, Does.Contain(workerUrl));
+            Assert.That(workerRequests, Does.Not.Contain(TestConstants.EmptyPage));
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests as failed on the worker when the worker is terminated")]
+        public async Task ShouldReportNetworkRequestsAsFailedOnTheWorkerWhenTheWorkerIsTerminated()
+        {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Worker network request events are only implemented for CDP.");
+            }
+
+            // Never responds, so the request stays pending until the worker dies.
+            Server.SetRoute("/hang", _ => new TaskCompletionSource<bool>().Task);
+
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
+
+            var hangUrl = TestConstants.ServerUrl + "/hang";
+            var requestTask = WaitForWorkerRequestAsync(worker, hangUrl);
+            await worker.EvaluateFunctionAsync("url => { void fetch(url); }", hangUrl);
+            var request = await requestTask.WithTimeout();
+
+            var failedTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.RequestFailed += (_, e) =>
+            {
+                if (e.Request == request)
+                {
+                    failedTcs.TrySetResult(e.Request);
+                }
+            };
+            await Page.EvaluateFunctionAsync("() => globalThis.worker.terminate()");
+            await failedTcs.Task.WithTimeout();
+
+            Assert.That(request.FailureText, Is.EqualTo("net::ERR_ABORTED"));
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests on shared workers")]
+        public async Task ShouldReportNetworkRequestsOnSharedWorkers()
+        {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Worker network request events are only implemented for CDP.");
+            }
+
+            // Same-origin script, so the worker can fetch from the test server.
+            Server.SetRoute("/shared-network-worker.js", async context =>
+            {
+                context.Response.Headers["Content-Type"] = "text/javascript";
+                await context.Response.WriteAsync(string.Empty);
+            });
+            var workerUrl = TestConstants.ServerUrl + "/shared-network-worker.js";
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var targetTask = Context.WaitForTargetAsync(t => t.Type == TargetType.SharedWorker && t.Url == workerUrl);
+            await Page.EvaluateFunctionAsync("url => { globalThis.sharedWorker = new SharedWorker(url); }", workerUrl);
+            var target = await targetTask.WithTimeout();
+            var worker = await target.WorkerAsync();
+
+            var url = TestConstants.ServerUrl + "/one-style.css";
+            var requestTask = WaitForWorkerRequestAsync(worker, url);
+            var responseTask = WaitForWorkerResponseAsync(worker, url);
+            await worker.EvaluateFunctionAsync("async url => { await (await fetch(url)).text(); }", url);
+            var request = await requestTask.WithTimeout();
+            var response = await responseTask.WithTimeout();
+
+            Assert.That(request.Worker, Is.SameAs(worker));
+            Assert.That(request.Frame, Is.Null);
+            Assert.That(request.Page, Is.Null);
+            Assert.That(response.Request, Is.SameAs(request));
+            Assert.That(response.Status, Is.EqualTo(System.Net.HttpStatusCode.OK));
         }
 
         [Test, PuppeteerTest("worker.spec", "Workers", "should emit created and destroyed events")]
@@ -527,6 +658,45 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(testResponse, Is.Not.Null);
             var text = await testResponse.TextAsync();
             Assert.That(text, Does.Contain("hello from the worker"));
+        }
+
+        private static Task<IRequest> WaitForWorkerRequestAsync(WebWorker worker, string url)
+        {
+            var tcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.Request += (_, e) =>
+            {
+                if (e.Request.Url == url)
+                {
+                    tcs.TrySetResult(e.Request);
+                }
+            };
+            return tcs.Task;
+        }
+
+        private static Task<IRequest> WaitForWorkerRequestFinishedAsync(WebWorker worker, string url)
+        {
+            var tcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.RequestFinished += (_, e) =>
+            {
+                if (e.Request.Url == url)
+                {
+                    tcs.TrySetResult(e.Request);
+                }
+            };
+            return tcs.Task;
+        }
+
+        private static Task<IResponse> WaitForWorkerResponseAsync(WebWorker worker, string url)
+        {
+            var tcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.Response += (_, e) =>
+            {
+                if (e.Response.Url == url)
+                {
+                    tcs.TrySetResult(e.Response);
+                }
+            };
+            return tcs.Task;
         }
     }
 }

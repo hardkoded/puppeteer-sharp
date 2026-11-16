@@ -34,9 +34,7 @@ namespace PuppeteerSharp.Cdp
             var client = Session ?? await SessionFactory(false).ConfigureAwait(false);
             var worker = new CdpWebWorker(
                 client,
-                TargetInfo.Url,
-                TargetInfo.TargetId,
-                TargetInfo.Type,
+                this,
                 (_, _, _) => Task.CompletedTask,
                 _ => { });
 

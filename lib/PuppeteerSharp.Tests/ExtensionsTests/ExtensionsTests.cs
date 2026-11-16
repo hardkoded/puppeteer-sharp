@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
@@ -284,6 +285,118 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             await context.CloseAsync();
             var targets = browserWithExtension.Targets();
             AssertNoServiceWorkerReported(targets, extensionId);
+        }
+
+        [Test, PuppeteerTest("extensions.spec", "extensions service worker network events", "should report network requests on the service worker")]
+        public async Task ShouldReportNetworkRequestsOnTheServiceWorker()
+        {
+            // The service worker runs on a chrome-extension:// origin.
+            Server.SetRoute("/cors.json", async context =>
+            {
+                context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+                context.Response.Headers["Content-Type"] = "application/json";
+                await context.Response.WriteAsync("{}");
+            });
+            await using var browserWithExtension = await Puppeteer.LaunchAsync(
+                BrowserWithExtensionOptions(),
+                TestConstants.LoggerFactory);
+            var worker = await InstallAndGetWorkerAsync(browserWithExtension);
+            var url = TestConstants.ServerUrl + "/cors.json";
+
+            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var finishedTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.Request += (_, e) =>
+            {
+                if (e.Request.Url == url)
+                {
+                    requestTcs.TrySetResult(e.Request);
+                }
+            };
+            worker.Response += (_, e) =>
+            {
+                if (e.Response.Url == url)
+                {
+                    responseTcs.TrySetResult(e.Response);
+                }
+            };
+            worker.RequestFinished += (_, e) =>
+            {
+                if (e.Request.Url == url)
+                {
+                    finishedTcs.TrySetResult(e.Request);
+                }
+            };
+            await worker.EvaluateFunctionAsync("async url => { await (await fetch(url)).text(); }", url);
+            var request = await requestTcs.Task.WithTimeout();
+            var response = await responseTcs.Task.WithTimeout();
+            var finished = await finishedTcs.Task.WithTimeout();
+
+            Assert.That(request.Worker, Is.SameAs(worker));
+            Assert.That(request.Frame, Is.Null);
+            Assert.That(request.Page, Is.Null);
+            Assert.That(response.Request, Is.SameAs(request));
+            Assert.That(response.Status, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(finished, Is.SameAs(request));
+        }
+
+        [Test, PuppeteerTest("extensions.spec", "extensions service worker network events", "should report failed network requests on the service worker")]
+        public async Task ShouldReportFailedNetworkRequestsOnTheServiceWorker()
+        {
+            Server.SetRoute("/fail", context =>
+            {
+                context.Abort();
+                return Task.CompletedTask;
+            });
+            await using var browserWithExtension = await Puppeteer.LaunchAsync(
+                BrowserWithExtensionOptions(),
+                TestConstants.LoggerFactory);
+            var worker = await InstallAndGetWorkerAsync(browserWithExtension);
+            var url = TestConstants.ServerUrl + "/fail";
+
+            var failedTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.RequestFailed += (_, e) =>
+            {
+                if (e.Request.Url == url)
+                {
+                    failedTcs.TrySetResult(e.Request);
+                }
+            };
+            await worker.EvaluateFunctionAsync("async url => { await fetch(url).catch(() => {}); }", url);
+            var failed = await failedTcs.Task.WithTimeout();
+
+            Assert.That(failed.Worker, Is.SameAs(worker));
+            Assert.That(failed.FailureText, Is.Not.Empty);
+        }
+
+        [Test, PuppeteerTest("extensions.spec", "extensions service worker network events", "should not allow intercepting service worker requests")]
+        public async Task ShouldNotAllowInterceptingServiceWorkerRequests()
+        {
+            await using var browserWithExtension = await Puppeteer.LaunchAsync(
+                BrowserWithExtensionOptions(),
+                TestConstants.LoggerFactory);
+            var worker = await InstallAndGetWorkerAsync(browserWithExtension);
+
+            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.Request += (_, e) =>
+            {
+                if (e.Request.Url == TestConstants.EmptyPage)
+                {
+                    requestTcs.TrySetResult(e.Request);
+                }
+            };
+            await worker.EvaluateFunctionAsync("async url => { await fetch(url).catch(() => {}); }", TestConstants.EmptyPage);
+            var request = await requestTcs.Task.WithTimeout();
+
+            var exception = Assert.ThrowsAsync<PuppeteerException>(() => request.ContinueAsync());
+            Assert.That(exception!.Message, Does.Contain("Request Interception is not enabled!"));
+        }
+
+        private static async Task<WebWorker> InstallAndGetWorkerAsync(IBrowser browser)
+        {
+            var id = await browser.InstallExtensionAsync(_extensionPath);
+            var target = await browser.WaitForTargetAsync(t => t.Url.Contains(id) && t.Type == TargetType.ServiceWorker);
+            return await target.WorkerAsync();
         }
     }
 }

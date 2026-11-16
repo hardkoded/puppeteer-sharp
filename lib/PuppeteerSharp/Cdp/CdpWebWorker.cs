@@ -45,20 +45,19 @@ public class CdpWebWorker : WebWorker
 
     internal CdpWebWorker(
         CDPSession client,
-        string url,
-        string targetId,
-        TargetType targetType,
+        CdpTarget target,
         Func<ConsoleType, IJSHandle[], StackTrace, Task> consoleAPICalled,
         Action<EvaluateExceptionResponseDetails> exceptionThrown,
+        NetworkManager networkManager = null,
         Func<bool> hasOwnerExceptionListeners = null,
-        Action<RemoteException> forwardException = null) : base(url)
+        Action<RemoteException> forwardException = null) : base(target.Url)
     {
         _hasOwnerExceptionListeners = hasOwnerExceptionListeners ?? (() => false);
         _forwardException = forwardException ?? (_ => { });
         _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
-        _id = targetId;
+        _id = target.TargetId;
         Client = client;
-        _targetType = targetType;
+        _targetType = target.Type;
         World = new IsolatedWorld(null, this, new TimeoutSettings(), true);
         _consoleAPICalled = consoleAPICalled;
         _exceptionThrown = exceptionThrown;
@@ -70,6 +69,26 @@ public class CdpWebWorker : WebWorker
         // this, those one-shot events race the subscriptions and can be dropped, leaving
         // EvaluateFunctionAsync awaiting _workerScriptLoaded forever.
         client.FlushEarlyMessages();
+
+        // Service and shared workers create their own NetworkManager.
+        var netManager = networkManager ?? CreateOwnNetworkManager(target, client);
+
+        // This might fail if the target is closed before we receive all execution contexts.
+        _ = netManager.AddClientAsync(client).ContinueWith(
+            task =>
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.ErrorMessage(task.Exception!.Message);
+                }
+            },
+            TaskScheduler.Default);
+
+        // Must run after AddClientAsync(): it synchronously registers the manager's Disconnected
+        // handler, which emits RequestFailed for pending requests (NetworkManager.RemoveClient).
+        // ForwardNetworkEvents() registers a later Disconnected handler that stops forwarding, so the
+        // opposite order would drop those RequestFailed events.
+        ForwardNetworkEvents(netManager);
 
         _ = client.SendAsync("Runtime.enable").ContinueWith(
             task =>
@@ -182,6 +201,83 @@ public class CdpWebWorker : WebWorker
         await _workerScriptLoaded.Task.ConfigureAwait(false);
         return await base.WaitForFunctionAsync(script, options, args).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Network manager for workers that are not owned by a page (service and shared workers).
+    /// It only tracks this worker's session.
+    /// </summary>
+    private NetworkManager CreateOwnNetworkManager(CdpTarget target, CDPSession client)
+        => new(new WorkerFrameProvider(this, target), client.Connection.LoggerFactory, target.Browser.IsNetworkEnabled());
+
+    /// <summary>
+    /// Re-emits network events that belong to this worker. The network manager may be shared with a
+    /// page (dedicated workers), so events are filtered by <see cref="IRequest.Worker"/>.
+    /// </summary>
+    private void ForwardNetworkEvents(NetworkManager networkManager)
+    {
+        void ForwardRequest(object sender, RequestEventArgs e)
+        {
+            if (IsOwn(e.Request))
+            {
+                OnRequest(e);
+            }
+        }
+
+        void ForwardRequestServedFromCache(object sender, RequestEventArgs e)
+        {
+            if (IsOwn(e.Request))
+            {
+                OnRequestServedFromCache(e);
+            }
+        }
+
+        void ForwardResponse(object sender, ResponseCreatedEventArgs e)
+        {
+            if (IsOwn(e.Response.Request))
+            {
+                OnResponse(e);
+            }
+        }
+
+        void ForwardRequestFailed(object sender, RequestEventArgs e)
+        {
+            if (IsOwn(e.Request))
+            {
+                OnRequestFailed(e);
+            }
+        }
+
+        void ForwardRequestFinished(object sender, RequestEventArgs e)
+        {
+            if (IsOwn(e.Request))
+            {
+                OnRequestFinished(e);
+            }
+        }
+
+        networkManager.Request += ForwardRequest;
+        networkManager.RequestServedFromCache += ForwardRequestServedFromCache;
+        networkManager.Response += ForwardResponse;
+        networkManager.RequestFailed += ForwardRequestFailed;
+        networkManager.RequestFinished += ForwardRequestFinished;
+
+        void OnDisconnected(object sender, EventArgs e)
+        {
+            Client.Disconnected -= OnDisconnected;
+            networkManager.Request -= ForwardRequest;
+            networkManager.RequestServedFromCache -= ForwardRequestServedFromCache;
+            networkManager.Response -= ForwardResponse;
+            networkManager.RequestFailed -= ForwardRequestFailed;
+            networkManager.RequestFinished -= ForwardRequestFinished;
+        }
+
+        Client.Disconnected += OnDisconnected;
+    }
+
+    /// <summary>
+    /// Utility method to check if the request is owned by the current WebWorker.
+    /// </summary>
+    private bool IsOwn(IRequest request) => request?.Worker == this;
 
     private async void OnMessageReceived(object sender, MessageEventArgs e)
     {
@@ -312,5 +408,14 @@ public class CdpWebWorker : WebWorker
         {
             World.SetNewContext(CdpCDPSession, e.Context, World);
         }
+    }
+
+    private sealed class WorkerFrameProvider(CdpWebWorker worker, CdpTarget target) : IFrameProvider
+    {
+        public IBrowser Browser => target.Browser;
+
+        public Task<CdpFrame> GetFrameAsync(string frameId) => Task.FromResult<CdpFrame>(null);
+
+        public WebWorker Worker(CDPSession client) => client == worker.Client ? worker : null;
     }
 }

@@ -100,9 +100,10 @@ namespace PuppeteerSharp.Cdp
 
             subscriptions.Dispose();
 
-            // Only dedicated workers leave requests pending when their session goes
-            // away. The worker is still known here: the session is closed before the
-            // page handles the target detaching.
+            // Only worker sessions (dedicated workers tracked by the page, and
+            // service/shared workers with their own manager) leave requests pending
+            // when their session goes away. The worker is still known here: the
+            // session is closed before its owner handles the target detaching.
             if (_frameManager.Worker(client) == null)
             {
                 return;
@@ -809,7 +810,7 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            var userAgent = _userAgent ?? await _frameManager.Page.Browser.GetUserAgentAsync().ConfigureAwait(false);
+            var userAgent = _userAgent ?? await _frameManager.Browser.GetUserAgentAsync().ConfigureAwait(false);
             if (userAgent == null)
             {
                 return;

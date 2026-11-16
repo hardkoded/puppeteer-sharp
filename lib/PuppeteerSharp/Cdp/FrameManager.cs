@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Cdp
 
         internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
-        IPage IFrameProvider.Page => Page;
+        IBrowser IFrameProvider.Browser => ((IPage)Page).Browser;
 
         internal CDPSession Client { get; private set; }
 
