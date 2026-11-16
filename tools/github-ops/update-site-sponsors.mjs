@@ -36,7 +36,7 @@ async function githubSponsors(token) {
     const query = `query($login: String!) {
       repositoryOwner(login: $login) {
         ... on Sponsorable {
-          sponsorshipsAsMaintainer(first: 100, includePrivate: false, activeOnly: false) {
+          sponsorshipsAsMaintainer(first: 100, includePrivate: false, activeOnly: true) {
             nodes { sponsorEntity { ... on User { login name url } ... on Organization { login name url } } }
           }
         }
