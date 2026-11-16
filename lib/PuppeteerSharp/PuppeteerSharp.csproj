@@ -83,4 +83,15 @@
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
+  <!--
+    Installs the Husky.Net git hooks (.husky/pre-push runs `dotnet csharpier check .`) for contributors.
+    Skipped on CI (CI=true), when HUSKY=0, and when the sources are not a git checkout.
+  -->
+  <PropertyGroup>
+    <RepoRootDirectory>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../../'))</RepoRootDirectory>
+  </PropertyGroup>
+  <Target Name="Husky" BeforeTargets="Restore;CollectPackageReferences" Condition=" '$(CI)' != 'true' AND '$(HUSKY)' != '0' AND Exists('$(RepoRootDirectory).git') ">
+    <Exec Command="dotnet tool restore" WorkingDirectory="$(RepoRootDirectory)" StandardOutputImportance="Low" StandardErrorImportance="High" />
+    <Exec Command="dotnet husky install" WorkingDirectory="$(RepoRootDirectory)" StandardOutputImportance="Low" StandardErrorImportance="High" />
+  </Target>
 </Project>

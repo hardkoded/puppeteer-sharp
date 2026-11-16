@@ -1,0 +1,11 @@
+# Static test fixtures and third-party assets served by the test server
+**/wwwroot/**
+
+# Documentation sites and generated docs
+docfx_project/
+docs-site/
+
+# Build output and packages
+**/bin/
+**/obj/
+**/node_modules/

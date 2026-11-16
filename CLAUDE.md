@@ -17,6 +17,15 @@ StyleCop enforces a strict member ordering inside a class, applied in this prior
 
 Always verify which git branch you are on before making commits or creating PRs. Never commit to main/master. If the task requires a new branch, create it immediately and confirm with `git branch --show-current` before proceeding.
 
+## Formatting
+
+CSharpier owns formatting. Run `dotnet csharpier format .` from the repo root before every commit/push. The Husky.Net pre-push hook runs `dotnet csharpier check .` and blocks unformatted pushes. Do not run `dotnet format whitespace` or a plain `dotnet format`, because their whitespace pass fights CSharpier. Use `dotnet format style` / `dotnet format analyzers` only.
+
+- CSharpier and Husky.Net are local tools pinned in `.config/dotnet-tools.json`. Run `dotnet tool restore` once to get them.
+- The hook is installed automatically by the `Husky` MSBuild target in `lib/PuppeteerSharp/PuppeteerSharp.csproj` on restore/build. It is skipped when `CI=true`, when `HUSKY=0`, or when there is no `.git`.
+- CI runs `dotnet csharpier check .` in the `csharpier` job of `.github/workflows/dotnet.yml`.
+- Files CSharpier must not touch are listed in `.csharpierignore`.
+
 ## Upstream Porting Conventions
 
 When porting upstream TypeScript/Puppeteer changes to PuppeteerSharp (.NET), translate API naming conventions: camelCase → PascalCase, Promise<T> → Task<T>, interfaces prefixed with I, events use C# event patterns. Use `ReloadOptions`-style single parameter objects rather than creating redundant overloads.
