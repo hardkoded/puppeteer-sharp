@@ -1,0 +1,4 @@
+# Commits listed here are skipped by `git blame` (use `git config blame.ignoreRevsFile .git-blame-ignore-revs` locally).
+
+# Format codebase with CSharpier
+264479f4dfd292db5806e70bfeb12ab6c84b1a9e
