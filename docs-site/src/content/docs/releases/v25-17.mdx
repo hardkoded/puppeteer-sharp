@@ -22,7 +22,7 @@ The docs moved from DocFX on GitHub Pages to this Starlight site ([#3655](https:
 
 ### Stream a response, and read its encoded size
 
-[`IResponse.StreamAsync`](/api/PuppeteerSharp/IResponse/) returns a `Stream` of the body, with chunks delivered as they arrive ([#3666](https://github.com/hardkoded/puppeteer-sharp/pull/3666)). Call it from the `Response` event, while the body is still loading. If loading has already finished, the stream contains the whole body as one chunk. If loading fails, a later read throws `PuppeteerException`.
+[`IResponse.StreamAsync`](/api/PuppeteerSharp/IResponse/) returns a `Stream` of the body, with chunks delivered as they arrive ([#3666](https://github.com/hardkoded/puppeteer-sharp/pull/3666)). Call it from the `Response` event, while the body is still loading. If loading has already finished, the stream contains the whole body as one chunk. A redirect also raises `Response`, and `StreamAsync` then throws `PuppeteerException` (`Response body is unavailable for redirect responses`). A failed load throws `PuppeteerException` from a later read. The handler is not awaited, so catch those failures inside it.
 
 `StreamAsync` is a CDP method. On WebDriver BiDi it returns a faulted task with `NotSupportedException` and the message `Response.StreamAsync is not supported in WebDriver BiDi.` Use `BufferAsync` or `TextAsync` on BiDi.
 
@@ -31,12 +31,19 @@ The docs moved from DocFX on GitHub Pages to this Starlight site ([#3655](https:
 ```csharp
 page.Response += async (_, e) =>
 {
-    using var body = await e.Response.StreamAsync();
-    var buffer = new byte[8192];
-    int read;
-    while ((read = await body.ReadAsync(buffer, 0, buffer.Length)) > 0)
+    try
     {
-        // Process `read` bytes from `buffer`.
+        using var body = await e.Response.StreamAsync();
+        var buffer = new byte[8192];
+        int read;
+        while ((read = await body.ReadAsync(buffer, 0, buffer.Length)) > 0)
+        {
+            // Process `read` bytes from `buffer`.
+        }
+    }
+    catch (PuppeteerException)
+    {
+        // Redirects and failed loads have no readable body.
     }
 };
 
@@ -131,7 +138,7 @@ string label = await page.Locator("button")
 
 ### Download behavior on launch and connect
 
-[`LaunchOptions`](/api/PuppeteerSharp/LaunchOptions/) and [`ConnectOptions`](/api/PuppeteerSharp/ConnectOptions/) accept a [`DownloadBehavior`](/api/PuppeteerSharp/DownloadBehavior/) ([#3679](https://github.com/hardkoded/puppeteer-sharp/pull/3679)). `Policy` is a `DownloadPolicy`: `Deny`, `Allow`, `AllowAndName`, or `Default`. `DownloadPath` is required for `Allow` and `AllowAndName`. `AllowAndName` names every file from its download GUID.
+[`LaunchOptions`](/api/PuppeteerSharp/LaunchOptions/) and [`ConnectOptions`](/api/PuppeteerSharp/ConnectOptions/) accept a [`DownloadBehavior`](/api/PuppeteerSharp/DownloadBehavior/) ([#3679](https://github.com/hardkoded/puppeteer-sharp/pull/3679)). `Policy` is a `DownloadPolicy`: `Deny`, `Allow`, `AllowAndName`, or `Default`. `DownloadPath` is required for `Allow` and `AllowAndName`. `AllowAndName` names every file from its download GUID. On WebDriver BiDi, `AllowAndName` throws `NotSupportedException` (`allowAndName` is not supported in WebDriver BiDi). Use `Allow` on BiDi.
 
 ```csharp
 await using IBrowser browser = await Puppeteer.LaunchAsync(new LaunchOptions
@@ -148,12 +155,12 @@ await using IBrowser browser = await Puppeteer.LaunchAsync(new LaunchOptions
 
 ### Screen recording without an enumeration buffer
 
-[`RecordOptions.BufferForEnumeration`](/api/PuppeteerSharp/RecordOptions/) controls whether recording chunks are kept for `await foreach` ([#3662](https://github.com/hardkoded/puppeteer-sharp/pull/3662)). The default, null or true, buffers them. Set it to false when the recording only goes to `Path` or to a pipe, so an unread queue does not retain the video. `GetAsyncEnumerator` then throws `InvalidOperationException`.
+[`RecordOptions.BufferForEnumeration`](/api/PuppeteerSharp/RecordOptions/) controls whether recording chunks are kept for `await foreach` ([#3662](https://github.com/hardkoded/puppeteer-sharp/pull/3662)). The default, null or true, buffers them. Set it to false when the recording only goes to `Path` or to a pipe, so an unread queue does not retain the video. `GetAsyncEnumerator` then throws `InvalidOperationException`. `RecordAsync` writes an MP4 stream. The obsolete `ScreencastAsync` is the WebM recorder.
 
 ```csharp
 await using ScreenRecording recording = await page.RecordAsync(new RecordOptions
 {
-    Path = "session.webm",
+    Path = "session.mp4",
     BufferForEnumeration = false,
 });
 
