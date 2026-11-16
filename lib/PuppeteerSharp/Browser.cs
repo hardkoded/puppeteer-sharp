@@ -15,7 +15,6 @@ using RxSharp = ReactiveExtensionsSharp;
 using PuppeteerSharp.Bidi;
 #endif
 
-
 namespace PuppeteerSharp
 {
     // We won't change the name just because WebDriver has a namespace with the same name.

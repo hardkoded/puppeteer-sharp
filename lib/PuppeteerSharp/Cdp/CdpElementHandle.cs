@@ -39,9 +39,8 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
     private readonly CdpFrame _cdpFrame;
     private int? _backendNodeId;
 
-    internal CdpElementHandle(IsolatedWorld world,
 #pragma warning disable CA2000
-        RemoteObject remoteObject)
+    internal CdpElementHandle(IsolatedWorld world, RemoteObject remoteObject)
         : base(new CdpJSHandle(world, remoteObject))
 #pragma warning restore CA2000
     {

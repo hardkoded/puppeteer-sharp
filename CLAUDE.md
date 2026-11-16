@@ -133,3 +133,24 @@ When investigating flaky tests, always look for root causes (race conditions, no
 ## Continuous improvement
 
 Every time you find a code style error during builds, for instance rules failures like "SA1648". Update this document to include the new rule and a brief description of how the codebase adheres to it. This will help maintain a high standard of code quality and consistency throughout the project.
+
+### StyleCop rules turned off because of CSharpier
+
+CSharpier owns layout, so these StyleCop layout rules are set to `none` in `lib/.editorconfig`. Do not turn them back on, and do not hand-format code to satisfy them; run `dotnet csharpier format .` instead.
+
+- SA1003: Symbols should be spaced correctly. CSharpier breaks a cast before a wrapped operand.
+- SA1009: Closing parenthesis should be spaced correctly. CSharpier puts the closing parenthesis of a wrapped argument or parameter list on its own line.
+- SA1111: Closing parenthesis should be on the line of the last parameter. Same cause as SA1009.
+- SA1118: Parameter should not span multiple lines. CSharpier wraps long arguments, such as lambdas and multi-line strings.
+- SA1500: Braces for multi-line statements should not share a line. CSharpier writes `} while (...);`.
+- SA1501: Statement should not be on a single line. CSharpier writes empty blocks such as `catch { }` on one line.
+- SA1502: Element should not be on a single line. CSharpier writes empty bodies as `{ }`.
+- SA1504: All accessors should be single-line or multi-line. CSharpier collapses short accessors.
+- SA1513: Closing brace should be followed by a blank line. CSharpier controls the blank lines around wrapped expressions and patterns.
+- SA1515: Single-line comment should be preceded by a blank line. CSharpier removes blank lines inside attribute lists.
+- SA1516: Elements should be separated by a blank line. CSharpier removes blank lines between accessors.
+
+Rules that stay on and that CSharpier output still meets:
+
+- SA1507: Code should not contain multiple blank lines in a row. CSharpier collapses them, so a double blank line means the file was not formatted.
+- SA1116: Parameters should begin on the line after the declaration when they span multiple lines. Do not put a `#pragma` inside a parameter list, because CSharpier then keeps the list as written. Put the `#pragma warning disable` before the member instead.

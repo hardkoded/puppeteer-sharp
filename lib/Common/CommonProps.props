@@ -15,6 +15,8 @@
     BeforeTargets="PreBuildEvent"
     Condition=" !$(DefineConstants.Contains('CDP_ONLY')) "
   >
-    <Exec Command="dotnet format $(ProjectPath) --exclude-diagnostics CA1865" />
+    <!-- CSharpier owns whitespace formatting, so only the style and analyzers passes run here. -->
+    <Exec Command="dotnet format style $(ProjectPath) --exclude-diagnostics CA1865" />
+    <Exec Command="dotnet format analyzers $(ProjectPath) --exclude-diagnostics CA1865" />
   </Target>
 </Project>

@@ -163,8 +163,6 @@ dotnet_diagnostic.SA1624.severity = error
 dotnet_diagnostic.SA1028.severity = error
 # SA1600: Elements should be documented
 dotnet_diagnostic.SA1600.severity = error
-# SA1516: Elements should be separated by blank line
-dotnet_diagnostic.SA1516.severity = error
 # SA1629: Documentation text should end with a period
 dotnet_diagnostic.SA1629.severity = error
 # SA1514: Element documentation header should be preceded by blank line
@@ -181,12 +179,8 @@ dotnet_diagnostic.SA1208.severity = error
 dotnet_diagnostic.SA1204.severity = error
 # SA1004: Documentation line should begin with a space.
 dotnet_diagnostic.SA1004.severity = error
-# SA1513: Closing brace should be followed by blank line
-dotnet_diagnostic.SA1513.severity = error
 # SA1124: Don't use regions
 dotnet_diagnostic.SA1124.severity = error
-# SA1009: Closing parenthesis should not be preceded by a space.
-dotnet_diagnostic.SA1009.severity = error
 # SA1413: Use trailing comma in multi-line initializers
 dotnet_diagnostic.SA1413.severity = error
 # SA1602: Enumeration items should be documented
@@ -199,16 +193,12 @@ dotnet_diagnostic.SA1203.severity = error
 dotnet_diagnostic.SA1720.severity = error
 # SA1300: Element 'iFrame' should begin with an uppercase letter
 dotnet_diagnostic.SA1300.severity = error
-# SA1500: Braces for multi-line statements should not share line
-dotnet_diagnostic.SA1500.severity = error
 # SA1214: Readonly fields should appear before non-readonly fields
 dotnet_diagnostic.SA1214.severity = error
 # SA1642: Constructor summary documentation should begin with standard text (SA1642) (PuppeteerSharp)
 dotnet_diagnostic.SA1642.severity = error
 # SA1013: Closing brace should be preceded by a space.
 dotnet_diagnostic.SA1013.severity = error
-# SA1515: Single-line comment should be preceded by blank line
-dotnet_diagnostic.SA1515.severity = error
 # SA1518: File is required to end with a single newline character
 dotnet_diagnostic.SA1518.severity = none
 # SA1012: Opening brace should be followed by a space.
@@ -229,16 +219,37 @@ dotnet_diagnostic.SA1614.severity = error
 dotnet_diagnostic.SA1622.severity = error
 # SA1116: The parameters should begin on the line after the declaration, whenever the parameter span across multiple lines
 dotnet_diagnostic.SA1116.severity = error
-# SA1111: Closing parenthesis should be on line of last parameter
-dotnet_diagnostic.SA1111.severity = error
 # SA1505: An opening brace should not be followed by a blank line.
 dotnet_diagnostic.SA1505.severity = error
 # SA1612: The parameter documentation for 'filePaths' should be at position 2.
 dotnet_diagnostic.SA1612.severity = error
 # SA1620: The type parameter documentation for 'T4' should be at position 4.
 dotnet_diagnostic.SA1620.severity = error
+
+# Layout rules that conflict with CSharpier, which owns formatting (see CLAUDE.md).
+# They are turned off because of CSharpier: its output breaks them and it would undo manual fixes.
+# SA1003: Symbols should be spaced correctly (CSharpier breaks a cast before a wrapped operand)
+dotnet_diagnostic.SA1003.severity = none
+# SA1009: Closing parenthesis should be spaced correctly (CSharpier puts it on its own line)
+dotnet_diagnostic.SA1009.severity = none
+# SA1111: Closing parenthesis should be on line of last parameter
+dotnet_diagnostic.SA1111.severity = none
 # SA1118: The parameter spans multiple lines
-dotnet_diagnostic.SA1118.severity = error
+dotnet_diagnostic.SA1118.severity = none
+# SA1500: Braces for multi-line statements should not share line (CSharpier writes `} while (...)`)
+dotnet_diagnostic.SA1500.severity = none
+# SA1501: Statement should not be on a single line (CSharpier writes empty blocks as `{ }`)
+dotnet_diagnostic.SA1501.severity = none
+# SA1502: Element should not be on a single line (CSharpier writes empty bodies as `{ }`)
+dotnet_diagnostic.SA1502.severity = none
+# SA1504: All accessors should be single-line or multi-line (CSharpier collapses short accessors)
+dotnet_diagnostic.SA1504.severity = none
+# SA1513: Closing brace should be followed by blank line
+dotnet_diagnostic.SA1513.severity = none
+# SA1515: Single-line comment should be preceded by blank line (CSharpier removes blank lines in attribute lists)
+dotnet_diagnostic.SA1515.severity = none
+# SA1516: Elements should be separated by blank line (CSharpier removes blank lines between accessors)
+dotnet_diagnostic.SA1516.severity = none
 
 # Microsoft.CodeQuality.Analyzers
 # Overloads to System.Uri
