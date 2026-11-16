@@ -14,45 +14,6 @@ namespace PuppeteerSharp.Tests.WorkerTests
         {
         }
 
-        private static Task<IRequest> WaitForWorkerRequestAsync(WebWorker worker, string url)
-        {
-            var tcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
-            worker.Request += (_, e) =>
-            {
-                if (e.Request.Url == url)
-                {
-                    tcs.TrySetResult(e.Request);
-                }
-            };
-            return tcs.Task;
-        }
-
-        private static Task<IRequest> WaitForWorkerRequestFinishedAsync(WebWorker worker, string url)
-        {
-            var tcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
-            worker.RequestFinished += (_, e) =>
-            {
-                if (e.Request.Url == url)
-                {
-                    tcs.TrySetResult(e.Request);
-                }
-            };
-            return tcs.Task;
-        }
-
-        private static Task<IResponse> WaitForWorkerResponseAsync(WebWorker worker, string url)
-        {
-            var tcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
-            worker.Response += (_, e) =>
-            {
-                if (e.Response.Url == url)
-                {
-                    tcs.TrySetResult(e.Response);
-                }
-            };
-            return tcs.Task;
-        }
-
         private async Task<WebWorker> CreateWorkerAsync()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -165,6 +126,11 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests on the worker")]
         public async Task ShouldReportNetworkRequestsOnTheWorker()
         {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Worker network request events are only implemented for CDP.");
+            }
+
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
             await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
@@ -190,6 +156,11 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests on the worker only for its own requests")]
         public async Task ShouldReportNetworkRequestsOnTheWorkerOnlyForItsOwnRequests()
         {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Worker network request events are only implemented for CDP.");
+            }
+
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
             await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
@@ -215,6 +186,11 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests as failed on the worker when the worker is terminated")]
         public async Task ShouldReportNetworkRequestsAsFailedOnTheWorkerWhenTheWorkerIsTerminated()
         {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Worker network request events are only implemented for CDP.");
+            }
+
             // Never responds, so the request stays pending until the worker dies.
             Server.SetRoute("/hang", _ => new TaskCompletionSource<bool>().Task);
 
@@ -245,6 +221,11 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests on shared workers")]
         public async Task ShouldReportNetworkRequestsOnSharedWorkers()
         {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Worker network request events are only implemented for CDP.");
+            }
+
             // Same-origin script, so the worker can fetch from the test server.
             Server.SetRoute("/shared-network-worker.js", async context =>
             {
@@ -677,6 +658,45 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(testResponse, Is.Not.Null);
             var text = await testResponse.TextAsync();
             Assert.That(text, Does.Contain("hello from the worker"));
+        }
+
+        private static Task<IRequest> WaitForWorkerRequestAsync(WebWorker worker, string url)
+        {
+            var tcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.Request += (_, e) =>
+            {
+                if (e.Request.Url == url)
+                {
+                    tcs.TrySetResult(e.Request);
+                }
+            };
+            return tcs.Task;
+        }
+
+        private static Task<IRequest> WaitForWorkerRequestFinishedAsync(WebWorker worker, string url)
+        {
+            var tcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.RequestFinished += (_, e) =>
+            {
+                if (e.Request.Url == url)
+                {
+                    tcs.TrySetResult(e.Request);
+                }
+            };
+            return tcs.Task;
+        }
+
+        private static Task<IResponse> WaitForWorkerResponseAsync(WebWorker worker, string url)
+        {
+            var tcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
+            worker.Response += (_, e) =>
+            {
+                if (e.Response.Url == url)
+                {
+                    tcs.TrySetResult(e.Response);
+                }
+            };
+            return tcs.Task;
         }
     }
 }

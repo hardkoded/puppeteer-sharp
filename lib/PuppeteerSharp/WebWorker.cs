@@ -56,7 +56,7 @@ namespace PuppeteerSharp
         /// </para>
         /// <para>
         /// Requests issued by service workers and shared workers cannot be intercepted:
-        /// <see cref="IRequest.ContinueAsync"/>, <see cref="IRequest.AbortAsync"/> and <see cref="IRequest.RespondAsync"/> throw.
+        /// <c>ContinueAsync</c>, <c>AbortAsync</c> and <c>RespondAsync</c> throw.
         /// </para>
         /// This API is experimental.
         /// </remarks>

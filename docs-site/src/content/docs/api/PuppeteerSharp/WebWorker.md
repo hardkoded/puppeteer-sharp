@@ -139,7 +139,7 @@ extension service worker), a new [WebWorker](./) is created and listeners must b
 &lt;/p&gt;
 &lt;p&gt;
 Requests issued by service workers and shared workers cannot be intercepted:
-`Int32%7d)`, `Int32%7d)` and `Int32%7d)` throw.
+`ContinueAsync`, `AbortAsync` and `RespondAsync` throw.
 &lt;/p&gt;
 
 This API is experimental.

@@ -277,7 +277,7 @@ public class CdpWebWorker : WebWorker
     /// <summary>
     /// Utility method to check if the request is owned by the current WebWorker.
     /// </summary>
-    private bool IsOwn(IRequest request) => request.Worker == this;
+    private bool IsOwn(IRequest request) => request?.Worker == this;
 
     private async void OnMessageReceived(object sender, MessageEventArgs e)
     {
