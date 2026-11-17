@@ -24,14 +24,24 @@
   ],
   "github": [
     {
+      "login": "nogginbox",
+      "name": "Richard Garside",
+      "url": "https://github.com/nogginbox"
+    },
+    {
       "login": "tolgabalci",
       "name": "Tolga Balci",
       "url": "https://github.com/tolgabalci"
     },
     {
-      "login": "nogginbox",
-      "name": "Richard Garside",
-      "url": "https://github.com/nogginbox"
+      "login": "iron-software",
+      "name": "Iron Software",
+      "url": "https://github.com/iron-software"
+    },
+    {
+      "login": "htmlcsstoimage",
+      "name": "HTML/CSS to Image API",
+      "url": "https://github.com/htmlcsstoimage"
     }
   ]
 }
