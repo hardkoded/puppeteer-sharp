@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
@@ -372,6 +373,27 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                     new WaitForOptions(1)
                 )
             );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "browsercontext.spec",
+                "BrowserContext",
+                "should be able to abort waiting for a target"
+            )
+        ]
+        public void ShouldBeAbleToAbortWaitingForATarget()
+        {
+            var context = Browser.DefaultContext;
+            using var cts = new CancellationTokenSource();
+            var task = context.WaitForTargetAsync(
+                _ => false,
+                new WaitForOptions { CancellationToken = cts.Token }
+            );
+
+            cts.Cancel();
+            Assert.ThrowsAsync<TaskCanceledException>(() => task);
         }
 
         [
