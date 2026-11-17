@@ -687,6 +687,15 @@ public class CdpPage : Page
             _fileChooserInterceptors.TryRemove(guid, out _);
             throw;
         }
+        finally
+        {
+            // Once nobody is waiting anymore, stop intercepting so that file choosers
+            // opened later (e.g. by a user of a headful browser) are shown again.
+            if (_fileChooserInterceptors.IsEmpty)
+            {
+                await DisableFileChooserInterceptionAsync().ConfigureAwait(false);
+            }
+        }
     }
 
     /// <inheritdoc/>
@@ -1684,6 +1693,24 @@ public class CdpPage : Page
             }
 
             queue.AddRange(_targetManager.GetChildTargets(next));
+        }
+    }
+
+    private async Task DisableFileChooserInterceptionAsync()
+    {
+        try
+        {
+            await PrimaryTargetClient
+                .SendAsync(
+                    "Page.setInterceptFileChooserDialog",
+                    new PageSetInterceptFileChooserDialog { Enabled = false }
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // If the session is gone, the interception went away with it.
+            _logger.ErrorWithException(ex, ex.Message);
         }
     }
 }

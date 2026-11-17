@@ -1,6 +1,8 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.InputTests
@@ -171,6 +173,91 @@ namespace PuppeteerSharp.Tests.InputTests
             );
 
             Assert.That(await Page.EvaluateExpressionAsync<int>("1 + 1"), Is.EqualTo(2));
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests Page.waitForFileChooser",
+                "should stop intercepting file choosers when no longer waiting"
+            )
+        ]
+        public async Task ShouldStopInterceptingFileChoosersWhenNoLongerWaiting()
+        {
+            await Page.SetContentAsync("<input type=\"file\" />");
+            var client = ((CdpPage)Page).Client;
+            var fileChooserOpenedEvents = 0;
+            void OnFileChooserOpened(object sender, MessageEventArgs e)
+            {
+                if (e.MessageID == "Page.fileChooserOpened")
+                {
+                    Interlocked.Increment(ref fileChooserOpenedEvents);
+                }
+            }
+
+            client.MessageReceived += OnFileChooserOpened;
+            try
+            {
+                var waitForTask = Page.WaitForFileChooserAsync();
+                await Task.WhenAll(waitForTask, Page.ClickAsync("input"));
+                await waitForTask.Result.AcceptAsync(TestConstants.FileToUpload);
+                Assert.That(fileChooserOpenedEvents, Is.EqualTo(1));
+
+                // Nobody is waiting, so this file chooser must not be intercepted.
+                await Page.ClickAsync("input");
+
+                // Events arrive in order, so an intercepted file chooser from the click
+                // above would be reported before this one.
+                await Task.WhenAll(Page.WaitForFileChooserAsync(), Page.ClickAsync("input"));
+                Assert.That(fileChooserOpenedEvents, Is.EqualTo(2));
+            }
+            finally
+            {
+                client.MessageReceived -= OnFileChooserOpened;
+            }
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests Page.waitForFileChooser",
+                "should stop intercepting file choosers after a timeout"
+            )
+        ]
+        public async Task ShouldStopInterceptingFileChoosersAfterATimeout()
+        {
+            await Page.SetContentAsync("<input type=\"file\" />");
+            var client = ((CdpPage)Page).Client;
+            var fileChooserOpenedEvents = 0;
+            void OnFileChooserOpened(object sender, MessageEventArgs e)
+            {
+                if (e.MessageID == "Page.fileChooserOpened")
+                {
+                    Interlocked.Increment(ref fileChooserOpenedEvents);
+                }
+            }
+
+            client.MessageReceived += OnFileChooserOpened;
+            try
+            {
+                Assert.ThrowsAsync<TimeoutException>(() =>
+                    Page.WaitForFileChooserAsync(new WaitForOptions { Timeout = 1 })
+                );
+
+                // Nobody is waiting, so this file chooser must not be intercepted.
+                await Page.ClickAsync("input");
+
+                // Events arrive in order, so an intercepted file chooser from the click
+                // above would be reported before this one.
+                await Task.WhenAll(Page.WaitForFileChooserAsync(), Page.ClickAsync("input"));
+                Assert.That(fileChooserOpenedEvents, Is.EqualTo(1));
+            }
+            finally
+            {
+                client.MessageReceived -= OnFileChooserOpened;
+            }
         }
     }
 }
