@@ -84,6 +84,25 @@ namespace PuppeteerSharp.Tests.PageTests
             PuppeteerTest(
                 "page.spec",
                 "Page Page.addStyleTag",
+                "should work with a path when the options are reused"
+            )
+        ]
+        public async Task ShouldWorkWithAPathWhenTheOptionsAreReused()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var options = new AddTagOptions { Path = "Assets/injectedstyle.css" };
+            await Page.AddStyleTagAsync(options);
+            var styleHandle = await Page.AddStyleTagAsync(options);
+            Assert.That(styleHandle, Is.Not.Null);
+            Assert.That(options.Content, Is.Null);
+            Assert.That(options.Url, Is.Null);
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.addStyleTag",
                 "should include sourcemap when path is provided"
             )
         ]
