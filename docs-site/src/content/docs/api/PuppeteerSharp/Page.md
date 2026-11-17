@@ -3513,7 +3513,7 @@ Sets the user agent, user agent metadata, and platform.
 
 
 ```csharp
-public abstract Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null)
+public abstract Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentMetadata = null)
 ```
 
 
@@ -3524,7 +3524,7 @@ Sets the user agent to be used in this page.
 | Name | Type | Description |
 | --- | --- | --- |
 | `userAgent` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Specific user agent to use in this page. |
-| `userAgentData` | [UserAgentMetadata](/api/PuppeteerSharp/UserAgentMetadata/) | Specific user agent client hint data to use in this page. |
+| `userAgentMetadata` | [UserAgentMetadata](/api/PuppeteerSharp/UserAgentMetadata/) | Specific user agent client hint data to use in this page. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 

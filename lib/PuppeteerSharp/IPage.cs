@@ -1271,9 +1271,9 @@ namespace PuppeteerSharp
         /// Sets the user agent to be used in this page.
         /// </summary>
         /// <param name="userAgent">Specific user agent to use in this page.</param>
-        /// <param name="userAgentData">Specific user agent client hint data to use in this page.</param>
+        /// <param name="userAgentMetadata">Specific user agent client hint data to use in this page.</param>
         /// <returns>Task.</returns>
-        Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null);
+        Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentMetadata = null);
 
         /// <summary>
         /// Sets the user agent, user agent metadata, and platform.
