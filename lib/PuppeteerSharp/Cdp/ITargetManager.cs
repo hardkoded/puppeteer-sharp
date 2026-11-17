@@ -38,6 +38,13 @@ namespace PuppeteerSharp
         AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets();
 
         /// <summary>
+        /// Returns the attached iframe target that has the given frame as its root frame.
+        /// </summary>
+        /// <param name="frameId">Frame id.</param>
+        /// <returns>The iframe target, or null.</returns>
+        CdpTarget GetFrameTarget(string frameId);
+
+        /// <summary>
         /// Async tasks to be performed after calling the target manager constructor.
         /// </summary>
         /// <returns>A task that resolves when all the tasks are completed.</returns>

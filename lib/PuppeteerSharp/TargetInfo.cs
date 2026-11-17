@@ -47,5 +47,10 @@ namespace PuppeteerSharp
         /// the type of "page", this may be set to "portal" or "prerender".
         /// </summary>
         public string Subtype { get; set; }
+
+        /// <summary>
+        /// Gets the id of the parent frame, for iframe targets.
+        /// </summary>
+        public string ParentFrameId { get; set; }
     }
 }

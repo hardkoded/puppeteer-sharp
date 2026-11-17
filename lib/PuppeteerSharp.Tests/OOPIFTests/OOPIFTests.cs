@@ -182,6 +182,72 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
         }
 
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should evaluate in OOP iframes that become normal iframes again"
+            )
+        ]
+        public async Task ShouldEvaluateInOopIframesThatBecomeNormalIframesAgain()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var frameTask = Page.WaitForFrameAsync(frame => Array.IndexOf(Page.Frames, frame) == 1);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            var frame = await frameTask.WithTimeout();
+            var crossProcessUrl = TestConstants.CrossProcessHttpPrefix + "/empty.html";
+
+            await FrameUtils.NavigateFrameAsync(Page, "frame1", crossProcessUrl);
+            Assert.That(
+                await frame.EvaluateFunctionAsync<string>("() => location.href"),
+                Is.EqualTo(crossProcessUrl)
+            );
+
+            await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            Assert.That(frame.Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(
+                await frame.EvaluateFunctionAsync<string>("() => location.href"),
+                Is.EqualTo(TestConstants.EmptyPage)
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should evaluate in OOP iframes that navigate themselves to become normal iframes again"
+            )
+        ]
+        public async Task ShouldEvaluateInOopIframesThatNavigateThemselvesToBecomeNormalIframesAgain()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var frameTask = Page.WaitForFrameAsync(frame => Array.IndexOf(Page.Frames, frame) == 1);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            var frame = await frameTask.WithTimeout();
+            await FrameUtils.NavigateFrameAsync(
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
+            );
+
+            await Task.WhenAll(
+                frame.WaitForNavigationAsync(),
+                frame.EvaluateFunctionAsync(
+                    "url => setTimeout(() => { location.assign(url); }, 0)",
+                    TestConstants.EmptyPage
+                )
+            );
+
+            Assert.That(frame.Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(
+                await frame.EvaluateFunctionAsync<string>("() => location.href"),
+                Is.EqualTo(TestConstants.EmptyPage)
+            );
+            Assert.That(Page.Frames, Has.Length.EqualTo(2));
+        }
+
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support frames within OOP frames")]
         public async Task ShouldSupportFramesWithinOopFrames()
         {
