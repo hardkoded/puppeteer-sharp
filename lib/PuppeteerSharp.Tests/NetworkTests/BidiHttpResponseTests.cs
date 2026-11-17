@@ -44,6 +44,26 @@ public class BidiHttpResponseTests
         Assert.That(response.Headers["cache-control"], Is.EqualTo("no-cache, no-store"));
     }
 
+    [
+        Test,
+        PuppeteerTest(
+            "HTTPResponse.test.ts",
+            "BidiHTTPResponse",
+            "should return a remote address on every call"
+        )
+    ]
+    public void ShouldReturnARemoteAddressOnEveryCall()
+    {
+        var data = CreateResponseData();
+
+        var response = BidiHttpResponse.FromResponseData(data);
+
+        Assert.That(response.RemoteAddress.IP, Is.EqualTo(string.Empty));
+        Assert.That(response.RemoteAddress.Port, Is.EqualTo(-1));
+        Assert.That(response.RemoteAddress.IP, Is.EqualTo(string.Empty));
+        Assert.That(response.RemoteAddress.Port, Is.EqualTo(-1));
+    }
+
     private static WebDriverBiDi.Network.ResponseData CreateResponseData(
         params (string Name, string Value)[] headers
     )
