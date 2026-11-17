@@ -49,9 +49,7 @@ internal static class BidiCookieHelper
             HttpOnly = bidiCookie.HttpOnly,
             Secure = bidiCookie.Secure,
             SameSite = ConvertSameSiteBidiToPuppeteer(bidiCookie.SameSite),
-            Expires = bidiCookie.EpochExpires.HasValue
-                ? (double)bidiCookie.EpochExpires.Value / 1000
-                : -1,
+            Expires = bidiCookie.EpochExpires.HasValue ? bidiCookie.EpochExpires.Value : -1,
             Session = !bidiCookie.EpochExpires.HasValue || bidiCookie.EpochExpires.Value == 0,
             SourceScheme = GetSourceScheme(bidiCookie),
             PartitionKey = GetPartitionKey(bidiCookie, returnCompositePartitionKey),
