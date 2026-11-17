@@ -24,6 +24,26 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(response.Url, Does.Contain("grid"));
         }
 
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goBack", "should be cancellable")]
+        public async Task ShouldBeCancellable()
+        {
+            await Page.SetCacheEnabledAsync(false);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+
+            // Hang for the request going back makes.
+            Server.SetRoute("/empty.html", _ => Task.Delay(-1));
+            using var cts = new CancellationTokenSource();
+            var requestTask = Server.WaitForRequest("/empty.html");
+            var navigation = Page.GoBackAsync(
+                new NavigationOptions { CancellationToken = cts.Token }
+            );
+            await requestTask;
+
+            cts.Cancel();
+            Assert.CatchAsync<OperationCanceledException>(() => navigation);
+        }
+
         [
             Test,
             PuppeteerTest(

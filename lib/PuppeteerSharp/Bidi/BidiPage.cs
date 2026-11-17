@@ -29,6 +29,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -1407,21 +1408,35 @@ public class BidiPage : Page
     private async Task<IResponse> GoAsync(int delta, NavigationOptions options)
     {
         options?.CancellationToken?.ThrowIfCancellationRequested();
-        var waitForNavigationTask = WaitForNavigationAsync(options);
+        using var controller = CancellationTokenSource.CreateLinkedTokenSource(
+            options?.CancellationToken ?? CancellationToken.None
+        );
+        var navOptions = (options ?? new NavigationOptions()) with
+        {
+            CancellationToken = controller.Token,
+        };
+        var waitForNavigationTask = WaitForNavigationAsync(navOptions);
         var navigationTask = BidiMainFrame.BrowsingContext.TraverseHistoryAsync(delta);
 
         try
         {
-            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+            // Use WhenAllFailFast to fail immediately if any task fails (like Promise.all in JS)
+            // so a caller cancellation is not masked by the later traverseHistory timeout.
+            await new[] { waitForNavigationTask, navigationTask }
+                .WhenAllFailFast()
+                .ConfigureAwait(false);
         }
         catch (OperationCanceledException)
             when (options?.CancellationToken?.IsCancellationRequested == true)
         {
             // Caller cancellation surfaces as cancellation, not as a navigation error
+            controller.Cancel();
             throw;
         }
         catch (Exception ex)
         {
+            // Release the navigation wait's handlers, like upstream's controller.abort()
+            controller.Cancel();
             throw new NavigationException(ex.Message, ex);
         }
 
