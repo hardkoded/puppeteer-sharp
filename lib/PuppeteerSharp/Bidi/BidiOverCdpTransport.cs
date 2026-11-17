@@ -54,7 +54,11 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
     private readonly ILogger _logger;
     private bool _isClosed;
 
-    private BidiOverCdpTransport(CdpConnection cdpConnection, CDPSession mapperSession, ILogger logger)
+    private BidiOverCdpTransport(
+        CdpConnection cdpConnection,
+        CDPSession mapperSession,
+        ILogger logger
+    )
     {
         _cdpConnection = cdpConnection;
         _mapperSession = mapperSession;
@@ -87,9 +91,12 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
         var messageString = Encoding.UTF8.GetString(message);
         try
         {
-            await _mapperSession.SendAsync(
-                "Runtime.evaluate",
-                new { expression = $"onBidiMessage({JsonSerializer.Serialize(messageString)})" }).ConfigureAwait(false);
+            await _mapperSession
+                .SendAsync(
+                    "Runtime.evaluate",
+                    new { expression = $"onBidiMessage({JsonSerializer.Serialize(messageString)})" }
+                )
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -121,60 +128,86 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
     internal static async Task<BidiOverCdpTransport> CreateAsync(
         string cdpEndpoint,
         IConnectionOptions options,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory
+    )
     {
         var logger = loggerFactory.CreateLogger<BidiOverCdpTransport>();
 
         // 1. Establish CDP connection to Chrome
-        var cdpConnection = await CdpConnection.Create(cdpEndpoint, options, loggerFactory).ConfigureAwait(false);
+        var cdpConnection = await CdpConnection
+            .Create(cdpEndpoint, options, loggerFactory)
+            .ConfigureAwait(false);
 
         try
         {
             // 2. Create a hidden mapper tab
-            var createTargetResponse = await cdpConnection.SendAsync<JsonElement>(
-                "Target.createTarget",
-                new { url = "about:blank", background = true }).ConfigureAwait(false);
+            var createTargetResponse = await cdpConnection
+                .SendAsync<JsonElement>(
+                    "Target.createTarget",
+                    new { url = "about:blank", background = true }
+                )
+                .ConfigureAwait(false);
 
             var mapperTargetId = createTargetResponse.GetProperty("targetId").GetString();
 
             // 3. Attach to the mapper tab
-            var attachResponse = await cdpConnection.SendAsync<JsonElement>(
-                "Target.attachToTarget",
-                new { targetId = mapperTargetId, flatten = true }).ConfigureAwait(false);
+            var attachResponse = await cdpConnection
+                .SendAsync<JsonElement>(
+                    "Target.attachToTarget",
+                    new { targetId = mapperTargetId, flatten = true }
+                )
+                .ConfigureAwait(false);
 
             var mapperSessionId = attachResponse.GetProperty("sessionId").GetString();
 
             // Get the CDPSession for the mapper tab
-            var mapperSession = await cdpConnection.GetSessionAsync(mapperSessionId).ConfigureAwait(false);
+            var mapperSession = await cdpConnection
+                .GetSessionAsync(mapperSessionId)
+                .ConfigureAwait(false);
 
             // 4. Enable Runtime domain on the mapper session
             await mapperSession.SendAsync("Runtime.enable").ConfigureAwait(false);
 
             // 5. Expose DevTools protocol to the mapper tab
-            await cdpConnection.SendAsync(
-                "Target.exposeDevToolsProtocol",
-                new { bindingName = "cdp", targetId = mapperTargetId, inheritPermissions = true }).ConfigureAwait(false);
+            await cdpConnection
+                .SendAsync(
+                    "Target.exposeDevToolsProtocol",
+                    new
+                    {
+                        bindingName = "cdp",
+                        targetId = mapperTargetId,
+                        inheritPermissions = true,
+                    }
+                )
+                .ConfigureAwait(false);
 
             // 6. Add binding for BiDi responses
-            await mapperSession.SendAsync(
-                "Runtime.addBinding",
-                new { name = "sendBidiResponse" }).ConfigureAwait(false);
+            await mapperSession
+                .SendAsync("Runtime.addBinding", new { name = "sendBidiResponse" })
+                .ConfigureAwait(false);
 
             // 7. Add binding for debug messages (optional)
-            await mapperSession.SendAsync(
-                "Runtime.addBinding",
-                new { name = "sendDebugMessage" }).ConfigureAwait(false);
+            await mapperSession
+                .SendAsync("Runtime.addBinding", new { name = "sendDebugMessage" })
+                .ConfigureAwait(false);
 
             // 8. Inject the mapper JavaScript
             var mapperSource = MapperTabSource.Value;
-            await mapperSession.SendAsync(
-                "Runtime.evaluate",
-                new { expression = mapperSource }).ConfigureAwait(false);
+            await mapperSession
+                .SendAsync("Runtime.evaluate", new { expression = mapperSource })
+                .ConfigureAwait(false);
 
             // 9. Start the mapper instance
-            await mapperSession.SendAsync(
-                "Runtime.evaluate",
-                new { expression = $"window.runMapperInstance('{mapperTargetId}')", awaitPromise = true }).ConfigureAwait(false);
+            await mapperSession
+                .SendAsync(
+                    "Runtime.evaluate",
+                    new
+                    {
+                        expression = $"window.runMapperInstance('{mapperTargetId}')",
+                        awaitPromise = true,
+                    }
+                )
+                .ConfigureAwait(false);
 
             logger.BidiMapperInitialized(mapperTargetId);
 
@@ -193,7 +226,9 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
         using var stream = assembly.GetManifestResourceStream("PuppeteerSharp.Bidi.mapperTab.js");
         if (stream == null)
         {
-            throw new PuppeteerException("Could not load embedded mapperTab.js resource. BiDi-over-CDP requires the chromium-bidi mapper.");
+            throw new PuppeteerException(
+                "Could not load embedded mapperTab.js resource. BiDi-over-CDP requires the chromium-bidi mapper."
+            );
         }
 
         using var reader = new StreamReader(stream);

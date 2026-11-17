@@ -12,11 +12,7 @@ namespace PuppeteerSharp.Tests.ScreencastTests
         public async Task CanStartScreencast()
         {
             await using var page = await Context.NewPageAsync();
-            await page.SetViewportAsync(new ViewPortOptions
-            {
-                Width = 500,
-                Height = 500
-            });
+            await page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
 
             var screencastFramesReceived = 0;
             var frameReceived = new TaskCompletionSource<bool>();
@@ -24,23 +20,25 @@ namespace PuppeteerSharp.Tests.ScreencastTests
             {
                 if (e.MessageID == "Page.screencastFrame")
                 {
-                    Assert.That(e.MessageData.GetProperty("data").GetString(), Is.Not.Null.Or.Empty);
+                    Assert.That(
+                        e.MessageData.GetProperty("data").GetString(),
+                        Is.Not.Null.Or.Empty
+                    );
                     Interlocked.Increment(ref screencastFramesReceived);
                     frameReceived.TrySetResult(true);
 
                     // acknowledge frame
-                    await page.Client.SendAsync("Page.screencastFrameAck", new
-                    {
-                        sessionId = e.MessageData.GetProperty("sessionId").GetInt32(),
-                    });
+                    await page.Client.SendAsync(
+                        "Page.screencastFrameAck",
+                        new { sessionId = e.MessageData.GetProperty("sessionId").GetInt32() }
+                    );
                 }
             };
 
-            await page.Client.SendAsync("Page.startScreencast", new
-            {
-                format = "png",
-                everyNthFrame = 1
-            });
+            await page.Client.SendAsync(
+                "Page.startScreencast",
+                new { format = "png", everyNthFrame = 1 }
+            );
 
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 

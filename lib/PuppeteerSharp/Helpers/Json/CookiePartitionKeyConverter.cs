@@ -10,13 +10,15 @@ namespace PuppeteerSharp.Helpers.Json
     internal sealed class CookiePartitionKeyConverter : JsonConverter<CookiePartitionKey>
     {
         /// <inheritdoc cref="JsonConverter"/>
-        public override bool CanConvert(Type objectType) => typeof(CookiePartitionKey).IsAssignableFrom(objectType);
+        public override bool CanConvert(Type objectType) =>
+            typeof(CookiePartitionKey).IsAssignableFrom(objectType);
 
         /// <inheritdoc cref="JsonConverter"/>
         public override CookiePartitionKey? Read(
             ref Utf8JsonReader reader,
             Type objectType,
-            JsonSerializerOptions options)
+            JsonSerializerOptions options
+        )
         {
             if (reader.TokenType == JsonTokenType.Null)
             {
@@ -37,7 +39,8 @@ namespace PuppeteerSharp.Helpers.Json
                 return null;
             }
 
-            var sourceOrigin = node["topLevelSite"]?.GetValue<string>() ?? node["sourceOrigin"]?.GetValue<string>();
+            var sourceOrigin = node["topLevelSite"]?.GetValue<string>()
+                ?? node["sourceOrigin"]?.GetValue<string>();
             if (sourceOrigin == null)
             {
                 return null;
@@ -56,7 +59,8 @@ namespace PuppeteerSharp.Helpers.Json
         public override void Write(
             Utf8JsonWriter writer,
             CookiePartitionKey? value,
-            JsonSerializerOptions options)
+            JsonSerializerOptions options
+        )
         {
             if (value != null)
             {

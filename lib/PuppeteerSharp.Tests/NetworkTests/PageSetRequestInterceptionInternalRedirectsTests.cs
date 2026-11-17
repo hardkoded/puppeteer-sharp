@@ -14,12 +14,24 @@ namespace PuppeteerSharp.Tests.NetworkTests
     public class PageSetRequestInterceptionInternalRedirectsTests : PuppeteerBaseTest
     {
         // @see https://github.com/puppeteer/puppeteer/issues/12183
-        [Test, PuppeteerTest("network.spec", "network Page.setRequestInterception", "should work with internal redirects not paused by Fetch.requestPaused")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Page.setRequestInterception",
+                "should work with internal redirects not paused by Fetch.requestPaused"
+            )
+        ]
         public async Task ShouldWorkWithInternalRedirectsNotPausedByFetchRequestPaused()
         {
-            var certPath = Path.Combine(TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"), "testCert.cer");
+            var certPath = Path.Combine(
+                TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"),
+                "testCert.cer"
+            );
             using var cert = X509CertificateLoader.LoadCertificateFromFile(certPath);
-            var spkiHash = Convert.ToBase64String(SHA256.HashData(cert.PublicKey.ExportSubjectPublicKeyInfo()));
+            var spkiHash = Convert.ToBase64String(
+                SHA256.HashData(cert.PublicKey.ExportSubjectPublicKeyInfo())
+            );
 
             // Chrome ignores `Strict-Transport-Security` headers on connections with
             // certificate errors, even when `acceptInsecureCerts: true` or
@@ -37,7 +49,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             HttpsServer.SetRoute("/hsts", context =>
             {
-                context.Response.Headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
+                context.Response.Headers["Strict-Transport-Security"] =
+                    "max-age=31536000; includeSubDomains";
                 return context.Response.WriteAsync("ok");
             });
             var httpsOrigin = $"https://domain1.test:{HttpsServer.Port}";
@@ -70,9 +83,15 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var response = await page.GoToAsync(httpsOrigin + "/start");
 
             Assert.That(response.Status, Is.EqualTo(System.Net.HttpStatusCode.OK));
-            Assert.That(requests.Select(r => r.Url), Is.EqualTo(new[] { httpsOrigin + "/start", httpEmptyPage, httpsEmptyPage }));
+            Assert.That(
+                requests.Select(r => r.Url),
+                Is.EqualTo(new[] { httpsOrigin + "/start", httpEmptyPage, httpsEmptyPage })
+            );
             Assert.That(responses, Is.EqualTo(new[] { 302, 307, 200 }));
-            Assert.That(response.Request.RedirectChain, Is.EqualTo(new[] { requests[0], requests[1] }));
+            Assert.That(
+                response.Request.RedirectChain,
+                Is.EqualTo(new[] { requests[0], requests[1] })
+            );
         }
     }
 }

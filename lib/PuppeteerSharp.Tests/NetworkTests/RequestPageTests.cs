@@ -6,11 +6,17 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestPageTests : PuppeteerPageBaseTest
     {
-        public RequestPageTests() : base()
-        {
-        }
+        public RequestPageTests()
+            : base() { }
 
-        [Test, PuppeteerTest("network.spec", "network Request.page", "should work for main frame navigation request")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.page",
+                "should work for main frame navigation request"
+            )
+        ]
         public async Task ShouldWorkForMainFrameNavigationRequest()
         {
             var requestTask = Page.WaitForRequestAsync(TestConstants.EmptyPage);
@@ -19,7 +25,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.Page, Is.SameAs(Page));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.page", "should work for subframe navigation request")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.page",
+                "should work for subframe navigation request"
+            )
+        ]
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -30,7 +43,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.Page, Is.SameAs(Page));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.page", "should work for fetch requests")]
+        [
+            Test,
+            PuppeteerTest("network.spec", "network Request.page", "should work for fetch requests")
+        ]
         public async Task ShouldWorkForFetchRequests()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

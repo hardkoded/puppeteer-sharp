@@ -22,7 +22,8 @@ namespace PuppeteerSharp.States
             launcher.OnExit();
         }
 
-        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout) => Task.CompletedTask;
+        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout) =>
+            Task.CompletedTask;
 
         public override Task KillAsync(LauncherBase p) => Task.CompletedTask;
 

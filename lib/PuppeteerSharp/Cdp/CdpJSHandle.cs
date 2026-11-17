@@ -76,13 +76,16 @@ public class CdpJSHandle : JSHandle, ICdpHandle
     {
         // We use Runtime.getProperties rather than the iterative version for
         // improved performance as it allows getting everything at once.
-        var response = await Client.SendAsync<RuntimeGetPropertiesResponse>(
-            "Runtime.getProperties",
-            new RuntimeGetPropertiesRequest
-            {
-                ObjectId = RemoteObject.ObjectId,
-                OwnProperties = true,
-            }).ConfigureAwait(false);
+        var response = await Client
+            .SendAsync<RuntimeGetPropertiesResponse>(
+                "Runtime.getProperties",
+                new RuntimeGetPropertiesRequest
+                {
+                    ObjectId = RemoteObject.ObjectId,
+                    OwnProperties = true,
+                }
+            )
+            .ConfigureAwait(false);
 
         var result = new Dictionary<string, IJSHandle>();
 
@@ -93,9 +96,11 @@ public class CdpJSHandle : JSHandle, ICdpHandle
                 continue;
             }
 
-            result[property.Name] = property.Value.Subtype == RemoteObjectSubtype.Node && ((IsolatedWorld)Realm).Frame != null
-                ? new CdpElementHandle((IsolatedWorld)Realm, property.Value)
-                : new CdpJSHandle((IsolatedWorld)Realm, property.Value);
+            result[property.Name] =
+                property.Value.Subtype == RemoteObjectSubtype.Node
+                && ((IsolatedWorld)Realm).Frame != null
+                    ? new CdpElementHandle((IsolatedWorld)Realm, property.Value)
+                    : new CdpJSHandle((IsolatedWorld)Realm, property.Value);
         }
 
         return result;
@@ -116,7 +121,9 @@ public class CdpJSHandle : JSHandle, ICdpHandle
             await DisposeAction().ConfigureAwait(false);
         }
 
-        await RemoteObjectHelper.ReleaseObjectAsync(Client, RemoteObject, Logger).ConfigureAwait(false);
+        await RemoteObjectHelper
+            .ReleaseObjectAsync(Client, RemoteObject, Logger)
+            .ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
 
@@ -125,12 +132,14 @@ public class CdpJSHandle : JSHandle, ICdpHandle
     {
         if (RemoteObject.ObjectId == null)
         {
-            return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject, true);
+            return "JSHandle:"
+                + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject, true);
         }
 
-        var type = RemoteObject.Subtype != RemoteObjectSubtype.Other
-            ? RemoteObject.Subtype.ToString()
-            : RemoteObject.Type.ToString();
+        var type =
+            RemoteObject.Subtype != RemoteObjectSubtype.Other
+                ? RemoteObject.Subtype.ToString()
+                : RemoteObject.Type.ToString();
         return "JSHandle@" + type.ToLower(System.Globalization.CultureInfo.CurrentCulture);
     }
 }

@@ -26,28 +26,39 @@ internal class BidiBluetoothEmulation : IBluetoothEmulation
             _ => throw new PuppeteerException($"Unknown adapter state: {state}"),
         };
 
-        await _browsingContext.Session.Driver.Bluetooth.SimulateAdapterAsync(
-            new SimulateAdapterCommandParameters(_browsingContext.Id, bidiState)).ConfigureAwait(false);
+        await _browsingContext
+            .Session.Driver.Bluetooth.SimulateAdapterAsync(
+                new SimulateAdapterCommandParameters(_browsingContext.Id, bidiState)
+            )
+            .ConfigureAwait(false);
     }
 
     public async Task DisableEmulationAsync()
     {
-        await _browsingContext.Session.Driver.Bluetooth.DisableSimulationAsync(
-            new DisableSimulationCommandParameters(_browsingContext.Id)).ConfigureAwait(false);
+        await _browsingContext
+            .Session.Driver.Bluetooth.DisableSimulationAsync(
+                new DisableSimulationCommandParameters(_browsingContext.Id)
+            )
+            .ConfigureAwait(false);
     }
 
-    public async Task SimulatePreconnectedPeripheralAsync(PreconnectedPeripheral preconnectedPeripheral)
+    public async Task SimulatePreconnectedPeripheralAsync(
+        PreconnectedPeripheral preconnectedPeripheral
+    )
     {
         var parameters = new SimulatePreconnectedPeripheralCommandParameters(
             _browsingContext.Id,
             preconnectedPeripheral.Address,
-            preconnectedPeripheral.Name);
+            preconnectedPeripheral.Name
+        );
 
         if (preconnectedPeripheral.ManufacturerData != null)
         {
             foreach (var md in preconnectedPeripheral.ManufacturerData)
             {
-                parameters.ManufacturerData.Add(new WebDriverBiDi.Bluetooth.BluetoothManufacturerData((uint)md.Key, md.Data));
+                parameters.ManufacturerData.Add(
+                    new WebDriverBiDi.Bluetooth.BluetoothManufacturerData((uint)md.Key, md.Data)
+                );
             }
         }
 
@@ -59,7 +70,9 @@ internal class BidiBluetoothEmulation : IBluetoothEmulation
             }
         }
 
-        await _browsingContext.Session.Driver.Bluetooth.SimulatePreconnectedPeripheralAsync(parameters).ConfigureAwait(false);
+        await _browsingContext
+            .Session.Driver.Bluetooth.SimulatePreconnectedPeripheralAsync(parameters)
+            .ConfigureAwait(false);
     }
 }
 

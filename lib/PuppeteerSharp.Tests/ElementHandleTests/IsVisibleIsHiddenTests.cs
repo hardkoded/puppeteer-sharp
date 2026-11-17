@@ -6,11 +6,17 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class IsVisibleIsHiddenTests : PuppeteerPageBaseTest
     {
-        public IsVisibleIsHiddenTests() : base()
-        {
-        }
+        public IsVisibleIsHiddenTests()
+            : base() { }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden", "should work")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden",
+                "should work"
+            )
+        ]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<div style='display: none'>text</div>");
@@ -23,31 +29,51 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(await element.IsHiddenAsync(), Is.False);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden", "should not throw for a detached text node with no parent element")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden",
+                "should not throw for a detached text node with no parent element"
+            )
+        ]
         public async Task ShouldNotThrowForADetachedTextNodeWithNoParentElement()
         {
             await Page.SetContentAsync("<div>x</div>");
-            var handle = await Page.EvaluateFunctionHandleAsync("() => document.createTextNode('orphan')");
+            var handle = await Page.EvaluateFunctionHandleAsync(
+                "() => document.createTextNode('orphan')"
+            );
             var textHandle = (IElementHandle)handle;
             Assert.That(await textHandle.IsHiddenAsync(), Is.True);
             Assert.That(await textHandle.IsVisibleAsync(), Is.False);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden", "should use the shadow host for a text node placed directly in a shadow root")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden",
+                "should use the shadow host for a text node placed directly in a shadow root"
+            )
+        ]
         public async Task ShouldUseTheShadowHostForATextNodePlacedDirectlyInAShadowRoot()
         {
             await Page.SetContentAsync("<div id='host'></div>");
-            var handle = await Page.EvaluateFunctionHandleAsync(@"() => {
+            var handle = await Page.EvaluateFunctionHandleAsync(
+                @"() => {
                 const host = document.getElementById('host');
                 const root = host.attachShadow({mode: 'open'});
                 root.textContent = 'hello';
                 return root.firstChild;
-            }");
+            }"
+            );
             var textHandle = (IElementHandle)handle;
             Assert.That(await textHandle.IsVisibleAsync(), Is.True);
             Assert.That(await textHandle.IsHiddenAsync(), Is.False);
 
-            await Page.EvaluateExpressionAsync("document.getElementById('host').style.visibility = 'hidden'");
+            await Page.EvaluateExpressionAsync(
+                "document.getElementById('host').style.visibility = 'hidden'"
+            );
             Assert.That(await textHandle.IsVisibleAsync(), Is.False);
             Assert.That(await textHandle.IsHiddenAsync(), Is.True);
         }

@@ -9,12 +9,17 @@ namespace PuppeteerSharp.Cdp
 {
     internal class FrameTree
     {
-        private readonly AsyncDictionaryHelper<string, CdpFrame> _frames = new("Frame {0} not found");
+        private readonly AsyncDictionaryHelper<string, CdpFrame> _frames = new(
+            "Frame {0} not found"
+        );
         private readonly List<string> _orderedFrameIds = new();
         private readonly object _orderedFrameIdsLock = new();
         private readonly ConcurrentDictionary<string, string> _parentIds = new();
         private readonly ConcurrentDictionary<string, List<string>> _childIds = new();
-        private readonly ConcurrentDictionary<string, List<TaskCompletionSource<CdpFrame>>> _waitRequests = new();
+        private readonly ConcurrentDictionary<
+            string,
+            List<TaskCompletionSource<CdpFrame>>
+        > _waitRequests = new();
 
         public CdpFrame MainFrame { get; set; }
 
@@ -40,7 +45,8 @@ namespace PuppeteerSharp.Cdp
 
         internal Task<CdpFrame> GetFrameAsync(string frameId) => _frames.GetItemAsync(frameId);
 
-        internal Task<CdpFrame> TryGetFrameAsync(string frameId) => _frames.TryGetItemAsync(frameId);
+        internal Task<CdpFrame> TryGetFrameAsync(string frameId) =>
+            _frames.TryGetItemAsync(frameId);
 
         internal CdpFrame GetById(string id)
         {
@@ -56,7 +62,9 @@ namespace PuppeteerSharp.Cdp
                 return Task.FromResult(frame);
             }
 
-            var deferred = new TaskCompletionSource<CdpFrame>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var deferred = new TaskCompletionSource<CdpFrame>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             var callbacks = _waitRequests.GetOrAdd(frameId, static _ => new());
             callbacks.Add(deferred);
 
@@ -128,10 +136,7 @@ namespace PuppeteerSharp.Cdp
                 return Array.Empty<CdpFrame>();
             }
 
-            return childIds
-                .Select(id => GetById(id))
-                .Where(frame => frame != null)
-                .ToArray();
+            return childIds.Select(id => GetById(id)).Where(frame => frame != null).ToArray();
         }
 
         internal Frame GetParentFrame(string frameId)

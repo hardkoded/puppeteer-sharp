@@ -6,7 +6,6 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
 {
     public class RemoveMatchingFlagsTests : PuppeteerPageBaseTest
     {
-
         [Test, PuppeteerTest("ChromeLauncher.test.ts", "removeMatchingFlags", "empty")]
         public void Empty()
         {
@@ -23,7 +22,10 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
             Assert.That(result, Is.EqualTo(new[] { "--bar=baz" }));
         }
 
-        [Test, PuppeteerTest("ChromeLauncher.test.ts", "removeMatchingFlags", "with multiple matches")]
+        [
+            Test,
+            PuppeteerTest("ChromeLauncher.test.ts", "removeMatchingFlags", "with multiple matches")
+        ]
         public void WithMultipleMatches()
         {
             var a = new[] { "--foo=1", "--bar=baz", "--foo=2" };

@@ -12,9 +12,15 @@ namespace PuppeteerSharp.QueryHandlers
         private static readonly string[] _customQuerySeparators = new[] { "=", "/" };
 
         private readonly object _lock = new();
-        private readonly Dictionary<string, (string RegisterScript, QueryHandler Handler)> _queryHandlers = new();
+        private readonly Dictionary<
+            string,
+            (string RegisterScript, QueryHandler Handler)
+        > _queryHandlers = new();
 
-        private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
+        private readonly Regex _customQueryHandlerNameRegex = new(
+            "[a-zA-Z]+$",
+            RegexOptions.Compiled
+        );
         private readonly QueryHandler _defaultHandler = new CssQueryHandler();
 
         // The connection is a good place to keep the state of custom queries and injectors.
@@ -22,13 +28,14 @@ namespace PuppeteerSharp.QueryHandlers
         // The connection is being shared between all the components involved in one browser instance
         internal static CustomQuerySelectorRegistry Default { get; } = new();
 
-        internal Dictionary<string, QueryHandler> InternalQueryHandlers => new()
-        {
-            ["aria"] = new AriaQueryHandler(),
-            ["pierce"] = new PierceQueryHandler(),
-            ["text"] = new TextQueryHandler(),
-            ["xpath"] = new XPathQueryHandler(),
-        };
+        internal Dictionary<string, QueryHandler> InternalQueryHandlers =>
+            new()
+            {
+                ["aria"] = new AriaQueryHandler(),
+                ["pierce"] = new PierceQueryHandler(),
+                ["text"] = new TextQueryHandler(),
+                ["xpath"] = new XPathQueryHandler(),
+            };
 
         internal void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
         {
@@ -40,10 +47,15 @@ namespace PuppeteerSharp.QueryHandlers
             var isValidName = _customQueryHandlerNameRegex.IsMatch(name);
             if (!isValidName)
             {
-                throw new PuppeteerException($"Custom query handler names may only contain [a-zA-Z]");
+                throw new PuppeteerException(
+                    $"Custom query handler names may only contain [a-zA-Z]"
+                );
             }
 
-            if (string.IsNullOrEmpty(queryHandler.QueryAll) && string.IsNullOrEmpty(queryHandler.QueryOne))
+            if (
+                string.IsNullOrEmpty(queryHandler.QueryAll)
+                && string.IsNullOrEmpty(queryHandler.QueryOne)
+            )
             {
                 throw new PuppeteerException("At least one query method must be implemented.");
             }
@@ -52,12 +64,14 @@ namespace PuppeteerSharp.QueryHandlers
             var jsonName = JsonSerializer.Serialize(name);
             var internalHandler = new QueryHandler
             {
-                QuerySelector = $@"(node, selector, PuppeteerUtil) => {{
+                QuerySelector =
+                    $@"(node, selector, PuppeteerUtil) => {{
                     return PuppeteerUtil.customQuerySelectors
                         .get({jsonName})
                         .querySelector(node, selector);
                 }}",
-                QuerySelectorAll = $@"(node, selector, PuppeteerUtil) => {{
+                QuerySelectorAll =
+                    $@"(node, selector, PuppeteerUtil) => {{
                     return PuppeteerUtil.customQuerySelectors
                         .get({jsonName})
                         .querySelectorAll(node, selector);
@@ -65,10 +79,15 @@ namespace PuppeteerSharp.QueryHandlers
             };
 
             // Generate the registration script that will be injected
-            var queryAll = string.IsNullOrEmpty(queryHandler.QueryAll) ? "undefined" : queryHandler.QueryAll;
-            var queryOne = string.IsNullOrEmpty(queryHandler.QueryOne) ? "undefined" : queryHandler.QueryOne;
+            var queryAll = string.IsNullOrEmpty(queryHandler.QueryAll)
+                ? "undefined"
+                : queryHandler.QueryAll;
+            var queryOne = string.IsNullOrEmpty(queryHandler.QueryOne)
+                ? "undefined"
+                : queryHandler.QueryOne;
 
-            var registerScript = $@"(PuppeteerUtil) => {{
+            var registerScript =
+                $@"(PuppeteerUtil) => {{
                 PuppeteerUtil.customQuerySelectors.register({jsonName}, {{
                     queryAll: {queryAll},
                     queryOne: {queryOne},
@@ -79,7 +98,9 @@ namespace PuppeteerSharp.QueryHandlers
             {
                 if (_queryHandlers.ContainsKey(name))
                 {
-                    throw new PuppeteerException($"A custom query handler named \"{name}\" already exists");
+                    throw new PuppeteerException(
+                        $"A custom query handler named \"{name}\" already exists"
+                    );
                 }
 
                 _queryHandlers.Add(name, (registerScript, internalHandler));
@@ -88,7 +109,11 @@ namespace PuppeteerSharp.QueryHandlers
             ScriptInjector.Default.Append(registerScript);
         }
 
-        internal (string UpdatedSelector, QueryHandler QueryHandler, WaitForFunctionPollingOption Polling) GetQueryHandlerAndSelector(string selector)
+        internal (
+            string UpdatedSelector,
+            QueryHandler QueryHandler,
+            WaitForFunctionPollingOption Polling
+        ) GetQueryHandlerAndSelector(string selector)
         {
             // Take a snapshot of custom handlers to avoid holding lock during iteration
             KeyValuePair<string, (string RegisterScript, QueryHandler Handler)>[] customHandlers;
@@ -123,9 +148,10 @@ namespace PuppeteerSharp.QueryHandlers
                         selector = selector.Substring(prefix.Length);
 
                         // Use RAF-based polling for ARIA selectors
-                        var polling = kv.Key == "aria"
-                            ? WaitForFunctionPollingOption.Raf
-                            : WaitForFunctionPollingOption.Mutation;
+                        var polling =
+                            kv.Key == "aria"
+                                ? WaitForFunctionPollingOption.Raf
+                                : WaitForFunctionPollingOption.Mutation;
                         return (selector, kv.Value, polling);
                     }
                 }
@@ -133,14 +159,28 @@ namespace PuppeteerSharp.QueryHandlers
 
             try
             {
-                var (jsonSelector, isPureCSS, hasPseudoClasses, hasAria) = PSelectorParser.Parse(selector);
+                var (jsonSelector, isPureCSS, hasPseudoClasses, hasAria) = PSelectorParser.Parse(
+                    selector
+                );
 
                 if (isPureCSS)
                 {
-                    return (selector, _defaultHandler, hasPseudoClasses ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);
+                    return (
+                        selector,
+                        _defaultHandler,
+                        hasPseudoClasses
+                            ? WaitForFunctionPollingOption.Raf
+                            : WaitForFunctionPollingOption.Mutation
+                    );
                 }
 
-                return (jsonSelector, new PQueryHandler(), hasAria || hasPseudoClasses ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);
+                return (
+                    jsonSelector,
+                    new PQueryHandler(),
+                    hasAria || hasPseudoClasses
+                        ? WaitForFunctionPollingOption.Raf
+                        : WaitForFunctionPollingOption.Mutation
+                );
             }
             catch
             {

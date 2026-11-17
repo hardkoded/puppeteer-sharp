@@ -10,9 +10,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitForOptions"/> class.
         /// </summary>
-        public WaitForOptions()
-        {
-        }
+        public WaitForOptions() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitForOptions"/> class.

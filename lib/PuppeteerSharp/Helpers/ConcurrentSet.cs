@@ -42,7 +42,10 @@ namespace PuppeteerSharp.Helpers
         /// </summary>
         public ConcurrentSet()
         {
-            _dictionary = new ConcurrentDictionary<T, byte>(DefaultConcurrencyLevel, DefaultCapacity);
+            _dictionary = new ConcurrentDictionary<T, byte>(
+                DefaultConcurrencyLevel,
+                DefaultCapacity
+            );
         }
 
         /// <summary>
@@ -52,7 +55,11 @@ namespace PuppeteerSharp.Helpers
         /// <param name="equalityComparer">The equality comparer for values in the set.</param>
         public ConcurrentSet(IEqualityComparer<T> equalityComparer)
         {
-            _dictionary = new ConcurrentDictionary<T, byte>(DefaultConcurrencyLevel, DefaultCapacity, equalityComparer);
+            _dictionary = new ConcurrentDictionary<T, byte>(
+                DefaultConcurrencyLevel,
+                DefaultCapacity,
+                equalityComparer
+            );
         }
 
         /// <summary>

@@ -4,7 +4,8 @@ namespace PuppeteerSharp.QueryHandlers
     {
         internal TextQueryHandler()
         {
-            QuerySelectorAll = @"(element, selector, {textQuerySelectorAll}) => {
+            QuerySelectorAll =
+                @"(element, selector, {textQuerySelectorAll}) => {
                 return textQuerySelectorAll(element, selector);
             }";
         }

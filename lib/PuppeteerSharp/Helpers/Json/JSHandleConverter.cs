@@ -10,10 +10,20 @@ namespace PuppeteerSharp.Helpers.Json
     internal sealed class JSHandleConverter : JsonConverter<IJSHandle>
     {
         /// <inheritdoc cref="JsonConverter"/>
-        public override IJSHandle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => null;
+        public override IJSHandle Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options
+        ) => null;
 
         /// <inheritdoc cref="JsonConverter"/>
-        public override void Write(Utf8JsonWriter writer, IJSHandle value, JsonSerializerOptions options)
-            => throw new PuppeteerException("Unable to make function call. Are you passing a nested JSHandle?");
+        public override void Write(
+            Utf8JsonWriter writer,
+            IJSHandle value,
+            JsonSerializerOptions options
+        ) =>
+            throw new PuppeteerException(
+                "Unable to make function call. Are you passing a nested JSHandle?"
+            );
     }
 }

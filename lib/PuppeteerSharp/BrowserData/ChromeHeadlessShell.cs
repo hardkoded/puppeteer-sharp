@@ -8,35 +8,46 @@ namespace PuppeteerSharp.BrowserData
     /// </summary>
     public static class ChromeHeadlessShell
     {
-        internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
-            => $"{baseUrl ?? "https://storage.googleapis.com/chrome-for-testing-public"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
+        internal static string ResolveDownloadUrl(
+            Platform platform,
+            string buildId,
+            string baseUrl
+        ) =>
+            $"{baseUrl ?? "https://storage.googleapis.com/chrome-for-testing-public"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
 
-        internal static string RelativeExecutablePath(Platform platform, string buildId)
-            => platform switch
+        internal static string RelativeExecutablePath(Platform platform, string buildId) =>
+            platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
                     "chrome-headless-shell-" + GetFolder(platform, buildId),
-                    "chrome-headless-shell"),
+                    "chrome-headless-shell"
+                ),
                 Platform.Linux or Platform.LinuxArm64 => Path.Combine(
                     "chrome-headless-shell-" + GetFolder(platform, buildId),
-                    "chrome-headless-shell"),
-                Platform.Win32 or Platform.Win64 => Path.Combine("chrome-headless-shell-" + GetFolder(platform, buildId), "chrome-headless-shell.exe"),
+                    "chrome-headless-shell"
+                ),
+                Platform.Win32 or Platform.Win64 => Path.Combine(
+                    "chrome-headless-shell-" + GetFolder(platform, buildId),
+                    "chrome-headless-shell.exe"
+                ),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
 
-        private static string[] ResolveDownloadPath(Platform platform, string buildId)
-            =>
+        private static string[] ResolveDownloadPath(Platform platform, string buildId) =>
             [
                 buildId,
                 GetFolder(platform, buildId),
-                $"chrome-headless-shell-{GetFolder(platform, buildId)}.zip"
+                $"chrome-headless-shell-{GetFolder(platform, buildId)}.zip",
             ];
 
-        private static string GetFolder(Platform platform, string buildId)
-            => platform switch
+        private static string GetFolder(Platform platform, string buildId) =>
+            platform switch
             {
                 // Chrome for Testing started publishing linux-arm64 builds in 153.0.8001.0.
-                Platform.LinuxArm64 => buildId != null && Chrome.CompareVersions(buildId, "153.0.8001.0") < 0 ? "linux64" : "linux-arm64",
+                Platform.LinuxArm64 => buildId != null
+                && Chrome.CompareVersions(buildId, "153.0.8001.0") < 0
+                    ? "linux64"
+                    : "linux-arm64",
                 Platform.Linux => "linux64",
                 Platform.MacOSArm64 => "mac-arm64",
                 Platform.MacOS => "mac-x64",

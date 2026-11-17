@@ -37,9 +37,12 @@ namespace PuppeteerSharp
         {
             try
             {
-                await _client.SendAsync(
-                    "Emulation.setTimezoneOverride",
-                    new EmulateTimezoneRequest { TimezoneId = timezoneId ?? string.Empty, }).ConfigureAwait(false);
+                await _client
+                    .SendAsync(
+                        "Emulation.setTimezoneOverride",
+                        new EmulateTimezoneRequest { TimezoneId = timezoneId ?? string.Empty }
+                    )
+                    .ConfigureAwait(false);
             }
             catch (Exception ex) when (ex.Message.Contains("Invalid timezone"))
             {
@@ -47,34 +50,42 @@ namespace PuppeteerSharp
             }
         }
 
-        internal Task EmulateVisionDeficiencyAsync(VisionDeficiency type)
-            => _client.SendAsync(
+        internal Task EmulateVisionDeficiencyAsync(VisionDeficiency type) =>
+            _client.SendAsync(
                 "Emulation.setEmulatedVisionDeficiency",
-                new EmulationSetEmulatedVisionDeficiencyRequest { Type = type, });
+                new EmulationSetEmulatedVisionDeficiencyRequest { Type = type }
+            );
 
         internal Task EmulateCPUThrottlingAsync(decimal? factor = null)
         {
             if (factor is < 1)
             {
-                throw new ArgumentException("Throttling rate should be greater or equal to 1", nameof(factor));
+                throw new ArgumentException(
+                    "Throttling rate should be greater or equal to 1",
+                    nameof(factor)
+                );
             }
 
             return _client.SendAsync(
                 "Emulation.setCPUThrottlingRate",
-                new EmulationSetCPUThrottlingRateRequest { Rate = factor ?? 1, });
+                new EmulationSetCPUThrottlingRateRequest { Rate = factor ?? 1 }
+            );
         }
 
         internal async Task EmulateIdleStateAsync(EmulateIdleOverrides overrides = null)
         {
             if (overrides != null)
             {
-                await _client.SendAsync(
-                    "Emulation.setIdleOverride",
-                    new EmulationSetIdleOverrideRequest
-                    {
-                        IsUserActive = overrides.IsUserActive,
-                        IsScreenUnlocked = overrides.IsScreenUnlocked,
-                    }).ConfigureAwait(false);
+                await _client
+                    .SendAsync(
+                        "Emulation.setIdleOverride",
+                        new EmulationSetIdleOverrideRequest
+                        {
+                            IsUserActive = overrides.IsUserActive,
+                            IsScreenUnlocked = overrides.IsScreenUnlocked,
+                        }
+                    )
+                    .ConfigureAwait(false);
             }
             else
             {
@@ -102,26 +113,30 @@ namespace PuppeteerSharp
             if (!reloadNeeded)
             {
                 // If the page will be reloaded, no need to adjust secondary clients.
-                await Task.WhenAll(_secondaryClients.Select(ApplyViewportAsync)).ConfigureAwait(false);
+                await Task.WhenAll(_secondaryClients.Select(ApplyViewportAsync))
+                    .ConfigureAwait(false);
             }
 
             return reloadNeeded;
         }
 
-        internal Task EmulateLocaleAsync(string locale)
-            => _client.SendAsync(
+        internal Task EmulateLocaleAsync(string locale) =>
+            _client.SendAsync(
                 "Emulation.setLocaleOverride",
-                new EmulationSetLocaleOverrideRequest { Locale = locale });
+                new EmulationSetLocaleOverrideRequest { Locale = locale }
+            );
 
-        internal Task EmulateMediaTypeAsync(MediaType type)
-            => _client.SendAsync(
+        internal Task EmulateMediaTypeAsync(MediaType type) =>
+            _client.SendAsync(
                 "Emulation.setEmulatedMedia",
-                new EmulationSetEmulatedMediaTypeRequest { Media = type });
+                new EmulationSetEmulatedMediaTypeRequest { Media = type }
+            );
 
-        internal Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features)
-            => _client.SendAsync(
+        internal Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features) =>
+            _client.SendAsync(
                 "Emulation.setEmulatedMedia",
-                new EmulationSetEmulatedMediaFeatureRequest { Features = features });
+                new EmulationSetEmulatedMediaFeatureRequest { Features = features }
+            );
 
         internal Task SetGeolocationAsync(GeolocationOption options)
         {
@@ -132,41 +147,51 @@ namespace PuppeteerSharp
 
             if (options.Longitude < -180 || options.Longitude > 180)
             {
-                throw new ArgumentException($"Invalid longitude '{options.Longitude}': precondition - 180 <= LONGITUDE <= 180 failed.");
+                throw new ArgumentException(
+                    $"Invalid longitude '{options.Longitude}': precondition - 180 <= LONGITUDE <= 180 failed."
+                );
             }
 
             if (options.Latitude < -90 || options.Latitude > 90)
             {
-                throw new ArgumentException($"Invalid latitude '{options.Latitude}': precondition - 90 <= LATITUDE <= 90 failed.");
+                throw new ArgumentException(
+                    $"Invalid latitude '{options.Latitude}': precondition - 90 <= LATITUDE <= 90 failed."
+                );
             }
 
             if (options.Accuracy < 0)
             {
-                throw new ArgumentException($"Invalid accuracy '{options.Accuracy}': precondition 0 <= ACCURACY failed.");
+                throw new ArgumentException(
+                    $"Invalid accuracy '{options.Accuracy}': precondition 0 <= ACCURACY failed."
+                );
             }
 
             return _client.SendAsync("Emulation.setGeolocationOverride", options);
         }
 
-        internal Task ResetDefaultBackgroundColorAsync()
-            => _client.SendAsync("Emulation.setDefaultBackgroundColorOverride");
+        internal Task ResetDefaultBackgroundColorAsync() =>
+            _client.SendAsync("Emulation.setDefaultBackgroundColorOverride");
 
-        internal Task SetTransparentBackgroundColorAsync()
-            => _client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new EmulationSetDefaultBackgroundColorOverrideRequest
-            {
-                Color = new EmulationSetDefaultBackgroundColorOverrideColor
+        internal Task SetTransparentBackgroundColorAsync() =>
+            _client.SendAsync(
+                "Emulation.setDefaultBackgroundColorOverride",
+                new EmulationSetDefaultBackgroundColorOverrideRequest
                 {
-                    R = 0,
-                    G = 0,
-                    B = 0,
-                    A = 0,
-                },
-            });
+                    Color = new EmulationSetDefaultBackgroundColorOverrideColor
+                    {
+                        R = 0,
+                        G = 0,
+                        B = 0,
+                        A = 0,
+                    },
+                }
+            );
 
-        internal Task EmulateFocusAsync(bool enabled)
-            => _client.SendAsync(
+        internal Task EmulateFocusAsync(bool enabled) =>
+            _client.SendAsync(
                 "Emulation.setFocusEmulationEnabled",
-                new EmulationSetFocusEmulationEnabledRequest { Enabled = enabled, });
+                new EmulationSetFocusEmulationEnabledRequest { Enabled = enabled }
+            );
 
         internal Task SetJavaScriptEnabledAsync(bool enabled)
         {
@@ -176,10 +201,10 @@ namespace PuppeteerSharp
             }
 
             JavascriptEnabled = enabled;
-            return _client.SendAsync("Emulation.setScriptExecutionDisabled", new EmulationSetScriptExecutionDisabledRequest
-            {
-                Value = !enabled,
-            });
+            return _client.SendAsync(
+                "Emulation.setScriptExecutionDisabled",
+                new EmulationSetScriptExecutionDisabledRequest { Value = !enabled }
+            );
         }
 
         private async Task ApplyViewportAsync(ICDPSession client)
@@ -189,13 +214,14 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await Task.WhenAll(
-                    [
-                        client.SendAsync("Emulation.clearDeviceMetricsOverride"),
-                        client.SendAsync(
-                            "Emulation.setTouchEmulationEnabled",
-                            new EmulationSetTouchEmulationEnabledRequest { Enabled = false, }),
-                    ]).ConfigureAwait(false);
+                    await Task.WhenAll([
+                            client.SendAsync("Emulation.clearDeviceMetricsOverride"),
+                            client.SendAsync(
+                                "Emulation.setTouchEmulationEnabled",
+                                new EmulationSetTouchEmulationEnabledRequest { Enabled = false }
+                            ),
+                        ])
+                        .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -210,32 +236,43 @@ namespace PuppeteerSharp
             var height = viewport.Height;
             var deviceScaleFactor = viewport.DeviceScaleFactor;
             var screenOrientation = viewport.IsLandscape
-                ? new ScreenOrientation { Angle = 90, Type = ScreenOrientationType.LandscapePrimary, }
-                : new ScreenOrientation { Angle = 0, Type = ScreenOrientationType.PortraitPrimary, };
+                ? new ScreenOrientation
+                {
+                    Angle = 90,
+                    Type = ScreenOrientationType.LandscapePrimary,
+                }
+                : new ScreenOrientation { Angle = 0, Type = ScreenOrientationType.PortraitPrimary };
             var hasTouch = viewport.HasTouch;
 
-            await Task.WhenAll(
-            [
-                client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
-                {
-                    Mobile = mobile,
-                    Width = width,
-                    Height = height,
-                    DeviceScaleFactor = deviceScaleFactor,
-                    ScreenOrientation = screenOrientation,
-                }).ContinueWith(
-                    task =>
-                    {
-                        if (task.IsFaulted)
-                        {
-                            _logger.ErrorMessage(task.Exception!.Message);
-                        }
-                    },
-                    TaskScheduler.Default),
-                client.SendAsync(
-                    "Emulation.setTouchEmulationEnabled",
-                    new EmulationSetTouchEmulationEnabledRequest { Enabled = hasTouch, }),
-            ]).ConfigureAwait(false);
+            await Task.WhenAll([
+                    client
+                        .SendAsync(
+                            "Emulation.setDeviceMetricsOverride",
+                            new EmulationSetDeviceMetricsOverrideRequest
+                            {
+                                Mobile = mobile,
+                                Width = width,
+                                Height = height,
+                                DeviceScaleFactor = deviceScaleFactor,
+                                ScreenOrientation = screenOrientation,
+                            }
+                        )
+                        .ContinueWith(
+                            task =>
+                            {
+                                if (task.IsFaulted)
+                                {
+                                    _logger.ErrorMessage(task.Exception!.Message);
+                                }
+                            },
+                            TaskScheduler.Default
+                        ),
+                    client.SendAsync(
+                        "Emulation.setTouchEmulationEnabled",
+                        new EmulationSetTouchEmulationEnabledRequest { Enabled = hasTouch }
+                    ),
+                ])
+                .ConfigureAwait(false);
         }
     }
 }

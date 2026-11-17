@@ -50,20 +50,24 @@ public class CdpKeyboard : Keyboard
 
         var text = options?.Text == null ? description.Text : options.Text;
 
-        return _client.SendAsync("Input.dispatchKeyEvent", new InputDispatchKeyEventRequest
-        {
-            Type = text != null ? DispatchKeyEventType.KeyDown : DispatchKeyEventType.RawKeyDown,
-            Modifiers = Modifiers,
-            WindowsVirtualKeyCode = description.KeyCode,
-            Code = description.Code,
-            Key = description.Key,
-            Text = text,
-            UnmodifiedText = text,
-            AutoRepeat = autoRepeat,
-            Location = description.Location,
-            IsKeypad = description.Location == 3,
-            Commands = options?.Commands,
-        });
+        return _client.SendAsync(
+            "Input.dispatchKeyEvent",
+            new InputDispatchKeyEventRequest
+            {
+                Type =
+                    text != null ? DispatchKeyEventType.KeyDown : DispatchKeyEventType.RawKeyDown,
+                Modifiers = Modifiers,
+                WindowsVirtualKeyCode = description.KeyCode,
+                Code = description.Code,
+                Key = description.Key,
+                Text = text,
+                UnmodifiedText = text,
+                AutoRepeat = autoRepeat,
+                Location = description.Location,
+                IsKeypad = description.Location == 3,
+                Commands = options?.Commands,
+            }
+        );
     }
 
     /// <inheritdoc/>
@@ -74,23 +78,23 @@ public class CdpKeyboard : Keyboard
         Modifiers &= ~ModifierBit(key);
         _pressedKeys.Remove(description.Code);
 
-        return _client.SendAsync("Input.dispatchKeyEvent", new InputDispatchKeyEventRequest
-        {
-            Type = DispatchKeyEventType.KeyUp,
-            Modifiers = Modifiers,
-            Key = description.Key,
-            WindowsVirtualKeyCode = description.KeyCode,
-            Code = description.Code,
-            Location = description.Location,
-        });
+        return _client.SendAsync(
+            "Input.dispatchKeyEvent",
+            new InputDispatchKeyEventRequest
+            {
+                Type = DispatchKeyEventType.KeyUp,
+                Modifiers = Modifiers,
+                Key = description.Key,
+                WindowsVirtualKeyCode = description.KeyCode,
+                Code = description.Code,
+                Location = description.Location,
+            }
+        );
     }
 
     /// <inheritdoc/>
-    public override Task SendCharacterAsync(string charText)
-        => _client.SendAsync("Input.insertText", new InputInsertTextRequest
-        {
-            Text = charText,
-        });
+    public override Task SendCharacterAsync(string charText) =>
+        _client.SendAsync("Input.insertText", new InputInsertTextRequest { Text = charText });
 
     /// <inheritdoc/>
     public override async Task TypeAsync(string text, TypeOptions options = null)
@@ -107,7 +111,8 @@ public class CdpKeyboard : Keyboard
             var letter = textParts.Current;
             if (KeyDefinitions.ContainsKey(letter.ToString()))
             {
-                await PressAsync(letter.ToString(), new PressOptions { Delay = delay }).ConfigureAwait(false);
+                await PressAsync(letter.ToString(), new PressOptions { Delay = delay })
+                    .ConfigureAwait(false);
             }
             else
             {

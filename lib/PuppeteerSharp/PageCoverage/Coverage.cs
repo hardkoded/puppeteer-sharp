@@ -17,37 +17,43 @@ namespace PuppeteerSharp.PageCoverage
         }
 
         /// <inheritdoc/>
-        public Task StartJSCoverageAsync(CoverageStartOptions options = null)
-            => _jsCoverage.StartAsync(options ?? new CoverageStartOptions());
+        public Task StartJSCoverageAsync(CoverageStartOptions options = null) =>
+            _jsCoverage.StartAsync(options ?? new CoverageStartOptions());
 
         /// <inheritdoc/>
         public Task<JSCoverageEntry[]> StopJSCoverageAsync() => _jsCoverage.StopAsync();
 
         /// <inheritdoc/>
-        public Task StartCSSCoverageAsync(CoverageStartOptions options = null)
-            => _cssCoverage.StartAsync(options ?? new CoverageStartOptions());
+        public Task StartCSSCoverageAsync(CoverageStartOptions options = null) =>
+            _cssCoverage.StartAsync(options ?? new CoverageStartOptions());
 
         /// <inheritdoc/>
         public Task<CoverageEntry[]> StopCSSCoverageAsync() => _cssCoverage.StopAsync();
 
-        internal static CoverageEntryRange[] ConvertToDisjointRanges(IEnumerable<CoverageRange> nestedRanges)
+        internal static CoverageEntryRange[] ConvertToDisjointRanges(
+            IEnumerable<CoverageRange> nestedRanges
+        )
         {
             var points = new List<CoverageEntryPoint>();
             foreach (var range in nestedRanges)
             {
-                points.Add(new CoverageEntryPoint
-                {
-                    Offset = range.StartOffset,
-                    Type = 0,
-                    Range = range,
-                });
+                points.Add(
+                    new CoverageEntryPoint
+                    {
+                        Offset = range.StartOffset,
+                        Type = 0,
+                        Range = range,
+                    }
+                );
 
-                points.Add(new CoverageEntryPoint
-                {
-                    Offset = range.EndOffset,
-                    Type = 1,
-                    Range = range,
-                });
+                points.Add(
+                    new CoverageEntryPoint
+                    {
+                        Offset = range.EndOffset,
+                        Type = 1,
+                        Range = range,
+                    }
+                );
             }
 
             points.Sort();
@@ -59,7 +65,11 @@ namespace PuppeteerSharp.PageCoverage
             // Run scanning line to intersect all ranges.
             foreach (var point in points)
             {
-                if (hitCountStack.Count > 0 && lastOffset < point.Offset && hitCountStack[hitCountStack.Count - 1] > 0)
+                if (
+                    hitCountStack.Count > 0
+                    && lastOffset < point.Offset
+                    && hitCountStack[hitCountStack.Count - 1] > 0
+                )
                 {
                     var lastResult = results.Count > 0 ? results[results.Count - 1] : null;
                     if (lastResult != null && lastResult.End == lastOffset)
@@ -68,11 +78,9 @@ namespace PuppeteerSharp.PageCoverage
                     }
                     else
                     {
-                        results.Add(new CoverageEntryRange
-                        {
-                            Start = lastOffset,
-                            End = point.Offset,
-                        });
+                        results.Add(
+                            new CoverageEntryRange { Start = lastOffset, End = point.Offset }
+                        );
                     }
                 }
 

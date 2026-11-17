@@ -8,9 +8,8 @@ namespace PuppeteerSharp.Tests.HeapSnapshotTests
 {
     public class HeapSnapshotTests : PuppeteerPageBaseTest
     {
-        public HeapSnapshotTests() : base()
-        {
-        }
+        public HeapSnapshotTests()
+            : base() { }
 
         [Test, PuppeteerTest("heapSnapshot.spec", "Heap Snapshot", "should capture heap snapshot")]
         public async Task ShouldCaptureHeapSnapshot()

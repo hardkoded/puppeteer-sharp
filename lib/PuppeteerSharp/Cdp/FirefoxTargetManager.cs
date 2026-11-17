@@ -17,18 +17,26 @@ namespace PuppeteerSharp.Cdp
         private readonly Func<TargetInfo, CDPSession, CDPSession, CdpTarget> _targetFactoryFunc;
         private readonly Func<CdpTarget, bool> _targetFilterFunc;
         private readonly ILogger<FirefoxTargetManager> _logger;
-        private readonly AsyncDictionaryHelper<string, CdpTarget> _availableTargetsByTargetId = new("Target {0} not found");
-        private readonly ConcurrentDictionary<string, CdpTarget> _availableTargetsBySessionId = new();
-        private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
+        private readonly AsyncDictionaryHelper<string, CdpTarget> _availableTargetsByTargetId = new(
+            "Target {0} not found"
+        );
+        private readonly ConcurrentDictionary<string, CdpTarget> _availableTargetsBySessionId =
+            new();
+        private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId =
+            new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
         private readonly DisposableActionsStack _subscriptions = new();
-        private readonly ConcurrentDictionary<ICDPSession, DisposableActionsStack> _attachmentSubscriptions = new();
+        private readonly ConcurrentDictionary<
+            ICDPSession,
+            DisposableActionsStack
+        > _attachmentSubscriptions = new();
         private List<string> _targetsIdsForInit = [];
 
         public FirefoxTargetManager(
             Connection connection,
             Func<TargetInfo, CDPSession, CDPSession, CdpTarget> targetFactoryFunc,
-            Func<Target, bool> targetFilterFunc)
+            Func<Target, bool> targetFilterFunc
+        )
         {
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
@@ -48,34 +56,42 @@ namespace PuppeteerSharp.Cdp
 
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
-        public IReadOnlyCollection<string> GetDiscoveredTargetIds() => _discoveredTargetsByTargetId.Keys.ToArray();
+        public IReadOnlyCollection<string> GetDiscoveredTargetIds() =>
+            _discoveredTargetsByTargetId.Keys.ToArray();
 
-        public Task DestroyExtensionServiceWorkerTargetsAsync(string extensionId, IReadOnlyCollection<string> existingTargetIds = null)
-            => Task.CompletedTask;
+        public Task DestroyExtensionServiceWorkerTargetsAsync(
+            string extensionId,
+            IReadOnlyCollection<string> existingTargetIds = null
+        ) => Task.CompletedTask;
 
         public async Task InitializeAsync()
         {
-            await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
-            {
-                Discover = true,
-                Filter = new[]
-                {
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
-                },
-            }).ConfigureAwait(false);
+            await _connection
+                .SendAsync(
+                    "Target.setDiscoverTargets",
+                    new TargetSetDiscoverTargetsRequest
+                    {
+                        Discover = true,
+                        Filter = new[] { new TargetSetDiscoverTargetsRequest.DiscoverFilter() },
+                    }
+                )
+                .ConfigureAwait(false);
 
             _targetsIdsForInit = [.. _discoveredTargetsByTargetId.Keys];
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
-        public AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets() => _availableTargetsByTargetId;
+        public AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets() =>
+            _availableTargetsByTargetId;
 
         public IEnumerable<ITarget> GetChildTargets(ITarget target) => [];
 
         public bool IsUrlAllowed(string url) => true;
 
-        public Task SetNetworkConditionsAsync(NetworkRestrictions restrictions)
-            => throw new NotSupportedException("Network restrictions are only supported with Chrome and the CDP protocol.");
+        public Task SetNetworkConditionsAsync(NetworkRestrictions restrictions) =>
+            throw new NotSupportedException(
+                "Network restrictions are only supported with Chrome and the CDP protocol."
+            );
 
         public void Dispose()
         {
@@ -95,7 +111,10 @@ namespace PuppeteerSharp.Cdp
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
-                        OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>());
+                        OnAttachedToTarget(
+                            sender,
+                            e.MessageData.ToObject<TargetAttachedToTargetResponse>()
+                        );
                         return;
                     case "Target.targetCreated":
                         OnTargetCreated(e.MessageData.ToObject<TargetCreatedResponse>());
@@ -108,14 +127,15 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception ex)
             {
-                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                var message =
+                    $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.ErrorWithException(ex, message);
                 _connection.Close(message);
             }
         }
 
-        private void Connection_SessionDetached(object sender, SessionEventArgs e)
-            => RemoveAttachmentListeners(e.Session);
+        private void Connection_SessionDetached(object sender, SessionEventArgs e) =>
+            RemoveAttachmentListeners(e.Session);
 
         private void SetupAttachmentListeners(ICDPSession session)
         {
@@ -125,13 +145,18 @@ namespace PuppeteerSharp.Cdp
             if (!_attachmentSubscriptions.TryAdd(session, subscriptions))
             {
                 subscriptions.Dispose();
-                throw new PuppeteerException("Attachment listeners already set up for this session.");
+                throw new PuppeteerException(
+                    "Attachment listeners already set up for this session."
+                );
             }
         }
 
         private void RemoveAttachmentListeners(ICDPSession session)
         {
-            if (session != null && _attachmentSubscriptions.TryRemove(session, out var subscriptions))
+            if (
+                session != null
+                && _attachmentSubscriptions.TryRemove(session, out var subscriptions)
+            )
             {
                 subscriptions.Dispose();
             }
@@ -163,11 +188,8 @@ namespace PuppeteerSharp.Cdp
             _availableTargetsByTargetId.AddItem(e.TargetInfo.TargetId, target);
             TargetAvailable?.Invoke(
                 this,
-                new TargetChangedArgs
-                {
-                    Target = target,
-                    TargetInfo = e.TargetInfo,
-                });
+                new TargetChangedArgs { Target = target, TargetInfo = e.TargetInfo }
+            );
             FinishInitializationIfReady(target.TargetId);
         }
 
@@ -178,7 +200,10 @@ namespace PuppeteerSharp.Cdp
 
             if (_availableTargetsByTargetId.TryRemove(e.TargetId, out var target))
             {
-                TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
+                TargetGone?.Invoke(
+                    this,
+                    new TargetChangedArgs { Target = target, TargetInfo = targetInfo }
+                );
             }
         }
 
@@ -186,7 +211,8 @@ namespace PuppeteerSharp.Cdp
         {
             var parentSession = sender as CDPSession;
             var targetInfo = e.TargetInfo;
-            var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
+            var session = _connection.GetSession(e.SessionId)
+                ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
             _availableTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
             SetupAttachmentListeners(session);
             session.Target = target;

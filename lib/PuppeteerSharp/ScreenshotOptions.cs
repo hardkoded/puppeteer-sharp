@@ -81,11 +81,12 @@ namespace PuppeteerSharp
             return GetScreenshotType(extension);
         }
 
-        private static ScreenshotType? GetScreenshotType(string extension) => extension switch
-        {
-            "jpe" or "jpeg" or "jpg" => ScreenshotType.Jpeg,
-            "png" => ScreenshotType.Png,
-            _ => null,
-        };
+        private static ScreenshotType? GetScreenshotType(string extension) =>
+            extension switch
+            {
+                "jpe" or "jpeg" or "jpg" => ScreenshotType.Jpeg,
+                "png" => ScreenshotType.Png,
+                _ => null,
+            };
     }
 }

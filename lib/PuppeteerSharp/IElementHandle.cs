@@ -81,7 +81,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="data">Drag data containing items and operations mask.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
-        [Obsolete("Don't use" + nameof(DragEnterAsync) + ". `dragenter` will automatically be performed during dragging. ")]
+        [Obsolete(
+            "Don't use"
+                + nameof(DragEnterAsync)
+                + ". `dragenter` will automatically be performed during dragging. "
+        )]
         Task DragEnterAsync(DragData data);
 
         /// <summary>
@@ -89,7 +93,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="data">Drag data containing items and operations mask.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
-        [Obsolete("Don't use" + nameof(DragOverAsync) + ". `dragover` will automatically be performed during dragging. ")]
+        [Obsolete(
+            "Don't use"
+                + nameof(DragOverAsync)
+                + ". `dragover` will automatically be performed during dragging. "
+        )]
         Task DragOverAsync(DragData data);
 
         /// <summary>
@@ -299,7 +307,10 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
-        Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
+        Task<IElementHandle> WaitForSelectorAsync(
+            string selector,
+            WaitForSelectorOptions options = null
+        );
 
         /// <summary>
         /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.

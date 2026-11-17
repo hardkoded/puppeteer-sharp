@@ -16,9 +16,16 @@ namespace PuppeteerSharp.Cdp
             ITargetManager targetManager,
             Func<bool, Task<CDPSession>> sessionFactory,
             ViewPortOptions defaultViewport,
-            TaskQueue screenshotTaskQueue)
-            : base(targetInfo, session, context, targetManager, sessionFactory, defaultViewport, screenshotTaskQueue)
-        {
-        }
+            TaskQueue screenshotTaskQueue
+        )
+            : base(
+                targetInfo,
+                session,
+                context,
+                targetManager,
+                sessionFactory,
+                defaultViewport,
+                screenshotTaskQueue
+            ) { }
     }
 }

@@ -54,7 +54,10 @@ internal sealed class Browser(Session session) : IDisposable
 
     public string Reason { get; set; }
 
-    internal UserContext DefaultUserContext => _userContexts.TryGetValue(UserContext.DEFAULT, out var context) ? context : _userContexts.Values.FirstOrDefault();
+    internal UserContext DefaultUserContext =>
+        _userContexts.TryGetValue(UserContext.DEFAULT, out var context)
+            ? context
+            : _userContexts.Values.FirstOrDefault();
 
     internal ICollection<UserContext> UserContexts => _userContexts.Values;
 
@@ -69,7 +72,9 @@ internal sealed class Browser(Session session) : IDisposable
     {
         try
         {
-            await Session.Driver.Browser.CloseAsync(new CloseCommandParameters()).ConfigureAwait(false);
+            await Session
+                .Driver.Browser.CloseAsync(new CloseCommandParameters())
+                .ConfigureAwait(false);
         }
         finally
         {
@@ -99,13 +104,16 @@ internal sealed class Browser(Session session) : IDisposable
 
     public async Task<UserContext> CreateUserContextAsync(DownloadBehavior downloadBehavior = null)
     {
-        var result = await Session.Driver.Browser.CreateUserContextAsync(new CreateUserContextCommandParameters()).ConfigureAwait(false);
+        var result = await Session
+            .Driver.Browser.CreateUserContextAsync(new CreateUserContextCommandParameters())
+            .ConfigureAwait(false);
         var userContext = CreateUserContext(result.UserContextId);
         if (downloadBehavior != null)
         {
             try
             {
-                await SetDownloadBehaviorAsync(downloadBehavior, [result.UserContextId]).ConfigureAwait(false);
+                await SetDownloadBehaviorAsync(downloadBehavior, [result.UserContextId])
+                    .ConfigureAwait(false);
             }
             catch
             {
@@ -130,17 +138,24 @@ internal sealed class Browser(Session session) : IDisposable
     /// Sets the download behavior for the given user contexts. If no user
     /// contexts are provided, the behavior is applied globally.
     /// </summary>
-    public async Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior, IEnumerable<string> userContexts = null)
+    public async Task SetDownloadBehaviorAsync(
+        DownloadBehavior downloadBehavior,
+        IEnumerable<string> userContexts = null
+    )
     {
         WebDriverBiDi.Browser.DownloadBehavior bidiBehavior;
         switch (downloadBehavior.Policy)
         {
             case DownloadPolicy.AllowAndName:
-                throw new NotSupportedException("`allowAndName` is not supported in WebDriver BiDi");
+                throw new NotSupportedException(
+                    "`allowAndName` is not supported in WebDriver BiDi"
+                );
             case DownloadPolicy.Allow:
                 if (downloadBehavior.DownloadPath == null)
                 {
-                    throw new NotSupportedException("`downloadPath` is required in `allow` download behavior");
+                    throw new NotSupportedException(
+                        "`downloadPath` is required in `allow` download behavior"
+                    );
                 }
 
                 bidiBehavior = new DownloadBehaviorAllowed(downloadBehavior.DownloadPath);
@@ -152,7 +167,10 @@ internal sealed class Browser(Session session) : IDisposable
                 return;
         }
 
-        var parameters = new SetDownloadBehaviorCommandParameters { DownloadBehavior = bidiBehavior };
+        var parameters = new SetDownloadBehaviorCommandParameters
+        {
+            DownloadBehavior = bidiBehavior,
+        };
         if (userContexts != null)
         {
             parameters.UserContexts.AddRange(userContexts);
@@ -163,7 +181,11 @@ internal sealed class Browser(Session session) : IDisposable
 
     public async Task RemoveInterceptAsync(string intercept)
     {
-        await Session.Driver.Network.RemoveInterceptAsync(new WebDriverBiDi.Network.RemoveInterceptCommandParameters(intercept)).ConfigureAwait(false);
+        await Session
+            .Driver.Network.RemoveInterceptAsync(
+                new WebDriverBiDi.Network.RemoveInterceptCommandParameters(intercept)
+            )
+            .ConfigureAwait(false);
     }
 
     private void Dispose(string reason)
@@ -202,7 +224,9 @@ internal sealed class Browser(Session session) : IDisposable
 
         try
         {
-            var tree = await Session.Driver.BrowsingContext.GetTreeAsync(new GetTreeCommandParameters()).ConfigureAwait(false);
+            var tree = await Session
+                .Driver.BrowsingContext.GetTreeAsync(new GetTreeCommandParameters())
+                .ConfigureAwait(false);
             var contexts = tree.ContextTree;
 
             // Simulating events so contexts are created naturally.
@@ -227,7 +251,9 @@ internal sealed class Browser(Session session) : IDisposable
 
     private async Task SyncUserContextsAsync()
     {
-        var result = await Session.Driver.Browser.GetUserContextsAsync(new GetUserContextsCommandParameters()).ConfigureAwait(false);
+        var result = await Session
+            .Driver.Browser.GetUserContextsAsync(new GetUserContextsCommandParameters())
+            .ConfigureAwait(false);
 
         foreach (var context in result.UserContexts)
         {

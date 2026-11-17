@@ -25,11 +25,20 @@ namespace PuppeteerSharp.Cdp
         private readonly TaskQueue _callbackQueue = new();
 
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
-        private readonly AsyncDictionaryHelper<string, CdpCDPSession> _sessions = new("Session {0} not found");
+        private readonly AsyncDictionaryHelper<string, CdpCDPSession> _sessions = new(
+            "Session {0} not found"
+        );
         private readonly List<string> _manuallyAttached = [];
         private int _lastId;
 
-        private Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null, int protocolTimeout = DefaultCommandTimeout)
+        private Connection(
+            string url,
+            int delay,
+            bool enqueueAsyncMessages,
+            IConnectionTransport transport,
+            ILoggerFactory loggerFactory = null,
+            int protocolTimeout = DefaultCommandTimeout
+        )
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -109,16 +118,26 @@ namespace PuppeteerSharp.Cdp
         }
 
         /// <inheritdoc/>
-        public async Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
+        public async Task<JsonElement?> SendAsync(
+            string method,
+            object args = null,
+            bool waitForCallback = true,
+            CommandOptions options = null
+        )
         {
             if (IsClosed)
             {
-                throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
+                throw new TargetClosedException(
+                    $"Protocol error({method}): Target closed.",
+                    CloseReason
+                );
             }
 
             if (method == "Network.emulateNetworkConditions" && RejectEmulateNetworkConditionsCalls)
             {
-                throw new PuppeteerException("Cannot reset network conditions: rule-based emulation is enabled.");
+                throw new PuppeteerException(
+                    "Cannot reset network conditions: rule-based emulation is enabled."
+                );
             }
 
             var id = GetMessageId();
@@ -129,7 +148,9 @@ namespace PuppeteerSharp.Cdp
             {
                 callback = new MessageTask
                 {
-                    TaskWrapper = new TaskCompletionSource<JsonElement?>(TaskCreationOptions.RunContinuationsAsynchronously),
+                    TaskWrapper = new TaskCompletionSource<JsonElement?>(
+                        TaskCreationOptions.RunContinuationsAsynchronously
+                    ),
                     Method = method,
                     Message = message,
                 };
@@ -145,30 +166,68 @@ namespace PuppeteerSharp.Cdp
                 // The WebSocket was aborted (e.g. Chrome exited) between the IsClosed check and the send.
                 // Treat this as a closed connection so callers get TargetClosedException instead.
                 Close("WebSocket error");
-                throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
+                throw new TargetClosedException(
+                    $"Protocol error({method}): Target closed.",
+                    CloseReason
+                );
             }
 
-            return waitForCallback ? await callback.TaskWrapper.Task.WithTimeout(ProtocolTimeout).ConfigureAwait(false) : null;
+            return waitForCallback
+                ? await callback.TaskWrapper.Task.WithTimeout(ProtocolTimeout).ConfigureAwait(false)
+                : null;
         }
 
         /// <inheritdoc/>
-        public async Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
+        public async Task<T> SendAsync<T>(
+            string method,
+            object args = null,
+            CommandOptions options = null
+        )
         {
             var response = await SendAsync(method, args, true, options).ConfigureAwait(false);
             return response!.Value.ToObject<T>();
         }
 
-        internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
+        internal static async Task<Connection> Create(
+            string url,
+            IConnectionOptions connectionOptions,
+            ILoggerFactory loggerFactory = null,
+            CancellationToken cancellationToken = default
+        )
         {
-            var transportFactory = connectionOptions.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
-            var transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
+            var transportFactory = connectionOptions.TransportFactory
+                ?? WebSocketTransport.DefaultTransportFactory;
+            var transport = await transportFactory(
+                    new Uri(url),
+                    connectionOptions,
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
 
-            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory, connectionOptions.ProtocolTimeout);
+            return new Connection(
+                url,
+                connectionOptions.SlowMo,
+                connectionOptions.EnqueueAsyncMessages,
+                transport,
+                loggerFactory,
+                connectionOptions.ProtocolTimeout
+            );
         }
 
-        internal static Connection CreateFromTransport(IConnectionTransport transport, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
+        internal static Connection CreateFromTransport(
+            IConnectionTransport transport,
+            IConnectionOptions connectionOptions,
+            ILoggerFactory loggerFactory = null
+        )
         {
-            return new Connection(string.Empty, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory, connectionOptions.ProtocolTimeout);
+            return new Connection(
+                string.Empty,
+                connectionOptions.SlowMo,
+                connectionOptions.EnqueueAsyncMessages,
+                transport,
+                loggerFactory,
+                connectionOptions.ProtocolTimeout
+            );
         }
 
         internal static Connection FromSession(CdpCDPSession session) => session.Connection;
@@ -185,28 +244,41 @@ namespace PuppeteerSharp.Cdp
             return Transport.SendAsync(message);
         }
 
-        internal byte[] GetMessage(int id, string method, object args, string sessionId = null)
-            => JsonSerializer.SerializeToUtf8Bytes(
-                new ConnectionRequest { Id = id, Method = method, Params = args, SessionId = sessionId },
-                JsonHelper.DefaultJsonSerializerSettings.Value);
+        internal byte[] GetMessage(int id, string method, object args, string sessionId = null) =>
+            JsonSerializer.SerializeToUtf8Bytes(
+                new ConnectionRequest
+                {
+                    Id = id,
+                    Method = method,
+                    Params = args,
+                    SessionId = sessionId,
+                },
+                JsonHelper.DefaultJsonSerializerSettings.Value
+            );
 
-        internal bool IsAutoAttached(string targetId)
-            => !_manuallyAttached.Contains(targetId);
+        internal bool IsAutoAttached(string targetId) => !_manuallyAttached.Contains(targetId);
 
-        internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo, bool isAutoAttachEmulated)
+        internal async Task<CDPSession> CreateSessionAsync(
+            TargetInfo targetInfo,
+            bool isAutoAttachEmulated
+        )
         {
             if (!isAutoAttachEmulated)
             {
                 _manuallyAttached.Add(targetInfo.TargetId);
             }
 
-            var sessionId = (await SendAsync<TargetAttachToTargetResponse>(
-                "Target.attachToTarget",
-                new TargetAttachToTargetRequest
-                {
-                    TargetId = targetInfo.TargetId,
-                    Flatten = true,
-                }).ConfigureAwait(false)).SessionId;
+            var sessionId = (
+                await SendAsync<TargetAttachToTargetResponse>(
+                        "Target.attachToTarget",
+                        new TargetAttachToTargetRequest
+                        {
+                            TargetId = targetInfo.TargetId,
+                            Flatten = true,
+                        }
+                    )
+                    .ConfigureAwait(false)
+            ).SessionId;
             _manuallyAttached.Remove(targetInfo.TargetId);
             return await GetSessionAsync(sessionId).ConfigureAwait(false);
         }
@@ -252,18 +324,23 @@ namespace PuppeteerSharp.Cdp
 
             foreach (var response in _callbacks.Values)
             {
-                response.TaskWrapper.TrySetException(new TargetClosedException(
-                    $"Protocol error({response.Method}): Target closed.",
-                    closeReason));
+                response.TaskWrapper.TrySetException(
+                    new TargetClosedException(
+                        $"Protocol error({response.Method}): Target closed.",
+                        closeReason
+                    )
+                );
             }
 
             _callbacks.Clear();
             MessageQueue.Dispose();
         }
 
-        internal CdpCDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
+        internal CdpCDPSession GetSession(string sessionId) =>
+            _sessions.GetValueOrDefault(sessionId);
 
-        internal Task<CdpCDPSession> GetSessionAsync(string sessionId) => _sessions.GetItemAsync(sessionId);
+        internal Task<CdpCDPSession> GetSessionAsync(string sessionId) =>
+            _sessions.GetItemAsync(sessionId);
 
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
@@ -316,7 +393,10 @@ namespace PuppeteerSharp.Cdp
 
                 try
                 {
-                    obj = JsonSerializer.Deserialize<ConnectionResponse>(response, JsonHelper.DefaultJsonSerializerSettings.Value);
+                    obj = JsonSerializer.Deserialize<ConnectionResponse>(
+                        response,
+                        JsonHelper.DefaultJsonSerializerSettings.Value
+                    );
                 }
                 catch (JsonException exc)
                 {
@@ -333,7 +413,8 @@ namespace PuppeteerSharp.Cdp
             }
             catch (Exception ex)
             {
-                var message = $"Connection failed to process {e.Message}. {ex.Message}. {ex.StackTrace}";
+                var message =
+                    $"Connection failed to process {e.Message}. {ex.Message}. {ex.StackTrace}";
                 _logger.ErrorWithException(ex, message);
                 Close(message);
             }
@@ -347,12 +428,20 @@ namespace PuppeteerSharp.Cdp
             {
                 var param = obj.Params?.ToObject<ConnectionResponseParams>();
                 var sessionId = param.SessionId;
-                var session = new CdpCDPSession(this, param.TargetInfo.Type, sessionId, obj.SessionId);
+                var session = new CdpCDPSession(
+                    this,
+                    param.TargetInfo.Type,
+                    sessionId,
+                    obj.SessionId
+                );
                 _sessions.AddItem(sessionId, session);
 
                 SessionAttached?.Invoke(this, new SessionEventArgs(session));
 
-                if (obj.SessionId != null && _sessions.TryGetValue(obj.SessionId, out var parentSession))
+                if (
+                    obj.SessionId != null
+                    && _sessions.TryGetValue(obj.SessionId, out var parentSession)
+                )
                 {
                     parentSession.OnSessionAttached(session);
                 }
@@ -403,14 +492,18 @@ namespace PuppeteerSharp.Cdp
             }
             else
             {
-                MessageReceived?.Invoke(this, new MessageEventArgs
-                {
-                    MessageID = method,
-                    MessageData = (JsonElement)obj.Params,
-                });
+                MessageReceived?.Invoke(
+                    this,
+                    new MessageEventArgs
+                    {
+                        MessageID = method,
+                        MessageData = (JsonElement)obj.Params,
+                    }
+                );
             }
         }
 
-        private void Transport_Closed(object sender, TransportClosedEventArgs e) => Close(e.CloseReason);
+        private void Transport_Closed(object sender, TransportClosedEventArgs e) =>
+            Close(e.CloseReason);
     }
 }

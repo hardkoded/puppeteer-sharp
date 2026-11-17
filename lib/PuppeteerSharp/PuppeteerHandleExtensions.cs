@@ -20,8 +20,11 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
         /// <returns>Task.</returns>
         /// <exception cref="SelectorException">If <paramref name="elementHandleTask"/> resolves to <c>null</c>.</exception>
-        public static Task EvaluateFunctionAsync(this Task<IElementHandle> elementHandleTask, string pageFunction, params object[] args)
-            => elementHandleTask.EvaluateFunctionAsync<object>(pageFunction, args);
+        public static Task EvaluateFunctionAsync(
+            this Task<IElementHandle> elementHandleTask,
+            string pageFunction,
+            params object[] args
+        ) => elementHandleTask.EvaluateFunctionAsync<object>(pageFunction, args);
 
         /// <summary>
         /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="elementHandleTask"/> as the first argument.
@@ -32,7 +35,11 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c>.</returns>
         /// <exception cref="SelectorException">If <paramref name="elementHandleTask"/> resolves to <c>null</c>.</exception>
-        public static async Task<T> EvaluateFunctionAsync<T>(this Task<IElementHandle> elementHandleTask, string pageFunction, params object[] args)
+        public static async Task<T> EvaluateFunctionAsync<T>(
+            this Task<IElementHandle> elementHandleTask,
+            string pageFunction,
+            params object[] args
+        )
         {
             if (elementHandleTask == null)
             {
@@ -45,7 +52,9 @@ namespace PuppeteerSharp
                 throw new SelectorException("Error: failed to find element matching selector");
             }
 
-            return await elementHandle.EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
+            return await elementHandle
+                .EvaluateFunctionAsync<T>(pageFunction, args)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -57,14 +66,20 @@ namespace PuppeteerSharp
         /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c>.</returns>
         /// <exception cref="SelectorException">If <paramref name="elementHandle"/> is <c>null</c>.</exception>
-        public static async Task<T> EvaluateFunctionAsync<T>(this IElementHandle elementHandle, string pageFunction, params object[] args)
+        public static async Task<T> EvaluateFunctionAsync<T>(
+            this IElementHandle elementHandle,
+            string pageFunction,
+            params object[] args
+        )
         {
             if (elementHandle == null)
             {
                 throw new SelectorException("Error: failed to find element matching selector");
             }
 
-            var result = await elementHandle.EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
+            var result = await elementHandle
+                .EvaluateFunctionAsync<T>(pageFunction, args)
+                .ConfigureAwait(false);
             await elementHandle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
@@ -76,8 +91,11 @@ namespace PuppeteerSharp
         /// <param name="pageFunction">Function to be evaluated in browser context.</param>
         /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
         /// <returns>Task.</returns>
-        public static Task EvaluateFunctionAsync(this Task<IJSHandle> arrayHandleTask, string pageFunction, params object[] args)
-            => arrayHandleTask.EvaluateFunctionAsync<object>(pageFunction, args);
+        public static Task EvaluateFunctionAsync(
+            this Task<IJSHandle> arrayHandleTask,
+            string pageFunction,
+            params object[] args
+        ) => arrayHandleTask.EvaluateFunctionAsync<object>(pageFunction, args);
 
         /// <summary>
         /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>.
@@ -87,14 +105,20 @@ namespace PuppeteerSharp
         /// <param name="pageFunction">Function to be evaluated in browser context.</param>
         /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c>.</returns>
-        public static async Task<T> EvaluateFunctionAsync<T>(this Task<IJSHandle> arrayHandleTask, string pageFunction, params object[] args)
+        public static async Task<T> EvaluateFunctionAsync<T>(
+            this Task<IJSHandle> arrayHandleTask,
+            string pageFunction,
+            params object[] args
+        )
         {
             if (arrayHandleTask == null)
             {
                 throw new ArgumentNullException(nameof(arrayHandleTask));
             }
 
-            return await (await arrayHandleTask.ConfigureAwait(false)).EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
+            return await (await arrayHandleTask.ConfigureAwait(false))
+                .EvaluateFunctionAsync<T>(pageFunction, args)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -105,19 +129,28 @@ namespace PuppeteerSharp
         /// <param name="pageFunction">Function to be evaluated in browser context.</param>
         /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
         /// <returns>Task which resolves to the return value of <c>pageFunction</c>.</returns>
-        public static async Task<T> EvaluateFunctionAsync<T>(this IJSHandle arrayHandle, string pageFunction, params object[] args)
+        public static async Task<T> EvaluateFunctionAsync<T>(
+            this IJSHandle arrayHandle,
+            string pageFunction,
+            params object[] args
+        )
         {
             if (arrayHandle == null)
             {
                 throw new ArgumentNullException(nameof(arrayHandle));
             }
 
-            var result = await arrayHandle.EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
+            var result = await arrayHandle
+                .EvaluateFunctionAsync<T>(pageFunction, args)
+                .ConfigureAwait(false);
             await arrayHandle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
 
-        internal static RuntimeCallFunctionOnRequestArgumentValue FormatArgument(this ICdpHandle jSHandle, ExecutionContext context)
+        internal static RuntimeCallFunctionOnRequestArgumentValue FormatArgument(
+            this ICdpHandle jSHandle,
+            ExecutionContext context
+        )
         {
             if (jSHandle.Disposed)
             {
@@ -126,7 +159,9 @@ namespace PuppeteerSharp
 
             if (((JSHandle)jSHandle).Realm != context.World)
             {
-                throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
+                throw new PuppeteerException(
+                    "JSHandles can be evaluated only in the context they were created!"
+                );
             }
 
             var unserializableValue = jSHandle.RemoteObject.UnserializableValue;
@@ -149,40 +184,48 @@ namespace PuppeteerSharp
 
             var objectId = jSHandle.RemoteObject.ObjectId;
 
-            return new RuntimeCallFunctionOnRequestArgumentValue()
-            {
-                ObjectId = objectId,
-            };
+            return new RuntimeCallFunctionOnRequestArgumentValue() { ObjectId = objectId };
         }
 
-        internal static async IAsyncEnumerable<IElementHandle> TransposeIterableHandleAsync(this IJSHandle handle)
+        internal static async IAsyncEnumerable<IElementHandle> TransposeIterableHandleAsync(
+            this IJSHandle handle
+        )
         {
-            var iterator = await handle.EvaluateFunctionHandleAsync(@"iterable => {
+            var iterator = await handle
+                .EvaluateFunctionHandleAsync(
+                    @"iterable => {
                 return (async function* () {
                     yield* iterable;
                 })();
-            }").ConfigureAwait(false);
+            }"
+                )
+                .ConfigureAwait(false);
 
-            await foreach (var item in iterator.TransposeIteratorHandleAsync().ConfigureAwait(false))
+            await foreach (
+                var item in iterator.TransposeIteratorHandleAsync().ConfigureAwait(false)
+            )
             {
                 yield return item;
             }
         }
 
-        internal static async IAsyncEnumerable<IElementHandle> TransposeIteratorHandleAsync(this IJSHandle iterator)
+        internal static async IAsyncEnumerable<IElementHandle> TransposeIteratorHandleAsync(
+            this IJSHandle iterator
+        )
         {
             try
             {
                 IEnumerable<IElementHandle> result;
                 do
                 {
-                    result = await iterator.FastTransposeIteratorHandleAsync().ConfigureAwait(false);
+                    result = await iterator
+                        .FastTransposeIteratorHandleAsync()
+                        .ConfigureAwait(false);
                     foreach (var item in result)
                     {
                         yield return item;
                     }
-                }
-                while (result.Any());
+                } while (result.Any());
             }
             finally
             {
@@ -190,10 +233,13 @@ namespace PuppeteerSharp
             }
         }
 
-        internal static async Task<IEnumerable<IElementHandle>> FastTransposeIteratorHandleAsync(this IJSHandle handle)
+        internal static async Task<IEnumerable<IElementHandle>> FastTransposeIteratorHandleAsync(
+            this IJSHandle handle
+        )
         {
-            var array = await handle.EvaluateFunctionHandleAsync(
-                @"async (iterator, size) =>
+            var array = await handle
+                .EvaluateFunctionHandleAsync(
+                    @"async (iterator, size) =>
                 {
                     const results = [];
                     while (results.length < size)
@@ -207,7 +253,9 @@ namespace PuppeteerSharp
                     }
                     return results;
                 }",
-                20).ConfigureAwait(false);
+                    20
+                )
+                .ConfigureAwait(false);
 
             var properties = await array.GetPropertiesAsync().ConfigureAwait(false);
 

@@ -6,20 +6,30 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class QueryAllArrayTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryAllArray", "$$eval should handle many elements")]
+        [
+            Test,
+            PuppeteerTest(
+                "ariaqueryhandler.spec",
+                "AriaQueryHandler queryAllArray",
+                "$$eval should handle many elements"
+            )
+        ]
         public async Task EvalShouldHandleManyElements()
         {
             await Page.SetContentAsync("");
-            await Page.EvaluateExpressionAsync(@"
+            await Page.EvaluateExpressionAsync(
+                @"
                 for (var i = 0; i <= 10000; i++) {
                     const button = document.createElement('button');
                     button.textContent = i;
                     document.body.appendChild(button);
                 }
-            ");
-            var sum = await Page
-                .QuerySelectorAllHandleAsync("aria/[role=\"button\"]")
-                .EvaluateFunctionAsync<int>(@"buttons => buttons.reduce((acc, button) => acc + Number(button.textContent), 0)");
+            "
+            );
+            var sum = await Page.QuerySelectorAllHandleAsync("aria/[role=\"button\"]")
+                .EvaluateFunctionAsync<int>(
+                    @"buttons => buttons.reduce((acc, button) => acc + Number(button.textContent), 0)"
+                );
 
             Assert.That(sum, Is.EqualTo(50005000));
         }

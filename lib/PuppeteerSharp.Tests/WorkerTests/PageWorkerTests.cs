@@ -10,9 +10,8 @@ namespace PuppeteerSharp.Tests.WorkerTests
 {
     public class PageWorkerTests : PuppeteerPageBaseTest
     {
-        public PageWorkerTests() : base()
-        {
-        }
+        public PageWorkerTests()
+            : base() { }
 
         private async Task<WebWorker> CreateWorkerAsync()
         {
@@ -33,7 +32,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
             // The worker realm can exist before the worker script runs. The page
             // logs the messages that the worker posts after `workerFunction` is defined.
-            var workerFunctionLoggedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var workerFunctionLoggedTcs = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             Page.Console += (_, e) =>
             {
                 if (e.Message.Text.Contains("workerFunction"))
@@ -45,10 +46,14 @@ namespace PuppeteerSharp.Tests.WorkerTests
             await Task.WhenAll(
                 workerCreatedTcs.Task,
                 workerFunctionLoggedTcs.Task,
-                Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
+                Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html")
+            );
             var worker = Page.Workers[0];
             Assert.That(worker.Url, Does.Contain("worker.js"));
-            Assert.That(await worker.EvaluateExpressionAsync<string>("globalThis.workerFunction()"), Is.EqualTo("worker function result"));
+            Assert.That(
+                await worker.EvaluateExpressionAsync<string>("globalThis.workerFunction()"),
+                Is.EqualTo("worker function result")
+            );
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await workerDestroyedTcs.Task.WithTimeout();
@@ -73,7 +78,14 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(request.Page, Is.Null);
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests with request interception")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers",
+                "should report network requests with request interception"
+            )
+        ]
         public async Task ShouldReportNetworkRequestsWithRequestInterception()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -94,7 +106,14 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(request.Page, Is.Null);
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests as failed when the worker is terminated")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers",
+                "should report network requests as failed when the worker is terminated"
+            )
+        ]
         public async Task ShouldReportNetworkRequestsAsFailedWhenTheWorkerIsTerminated()
         {
             // Never responds, so the request stays pending until the worker dies.
@@ -106,10 +125,15 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var worker = await workerCreatedTcs.Task.WithTimeout();
 
             var requestTask = Page.WaitForRequestAsync(TestConstants.ServerUrl + "/hang");
-            await worker.EvaluateFunctionAsync("url => { void fetch(url); }", TestConstants.ServerUrl + "/hang");
+            await worker.EvaluateFunctionAsync(
+                "url => { void fetch(url); }",
+                TestConstants.ServerUrl + "/hang"
+            );
             var request = await requestTask;
 
-            var failedTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var failedTcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             Page.RequestFailed += (_, e) =>
             {
                 if (e.Request == request)
@@ -123,7 +147,10 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(request.FailureText, Is.EqualTo("net::ERR_ABORTED"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests on the worker")]
+        [
+            Test,
+            PuppeteerTest("worker.spec", "Workers", "should report network requests on the worker")
+        ]
         public async Task ShouldReportNetworkRequestsOnTheWorker()
         {
             if (!PuppeteerTestAttribute.IsCdp)
@@ -140,7 +167,10 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var requestTask = WaitForWorkerRequestAsync(worker, url);
             var responseTask = WaitForWorkerResponseAsync(worker, url);
             var finishedTask = WaitForWorkerRequestFinishedAsync(worker, url);
-            await worker.EvaluateFunctionAsync("async url => { await (await fetch(url)).text(); }", url);
+            await worker.EvaluateFunctionAsync(
+                "async url => { await (await fetch(url)).text(); }",
+                url
+            );
             var request = await requestTask.WithTimeout();
             var response = await responseTask.WithTimeout();
             var finished = await finishedTask.WithTimeout();
@@ -153,7 +183,14 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(finished, Is.SameAs(request));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests on the worker only for its own requests")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers",
+                "should report network requests on the worker only for its own requests"
+            )
+        ]
         public async Task ShouldReportNetworkRequestsOnTheWorkerOnlyForItsOwnRequests()
         {
             if (!PuppeteerTestAttribute.IsCdp)
@@ -171,10 +208,14 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
             await Task.WhenAll(
                 Page.WaitForRequestAsync(TestConstants.EmptyPage),
-                Page.EvaluateFunctionAsync("url => fetch(url)", TestConstants.EmptyPage));
+                Page.EvaluateFunctionAsync("url => fetch(url)", TestConstants.EmptyPage)
+            );
             var workerUrl = TestConstants.ServerUrl + "/one-style.css";
             var finishedTask = WaitForWorkerRequestFinishedAsync(worker, workerUrl);
-            await worker.EvaluateFunctionAsync("async url => { await (await fetch(url)).text(); }", workerUrl);
+            await worker.EvaluateFunctionAsync(
+                "async url => { await (await fetch(url)).text(); }",
+                workerUrl
+            );
             await finishedTask.WithTimeout();
 
             // Not an exact match: the worker's own script request may still be
@@ -183,7 +224,14 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(workerRequests, Does.Not.Contain(TestConstants.EmptyPage));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests as failed on the worker when the worker is terminated")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers",
+                "should report network requests as failed on the worker when the worker is terminated"
+            )
+        ]
         public async Task ShouldReportNetworkRequestsAsFailedOnTheWorkerWhenTheWorkerIsTerminated()
         {
             if (!PuppeteerTestAttribute.IsCdp)
@@ -204,7 +252,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
             await worker.EvaluateFunctionAsync("url => { void fetch(url); }", hangUrl);
             var request = await requestTask.WithTimeout();
 
-            var failedTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var failedTcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             worker.RequestFailed += (_, e) =>
             {
                 if (e.Request == request)
@@ -218,7 +268,14 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(request.FailureText, Is.EqualTo("net::ERR_ABORTED"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests on shared workers")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers",
+                "should report network requests on shared workers"
+            )
+        ]
         public async Task ShouldReportNetworkRequestsOnSharedWorkers()
         {
             if (!PuppeteerTestAttribute.IsCdp)
@@ -234,15 +291,23 @@ namespace PuppeteerSharp.Tests.WorkerTests
             });
             var workerUrl = TestConstants.ServerUrl + "/shared-network-worker.js";
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var targetTask = Context.WaitForTargetAsync(t => t.Type == TargetType.SharedWorker && t.Url == workerUrl);
-            await Page.EvaluateFunctionAsync("url => { globalThis.sharedWorker = new SharedWorker(url); }", workerUrl);
+            var targetTask = Context.WaitForTargetAsync(t =>
+                t.Type == TargetType.SharedWorker && t.Url == workerUrl
+            );
+            await Page.EvaluateFunctionAsync(
+                "url => { globalThis.sharedWorker = new SharedWorker(url); }",
+                workerUrl
+            );
             var target = await targetTask.WithTimeout();
             var worker = await target.WorkerAsync();
 
             var url = TestConstants.ServerUrl + "/one-style.css";
             var requestTask = WaitForWorkerRequestAsync(worker, url);
             var responseTask = WaitForWorkerResponseAsync(worker, url);
-            await worker.EvaluateFunctionAsync("async url => { await (await fetch(url)).text(); }", url);
+            await worker.EvaluateFunctionAsync(
+                "async url => { await (await fetch(url)).text(); }",
+                url
+            );
             var request = await requestTask.WithTimeout();
             var response = await responseTask.WithTimeout();
 
@@ -259,7 +324,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
 
-            var workerObj = await Page.EvaluateFunctionHandleAsync("() => new Worker('data:text/javascript,1')");
+            var workerObj = await Page.EvaluateFunctionHandleAsync(
+                "() => new Worker('data:text/javascript,1')"
+            );
             var worker = await workerCreatedTcs.Task;
             var workerDestroyedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerDestroyed += (_, e) => workerDestroyedTcs.TrySetResult(e.Worker);
@@ -273,16 +340,23 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
             Page.Console += (_, e) => consoleTcs.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
+            await Page.EvaluateFunctionAsync(
+                "() => new Worker(`data:text/javascript,console.log(1)`)"
+            );
 
             var log = await consoleTcs.Task;
             Assert.That(log.Text, Is.EqualTo("1"));
-            Assert.That(log.Location, Is.EqualTo(new ConsoleMessageLocation
-            {
-                URL = "",
-                LineNumber = 0,
-                ColumnNumber = 8
-            }));
+            Assert.That(
+                log.Location,
+                Is.EqualTo(
+                    new ConsoleMessageLocation
+                    {
+                        URL = "",
+                        LineNumber = 0,
+                        ColumnNumber = 8,
+                    }
+                )
+            );
             if (PuppeteerTestAttribute.IsCdp)
             {
                 Assert.That(log.Location.ScriptId, Is.Not.Null.And.Not.Empty);
@@ -297,12 +371,16 @@ namespace PuppeteerSharp.Tests.WorkerTests
             {
                 consoleTcs.TrySetResult(e.Message);
             };
-            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1, 2, 3, this)`)");
+            await Page.EvaluateFunctionAsync(
+                "() => new Worker(`data:text/javascript,console.log(1, 2, 3, this)`)"
+            );
             var log = await consoleTcs.Task;
 
             Assert.That(log.Text, Is.EqualTo("1 2 3 JSHandle@object"));
             Assert.That(log.Args.Count, Is.EqualTo(4));
-            var json = await (await log.Args[3].GetPropertyAsync("origin")).JsonValueAsync<string>();
+            var json = await (
+                await log.Args[3].GetPropertyAsync("origin")
+            ).JsonValueAsync<string>();
             Assert.That(json, Is.EqualTo("null"));
         }
 
@@ -312,7 +390,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
 
-            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
+            await Page.EvaluateFunctionAsync(
+                "() => new Worker(`data:text/javascript,console.log(1)`)"
+            );
             var worker = await workerCreatedTcs.Task;
             Assert.That(await worker.EvaluateExpressionAsync<int>("1+1"), Is.EqualTo(2));
         }
@@ -323,12 +403,21 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var errorTcs = new TaskCompletionSource<string>();
             Page.PageError += (_, e) => errorTcs.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript, throw new Error('this is my error');`)");
+            await Page.EvaluateFunctionAsync(
+                "() => new Worker(`data:text/javascript, throw new Error('this is my error');`)"
+            );
             var errorLog = await errorTcs.Task;
             Assert.That(errorLog, Does.Contain("this is my error"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should emit exception events on the worker and the page")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers",
+                "should emit exception events on the worker and the page"
+            )
+        ]
         public async Task ShouldEmitExceptionEventsOnTheWorkerAndThePage()
         {
             if (!PuppeteerTestAttribute.IsCdp)
@@ -337,12 +426,18 @@ namespace PuppeteerSharp.Tests.WorkerTests
             }
 
             var worker = await CreateWorkerAsync();
-            var workerTcs = new TaskCompletionSource<RemoteException>(TaskCreationOptions.RunContinuationsAsynchronously);
-            var pageTcs = new TaskCompletionSource<RemoteException>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var workerTcs = new TaskCompletionSource<RemoteException>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+            var pageTcs = new TaskCompletionSource<RemoteException>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             worker.ExceptionThrown += (_, e) => workerTcs.TrySetResult(e.Exception);
             Page.ExceptionThrown += (_, e) => pageTcs.TrySetResult(e.Exception);
 
-            await worker.EvaluateFunctionAsync("() => { setTimeout(() => { throw new Error('worker error'); }); }");
+            await worker.EvaluateFunctionAsync(
+                "() => { setTimeout(() => { throw new Error('worker error'); }); }"
+            );
 
             var workerException = await workerTcs.Task.WithTimeout();
             var pageException = await pageTcs.Task.WithTimeout();
@@ -350,7 +445,14 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(workerException.Text, Does.Contain("worker error"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should report each worker exception on the page exactly once")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers",
+                "should report each worker exception on the page exactly once"
+            )
+        ]
         public async Task ShouldReportEachWorkerExceptionOnThePageExactlyOnce()
         {
             if (!PuppeteerTestAttribute.IsCdp)
@@ -361,7 +463,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var worker = await CreateWorkerAsync();
             var exceptions = new List<string>();
             var pageErrors = new List<string>();
-            var barrier = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var barrier = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             Page.ExceptionThrown += (_, e) =>
             {
                 lock (exceptions)
@@ -382,17 +486,26 @@ namespace PuppeteerSharp.Tests.WorkerTests
                 }
             };
 
-            await worker.EvaluateFunctionAsync(@"() => {
+            await worker.EvaluateFunctionAsync(
+                @"() => {
                 setTimeout(() => { throw new Error('first'); });
                 setTimeout(() => { throw new Error('second'); });
-            }");
+            }"
+            );
             await barrier.Task.WithTimeout();
 
             Assert.That(exceptions.Where(t => t.Contains("first")).Count(), Is.EqualTo(1));
             Assert.That(pageErrors.Where(m => m.Contains("first")).Count(), Is.EqualTo(1));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should expose the remote exception via a moved handle")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers",
+                "should expose the remote exception via a moved handle"
+            )
+        ]
         public async Task ShouldExposeTheRemoteExceptionViaAMovedHandle()
         {
             if (!PuppeteerTestAttribute.IsCdp)
@@ -400,23 +513,32 @@ namespace PuppeteerSharp.Tests.WorkerTests
                 Assert.Ignore("RemoteException is only implemented for CDP.");
             }
 
-            var workerCreatedTcs = new TaskCompletionSource<WebWorker>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
                 globalThis.worker = new Worker(`data:text/javascript,self.onmessage = () => {
                     const error = new Error('custom');
                     error.code = 'E_WORKER';
                     throw error;
                 };`);
-            }");
+            }"
+            );
             var worker = await workerCreatedTcs.Task;
 
-            var handleTcs = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var handleTcs = new TaskCompletionSource<IJSHandle>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             worker.ExceptionThrown += (_, e) => handleTcs.TrySetResult(e.Exception.Handle.Move());
             await Page.EvaluateFunctionAsync("() => globalThis.worker.postMessage(null)");
 
             await using var handle = await handleTcs.Task.WithTimeout();
-            Assert.That(await handle.EvaluateFunctionAsync<string>("error => error.code"), Is.EqualTo("E_WORKER"));
+            Assert.That(
+                await handle.EvaluateFunctionAsync<string>("error => error.code"),
+                Is.EqualTo("E_WORKER")
+            );
         }
 
         [Test, PuppeteerTest("worker.spec", "Workers", "should work with console logs")]
@@ -425,7 +547,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
             Page.Console += (_, e) => consoleTcs.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1,2,3,this)`)");
+            await Page.EvaluateFunctionAsync(
+                "() => new Worker(`data:text/javascript,console.log(1,2,3,this)`)"
+            );
             var log = await consoleTcs.Task;
 
             Assert.That(log.Text, Does.Contain("1 2 3").Or.Contain("1 2 3"));
@@ -481,14 +605,23 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(message.Args, Has.Count.EqualTo(1));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers console", "should return the first line of the error message in text()")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers console",
+                "should return the first line of the error message in text()"
+            )
+        ]
         public async Task ConsoleShouldReturnFirstLineOfErrorMessageInText()
         {
             var worker = await CreateWorkerAsync();
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
             worker.Console += (_, e) => consoleTcs.TrySetResult(e.Message);
 
-            await worker.EvaluateFunctionAsync("() => console.log(new Error('test error\\nsecond line'))");
+            await worker.EvaluateFunctionAsync(
+                "() => console.log(new Error('test error\\nsecond line'))"
+            );
 
             var message = await consoleTcs.Task.WithTimeout();
             Assert.That(message.Text, Does.Contain("test error").Or.EqualTo("JSHandle@error"));
@@ -551,48 +684,75 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(message.Text, Is.EqualTo("calling console.error"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for console.log with promise")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers console",
+                "should work for console.log with promise"
+            )
+        ]
         public async Task ConsoleShouldWorkForConsoleLogWithPromise()
         {
             var worker = await CreateWorkerAsync();
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
             worker.Console += (_, e) => consoleTcs.TrySetResult(e.Message);
 
-            await worker.EvaluateFunctionAsync("() => console.log(Promise.resolve('should not wait until resolved!'))");
+            await worker.EvaluateFunctionAsync(
+                "() => console.log(Promise.resolve('should not wait until resolved!'))"
+            );
 
             var message = await consoleTcs.Task.WithTimeout();
             Assert.That(message.Type, Is.EqualTo(ConsoleType.Log));
             Assert.That(message.Text, Does.Contain("promise").Or.Contain("Promise"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for different console API calls with timing functions")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers console",
+                "should work for different console API calls with timing functions"
+            )
+        ]
         public async Task ConsoleShouldWorkForTimingFunctions()
         {
             var worker = await CreateWorkerAsync();
             var messages = new List<ConsoleMessage>();
             worker.Console += (_, e) => messages.Add(e.Message);
 
-            await worker.EvaluateFunctionAsync(@"() => {
+            await worker.EvaluateFunctionAsync(
+                @"() => {
                 console.time('calling console.time');
                 console.timeEnd('calling console.time');
-            }");
+            }"
+            );
 
             Assert.That(messages, Has.Count.EqualTo(1));
             Assert.That(messages[0].Type, Is.EqualTo(ConsoleType.TimeEnd));
             Assert.That(messages[0].Text, Does.Contain("calling console.time"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for different console API calls with group functions")]
+        [
+            Test,
+            PuppeteerTest(
+                "worker.spec",
+                "Workers console",
+                "should work for different console API calls with group functions"
+            )
+        ]
         public async Task ConsoleShouldWorkForGroupFunctions()
         {
             var worker = await CreateWorkerAsync();
             var messages = new List<ConsoleMessage>();
             worker.Console += (_, e) => messages.Add(e.Message);
 
-            await worker.EvaluateFunctionAsync(@"() => {
+            await worker.EvaluateFunctionAsync(
+                @"() => {
                 console.group('calling console.group');
                 console.groupEnd();
-            }");
+            }"
+            );
 
             Assert.That(messages, Has.Count.EqualTo(2));
             Assert.That(messages[0].Type, Is.EqualTo(ConsoleType.StartGroup));
@@ -607,10 +767,12 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
             worker.Console += (_, e) => consoleTcs.TrySetResult(e.Message);
 
-            await worker.EvaluateFunctionAsync(@"() => {
+            await worker.EvaluateFunctionAsync(
+                @"() => {
                 globalThis.test = 1;
                 console.log(1, 2, 3, globalThis);
-            }");
+            }"
+            );
 
             var message = await consoleTcs.Task.WithTimeout();
             Assert.That(message.Text, Does.Contain("1 2 3"));
@@ -627,12 +789,17 @@ namespace PuppeteerSharp.Tests.WorkerTests
                 workerCreatedTcs.Task,
                 Page.GoToAsync(
                     TestConstants.ServerUrl + "/worker/worker.html",
-                    new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } }));
+                    new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } }
+                )
+            );
 
             await Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 3000 });
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "should retrieve body for main worker requests")]
+        [
+            Test,
+            PuppeteerTest("worker.spec", "Workers", "should retrieve body for main worker requests")
+        ]
         public async Task ShouldRetrieveBodyForMainWorkerRequests()
         {
             IResponse testResponse = null;
@@ -653,7 +820,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
                 workerCreatedTcs.Task,
                 Page.GoToAsync(
                     TestConstants.ServerUrl + "/worker/worker.html",
-                    new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } }));
+                    new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } }
+                )
+            );
 
             Assert.That(testResponse, Is.Not.Null);
             var text = await testResponse.TextAsync();
@@ -662,7 +831,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
         private static Task<IRequest> WaitForWorkerRequestAsync(WebWorker worker, string url)
         {
-            var tcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var tcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             worker.Request += (_, e) =>
             {
                 if (e.Request.Url == url)
@@ -673,9 +844,14 @@ namespace PuppeteerSharp.Tests.WorkerTests
             return tcs.Task;
         }
 
-        private static Task<IRequest> WaitForWorkerRequestFinishedAsync(WebWorker worker, string url)
+        private static Task<IRequest> WaitForWorkerRequestFinishedAsync(
+            WebWorker worker,
+            string url
+        )
         {
-            var tcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var tcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             worker.RequestFinished += (_, e) =>
             {
                 if (e.Request.Url == url)
@@ -688,7 +864,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
         private static Task<IResponse> WaitForWorkerResponseAsync(WebWorker worker, string url)
         {
-            var tcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var tcs = new TaskCompletionSource<IResponse>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             worker.Response += (_, e) =>
             {
                 if (e.Response.Url == url)

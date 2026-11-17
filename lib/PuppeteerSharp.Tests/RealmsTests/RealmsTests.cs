@@ -9,20 +9,25 @@ namespace PuppeteerSharp.Tests.RealmsTests
 {
     public class RealmsTests : PuppeteerBaseTest
     {
-        private static readonly string _extensionPath = Path.Combine(AppContext.BaseDirectory, "Assets", "simple-extension");
+        private static readonly string _extensionPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "simple-extension"
+        );
 
-        private static LaunchOptions BrowserWithExtensionOptions() => new()
-        {
-            Headless = false,
-            EnableExtensions = true,
-        };
+        private static LaunchOptions BrowserWithExtensionOptions() =>
+            new() { Headless = false, EnableExtensions = true };
 
-        [Test, PuppeteerTest("realms.spec", "extension realms", "should include content script realms")]
+        [
+            Test,
+            PuppeteerTest("realms.spec", "extension realms", "should include content script realms")
+        ]
         public async Task ShouldIncludeContentScriptRealms()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
                 BrowserWithExtensionOptions(),
-                TestConstants.LoggerFactory);
+                TestConstants.LoggerFactory
+            );
 
             var page = await browserWithExtension.NewPageAsync();
             var extId = await browserWithExtension.InstallExtensionAsync(_extensionPath);
@@ -34,12 +39,20 @@ namespace PuppeteerSharp.Tests.RealmsTests
             Assert.That(realms.Count, Is.GreaterThanOrEqualTo(1));
         }
 
-        [Test, PuppeteerTest("realms.spec", "extension realms", "realm should return extension that created it")]
+        [
+            Test,
+            PuppeteerTest(
+                "realms.spec",
+                "extension realms",
+                "realm should return extension that created it"
+            )
+        ]
         public async Task RealmShouldReturnExtensionThatCreatedIt()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
                 BrowserWithExtensionOptions(),
-                TestConstants.LoggerFactory);
+                TestConstants.LoggerFactory
+            );
 
             var page = await browserWithExtension.NewPageAsync();
             var extId = await browserWithExtension.InstallExtensionAsync(_extensionPath);
@@ -65,12 +78,20 @@ namespace PuppeteerSharp.Tests.RealmsTests
             Assert.That(extension.Id, Is.EqualTo(extId));
         }
 
-        [Test, PuppeteerTest("realms.spec", "extension realms", "should evaluate in content script realms")]
+        [
+            Test,
+            PuppeteerTest(
+                "realms.spec",
+                "extension realms",
+                "should evaluate in content script realms"
+            )
+        ]
         public async Task ShouldEvaluateInContentScriptRealms()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
                 BrowserWithExtensionOptions(),
-                TestConstants.LoggerFactory);
+                TestConstants.LoggerFactory
+            );
 
             var page = await browserWithExtension.NewPageAsync();
             var extId = await browserWithExtension.InstallExtensionAsync(_extensionPath);
@@ -92,10 +113,14 @@ namespace PuppeteerSharp.Tests.RealmsTests
 
             Assert.That(contentScriptRealm, Is.Not.Null);
 
-            var isContentScript = await contentScriptRealm.EvaluateFunctionAsync<bool>("() => globalThis.thisIsTheContentScript");
+            var isContentScript = await contentScriptRealm.EvaluateFunctionAsync<bool>(
+                "() => globalThis.thisIsTheContentScript"
+            );
             Assert.That(isContentScript, Is.True);
 
-            var isContentScriptInMain = await page.EvaluateFunctionAsync<object>("() => globalThis.thisIsTheContentScript");
+            var isContentScriptInMain = await page.EvaluateFunctionAsync<object>(
+                "() => globalThis.thisIsTheContentScript"
+            );
             Assert.That(isContentScriptInMain, Is.Null);
         }
     }

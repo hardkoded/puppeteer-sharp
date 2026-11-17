@@ -12,9 +12,7 @@ namespace PuppeteerSharp
     {
         private TargetInfo _targetInfo;
 
-        internal TargetChangedArgs()
-        {
-        }
+        internal TargetChangedArgs() { }
 
         internal TargetChangedArgs(Target target)
         {

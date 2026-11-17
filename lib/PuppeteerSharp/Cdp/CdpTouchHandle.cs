@@ -35,7 +35,12 @@ internal class CdpTouchHandle : ITouchHandle
     private CDPSession _client;
     private bool _started;
 
-    internal CdpTouchHandle(CDPSession client, CdpTouchscreen touchScreen, Keyboard keyboard, TouchPoint touchPoint)
+    internal CdpTouchHandle(
+        CDPSession client,
+        CdpTouchscreen touchScreen,
+        Keyboard keyboard,
+        TouchPoint touchPoint
+    )
     {
         _client = client;
         _touchScreen = touchScreen;
@@ -56,20 +61,24 @@ internal class CdpTouchHandle : ITouchHandle
                 Type = "touchMove",
                 TouchPoints = [_touchPoint],
                 Modifiers = _keyboard.Modifiers,
-            });
+            }
+        );
     }
 
     /// <inheritdoc />
     public async Task EndAsync()
     {
-        await _client.SendAsync(
-            "Input.dispatchTouchEvent",
-            new InputDispatchTouchEventRequest
-            {
-                Type = "touchEnd",
-                TouchPoints = [_touchPoint],
-                Modifiers = _keyboard.Modifiers,
-            }).ConfigureAwait(false);
+        await _client
+            .SendAsync(
+                "Input.dispatchTouchEvent",
+                new InputDispatchTouchEventRequest
+                {
+                    Type = "touchEnd",
+                    TouchPoints = [_touchPoint],
+                    Modifiers = _keyboard.Modifiers,
+                }
+            )
+            .ConfigureAwait(false);
 
         _touchScreen.RemoveHandle(this);
     }
@@ -81,14 +90,17 @@ internal class CdpTouchHandle : ITouchHandle
             throw new PuppeteerException("Touch has already started");
         }
 
-        await _client.SendAsync(
-            "Input.dispatchTouchEvent",
-            new InputDispatchTouchEventRequest
-            {
-                Type = "touchStart",
-                TouchPoints = [_touchPoint],
-                Modifiers = _keyboard.Modifiers,
-            }).ConfigureAwait(false);
+        await _client
+            .SendAsync(
+                "Input.dispatchTouchEvent",
+                new InputDispatchTouchEventRequest
+                {
+                    Type = "touchStart",
+                    TouchPoints = [_touchPoint],
+                    Modifiers = _keyboard.Modifiers,
+                }
+            )
+            .ConfigureAwait(false);
 
         _started = true;
     }

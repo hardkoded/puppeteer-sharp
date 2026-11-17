@@ -13,7 +13,9 @@ namespace PuppeteerSharp.Tests
         public async Task CreatePageAsync()
         {
             Page = await Context.NewPageAsync();
-            Page.DefaultTimeout = Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
+            Page.DefaultTimeout = Debugger.IsAttached
+                ? TestConstants.DebuggerAttachedTestTimeout
+                : TestConstants.DefaultPuppeteerTimeout;
         }
 
         [TearDown]

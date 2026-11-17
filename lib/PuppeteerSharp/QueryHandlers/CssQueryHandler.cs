@@ -4,11 +4,13 @@ namespace PuppeteerSharp.QueryHandlers
     {
         internal CssQueryHandler()
         {
-            QuerySelector = @"(element, selector) => {
+            QuerySelector =
+                @"(element, selector) => {
                 return element.querySelector(selector);
             }";
 
-            QuerySelectorAll = @"(element, selector) => {
+            QuerySelectorAll =
+                @"(element, selector) => {
                 return element.querySelectorAll(selector);
             }";
         }

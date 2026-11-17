@@ -30,7 +30,14 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(error, Does.Contain("Fancy"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.PageError", "should fire for all value types")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.Events.PageError",
+                "should fire for all value types"
+            )
+        ]
         public async Task ShouldFireForAllValueTypes()
         {
             var errorTask = new TaskCompletionSource<PageErrorEventArgs>();
@@ -65,7 +72,8 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
                 errorTask.Task,
-                Page.GoToAsync(TestConstants.ServerUrl + "/error.html"));
+                Page.GoToAsync(TestConstants.ServerUrl + "/error.html")
+            );
 
             var error = await errorTask.Task;
             Assert.That(error.StackTrace, Is.Not.Empty);

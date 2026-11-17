@@ -13,7 +13,10 @@ namespace PuppeteerSharp.Tests.DownloadTests
         [SetUp]
         public void CreateTempDir()
         {
-            _tempDir = Path.Combine(Path.GetTempPath(), "downloads-" + Guid.NewGuid().ToString("N"));
+            _tempDir = Path.Combine(
+                Path.GetTempPath(),
+                "downloads-" + Guid.NewGuid().ToString("N")
+            );
             Directory.CreateDirectory(_tempDir);
         }
 
@@ -33,42 +36,68 @@ namespace PuppeteerSharp.Tests.DownloadTests
             }
         }
 
-        [Test, PuppeteerTest("download.spec", "Download Browser.createBrowserContext", "should download to configured location")]
+        [
+            Test,
+            PuppeteerTest(
+                "download.spec",
+                "Download Browser.createBrowserContext",
+                "should download to configured location"
+            )
+        ]
         public async Task ShouldDownloadToConfiguredLocation()
         {
-            await using var context = await Browser.CreateBrowserContextAsync(new BrowserContextOptions
-            {
-                DownloadBehavior = new DownloadBehavior
+            await using var context = await Browser.CreateBrowserContextAsync(
+                new BrowserContextOptions
                 {
-                    Policy = DownloadPolicy.Allow,
-                    DownloadPath = _tempDir,
-                },
-            });
+                    DownloadBehavior = new DownloadBehavior
+                    {
+                        Policy = DownloadPolicy.Allow,
+                        DownloadPath = _tempDir,
+                    },
+                }
+            );
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/download.html");
             await page.ClickAsync("#download");
             await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"));
         }
 
-        [Test, PuppeteerTest("download.spec", "Download Browser.createBrowserContext", "should not download to location")]
+        [
+            Test,
+            PuppeteerTest(
+                "download.spec",
+                "Download Browser.createBrowserContext",
+                "should not download to location"
+            )
+        ]
         public async Task ShouldNotDownloadToLocation()
         {
-            await using var context = await Browser.CreateBrowserContextAsync(new BrowserContextOptions
-            {
-                DownloadBehavior = new DownloadBehavior
+            await using var context = await Browser.CreateBrowserContextAsync(
+                new BrowserContextOptions
                 {
-                    Policy = DownloadPolicy.Deny,
-                    DownloadPath = "/tmp",
-                },
-            });
+                    DownloadBehavior = new DownloadBehavior
+                    {
+                        Policy = DownloadPolicy.Deny,
+                        DownloadPath = "/tmp",
+                    },
+                }
+            );
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/download.html");
             await page.ClickAsync("#download");
             Assert.ThrowsAsync<TimeoutException>(async () =>
-                await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt")));
+                await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"))
+            );
         }
 
-        [Test, PuppeteerTest("download.spec", "Download Puppeteer.launch", "should download to configured location in the default context")]
+        [
+            Test,
+            PuppeteerTest(
+                "download.spec",
+                "Download Puppeteer.launch",
+                "should download to configured location in the default context"
+            )
+        ]
         public async Task ShouldDownloadToConfiguredLocationInTheDefaultContext()
         {
             var options = TestConstants.DefaultBrowserOptions();

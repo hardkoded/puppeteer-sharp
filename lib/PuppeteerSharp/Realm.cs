@@ -38,7 +38,10 @@ namespace PuppeteerSharp
 
         internal abstract Task<IJSHandle> EvaluateExpressionHandleAsync(string script);
 
-        internal abstract Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args);
+        internal abstract Task<IJSHandle> EvaluateFunctionHandleAsync(
+            string script,
+            params object[] args
+        );
 
         internal abstract Task<T> EvaluateExpressionAsync<T>(string script);
 
@@ -48,7 +51,11 @@ namespace PuppeteerSharp
 
         internal abstract Task EvaluateFunctionAsync(string script, params object[] args);
 
-        internal async Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
+        internal async Task<IJSHandle> WaitForFunctionAsync(
+            string script,
+            WaitForFunctionOptions options,
+            params object[] args
+        )
         {
             using var waitTask = new WaitTask(
                 this,
@@ -59,14 +66,16 @@ namespace PuppeteerSharp
                 options.Timeout ?? TimeoutSettings.Timeout,
                 options.Root,
                 options.CancellationToken,
-                args);
+                args
+            );
 
-            return await waitTask
-                .Task
-                .ConfigureAwait(false);
+            return await waitTask.Task.ConfigureAwait(false);
         }
 
-        internal async Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
+        internal async Task<IJSHandle> WaitForExpressionAsync(
+            string script,
+            WaitForFunctionOptions options
+        )
         {
             using var waitTask = new WaitTask(
                 this,
@@ -77,11 +86,10 @@ namespace PuppeteerSharp
                 options.Timeout ?? TimeoutSettings.Timeout,
                 null, // Root
                 options.CancellationToken,
-                null); // args
+                null
+            ); // args
 
-            return await waitTask
-                .Task
-                .ConfigureAwait(false);
+            return await waitTask.Task.ConfigureAwait(false);
         }
     }
 }

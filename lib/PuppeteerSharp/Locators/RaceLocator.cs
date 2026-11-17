@@ -17,37 +17,45 @@ namespace PuppeteerSharp.Locators
 
         internal override async Task<IJSHandle> WaitHandleCoreAsync(
             LocatorActionOptions options,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var tcs = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var tcs = new TaskCompletionSource<IJSHandle>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
             var remaining = _locators.Count;
             Exception lastException = null;
 
-            using var reg = cancellationToken.Register(() =>
-                tcs.TrySetCanceled(cancellationToken));
+            using var reg = cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken));
 
-            var tasks = _locators.Select(locator => Task.Run(async () =>
-            {
-                try
-                {
-                    var handle = await locator.WaitHandleCoreAsync(options, cancellationToken).ConfigureAwait(false);
-                    if (!tcs.TrySetResult(handle))
+            var tasks = _locators
+                .Select(locator =>
+                    Task.Run(async () =>
                     {
-                        // Another locator won; dispose this handle.
-                        await handle.DisposeAsync().ConfigureAwait(false);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    lastException = ex;
-                    if (Interlocked.Decrement(ref remaining) == 0)
-                    {
-                        tcs.TrySetException(lastException);
-                    }
-                }
-            })).ToArray();
+                        try
+                        {
+                            var handle = await locator
+                                .WaitHandleCoreAsync(options, cancellationToken)
+                                .ConfigureAwait(false);
+                            if (!tcs.TrySetResult(handle))
+                            {
+                                // Another locator won; dispose this handle.
+                                await handle.DisposeAsync().ConfigureAwait(false);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            lastException = ex;
+                            if (Interlocked.Decrement(ref remaining) == 0)
+                            {
+                                tcs.TrySetException(lastException);
+                            }
+                        }
+                    })
+                )
+                .ToArray();
 
             return await tcs.Task.ConfigureAwait(false);
         }

@@ -41,7 +41,9 @@ public class CdpWebWorker : WebWorker
     private readonly Action<RemoteException> _forwardException;
     private readonly string _id;
     private readonly TargetType _targetType;
-    private readonly TaskCompletionSource<bool> _workerScriptLoaded = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly TaskCompletionSource<bool> _workerScriptLoaded = new(
+        TaskCreationOptions.RunContinuationsAsynchronously
+    );
 
     internal CdpWebWorker(
         CDPSession client,
@@ -50,7 +52,9 @@ public class CdpWebWorker : WebWorker
         Action<EvaluateExceptionResponseDetails> exceptionThrown,
         NetworkManager networkManager = null,
         Func<bool> hasOwnerExceptionListeners = null,
-        Action<RemoteException> forwardException = null) : base(target.Url)
+        Action<RemoteException> forwardException = null
+    )
+        : base(target.Url)
     {
         _hasOwnerExceptionListeners = hasOwnerExceptionListeners ?? (() => false);
         _forwardException = forwardException ?? (_ => { });
@@ -74,15 +78,18 @@ public class CdpWebWorker : WebWorker
         var netManager = networkManager ?? CreateOwnNetworkManager(target, client);
 
         // This might fail if the target is closed before we receive all execution contexts.
-        _ = netManager.AddClientAsync(client).ContinueWith(
-            task =>
-            {
-                if (task.IsFaulted)
+        _ = netManager
+            .AddClientAsync(client)
+            .ContinueWith(
+                task =>
                 {
-                    _logger.ErrorMessage(task.Exception!.Message);
-                }
-            },
-            TaskScheduler.Default);
+                    if (task.IsFaulted)
+                    {
+                        _logger.ErrorMessage(task.Exception!.Message);
+                    }
+                },
+                TaskScheduler.Default
+            );
 
         // Must run after AddClientAsync(): it synchronously registers the manager's Disconnected
         // handler, which emits RequestFailed for pending requests (NetworkManager.RemoveClient).
@@ -90,25 +97,31 @@ public class CdpWebWorker : WebWorker
         // opposite order would drop those RequestFailed events.
         ForwardNetworkEvents(netManager);
 
-        _ = client.SendAsync("Runtime.enable").ContinueWith(
-            task =>
-            {
-                if (task.IsFaulted)
+        _ = client
+            .SendAsync("Runtime.enable")
+            .ContinueWith(
+                task =>
                 {
-                    _logger.ErrorMessage(task.Exception!.Message);
-                }
-            },
-            TaskScheduler.Default);
+                    if (task.IsFaulted)
+                    {
+                        _logger.ErrorMessage(task.Exception!.Message);
+                    }
+                },
+                TaskScheduler.Default
+            );
 
-        _ = client.SendAsync("Log.enable").ContinueWith(
-            task =>
-            {
-                if (task.IsFaulted)
+        _ = client
+            .SendAsync("Log.enable")
+            .ContinueWith(
+                task =>
                 {
-                    _logger.ErrorMessage(task.Exception!.Message);
-                }
-            },
-            TaskScheduler.Default);
+                    if (task.IsFaulted)
+                    {
+                        _logger.ErrorMessage(task.Exception!.Message);
+                    }
+                },
+                TaskScheduler.Default
+            );
     }
 
     /// <inheritdoc/>
@@ -129,38 +142,41 @@ public class CdpWebWorker : WebWorker
             case TargetType.ServiceWorker:
                 if (!CdpCDPSession.Detached)
                 {
-                    await CdpCDPSession.Connection.SendAsync(
-                        "Target.closeTarget",
-                        new TargetCloseTargetRequest()
-                        {
-                            TargetId = _id,
-                        }).ConfigureAwait(false);
+                    await CdpCDPSession
+                        .Connection.SendAsync(
+                            "Target.closeTarget",
+                            new TargetCloseTargetRequest() { TargetId = _id }
+                        )
+                        .ConfigureAwait(false);
 
-                    await CdpCDPSession.Connection.SendAsync(
-                        "Target.detachFromTarget",
-                        new TargetDetachFromTargetRequest()
-                        {
-                            SessionId = Client.Id,
-                        }).ConfigureAwait(false);
+                    await CdpCDPSession
+                        .Connection.SendAsync(
+                            "Target.detachFromTarget",
+                            new TargetDetachFromTargetRequest() { SessionId = Client.Id }
+                        )
+                        .ConfigureAwait(false);
                 }
 
                 break;
             case TargetType.SharedWorker:
                 if (!CdpCDPSession.Detached)
                 {
-                    await CdpCDPSession.Connection.SendAsync(
-                        "Target.closeTarget",
-                        new TargetCloseTargetRequest()
-                        {
-                            TargetId = _id,
-                        }).ConfigureAwait(false);
+                    await CdpCDPSession
+                        .Connection.SendAsync(
+                            "Target.closeTarget",
+                            new TargetCloseTargetRequest() { TargetId = _id }
+                        )
+                        .ConfigureAwait(false);
                 }
 
                 break;
             default:
-                await EvaluateFunctionAsync(@"() => {
+                await EvaluateFunctionAsync(
+                        @"() => {
                         self.close();
-                    }").ConfigureAwait(false);
+                    }"
+                    )
+                    .ConfigureAwait(false);
                 break;
         }
     }
@@ -194,7 +210,11 @@ public class CdpWebWorker : WebWorker
     }
 
     /// <inheritdoc/>
-    public override async Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+    public override async Task<IJSHandle> WaitForFunctionAsync(
+        string script,
+        WaitForFunctionOptions options = null,
+        params object[] args
+    )
     {
         // Match evaluate*: wait until the worker script has run so WaitForFunction does not
         // start polling before top-level worker setup (e.g. setTimeout) has been scheduled.
@@ -206,8 +226,12 @@ public class CdpWebWorker : WebWorker
     /// Network manager for workers that are not owned by a page (service and shared workers).
     /// It only tracks this worker's session.
     /// </summary>
-    private NetworkManager CreateOwnNetworkManager(CdpTarget target, CDPSession client)
-        => new(new WorkerFrameProvider(this, target), client.Connection.LoggerFactory, target.Browser.IsNetworkEnabled());
+    private NetworkManager CreateOwnNetworkManager(CdpTarget target, CDPSession client) =>
+        new(
+            new WorkerFrameProvider(this, target),
+            client.Connection.LoggerFactory,
+            target.Browser.IsNetworkEnabled()
+        );
 
     /// <summary>
     /// Re-emits network events that belong to this worker. The network manager may be shared with a
@@ -286,7 +310,9 @@ public class CdpWebWorker : WebWorker
             switch (e.MessageID)
             {
                 case "Runtime.executionContextCreated":
-                    OnExecutionContextCreated(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>());
+                    OnExecutionContextCreated(
+                        e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>()
+                    );
                     break;
                 case "Runtime.consoleAPICalled":
                     await OnConsoleAPICalledAsync(e).ConfigureAwait(false);
@@ -317,7 +343,11 @@ public class CdpWebWorker : WebWorker
             // Nobody can use a handle, but the browser keeps the exception alive until it is released.
             if (details.Exception != null)
             {
-                _ = RemoteObjectHelper.ReleaseObjectAsync(Client, CdpRemoteException.ToRemoteObject(details.Exception), _logger);
+                _ = RemoteObjectHelper.ReleaseObjectAsync(
+                    Client,
+                    CdpRemoteException.ToRemoteObject(details.Exception),
+                    _logger
+                );
             }
 
             return;
@@ -354,8 +384,8 @@ public class CdpWebWorker : WebWorker
         }
     }
 
-    private IJSHandle CreateExceptionHandle(EvaluateExceptionResponseInfo info)
-        => string.IsNullOrEmpty(info?.ObjectId)
+    private IJSHandle CreateExceptionHandle(EvaluateExceptionResponseInfo info) =>
+        string.IsNullOrEmpty(info?.ObjectId)
             ? null
             : new CdpJSHandle(World, CdpRemoteException.ToRemoteObject(info));
 
@@ -367,14 +397,20 @@ public class CdpWebWorker : WebWorker
         var tokens = handles.Select(i =>
         {
             var handle = (ICdpHandle)i;
-            if (handle.RemoteObject.Subtype == RemoteObjectSubtype.Error && !string.IsNullOrEmpty(handle.RemoteObject.Description))
+            if (
+                handle.RemoteObject.Subtype == RemoteObjectSubtype.Error
+                && !string.IsNullOrEmpty(handle.RemoteObject.Description)
+            )
             {
                 return handle.RemoteObject.Description.Split('\n')[0];
             }
 
-            return handle.RemoteObject.ObjectId != null || handle.RemoteObject.Type == RemoteObjectType.Object
+            return
+                handle.RemoteObject.ObjectId != null
+                || handle.RemoteObject.Type == RemoteObjectType.Object
                 ? i.ToString()
-                : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
+                : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString()
+                    ?? "null";
         });
 
         var location = new ConsoleMessageLocation();
@@ -383,23 +419,33 @@ public class CdpWebWorker : WebWorker
         {
             foreach (var callFrame in consoleData.StackTrace.CallFrames)
             {
-                stackTraceLocations.Add(new ConsoleMessageLocation
-                {
-                    URL = callFrame.URL,
-                    LineNumber = callFrame.LineNumber,
-                    ColumnNumber = callFrame.ColumnNumber,
-                    FunctionName = callFrame.FunctionName,
-                    ScriptId = callFrame.ScriptId,
-                });
+                stackTraceLocations.Add(
+                    new ConsoleMessageLocation
+                    {
+                        URL = callFrame.URL,
+                        LineNumber = callFrame.LineNumber,
+                        ColumnNumber = callFrame.ColumnNumber,
+                        FunctionName = callFrame.FunctionName,
+                        ScriptId = callFrame.ScriptId,
+                    }
+                );
             }
 
             location = stackTraceLocations[0];
         }
 
-        var consoleMessage = new ConsoleMessage(consoleData.Type, string.Join(" ", tokens), handles, location, stackTraceLocations, worker: this);
+        var consoleMessage = new ConsoleMessage(
+            consoleData.Type,
+            string.Join(" ", tokens),
+            handles,
+            location,
+            stackTraceLocations,
+            worker: this
+        );
         OnConsole(new ConsoleEventArgs(consoleMessage));
 
-        await _consoleAPICalled(consoleData.Type, handles, consoleData.StackTrace).ConfigureAwait(false);
+        await _consoleAPICalled(consoleData.Type, handles, consoleData.StackTrace)
+            .ConfigureAwait(false);
     }
 
     private void OnExecutionContextCreated(RuntimeExecutionContextCreatedResponse e)

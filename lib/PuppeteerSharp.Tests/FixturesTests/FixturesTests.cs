@@ -18,7 +18,8 @@ namespace PuppeteerSharp.Tests.FixturesTests
             var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
             using var process = GetTestAppProcess(
                 "PuppeteerSharp.Tests.DumpIO",
-                $"\"{browserFetcher.GetInstalledBrowsers().First().GetExecutablePath()}\" \"${browser}\"");
+                $"\"{browserFetcher.GetInstalledBrowsers().First().GetExecutablePath()}\" \"${browser}\""
+            );
 
             process.ErrorDataReceived += (_, e) =>
             {
@@ -38,14 +39,14 @@ namespace PuppeteerSharp.Tests.FixturesTests
             var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
             var chromiumLauncher = new ChromeLauncher(
                 browserFetcher.GetInstalledBrowsers().First().GetExecutablePath(),
-                new LaunchOptions { Headless = true });
+                new LaunchOptions { Headless = true }
+            );
 
             await chromiumLauncher.StartAsync().ConfigureAwait(false);
 
-            var browser = await Puppeteer.ConnectAsync(new ConnectOptions
-            {
-                BrowserWSEndpoint = chromiumLauncher.EndPoint
-            });
+            var browser = await Puppeteer.ConnectAsync(
+                new ConnectOptions { BrowserWSEndpoint = chromiumLauncher.EndPoint }
+            );
 
             browser.Disconnected += (_, _) =>
             {
@@ -58,7 +59,14 @@ namespace PuppeteerSharp.Tests.FixturesTests
             Assert.That(browser.IsClosed, Is.True);
         }
 
-        [Test, PuppeteerTest("fixtures.spec", "Fixtures", "should close the browser when the node process closes")]
+        [
+            Test,
+            PuppeteerTest(
+                "fixtures.spec",
+                "Fixtures",
+                "should close the browser when the node process closes"
+            )
+        ]
         public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
@@ -66,9 +74,12 @@ namespace PuppeteerSharp.Tests.FixturesTests
                 new LaunchOptions
                 {
                     Headless = true,
-                    Browser = TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
+                    Browser = TestConstants.IsChrome
+                        ? SupportedBrowser.Chrome
+                        : SupportedBrowser.Firefox,
                 },
-                TestConstants.LoggerFactory);
+                TestConstants.LoggerFactory
+            );
 
             browser.Disconnected += (_, _) =>
             {
@@ -111,7 +122,10 @@ namespace PuppeteerSharp.Tests.FixturesTests
             process.StartInfo.FileName = "dotnet";
             process.StartInfo.Arguments = $"{appName}.dll {arguments}";
 #else
-            process.StartInfo.FileName = Path.Combine(GetSubprocessWorkingDir(appName), $"{appName}.exe");
+            process.StartInfo.FileName = Path.Combine(
+                GetSubprocessWorkingDir(appName),
+                $"{appName}.exe"
+            );
             process.StartInfo.Arguments = arguments;
 #endif
             process.StartInfo.UseShellExecute = false;
@@ -128,19 +142,9 @@ namespace PuppeteerSharp.Tests.FixturesTests
             var build = "Release";
 #endif
 #if NETCOREAPP
-            return Path.Combine(
-                TestUtils.FindParentDirectory("lib"),
-                dir,
-                "bin",
-                build,
-                "net10.0");
+            return Path.Combine(TestUtils.FindParentDirectory("lib"), dir, "bin", build, "net10.0");
 #else
-            return Path.Combine(
-                TestUtils.FindParentDirectory("lib"),
-                dir,
-                "bin",
-                build,
-                "net48");
+            return Path.Combine(TestUtils.FindParentDirectory("lib"), dir, "bin", build, "net48");
 #endif
         }
     }

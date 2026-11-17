@@ -26,7 +26,9 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync();
-            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
+            await using var browser = await Puppeteer.LaunchAsync(
+                new LaunchOptions { Headless = true }
+            );
             await using var page = await browser.NewPageAsync();
             await page.GoToAsync("http://www.google.com"); // In case of fonts being loaded from a CDN, use WaitUntilNavigation.Networkidle0 as a second param.
             await page.EvaluateExpressionHandleAsync("document.fonts.ready"); // Wait for fonts to be loaded. Omitting this might result in no text rendered in pdf.
@@ -97,22 +99,56 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.PdfAsync(outputFile, new PdfOptions { Tagged = false });
             await Page.PdfAsync(accessibleOutputFile, new PdfOptions { Tagged = true });
 
-            Assert.That(new FileInfo(accessibleOutputFile).Length, Is.GreaterThan(new FileInfo(outputFile).Length));
+            Assert.That(
+                new FileInfo(accessibleOutputFile).Length,
+                Is.GreaterThan(new FileInfo(outputFile).Length)
+            );
         }
 
-        [Test, PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with custom mm and pt dimensions")]
+        [
+            Test,
+            PuppeteerTest(
+                "pdf.spec",
+                "Page.pdf",
+                "can print to PDF with custom mm and pt dimensions"
+            )
+        ]
         public async Task CanPrintToPdfWithCustomMmAndPtDimensions()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
-            var mmPdf = await Page.PdfDataAsync(new PdfOptions { Width = "556.27mm", Height = "145.27mm" });
+            var mmPdf = await Page.PdfDataAsync(
+                new PdfOptions { Width = "556.27mm", Height = "145.27mm" }
+            );
             var mmText = System.Text.Encoding.Latin1.GetString(mmPdf);
-            var mediaBox = System.Text.RegularExpressions.Regex.Match(mmText, @"/MediaBox \[0 0 ([\d.]+) ([\d.]+)\]");
+            var mediaBox = System.Text.RegularExpressions.Regex.Match(
+                mmText,
+                @"/MediaBox \[0 0 ([\d.]+) ([\d.]+)\]"
+            );
             Assert.That(mediaBox.Success, Is.True);
-            Assert.That(Math.Round(double.Parse(mediaBox.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)), Is.EqualTo(1577));
-            Assert.That(Math.Round(double.Parse(mediaBox.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture)), Is.EqualTo(412));
+            Assert.That(
+                Math.Round(
+                    double.Parse(
+                        mediaBox.Groups[1].Value,
+                        System.Globalization.CultureInfo.InvariantCulture
+                    )
+                ),
+                Is.EqualTo(1577)
+            );
+            Assert.That(
+                Math.Round(
+                    double.Parse(
+                        mediaBox.Groups[2].Value,
+                        System.Globalization.CultureInfo.InvariantCulture
+                    )
+                ),
+                Is.EqualTo(412)
+            );
 
             var ptPdf = await Page.PdfDataAsync(new PdfOptions { Width = "72pt", Height = "6pc" });
-            Assert.That(System.Text.Encoding.Latin1.GetString(ptPdf), Does.Contain("/MediaBox [0 0 72 72]"));
+            Assert.That(
+                System.Text.Encoding.Latin1.GetString(ptPdf),
+                Does.Contain("/MediaBox [0 0 72 72]")
+            );
         }
 
         [Test, PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with outline")]
@@ -136,7 +172,10 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.PdfAsync(outputFile, new PdfOptions { Tagged = false });
             await Page.PdfAsync(outputFileOutlined, new PdfOptions { Tagged = true });
 
-            Assert.That(new FileInfo(outputFileOutlined).Length, Is.GreaterThan(new FileInfo(outputFile).Length));
+            Assert.That(
+                new FileInfo(outputFileOutlined).Length,
+                Is.GreaterThan(new FileInfo(outputFile).Length)
+            );
         }
 
         [Test]
@@ -153,9 +192,10 @@ namespace PuppeteerSharp.Tests.PageTests
                     Top = "20px",
                     Right = "20px",
                     Bottom = "40px",
-                    Left = "20px"
+                    Left = "20px",
                 },
-                FooterTemplate = "<div id=\"footer-template\" style=\"font-size:10px !important; color:#808080; padding-left:10px\">- <span class=\"pageNumber\"></span> - </div>"
+                FooterTemplate =
+                    "<div id=\"footer-template\" style=\"font-size:10px !important; color:#808080; padding-left:10px\">- <span class=\"pageNumber\"></span> - </div>",
             };
 
             var serialized = JsonSerializer.Serialize(pdfOptions);
@@ -206,10 +246,12 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("page.spec", "Page.pdf", "should accept page ranges without spaces")]
         public async Task ShouldAcceptPageRangesWithoutSpaces()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
                 <div style=""break-after: page"">1</div>
                 <div style=""break-after: page"">2</div>
-                <div>3</div>");
+                <div>3</div>"
+            );
 
             var pdf = await Page.PdfDataAsync(new PdfOptions { PageRanges = "1-2,3" });
 
@@ -229,7 +271,14 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.pdf", "should not wait for fonts if waitForFonts is false")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page.pdf",
+                "should not wait for fonts if waitForFonts is false"
+            )
+        ]
         public async Task ShouldNotWaitForFontsIfWaitForFontsIsFalse()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -245,9 +294,13 @@ namespace PuppeteerSharp.Tests.PageTests
                         document.fonts.add(font);
                         void font.load();
                     }",
-                    TestConstants.ServerUrl + "/never-loading-font.woff2"));
+                    TestConstants.ServerUrl + "/never-loading-font.woff2"
+                )
+            );
 
-            var pdf = await Page.PdfDataAsync(new PdfOptions { WaitForFonts = false, Timeout = 5_000 });
+            var pdf = await Page.PdfDataAsync(
+                new PdfOptions { WaitForFonts = false, Timeout = 5_000 }
+            );
             Assert.That(pdf, Is.Not.Empty);
         }
 

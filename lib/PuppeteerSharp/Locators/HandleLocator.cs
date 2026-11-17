@@ -15,7 +15,10 @@ namespace PuppeteerSharp.Locators
             _handle = handle;
         }
 
-        internal override Task<IJSHandle> WaitHandleCoreAsync(LocatorActionOptions options, CancellationToken cancellationToken)
+        internal override Task<IJSHandle> WaitHandleCoreAsync(
+            LocatorActionOptions options,
+            CancellationToken cancellationToken
+        )
         {
             return Task.FromResult<IJSHandle>(_handle);
         }

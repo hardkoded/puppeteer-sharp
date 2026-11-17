@@ -11,7 +11,10 @@ namespace PuppeteerSharp.Helpers
 #pragma warning restore CS0618
         }
 
-        internal static void ConfigureWebSocketKeepAlive(System.Net.WebSockets.ClientWebSocket client, WsOptions wsOptions)
+        internal static void ConfigureWebSocketKeepAlive(
+            System.Net.WebSockets.ClientWebSocket client,
+            WsOptions wsOptions
+        )
         {
             if (wsOptions?.KeepAlive != true)
             {

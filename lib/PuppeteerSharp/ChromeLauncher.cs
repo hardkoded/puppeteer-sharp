@@ -45,7 +45,8 @@ namespace PuppeteerSharp
         internal override PipeTransport PipeTransport => _pipeTransport;
 
         /// <inheritdoc />
-        public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";
+        public override string ToString() =>
+            $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";
 
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
@@ -58,13 +59,12 @@ namespace PuppeteerSharp
             }
 
             // Merge default enabled features with user-provided ones, if any.
-            var enabledFeatures = new List<string>
-            {
-                "PdfOopif",
-            };
+            var enabledFeatures = new List<string> { "PdfOopif" };
 
             enabledFeatures.AddRange(userEnabledFeatures);
-            enabledFeatures = enabledFeatures.Where(feature => !string.IsNullOrEmpty(feature)).ToList();
+            enabledFeatures = enabledFeatures
+                .Where(feature => !string.IsNullOrEmpty(feature))
+                .ToList();
 
             var userDisabledFeatures = GetFeatures("--disable-features", args);
             if (userDisabledFeatures.Length > 0)
@@ -94,8 +94,7 @@ namespace PuppeteerSharp
                 .Where(disabledFeature => !enabledFeatures.Contains(disabledFeature))
                 .ToList();
 
-            var chromiumArguments = new List<string>(
-            [
+            var chromiumArguments = new List<string>([
                 "--allow-pre-commit-input",
                 "--disable-background-networking",
                 "--disable-background-timer-throttling",
@@ -128,11 +127,13 @@ namespace PuppeteerSharp
                 $"--enable-features={string.Join(",", enabledFeatures)}",
             };
 
-            if (string.Equals(
+            if (
+                string.Equals(
                     Environment.GetEnvironmentVariable("PUPPETEER_DANGEROUS_NO_SANDBOX"),
                     "true",
-                    StringComparison.Ordinal) &&
-                !args.Contains("--no-sandbox"))
+                    StringComparison.Ordinal
+                ) && !args.Contains("--no-sandbox")
+            )
             {
                 chromiumArguments.Add("--no-sandbox");
             }
@@ -149,12 +150,14 @@ namespace PuppeteerSharp
 
             if (options.Headless)
             {
-                chromiumArguments.AddRange(new[]
-                {
-                    options.HeadlessMode == HeadlessMode.True ? "--headless=new" : "--headless",
-                    "--hide-scrollbars",
-                    "--mute-audio",
-                });
+                chromiumArguments.AddRange(
+                    new[]
+                    {
+                        options.HeadlessMode == HeadlessMode.True ? "--headless=new" : "--headless",
+                        "--hide-scrollbars",
+                        "--mute-audio",
+                    }
+                );
             }
 
             if (options.EnableExtensions is not { Enabled: true })
@@ -176,11 +179,12 @@ namespace PuppeteerSharp
             var prefix = flag.EndsWith("=", StringComparison.Ordinal) ? flag : $"{flag}=";
             return (options ?? [])
                 .Where(s => s.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
-                .SelectMany(s => s
-                    .Substring(s.IndexOf('=') + 1)
-                    .Trim()
-                    .Split(',')
-                    .Select(feature => feature.Trim()))
+                .SelectMany(s =>
+                    s.Substring(s.IndexOf('=') + 1)
+                        .Trim()
+                        .Split(',')
+                        .Select(feature => feature.Trim())
+                )
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
         }
@@ -188,7 +192,9 @@ namespace PuppeteerSharp
         internal static string[] RemoveMatchingFlags(string[] array, string flag)
         {
             var prefix = flag.EndsWith("=", StringComparison.Ordinal) ? flag : $"{flag}=";
-            return array.Where(arg => !arg.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            return array
+                .Where(arg => !arg.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
+                .ToArray();
         }
 
         /// <summary>
@@ -219,7 +225,10 @@ namespace PuppeteerSharp
             base.Dispose(disposing);
         }
 
-        private static (List<string> ChromiumArgs, TempDirectory TempUserDataDirectory) PrepareChromiumArgs(LaunchOptions options)
+        private static (
+            List<string> ChromiumArgs,
+            TempDirectory TempUserDataDirectory
+        ) PrepareChromiumArgs(LaunchOptions options)
         {
             var chromiumArgs = new List<string>();
 
@@ -238,7 +247,11 @@ namespace PuppeteerSharp
 
             TempDirectory tempUserDataDirectory = null;
 
-            if (!chromiumArgs.Any(argument => argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)))
+            if (
+                !chromiumArgs.Any(argument =>
+                    argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)
+                )
+            )
             {
                 if (options.Pipe)
                 {
@@ -250,7 +263,9 @@ namespace PuppeteerSharp
                 }
             }
 
-            var userDataDirOption = chromiumArgs.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
+            var userDataDirOption = chromiumArgs.FirstOrDefault(i =>
+                i.StartsWith(UserDataDirArgument, StringComparison.Ordinal)
+            );
             if (string.IsNullOrEmpty(userDataDirOption))
             {
                 tempUserDataDirectory = new TempDirectory();
@@ -281,8 +296,14 @@ namespace PuppeteerSharp
 
             // Create anonymous pipes with inheritable handles so the child process
             // can communicate via these pipes instead of WebSocket.
-            _pipeToProcess = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable);
-            _pipeFromProcess = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
+            _pipeToProcess = new AnonymousPipeServerStream(
+                PipeDirection.Out,
+                HandleInheritability.Inheritable
+            );
+            _pipeFromProcess = new AnonymousPipeServerStream(
+                PipeDirection.In,
+                HandleInheritability.Inheritable
+            );
 
             var readHandle = _pipeToProcess.GetClientHandleAsString();
             var writeHandle = _pipeFromProcess.GetClientHandleAsString();
@@ -290,7 +311,8 @@ namespace PuppeteerSharp
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // On Windows, pass pipe handles directly via --remote-debugging-io-pipes.
-                Process.StartInfo.Arguments = $"{arguments} --remote-debugging-io-pipes={readHandle},{writeHandle}";
+                Process.StartInfo.Arguments =
+                    $"{arguments} --remote-debugging-io-pipes={readHandle},{writeHandle}";
             }
             else
             {
@@ -302,7 +324,8 @@ namespace PuppeteerSharp
 
                 var escapedExecutable = executable.Replace("\"", "\\\"");
                 var escapedArguments = arguments.Replace("\"", "\\\"");
-                var script = $"exec 3<&{readHandle} 4>&{writeHandle} {readHandle}<&- {writeHandle}>&-; exec \\\"{escapedExecutable}\\\" {escapedArguments}";
+                var script =
+                    $"exec 3<&{readHandle} 4>&{writeHandle} {readHandle}<&- {writeHandle}>&-; exec \\\"{escapedExecutable}\\\" {escapedArguments}";
 
                 Process.StartInfo.FileName = shell;
                 Process.StartInfo.Arguments = $"-c \"{script}\"";

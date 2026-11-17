@@ -7,7 +7,14 @@ namespace PuppeteerSharp.Tests.RequestInterceptionExperimentalTests;
 
 public class RequestResourceTypeTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Request.resourceType", "should work for document type")]
+    [
+        Test,
+        PuppeteerTest(
+            "requestinterception-experimental.spec",
+            "Request.resourceType",
+            "should work for document type"
+        )
+    ]
     public async Task ShouldWorkForDocumentType()
     {
         await Page.SetRequestInterceptionAsync(true);
@@ -17,7 +24,14 @@ public class RequestResourceTypeTests : PuppeteerPageBaseTest
         Assert.That(request.ResourceType, Is.EqualTo(ResourceType.Document));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Request.resourceType", "should work for stylesheets")]
+    [
+        Test,
+        PuppeteerTest(
+            "requestinterception-experimental.spec",
+            "Request.resourceType",
+            "should work for stylesheets"
+        )
+    ]
     public async Task ShouldWorkForStylesheets()
     {
         await Page.SetRequestInterceptionAsync(true);

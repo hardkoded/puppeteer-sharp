@@ -11,9 +11,13 @@ namespace PuppeteerSharp.Tests
     {
         [TestCase(null)]
         [TestCase(true)]
-        public async Task ShouldPreserveBufferedChunksForLaterEnumeration(bool? bufferForEnumeration)
+        public async Task ShouldPreserveBufferedChunksForLaterEnumeration(
+            bool? bufferForEnumeration
+        )
         {
-            await using var recording = new TestScreenRecording(new RecordOptions { BufferForEnumeration = bufferForEnumeration });
+            await using var recording = new TestScreenRecording(
+                new RecordOptions { BufferForEnumeration = bufferForEnumeration }
+            );
             byte[] first = { 1, 2 };
             byte[] second = { 3, 4 };
             recording.Emit(first);
@@ -32,7 +36,9 @@ namespace PuppeteerSharp.Tests
         [Test]
         public async Task ShouldPipeAndEndDestinationWithoutEnumerationBuffering()
         {
-            await using var recording = new TestScreenRecording(new RecordOptions { BufferForEnumeration = false });
+            await using var recording = new TestScreenRecording(
+                new RecordOptions { BufferForEnumeration = false }
+            );
             using var stream = new MemoryStream();
             var destination = new TestDestination(stream);
             recording.Pipe(destination);
@@ -48,14 +54,18 @@ namespace PuppeteerSharp.Tests
         [Test]
         public async Task ShouldRejectEnumerationBeforeReceivingChunksWhenBufferingIsDisabled()
         {
-            await using var recording = new TestScreenRecording(new RecordOptions { BufferForEnumeration = false });
+            await using var recording = new TestScreenRecording(
+                new RecordOptions { BufferForEnumeration = false }
+            );
             Assert.Throws<InvalidOperationException>(() => recording.GetAsyncEnumerator());
         }
 
         [Test]
         public async Task ShouldPropagateDestinationWriteFailuresWithoutEnumerationBuffering()
         {
-            await using var recording = new TestScreenRecording(new RecordOptions { BufferForEnumeration = false });
+            await using var recording = new TestScreenRecording(
+                new RecordOptions { BufferForEnumeration = false }
+            );
             using var stream = new MemoryStream();
             stream.Dispose();
             recording.Pipe(new TestDestination(stream));
@@ -66,9 +76,7 @@ namespace PuppeteerSharp.Tests
         private sealed class TestScreenRecording : ScreenRecording
         {
             public TestScreenRecording(RecordOptions options)
-                : base(null, options, NullLogger.Instance)
-            {
-            }
+                : base(null, options, NullLogger.Instance) { }
 
             public override Task StopAsync() => CloseDestinationsAsync();
 

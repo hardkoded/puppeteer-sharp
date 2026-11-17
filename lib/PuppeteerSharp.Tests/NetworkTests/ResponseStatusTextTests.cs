@@ -7,9 +7,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseStatusTextTests : PuppeteerPageBaseTest
     {
-        public ResponseStatusTextTests() : base()
-        {
-        }
+        public ResponseStatusTextTests()
+            : base() { }
 
         [Test, PuppeteerTest("network.spec", "network Response.statusText", "should work")]
         public async Task ShouldWork()
@@ -28,7 +27,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(response.StatusText, Is.EqualTo("cool!"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.statusText", "handles missing status text")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.statusText",
+                "handles missing status text"
+            )
+        ]
         public async Task HandlesMissingStatusText()
         {
             Server.SetRoute("/nostatus", (context) =>

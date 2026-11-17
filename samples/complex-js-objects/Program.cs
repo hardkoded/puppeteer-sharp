@@ -12,6 +12,7 @@ namespace Example.ComplexJSObjects
         {
             public string Title { get; set; }
             public string Url { get; set; }
+
             public override string ToString() => $"Title: {Title} \nURL: {Url}";
         }
 
@@ -30,7 +31,8 @@ namespace Example.ComplexJSObjects
             {
                 await page.GoToAsync("https://news.ycombinator.com/");
                 Console.WriteLine("Get all urls from page");
-                var jsCode = @"() => {
+                var jsCode =
+                    @"() => {
 const selectors = Array.from(document.querySelectorAll('span[class=""titleline""] > a:first-child'));
 return selectors.map( t=> {return { title: t.innerHTML, url: t.href}});
 }";

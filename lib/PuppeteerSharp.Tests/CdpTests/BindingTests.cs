@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.CdpTests
 {
     public class BindingTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("binding.spec", "CDP binding handle disposal", "should release temporary handles after queryOne")]
+        [
+            Test,
+            PuppeteerTest(
+                "binding.spec",
+                "CDP binding handle disposal",
+                "should release temporary handles after queryOne"
+            )
+        ]
         public async Task ShouldReleaseTemporaryHandlesAfterQueryOne()
         {
             var client = await Page.CreateCDPSessionAsync();
@@ -14,13 +21,23 @@ namespace PuppeteerSharp.Tests.CdpTests
 
             var button = await Page.WaitForSelectorAsync("aria/Submit");
             Assert.That(button, Is.Not.Null);
-            Assert.That(await button.EvaluateFunctionAsync<string>("button => button.textContent"), Is.EqualTo("Submit"));
+            Assert.That(
+                await button.EvaluateFunctionAsync<string>("button => button.textContent"),
+                Is.EqualTo("Submit")
+            );
             await button.DisposeAsync();
 
             await AssertNoButtonsRetainedAsync(client);
         }
 
-        [Test, PuppeteerTest("binding.spec", "CDP binding handle disposal", "should release temporary handles after queryAll")]
+        [
+            Test,
+            PuppeteerTest(
+                "binding.spec",
+                "CDP binding handle disposal",
+                "should release temporary handles after queryAll"
+            )
+        ]
         public async Task ShouldReleaseTemporaryHandlesAfterQueryAll()
         {
             var client = await Page.CreateCDPSessionAsync();
@@ -30,7 +47,10 @@ namespace PuppeteerSharp.Tests.CdpTests
             Assert.That(buttons, Has.Length.EqualTo(2));
             foreach (var button in buttons)
             {
-                Assert.That(await button.EvaluateFunctionAsync<string>("button => button.textContent"), Is.EqualTo("Submit"));
+                Assert.That(
+                    await button.EvaluateFunctionAsync<string>("button => button.textContent"),
+                    Is.EqualTo("Submit")
+                );
                 await button.DisposeAsync();
             }
 
@@ -39,7 +59,11 @@ namespace PuppeteerSharp.Tests.CdpTests
 
         [TestCase("resolve")]
         [TestCase("error")]
-        [PuppeteerTest("binding.spec", "CDP binding handle disposal", "should preserve node arguments when exposed functions resolve")]
+        [PuppeteerTest(
+            "binding.spec",
+            "CDP binding handle disposal",
+            "should preserve node arguments when exposed functions resolve"
+        )]
         public async Task ShouldPreserveNodeArgumentsWhenExposedFunctionsFinish(string outcome)
         {
             IElementHandle received = null;
@@ -48,7 +72,10 @@ namespace PuppeteerSharp.Tests.CdpTests
                 // The binding deserializes arguments by declared type, so node arguments are received as object.
                 var node = (IElementHandle)nodeArg;
                 received = node;
-                Assert.That(await node.EvaluateFunctionAsync<string>("node => node.nodeName"), Is.EqualTo("BODY"));
+                Assert.That(
+                    await node.EvaluateFunctionAsync<string>("node => node.nodeName"),
+                    Is.EqualTo("BODY")
+                );
                 if (outcome == "error")
                 {
                     throw new System.Exception("failed");
@@ -57,13 +84,15 @@ namespace PuppeteerSharp.Tests.CdpTests
                 return "success";
             });
 
-            var result = await Page.EvaluateFunctionAsync<string>(@"async () => {
+            var result = await Page.EvaluateFunctionAsync<string>(
+                @"async () => {
                 try {
                     return await globalThis.inspectNode(document.body);
                 } catch (error) {
                     return error.message;
                 }
-            }");
+            }"
+            );
             Assert.That(result, Is.EqualTo(outcome == "resolve" ? "success" : "failed"));
 
             // Wait for the binding to finish its response round trip.
@@ -71,10 +100,20 @@ namespace PuppeteerSharp.Tests.CdpTests
             Assert.That(received, Is.Not.Null);
             await using var node = received;
             Assert.That(node.Disposed, Is.False);
-            Assert.That(await node.EvaluateFunctionAsync<string>("node => node.nodeName"), Is.EqualTo("BODY"));
+            Assert.That(
+                await node.EvaluateFunctionAsync<string>("node => node.nodeName"),
+                Is.EqualTo("BODY")
+            );
         }
 
-        [Test, PuppeteerTest("binding.spec", "CDP binding handle disposal", "should preserve node arguments returned by exposed functions")]
+        [
+            Test,
+            PuppeteerTest(
+                "binding.spec",
+                "CDP binding handle disposal",
+                "should preserve node arguments returned by exposed functions"
+            )
+        ]
         public async Task ShouldPreserveNodeArgumentsReturnedByExposedFunctions()
         {
             IElementHandle received = null;
@@ -88,31 +127,53 @@ namespace PuppeteerSharp.Tests.CdpTests
             });
 
             Assert.That(
-                await Page.EvaluateFunctionAsync<bool>("async () => (await globalThis.echoNode(document.body)) === document.body"),
-                Is.True);
+                await Page.EvaluateFunctionAsync<bool>(
+                    "async () => (await globalThis.echoNode(document.body)) === document.body"
+                ),
+                Is.True
+            );
             await Page.EvaluateFunctionAsync("() => {}");
             Assert.That(received, Is.Not.Null);
             await using var node = received;
             Assert.That(node.Disposed, Is.False);
-            Assert.That(await node.EvaluateFunctionAsync<string>("node => node.nodeName"), Is.EqualTo("BODY"));
+            Assert.That(
+                await node.EvaluateFunctionAsync<string>("node => node.nodeName"),
+                Is.EqualTo("BODY")
+            );
         }
 
-        [Test, PuppeteerTest("binding.spec", "CDP binding handle disposal", "should preserve handles returned by exposed functions")]
+        [
+            Test,
+            PuppeteerTest(
+                "binding.spec",
+                "CDP binding handle disposal",
+                "should preserve handles returned by exposed functions"
+            )
+        ]
         public async Task ShouldPreserveHandlesReturnedByExposedFunctions()
         {
-            await using var handle = await Page.EvaluateFunctionHandleAsync("() => ({ value: 42 })");
+            await using var handle = await Page.EvaluateFunctionHandleAsync(
+                "() => ({ value: 42 })"
+            );
             await Page.ExposeFunctionAsync("getValue", () => handle);
 
             for (var i = 0; i < 2; i++)
             {
-                Assert.That(await Page.EvaluateFunctionAsync<int>("async () => (await globalThis.getValue()).value"), Is.EqualTo(42));
+                Assert.That(
+                    await Page.EvaluateFunctionAsync<int>(
+                        "async () => (await globalThis.getValue()).value"
+                    ),
+                    Is.EqualTo(42)
+                );
                 Assert.That(handle.Disposed, Is.False);
             }
         }
 
         private async Task AssertNoButtonsRetainedAsync(ICDPSession client)
         {
-            await using var prototype = await Page.EvaluateFunctionHandleAsync("() => HTMLButtonElement.prototype");
+            await using var prototype = await Page.EvaluateFunctionHandleAsync(
+                "() => HTMLButtonElement.prototype"
+            );
             await Page.EvaluateFunctionAsync("() => document.body.replaceChildren()");
 
             // Replace the last evaluated result in the utility world before collecting.

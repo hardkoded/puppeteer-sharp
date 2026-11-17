@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class IsIntersectingViewportTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isIntersectingViewport", "should work")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.isIntersectingViewport",
+                "should work"
+            )
+        ]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
@@ -19,7 +26,14 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isIntersectingViewport", "should work with threshold")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.isIntersectingViewport",
+                "should work with threshold"
+            )
+        ]
         public async Task ShouldWorkWithThreshold()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
@@ -27,7 +41,14 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(await button.IsIntersectingViewportAsync(0.001m), Is.False);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isIntersectingViewport", "should work with threshold of 1")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.isIntersectingViewport",
+                "should work with threshold of 1"
+            )
+        ]
         public async Task ShouldWorkWithThresholdOf1()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");
@@ -35,7 +56,14 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(await button.IsIntersectingViewportAsync(1), Is.True);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isIntersectingViewport", "should work with svg elements")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.isIntersectingViewport",
+                "should work with svg elements"
+            )
+        ]
         public async Task ShouldWorkWithSvgElements()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/inline-svg.html");

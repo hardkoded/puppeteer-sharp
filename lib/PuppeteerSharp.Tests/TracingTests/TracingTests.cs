@@ -46,29 +46,34 @@ namespace PuppeteerSharp.Tests.TracingTests
         [Test, PuppeteerTest("tracing.spec", "Tracing", "should output a trace")]
         public async Task ShouldOutputATrace()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
-            {
-                Screenshots = true,
-                Path = _file
-            });
+            await Page.Tracing.StartAsync(new TracingOptions { Screenshots = true, Path = _file });
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.Tracing.StopAsync();
 
             Assert.That(File.Exists(_file), Is.True);
         }
 
-        [Test, PuppeteerTest("tracing.spec", "Tracing", "should run with custom categories if provided")]
+        [
+            Test,
+            PuppeteerTest(
+                "tracing.spec",
+                "Tracing",
+                "should run with custom categories if provided"
+            )
+        ]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
-            {
-                Path = _file,
-                Categories = new List<string>
+            await Page.Tracing.StartAsync(
+                new TracingOptions
                 {
-                    "-*",
-                    "disabled-by-default-devtools.timeline.frame",
+                    Path = _file,
+                    Categories = new List<string>
+                    {
+                        "-*",
+                        "disabled-by-default-devtools.timeline.frame",
+                    },
                 }
-            });
+            );
 
             await Page.Tracing.StopAsync();
 
@@ -89,10 +94,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         [Test, PuppeteerTest("tracing.spec", "Tracing", "should run with default categories")]
         public async Task ShouldRunWithDefaultCategories()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
-            {
-                Path = _file,
-            });
+            await Page.Tracing.StartAsync(new TracingOptions { Path = _file });
 
             await Page.Tracing.StopAsync();
             var jsonString = await File.ReadAllTextAsync(_file);
@@ -107,17 +109,11 @@ namespace PuppeteerSharp.Tests.TracingTests
         [Test, PuppeteerTest("tracing.spec", "Tracing", "should throw if tracing on two pages")]
         public async Task ShouldThrowIfTracingOnTwoPages()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
-            {
-                Path = _file
-            });
+            await Page.Tracing.StartAsync(new TracingOptions { Path = _file });
             var newPage = await Browser.NewPageAsync();
             var exception = Assert.CatchAsync(async () =>
             {
-                await newPage.Tracing.StartAsync(new TracingOptions
-                {
-                    Path = _file
-                });
+                await newPage.Tracing.StartAsync(new TracingOptions { Path = _file });
             });
 
             Assert.That(exception, Is.Not.Null);
@@ -128,11 +124,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         [Test, PuppeteerTest("tracing.spec", "Tracing", "should return a typedArray")]
         public async Task ShouldReturnATypedArray()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
-            {
-                Screenshots = true,
-                Path = _file
-            });
+            await Page.Tracing.StartAsync(new TracingOptions { Screenshots = true, Path = _file });
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var trace = await Page.Tracing.StopAsync();
             var buf = File.ReadAllText(_file);
@@ -154,26 +146,34 @@ namespace PuppeteerSharp.Tests.TracingTests
             using var loggerFactory = new LoggerFactory();
             var client = Substitute.For<CDPSession>();
             client.LoggerFactory.Returns(loggerFactory);
-            client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
+            client
+                .SendAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<object>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<CommandOptions>()
+                )
                 .Returns(Task.FromResult<JsonElement?>(null));
 
             var tracing = new Tracing(client);
-            await tracing.StartAsync(new TracingOptions
-            {
-                Path = _file,
-                BufferSize = 10,
-            });
+            await tracing.StartAsync(new TracingOptions { Path = _file, BufferSize = 10 });
 
-            await client.Received().SendAsync(
-                "Tracing.start",
-                Arg.Is<TracingStartRequest>(request =>
-                    request.TraceConfig != null &&
-                    request.TraceConfig.TraceBufferSizeInKb == 10),
-                Arg.Any<bool>(),
-                Arg.Any<CommandOptions>());
+            await client
+                .Received()
+                .SendAsync(
+                    "Tracing.start",
+                    Arg.Is<TracingStartRequest>(request =>
+                        request.TraceConfig != null && request.TraceConfig.TraceBufferSizeInKb == 10
+                    ),
+                    Arg.Any<bool>(),
+                    Arg.Any<CommandOptions>()
+                );
         }
 
-        [Test, PuppeteerTest("tracing.spec", "Tracing", "should support a typedArray without a path")]
+        [
+            Test,
+            PuppeteerTest("tracing.spec", "Tracing", "should support a typedArray without a path")
+        ]
         public async Task ShouldSupportATypedArrayWithoutAPath()
         {
             await Page.Tracing.StartAsync();
@@ -182,13 +182,17 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.That(trace.Length, Is.GreaterThan(10));
         }
 
-        [Test, PuppeteerTest("tracing.spec", "Tracing", "should properly fail if readProtocolStream errors out")]
+        [
+            Test,
+            PuppeteerTest(
+                "tracing.spec",
+                "Tracing",
+                "should properly fail if readProtocolStream errors out"
+            )
+        ]
         public async Task ShouldProperlyFailIfReadProtocolStreamErrorsOut()
         {
-            await Page.Tracing.StartAsync(new TracingOptions
-            {
-                Path = Path.GetTempPath()
-            });
+            await Page.Tracing.StartAsync(new TracingOptions { Path = Path.GetTempPath() });
 
             var exception = Assert.CatchAsync(async () =>
             {

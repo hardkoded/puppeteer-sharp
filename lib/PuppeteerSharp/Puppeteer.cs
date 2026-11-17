@@ -38,7 +38,8 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
+        public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices =>
+            DeviceDescriptors.ToReadOnly();
 
         /// <summary>
         /// Returns a list of network conditions to be used with <seealso cref="IPage.EmulateNetworkConditionsAsync(PuppeteerSharp.NetworkConditions)"/>.
@@ -56,7 +57,8 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        public static IReadOnlyDictionary<string, NetworkConditions> NetworkConditions => PredefinedNetworkConditions.ToReadOnly();
+        public static IReadOnlyDictionary<string, NetworkConditions> NetworkConditions =>
+            PredefinedNetworkConditions.ToReadOnly();
 
         /// <summary>
         /// Extra <see cref="IJsonTypeInfoResolver"/> used to serialize and deserialize objects on AOT environments.
@@ -76,8 +78,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Chromium arguments.</returns>
         /// <param name="options">Options.</param>
-        public static string[] GetDefaultArgs(LaunchOptions options = null)
-            => (options?.Browser ?? SupportedBrowser.Firefox) == SupportedBrowser.Firefox
+        public static string[] GetDefaultArgs(LaunchOptions options = null) =>
+            (options?.Browser ?? SupportedBrowser.Firefox) == SupportedBrowser.Firefox
                 ? FirefoxLauncher.GetDefaultArgs(options ?? new LaunchOptions())
                 : ChromeLauncher.GetDefaultArgs(options ?? new LaunchOptions());
 
@@ -99,8 +101,10 @@ namespace PuppeteerSharp
         /// - <c>PUPPETEER_EXECUTABLE_PATH</c> - specify an executable path to be used in <see cref="Puppeteer.LaunchAsync(LaunchOptions, ILoggerFactory)"/>.
         ///   **BEWARE**: Puppeteer is only <see href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy">guaranteed to work</see> with the bundled Chromium, use at your own risk.
         /// </remarks>
-        public static Task<IBrowser> LaunchAsync(LaunchOptions options, ILoggerFactory loggerFactory = null)
-            => new Launcher(loggerFactory).LaunchAsync(options);
+        public static Task<IBrowser> LaunchAsync(
+            LaunchOptions options,
+            ILoggerFactory loggerFactory = null
+        ) => new Launcher(loggerFactory).LaunchAsync(options);
 
         /// <summary>
         /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
@@ -108,21 +112,24 @@ namespace PuppeteerSharp
         /// <param name="options">Options for connecting.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <returns>A connected browser.</returns>
-        public static Task<IBrowser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
-            => new Launcher(loggerFactory).ConnectAsync(options);
+        public static Task<IBrowser> ConnectAsync(
+            ConnectOptions options,
+            ILoggerFactory loggerFactory = null
+        ) => new Launcher(loggerFactory).ConnectAsync(options);
 
         /// <summary>
         /// Creates the browser fetcher.
         /// </summary>
         /// <returns>The browser fetcher.</returns>
         /// <param name="options">Options.</param>
-        public static IBrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options) => new BrowserFetcher(options);
+        public static IBrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options) =>
+            new BrowserFetcher(options);
 
         /// <summary>
         /// Defines whether Puppeteer should follow symlinks for file operations.
         /// </summary>
         /// <param name="followSymlinks">Whether Puppeteer should follow symlinks.</param>
-        public static void SetFollowSymlinks(bool followSymlinks)
-            => FollowSymlinks = followSymlinks;
+        public static void SetFollowSymlinks(bool followSymlinks) =>
+            FollowSymlinks = followSymlinks;
     }
 }

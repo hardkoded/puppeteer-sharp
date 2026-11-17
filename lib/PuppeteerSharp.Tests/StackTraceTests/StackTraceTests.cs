@@ -11,9 +11,11 @@ namespace PuppeteerSharp.Tests.StackTraceTests
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(async () =>
             {
-                await Page.EvaluateFunctionAsync(@"() => {
+                await Page.EvaluateFunctionAsync(
+                    @"() => {
                     throw new Error('Test');
-                }");
+                }"
+                );
             });
 
             Assert.That(exception.Message, Does.Contain("Test"));
@@ -24,39 +26,60 @@ namespace PuppeteerSharp.Tests.StackTraceTests
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(async () =>
             {
-                await Page.EvaluateFunctionHandleAsync(@"() => {
+                await Page.EvaluateFunctionHandleAsync(
+                    @"() => {
                     throw new Error('Test');
-                }");
+                }"
+                );
             });
 
             Assert.That(exception.Message, Does.Contain("Test"));
         }
 
-        [Test, PuppeteerTest("stacktrace.spec", "Stack trace", "should work with contiguous evaluation")]
+        [
+            Test,
+            PuppeteerTest(
+                "stacktrace.spec",
+                "Stack trace",
+                "should work with contiguous evaluation"
+            )
+        ]
         public async Task ShouldWorkWithContiguousEvaluation()
         {
-            await using var thrower = await Page.EvaluateFunctionHandleAsync(@"() => {
+            await using var thrower = await Page.EvaluateFunctionHandleAsync(
+                @"() => {
                 return () => {
                     throw new Error('Test');
                 };
-            }");
+            }"
+            );
 
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(async () =>
             {
-                await thrower.EvaluateFunctionAsync(@"thrower => {
+                await thrower.EvaluateFunctionAsync(
+                    @"thrower => {
                     thrower();
-                }");
+                }"
+                );
             });
 
             Assert.That(exception.Message, Does.Contain("Test"));
         }
 
-        [Test, PuppeteerTest("stacktrace.spec", "Stack trace", "should work with nested function calls")]
+        [
+            Test,
+            PuppeteerTest(
+                "stacktrace.spec",
+                "Stack trace",
+                "should work with nested function calls"
+            )
+        ]
         public void ShouldWorkWithNestedFunctionCalls()
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(async () =>
             {
-                await Page.EvaluateFunctionAsync(@"() => {
+                await Page.EvaluateFunctionAsync(
+                    @"() => {
                     function a() {
                         throw new Error('Test');
                     }
@@ -70,13 +93,17 @@ namespace PuppeteerSharp.Tests.StackTraceTests
                         c();
                     }
                     d();
-                }");
+                }"
+                );
             });
 
             Assert.That(exception.Message, Does.Contain("Test"));
         }
 
-        [Test, PuppeteerTest("stacktrace.spec", "Stack trace", "should work for none error objects")]
+        [
+            Test,
+            PuppeteerTest("stacktrace.spec", "Stack trace", "should work for none error objects")
+        ]
         public async Task ShouldWorkForNonErrorObjects()
         {
             var errorTask = new TaskCompletionSource<PageErrorEventArgs>();
@@ -91,10 +118,12 @@ namespace PuppeteerSharp.Tests.StackTraceTests
 
             await Task.WhenAll(
                 errorTask.Task,
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     // This can happen when a 404 with HTML is returned
                     void Promise.reject(new Response());
-                }")
+                }"
+                )
             );
 
             var error = await errorTask.Task;

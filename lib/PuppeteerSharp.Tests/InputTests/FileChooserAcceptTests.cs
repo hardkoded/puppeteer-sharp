@@ -6,41 +6,64 @@ namespace PuppeteerSharp.Tests.InputTests
 {
     public class FileChooserAcceptTests : PuppeteerPageBaseTest
     {
-        public FileChooserAcceptTests() : base()
-        {
-        }
+        public FileChooserAcceptTests()
+            : base() { }
 
-        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should accept single file")]
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests FileChooser.accept",
+                "should accept single file"
+            )
+        ]
         public async Task ShouldAcceptSingleFile()
         {
-            await Page.SetContentAsync("<input type=file oninput='javascript:console.timeStamp()'>");
+            await Page.SetContentAsync(
+                "<input type=file oninput='javascript:console.timeStamp()'>"
+            );
             var waitForTask = Page.WaitForFileChooserAsync();
             var metricsTcs = new TaskCompletionSource<bool>();
 
-            await Task.WhenAll(
-                waitForTask,
-                Page.ClickAsync("input"));
+            await Task.WhenAll(waitForTask, Page.ClickAsync("input"));
 
             Page.Metrics += (_, _) => metricsTcs.TrySetResult(true);
 
             await Task.WhenAll(
                 waitForTask.Result.AcceptAsync(TestConstants.FileToUpload),
-                metricsTcs.Task);
+                metricsTcs.Task
+            );
 
-            Assert.That(await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<int>("input => input.files.length"), Is.EqualTo(1));
             Assert.That(
-                await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<string>("input => input.files[0].name"),
-                Is.EqualTo("file-to-upload.txt"));
+                await Page.QuerySelectorAsync("input")
+                    .EvaluateFunctionAsync<int>("input => input.files.length"),
+                Is.EqualTo(1)
+            );
+            Assert.That(
+                await Page.QuerySelectorAsync("input")
+                    .EvaluateFunctionAsync<string>("input => input.files[0].name"),
+                Is.EqualTo("file-to-upload.txt")
+            );
         }
 
-        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should be able to read selected file")]
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests FileChooser.accept",
+                "should be able to read selected file"
+            )
+        ]
         public async Task ShouldBeAbleToReadSelectedFile()
         {
             await Page.SetContentAsync("<input type=file>");
-            _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync(TestConstants.FileToUpload));
+            _ = Page.WaitForFileChooserAsync()
+                .ContinueWith(t => t.Result.AcceptAsync(TestConstants.FileToUpload));
 
             Assert.That(
-                await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<string>(@"async picker =>
+                await Page.QuerySelectorAsync("input")
+                    .EvaluateFunctionAsync<string>(
+                        @"async picker =>
                 {
                     picker.click();
                     await new Promise(x => picker.oninput = x);
@@ -48,70 +71,111 @@ namespace PuppeteerSharp.Tests.InputTests
                     const promise = new Promise(fulfill => reader.onload = fulfill);
                     reader.readAsText(picker.files[0]);
                     return promise.then(() => reader.result);
-                }"), Is.EqualTo("contents of the file"));
+                }"
+                    ),
+                Is.EqualTo("contents of the file")
+            );
         }
 
-        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should be able to reset selected files with empty file list")]
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests FileChooser.accept",
+                "should be able to reset selected files with empty file list"
+            )
+        ]
         public async Task ShouldBeAbleToResetSelectedFilesWithEmptyFileList()
         {
             await Page.SetContentAsync("<input type=file>");
-            _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync(TestConstants.FileToUpload));
+            _ = Page.WaitForFileChooserAsync()
+                .ContinueWith(t => t.Result.AcceptAsync(TestConstants.FileToUpload));
 
             Assert.That(
-                await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<int>(@"async picker =>
+                await Page.QuerySelectorAsync("input")
+                    .EvaluateFunctionAsync<int>(
+                        @"async picker =>
                 {
                 picker.click();
                 await new Promise(x => picker.oninput = x);
                 return picker.files.length;
-            }"), Is.EqualTo(1));
+            }"
+                    ),
+                Is.EqualTo(1)
+            );
 
             _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync());
 
             Assert.That(
-                await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<int>(@"async picker =>
+                await Page.QuerySelectorAsync("input")
+                    .EvaluateFunctionAsync<int>(
+                        @"async picker =>
                 {
                 picker.click();
                 await new Promise(x => picker.oninput = x);
                 return picker.files.length;
-            }"), Is.EqualTo(0));
+            }"
+                    ),
+                Is.EqualTo(0)
+            );
         }
 
-        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should not accept multiple files for single-file input")]
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests FileChooser.accept",
+                "should not accept multiple files for single-file input"
+            )
+        ]
         public async Task ShouldNotAcceptMultipleFilesForSingleFileInput()
         {
             await Page.SetContentAsync("<input type=file>");
             var waitForTask = Page.WaitForFileChooserAsync();
 
-            await Task.WhenAll(
-                waitForTask,
-                Page.ClickAsync("input"));
+            await Task.WhenAll(waitForTask, Page.ClickAsync("input"));
 
-            Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync(
-                "./assets/file-to-upload.txt",
-                "./assets/pptr.png"));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                waitForTask.Result.AcceptAsync("./assets/file-to-upload.txt", "./assets/pptr.png")
+            );
         }
 
-        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should succeed even for non-existent files")]
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests FileChooser.accept",
+                "should succeed even for non-existent files"
+            )
+        ]
         public async Task ShouldSucceedEvenForNonExistentFiles()
         {
             await Page.SetContentAsync("<input type=file>");
             var waitForTask = Page.WaitForFileChooserAsync();
 
-            await Task.WhenAll(
-                waitForTask,
-                Page.ClickAsync("input"));
+            await Task.WhenAll(waitForTask, Page.ClickAsync("input"));
 
             await waitForTask.Result.AcceptAsync("file-does-not-exist.txt");
         }
 
-        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should error on read of non-existent files")]
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests FileChooser.accept",
+                "should error on read of non-existent files"
+            )
+        ]
         public async Task ShouldErrorOnReadOfNonExistentFiles()
         {
             await Page.SetContentAsync("<input type=file>");
-            _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync("file-does-not-exist.txt"));
+            _ = Page.WaitForFileChooserAsync()
+                .ContinueWith(t => t.Result.AcceptAsync("file-does-not-exist.txt"));
 
             Assert.That(
-                await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<bool>(@"async picker =>
+                await Page.QuerySelectorAsync("input")
+                    .EvaluateFunctionAsync<bool>(
+                        @"async picker =>
                 {
                     picker.click();
                     await new Promise(x => picker.oninput = x);
@@ -119,23 +183,34 @@ namespace PuppeteerSharp.Tests.InputTests
                     const promise = new Promise(fulfill => reader.onerror = fulfill);
                     reader.readAsText(picker.files[0]);
                     return await promise.then(() => false);
-                }"), Is.False);
+                }"
+                    ),
+                Is.False
+            );
         }
 
-        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should fail when accepting file chooser twice")]
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests FileChooser.accept",
+                "should fail when accepting file chooser twice"
+            )
+        ]
         public async Task ShouldFailWhenAcceptingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");
             var waitForTask = Page.WaitForFileChooserAsync();
 
-            await Task.WhenAll(
-                waitForTask,
-                Page.ClickAsync("input"));
+            await Task.WhenAll(waitForTask, Page.ClickAsync("input"));
 
             var fileChooser = waitForTask.Result;
             await fileChooser.AcceptAsync();
             var ex = Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync());
-            Assert.That(ex.Message, Is.EqualTo("Cannot accept FileChooser which is already handled!"));
+            Assert.That(
+                ex.Message,
+                Is.EqualTo("Cannot accept FileChooser which is already handled!")
+            );
         }
     }
 }

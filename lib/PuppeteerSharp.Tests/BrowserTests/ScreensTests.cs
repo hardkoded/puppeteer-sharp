@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class ScreensTests : PuppeteerBrowserBaseTest
     {
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.screens", "should return default screen info")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.screens",
+                "should return default screen info"
+            )
+        ]
         public async Task ShouldReturnDefaultScreenInfo()
         {
             var screenInfos = await Browser.ScreensAsync();

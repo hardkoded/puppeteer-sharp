@@ -13,7 +13,14 @@ namespace PuppeteerSharp.Tests.NetworkTests;
 [TestFixture]
 public class CdpHttpRequestTests
 {
-    [Test, PuppeteerTest("HTTPRequest.test.ts", "CdpHTTPRequest", "should reconstruct postData from postDataEntries")]
+    [
+        Test,
+        PuppeteerTest(
+            "HTTPRequest.test.ts",
+            "CdpHTTPRequest",
+            "should reconstruct postData from postDataEntries"
+        )
+    ]
     public void ShouldReconstructPostDataFromPostDataEntries()
     {
         var client = Substitute.For<CDPSession>();
@@ -36,19 +43,37 @@ public class CdpHttpRequestTests
                     Headers = new Dictionary<string, string>(),
                     PostDataEntries =
                     [
-                        new PostDataEntry { Bytes = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("part1")) },
-                        new PostDataEntry { Bytes = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("part2")) },
+                        new PostDataEntry
+                        {
+                            Bytes = Convert.ToBase64String(
+                                System.Text.Encoding.UTF8.GetBytes("part1")
+                            ),
+                        },
+                        new PostDataEntry
+                        {
+                            Bytes = Convert.ToBase64String(
+                                System.Text.Encoding.UTF8.GetBytes("part2")
+                            ),
+                        },
                     ],
                 },
                 Initiator = new Initiator { Type = InitiatorType.Other },
             },
             [],
-            loggerFactory);
+            loggerFactory
+        );
 
         Assert.That(request.PostData, Is.EqualTo("part1part2"));
     }
 
-    [Test, PuppeteerTest("HTTPRequest.test.ts", "CdpHTTPRequest", "should fallback to postData if postDataEntries is missing")]
+    [
+        Test,
+        PuppeteerTest(
+            "HTTPRequest.test.ts",
+            "CdpHTTPRequest",
+            "should fallback to postData if postDataEntries is missing"
+        )
+    ]
     public void ShouldFallbackToPostDataIfPostDataEntriesIsMissing()
     {
         var client = Substitute.For<CDPSession>();
@@ -74,7 +99,8 @@ public class CdpHttpRequestTests
                 Initiator = new Initiator { Type = InitiatorType.Other },
             },
             [],
-            loggerFactory);
+            loggerFactory
+        );
 
         Assert.That(request.PostData, Is.EqualTo("originalData"));
     }

@@ -5,9 +5,8 @@ namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue0764 : PuppeteerPageBaseTest
     {
-        public Issue0764() : base()
-        {
-        }
+        public Issue0764()
+            : base() { }
 
         public async Task BufferAsyncShouldWorkWithBinaries()
         {
@@ -20,9 +19,7 @@ namespace PuppeteerSharp.Tests.Issues
                 }
             };
 
-            await Task.WhenAll(
-                Page.GoToAsync(TestConstants.ServerUrl + "/grid.html"),
-                tcs.Task);
+            await Task.WhenAll(Page.GoToAsync(TestConstants.ServerUrl + "/grid.html"), tcs.Task);
             Assert.That(ScreenshotHelper.PixelMatch("0.png", await tcs.Task), Is.True);
         }
     }

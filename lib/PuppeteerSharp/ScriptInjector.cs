@@ -39,7 +39,9 @@ namespace PuppeteerSharp
             string amendments;
             lock (_lock)
             {
-                amendments = string.Concat(_amendments.Select(statement => $"({statement})(module.exports.default);"));
+                amendments = string.Concat(
+                    _amendments.Select(statement => $"({statement})(module.exports.default);")
+                );
             }
 
             return $@"(() => {{

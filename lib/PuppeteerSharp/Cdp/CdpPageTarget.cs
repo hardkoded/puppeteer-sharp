@@ -19,8 +19,16 @@ namespace PuppeteerSharp.Cdp
             ITargetManager targetManager,
             Func<bool, Task<CDPSession>> sessionFactory,
             ViewPortOptions defaultViewport,
-            TaskQueue screenshotTaskQueue)
-            : base(targetInfo, (CdpCDPSession)session, (CdpBrowserContext)context, targetManager, sessionFactory, screenshotTaskQueue)
+            TaskQueue screenshotTaskQueue
+        )
+            : base(
+                targetInfo,
+                (CdpCDPSession)session,
+                (CdpBrowserContext)context,
+                targetManager,
+                sessionFactory,
+                screenshotTaskQueue
+            )
         {
             _defaultViewport = defaultViewport;
             _screenshotTaskQueue = screenshotTaskQueue;
@@ -49,13 +57,16 @@ namespace PuppeteerSharp.Cdp
         {
             if (PageTask == null)
             {
-                var session = (CdpCDPSession)(Session ?? await SessionFactory(false).ConfigureAwait(false));
+                var session = (CdpCDPSession)(
+                    Session ?? await SessionFactory(false).ConfigureAwait(false)
+                );
 
                 PageTask = CdpPage.CreateAsync(
                     session,
                     this,
                     _defaultViewport,
-                    _screenshotTaskQueue);
+                    _screenshotTaskQueue
+                );
             }
 
             return await PageTask.ConfigureAwait(false);
@@ -89,7 +100,8 @@ namespace PuppeteerSharp.Cdp
                     var popupPage = await PageAsync().ConfigureAwait(false);
                     openerPage.OnPopup(popupPage);
                 },
-                TaskScheduler.Default);
+                TaskScheduler.Default
+            );
             CheckIfInitialized();
         }
 

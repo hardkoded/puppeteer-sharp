@@ -40,19 +40,28 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                 // Firefox: use network.dns.localDomains pref to resolve test domains
                 DefaultOptions.ExtraPrefsFirefox = new()
                 {
-                    ["network.dns.localDomains"] = "mainframe,inner-frame1.test,inner-frame2.test,oopifdomain"
+                    ["network.dns.localDomains"] =
+                        "mainframe,inner-frame1.test,inner-frame2.test,oopifdomain",
                 };
             }
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should report console messages from OOP iframes to the browser and context")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should report console messages from OOP iframes to the browser and context"
+            )
+        ]
         public async Task ShouldReportConsoleMessagesFromOopIframesToTheBrowserAndContext()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frame = await FrameUtils.AttachFrameAsync(
                 Page,
                 "frame1",
-                TestConstants.CrossProcessHttpPrefix + "/empty.html");
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
+            );
 
             var browserMessageTask = new TaskCompletionSource<ConsoleMessage>();
             var contextMessageTask = new TaskCompletionSource<ConsoleMessage>();
@@ -79,9 +88,13 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                 await Task.WhenAll(
                     browserMessageTask.Task,
                     contextMessageTask.Task,
-                    frame.EvaluateFunctionAsync("() => console.log('from-oopif')"));
+                    frame.EvaluateFunctionAsync("() => console.log('from-oopif')")
+                );
 
-                Assert.That(browserMessageTask.Task.Result, Is.SameAs(contextMessageTask.Task.Result));
+                Assert.That(
+                    browserMessageTask.Task.Result,
+                    Is.SameAs(contextMessageTask.Task.Result)
+                );
             }
             finally
             {
@@ -90,16 +103,25 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             }
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should treat OOP iframes and normal iframes the same")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should treat OOP iframes and normal iframes the same"
+            )
+        ]
         public async Task ShouldTreatOopIframesAndNormalIframesTheSame()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var frameTask = Page.WaitForFrameAsync((frame) => frame.Url?.EndsWith("/empty.html") == true);
+            var frameTask = Page.WaitForFrameAsync(
+                (frame) => frame.Url?.EndsWith("/empty.html") == true
+            );
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(
-              Page,
-              "frame2",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                Page,
+                "frame2",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             await frameTask.WithTimeout();
             Assert.That(Page.MainFrame.ChildFrames, Has.Count.EqualTo(2));
@@ -111,38 +133,51 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
             await FrameUtils.AttachFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             var frame = await frameTask.WithTimeout();
             Assert.That(frame.Url, Does.Contain("/empty.html"));
             var nav = frame.WaitForNavigationAsync();
             await FrameUtils.NavigateFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/assets/frame.html"
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/assets/frame.html"
             );
             await nav.WithTimeout();
             Assert.That(frame.Url, Does.Contain("/assets/frame.html"));
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support OOP iframes becoming normal iframes again")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should support OOP iframes becoming normal iframes again"
+            )
+        ]
         public async Task ShouldSupportOopIframesBecomingNormalIframesAgain()
         {
             await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
+            await FrameUtils
+                .AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage)
+                .WithTimeout();
             var frame = await frameTask.WithTimeout();
             var nav = frame.WaitForNavigationAsync();
-            await FrameUtils.NavigateFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
-            ).WithTimeout();
+            await FrameUtils
+                .NavigateFrameAsync(
+                    Page,
+                    "frame1",
+                    TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                )
+                .WithTimeout();
             await nav.WithTimeout();
             nav = frame.WaitForNavigationAsync();
-            await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
+            await FrameUtils
+                .NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage)
+                .WithTimeout();
             await nav.WithTimeout();
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
         }
@@ -151,28 +186,45 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         public async Task ShouldSupportFramesWithinOopFrames()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var frame1Task = Page.WaitForFrameAsync((frame) => frame.Url.Contains("/frames/one-frame.html"));
-            var frame2Task = Page.WaitForFrameAsync((frame) => frame.Url.Contains("/frames/frame.html"));
+            var frame1Task = Page.WaitForFrameAsync(
+                (frame) => frame.Url.Contains("/frames/one-frame.html")
+            );
+            var frame2Task = Page.WaitForFrameAsync(
+                (frame) => frame.Url.Contains("/frames/frame.html")
+            );
 
             await FrameUtils.AttachFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/frames/one-frame.html"
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/frames/one-frame.html"
             );
 
             var frame1 = await frame1Task;
             var frame2 = await frame2Task;
 
-            Assert.That(await frame1.EvaluateExpressionAsync<string>("document.location.href"), Does.Contain("one-frame"));
-            Assert.That(await frame2.EvaluateExpressionAsync<string>("document.location.href"), Does.Contain("frame.html"));
+            Assert.That(
+                await frame1.EvaluateExpressionAsync<string>("document.location.href"),
+                Does.Contain("one-frame")
+            );
+            Assert.That(
+                await frame2.EvaluateExpressionAsync<string>("document.location.href"),
+                Does.Contain("frame.html")
+            );
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should recover cross-origin frames on reconnect")]
+        [
+            Test,
+            PuppeteerTest("oopif.spec", "OOPIF", "should recover cross-origin frames on reconnect")
+        ]
         public async Task ShouldRecoverCrossOriginFramesOnReconnect()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var frame1Task = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame && frame.ParentFrame == Page.MainFrame);
-            var frame2Task = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame && frame.ParentFrame != Page.MainFrame);
+            var frame1Task = Page.WaitForFrameAsync(
+                (frame) => frame != Page.MainFrame && frame.ParentFrame == Page.MainFrame
+            );
+            var frame2Task = Page.WaitForFrameAsync(
+                (frame) => frame != Page.MainFrame && frame.ParentFrame != Page.MainFrame
+            );
 
             await FrameUtils.AttachFrameAsync(
                 Page,
@@ -183,10 +235,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Task.WhenAll(frame1Task, frame2Task);
             var dump1 = await FrameUtils.DumpFramesAsync(Page.MainFrame);
 
-            await using var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions()
-            {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint,
-            });
+            await using var browserTwo = await Puppeteer.ConnectAsync(
+                new ConnectOptions() { BrowserWSEndpoint = Browser.WebSocketEndpoint }
+            );
 
             var pages = await browserTwo.PagesAsync();
             var emptyPages = pages.Where(page => page.Url == TestConstants.EmptyPage).ToArray();
@@ -200,13 +251,17 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
+            await FrameUtils
+                .AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage)
+                .WithTimeout();
             var frame = await frameTask.WithTimeout();
-            await FrameUtils.NavigateFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
-            ).WithTimeout();
+            await FrameUtils
+                .NavigateFrameAsync(
+                    Page,
+                    "frame1",
+                    TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                )
+                .WithTimeout();
             var detachedTcs = new TaskCompletionSource<bool>();
             Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(Page, "frame1").WithTimeout();
@@ -214,19 +269,30 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(Page.Frames, Has.Exactly(1).Items);
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support wait for navigation for transitions from local to OOPIF")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should support wait for navigation for transitions from local to OOPIF"
+            )
+        ]
         public async Task ShouldSupportWaitForNavigationForTransitionsFromLocalToOopif()
         {
             await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
+            await FrameUtils
+                .AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage)
+                .WithTimeout();
             var frame = await frameTask.WithTimeout();
             var nav = frame.WaitForNavigationAsync();
-            await FrameUtils.NavigateFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
-            ).WithTimeout();
+            await FrameUtils
+                .NavigateFrameAsync(
+                    Page,
+                    "frame1",
+                    TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                )
+                .WithTimeout();
             await nav.WithTimeout();
             var detachedTcs = new TaskCompletionSource<bool>();
             Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
@@ -241,9 +307,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
             await FrameUtils.AttachFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             var frame = await frameTask.WithTimeout();
             Assert.That(frame.Url, Does.Contain("/empty.html"));
@@ -251,7 +317,14 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(frame.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should report requests from OOP iframes to the browser and context")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should report requests from OOP iframes to the browser and context"
+            )
+        ]
         public async Task ShouldReportRequestsFromOopIframesToTheBrowserAndContext()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -262,8 +335,12 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             );
 
             var url = TestConstants.CrossProcessHttpPrefix + "/one-style.css";
-            var browserTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
-            var contextTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var browserTcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+            var contextTcs = new TaskCompletionSource<IRequest>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
 
             void OnBrowserRequest(object sender, RequestEventArgs e)
             {
@@ -285,7 +362,10 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Context.Request += OnContextRequest;
             try
             {
-                await frame.EvaluateFunctionAsync("async (url) => { await fetch(url, {cache: 'no-store'}); }", url);
+                await frame.EvaluateFunctionAsync(
+                    "async (url) => { await fetch(url, {cache: 'no-store'}); }",
+                    url
+                );
 
                 var browserRequest = await browserTcs.Task.WithTimeout();
                 var contextRequest = await contextTcs.Task.WithTimeout();
@@ -307,9 +387,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
             await FrameUtils.AttachFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             var frame = await frameTask.WithTimeout();
             await frame.EvaluateFunctionAsync("() => _test = 'Test 123!'");
@@ -336,14 +416,17 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             }
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var frameTask = Page.WaitForFrameAsync((frame) => Page.Frames.ToList().IndexOf(frame) == 1);
+            var frameTask = Page.WaitForFrameAsync(
+                (frame) => Page.Frames.ToList().IndexOf(frame) == 1
+            );
             await FrameUtils.AttachFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             var frame = await frameTask.WithTimeout(30_000);
-            await frame.EvaluateFunctionAsync(@"() => {
+            await frame.EvaluateFunctionAsync(
+                @"() => {
                 const button = document.createElement('button');
                 button.id = 'test-button';
                 button.innerText = 'click';
@@ -351,14 +434,20 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                     button.id = 'clicked';
                 };
                 document.body.appendChild(button);
-            }");
+            }"
+            );
 
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
                 document.body.style.border = '150px solid black';
                 document.body.style.margin = '250px';
                 document.body.style.padding = '50px';
-            }");
-            await frame.WaitForSelectorAsync("#test-button", new WaitForSelectorOptions { Visible = true });
+            }"
+            );
+            await frame.WaitForSelectorAsync(
+                "#test-button",
+                new WaitForSelectorOptions { Visible = true }
+            );
             await frame.ClickAsync("#test-button");
             await frame.WaitForSelectorAsync("#clicked");
         }
@@ -376,20 +465,36 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should wait for inner OOPIFs")]
         public async Task ShouldWaitForInnerOopifs()
         {
-            var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("inner-frame2.html"));
+            var frameTask = Page.WaitForFrameAsync(
+                (frame) => frame.Url.EndsWith("inner-frame2.html")
+            );
             await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/main-frame.html");
             var frame = await frameTask.WithTimeout();
             Assert.That((await GetIframesAsync()), Has.Length.EqualTo(2));
-            Assert.That(await frame.EvaluateFunctionAsync<int>("() => document.querySelectorAll('button').length"), Is.EqualTo(1));
+            Assert.That(
+                await frame.EvaluateFunctionAsync<int>(
+                    "() => document.querySelectorAll('button').length"
+                ),
+                Is.EqualTo(1)
+            );
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should load oopif iframes with subresources and request interception")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should load oopif iframes with subresources and request interception"
+            )
+        ]
         public async Task ShouldLoadOopifIframesWithSubresourcesAndRequestInterception()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += (sender, e) => _ = e.Request.ContinueAsync();
-            var requestTask = Page.WaitForRequestAsync(request => request.Url.Contains("requestFromOOPIF"));
+            var requestTask = Page.WaitForRequestAsync(request =>
+                request.Url.Contains("requestFromOOPIF")
+            );
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             await frameTask.WithTimeout();
             await requestTask.WithTimeout();
@@ -400,25 +505,34 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support frames within OOP iframes")]
         public async Task ShouldSupportFramesWithinOopIframes()
         {
-            var oopifFrameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
+            var oopifFrameTask = Page.WaitForFrameAsync(
+                (frame) => frame.Url.EndsWith("/oopif.html")
+            );
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             var oopIframe = await oopifFrameTask.WithTimeout();
-            await FrameUtils.AttachFrameAsync(
-              oopIframe,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
-            ).WithTimeout(2_000);
+            await FrameUtils
+                .AttachFrameAsync(
+                    oopIframe,
+                    "frame1",
+                    TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                )
+                .WithTimeout(2_000);
             var frame1 = oopIframe.ChildFrames.First();
             Assert.That(frame1.Url, Does.Contain("empty.html"));
-            await FrameUtils.NavigateFrameAsync(
-              oopIframe,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/oopif.html"
-            ).WithTimeout();
+            await FrameUtils
+                .NavigateFrameAsync(
+                    oopIframe,
+                    "frame1",
+                    TestConstants.CrossProcessHttpPrefix + "/oopif.html"
+                )
+                .WithTimeout();
             Assert.That(frame1.Url, Does.Contain("oopif.html"));
-            await frame1.GoToAsync(
-                TestConstants.CrossProcessHttpPrefix + "/oopif.html#navigate-within-document",
-                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Load } }).WithTimeout();
+            await frame1
+                .GoToAsync(
+                    TestConstants.CrossProcessHttpPrefix + "/oopif.html#navigate-within-document",
+                    new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Load } }
+                )
+                .WithTimeout();
             Assert.That(frame1.Url, Does.Contain("/oopif.html#navigate-within-document"));
             var detachedTcs = new TaskCompletionSource<bool>();
             Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
@@ -427,39 +541,59 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(oopIframe.ChildFrames, Is.Empty);
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs"
+            )
+        ]
         public async Task ClickablePointBoundingBoxBoxModelShouldWorkForElementsInsideOopifs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
-            await FrameUtils.AttachFrameAsync(
-              Page,
-              "frame1",
-              TestConstants.CrossProcessHttpPrefix + "/empty.html"
-            ).WithTimeout();
+            await FrameUtils
+                .AttachFrameAsync(
+                    Page,
+                    "frame1",
+                    TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                )
+                .WithTimeout();
             var frame = await frameTask.WithTimeout();
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
                 document.body.style.border = '50px solid black';
                 document.body.style.margin = '50px';
                 document.body.style.padding = '50px';
-            }");
-            await frame.EvaluateFunctionAsync(@"() => {
+            }"
+            );
+            await frame.EvaluateFunctionAsync(
+                @"() => {
                 const button = document.createElement('button');
                 button.id = 'test-button';
                 button.innerText = 'click';
                 document.body.appendChild(button);
-            }");
+            }"
+            );
 
-            var button = await frame.WaitForSelectorAsync("#test-button", new WaitForSelectorOptions { Visible = true });
+            var button = await frame.WaitForSelectorAsync(
+                "#test-button",
+                new WaitForSelectorOptions { Visible = true }
+            );
             var result = await button.ClickablePointAsync();
             Assert.That(result.X, Is.GreaterThan(150)); // padding + margin + border left
             Assert.That(result.Y, Is.GreaterThan(150)); // padding + margin + border top
             var resultBoxModel = await button.BoxModelAsync();
-            foreach (var quad in new[] {
-              resultBoxModel.Content,
-              resultBoxModel.Border,
-              resultBoxModel.Margin,
-              resultBoxModel.Padding})
+            foreach (
+                var quad in new[]
+                {
+                    resultBoxModel.Content,
+                    resultBoxModel.Border,
+                    resultBoxModel.Margin,
+                    resultBoxModel.Padding,
+                }
+            )
             {
                 foreach (var part in quad)
                 {
@@ -472,7 +606,14 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(resultBoundingBox.Y, Is.GreaterThan(150)); // padding + margin + border top
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should detect existing OOPIFs when Puppeteer connects to an existing page")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should detect existing OOPIFs when Puppeteer connects to an existing page"
+            )
+        ]
         public async Task ShouldDetectExistingOopifsWhenPuppeteerConnectsToAnExistingPage()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
@@ -482,10 +623,13 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
 
             var browserURL = $"http://127.0.0.1:{_port}";
-            var browser1 = await Puppeteer.ConnectAsync(new() { BrowserURL = browserURL }, TestConstants.LoggerFactory);
-            var target = await browser1.WaitForTargetAsync((target) =>
-              target.Url.EndsWith("dynamic-oopif.html")
-            ).WithTimeout();
+            var browser1 = await Puppeteer.ConnectAsync(
+                new() { BrowserURL = browserURL },
+                TestConstants.LoggerFactory
+            );
+            var target = await browser1
+                .WaitForTargetAsync((target) => target.Url.EndsWith("dynamic-oopif.html"))
+                .WithTimeout();
             await target.PageAsync();
             browser1.Disconnect();
         }
@@ -495,15 +639,20 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/lazy-oopif-frame.html");
             await Page.SetViewportAsync(new ViewPortOptions() { Width = 1000, Height = 1000 });
-            Assert.That(Page.Frames.Where(frame => !((Frame)frame).HasStartedLoading), Has.Exactly(1).Items);
+            Assert.That(
+                Page.Frames.Where(frame => !((Frame)frame).HasStartedLoading),
+                Has.Exactly(1).Items
+            );
         }
 
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support evaluateOnNewDocument")]
         public async Task ShouldSupportEvaluateOnNewDocument()
         {
-            await Page.EvaluateFunctionOnNewDocumentAsync(@"() => {
+            await Page.EvaluateFunctionOnNewDocumentAsync(
+                @"() => {
                 window.evaluateOnNewDocument = true;
-            }");
+            }"
+            );
             var frameTask = Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/oopif.html"));
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             await frameTask.WithTimeout();
@@ -512,16 +661,26 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             {
                 Assert.That(
                     await frame.EvaluateFunctionAsync<bool>("() => window.evaluateOnNewDocument"),
-                    Is.True);
+                    Is.True
+                );
             }
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support removing evaluateOnNewDocument scripts")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should support removing evaluateOnNewDocument scripts"
+            )
+        ]
         public async Task ShouldSupportRemovingEvaluateOnNewDocumentScripts()
         {
-            var result = await Page.EvaluateFunctionOnNewDocumentAsync(@"() => {
+            var result = await Page.EvaluateFunctionOnNewDocumentAsync(
+                @"() => {
                 window.evaluateOnNewDocument = true;
-            }");
+            }"
+            );
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/oopif.html"));
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
@@ -529,7 +688,8 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             {
                 Assert.That(
                     await frame.EvaluateFunctionAsync<bool>("() => window.evaluateOnNewDocument"),
-                    Is.True);
+                    Is.True
+                );
             }
 
             await Page.RemoveScriptToEvaluateOnNewDocumentAsync(result.Identifier);
@@ -569,11 +729,19 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             {
                 Assert.That(
                     await frame.EvaluateFunctionAsync<bool>("() => !!window['plusOne']"),
-                    Is.False);
+                    Is.False
+                );
             }
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should exposeFunction when an OOP iframe goes away mid-call")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should exposeFunction when an OOP iframe goes away mid-call"
+            )
+        ]
         public async Task ShouldExposeFunctionWhenAnOopIframeGoesAwayMidCall()
         {
             const int FrameCount = 8;
@@ -584,31 +752,44 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                 await FrameUtils.AttachFrameAsync(
                     Page,
                     $"oopif{i}",
-                    TestConstants.CrossProcessHttpPrefix + "/empty.html");
+                    TestConstants.CrossProcessHttpPrefix + "/empty.html"
+                );
             }
 
             Assert.That(Page.Frames, Has.Length.EqualTo(FrameCount + 1));
 
-            var detachedTask = Page.EvaluateFunctionAsync(@"() => {
+            var detachedTask = Page.EvaluateFunctionAsync(
+                @"() => {
                 for (const frame of document.querySelectorAll('iframe')) {
                     frame.remove();
                 }
-            }");
+            }"
+            );
             var exposedTask = Page.ExposeFunctionAsync("doubleIt", (int value) => value * 2);
 
             await exposedTask;
             await detachedTask;
 
-            var result = await Page.EvaluateFunctionAsync<int>("async () => await window.doubleIt(21)");
+            var result = await Page.EvaluateFunctionAsync<int>(
+                "async () => await window.doubleIt(21)"
+            );
             Assert.That(result, Is.EqualTo(42));
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should exposeFunction on a page with a PDF viewer")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "OOPIF",
+                "should exposeFunction on a page with a PDF viewer"
+            )
+        ]
         public async Task ShouldExposeFunctionOnAPageWithAPdfViewer()
         {
             await Page.GoToAsync(
                 TestConstants.ServerUrl + "/pdf-viewer.html",
-                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
+                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } }
+            );
 
             await Page.ExposeFunctionAsync("test", () =>
             {
@@ -621,37 +802,60 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         {
             await Page.GoToAsync(
                 TestConstants.ServerUrl + "/pdf-viewer.html",
-                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
+                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } }
+            );
 
             var results = await Task.WhenAll(
                 Page.Frames.Select(async frame =>
-                    await frame.EvaluateFunctionAsync<string>("() => window.location.pathname")));
+                    await frame.EvaluateFunctionAsync<string>("() => window.location.pathname")
+                )
+            );
 
-            Assert.That(results, Is.EqualTo(new[]
-            {
-                "/pdf-viewer.html",
-                "/sample.pdf",
-                "/index.html",
-                "/sample.pdf",
-            }));
+            Assert.That(
+                results,
+                Is.EqualTo(
+                    new[] { "/pdf-viewer.html", "/sample.pdf", "/index.html", "/sample.pdf" }
+                )
+            );
         }
 
-        [Test, PuppeteerTest("oopif.spec", "waitForFrame", "should resolve immediately if the frame already exists")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.spec",
+                "waitForFrame",
+                "should resolve immediately if the frame already exists"
+            )
+        ]
         public async Task ShouldResolveImmediatelyIfTheFrameAlreadyExists()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.CrossProcessHttpPrefix + "/empty.html");
+            await FrameUtils.AttachFrameAsync(
+                Page,
+                "frame2",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
+            );
             await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/empty.html"));
         }
 
-
-        [Test, PuppeteerTest("oopif.test", "OOPIF", "should continue intercepted requests from workers in OOPIFs")]
+        [
+            Test,
+            PuppeteerTest(
+                "oopif.test",
+                "OOPIF",
+                "should continue intercepted requests from workers in OOPIFs"
+            )
+        ]
         public async Task ShouldContinueInterceptedRequestsFromWorkersInOopifs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
-            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.CrossProcessHttpPrefix + "/worker/worker.html");
+            await FrameUtils.AttachFrameAsync(
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/worker/worker.html"
+            );
             var worker = await workerCreatedTcs.Task.WithTimeout();
 
             await Page.SetRequestInterceptionAsync(true);
@@ -674,7 +878,8 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                         return 'error';
                     }
                 }",
-                url);
+                url
+            );
 
             Assert.That(result, Is.EqualTo("ok"));
             var request = requests.Find(r => r.Url == url);
@@ -689,12 +894,15 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var networkEvents = new List<string>();
             var otherSessions = new List<ICDPSession>();
 
-            await session.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
-            {
-                AutoAttach = true,
-                Flatten = true,
-                WaitForDebuggerOnStart = true,
-            });
+            await session.SendAsync(
+                "Target.setAutoAttach",
+                new TargetSetAutoAttachRequest
+                {
+                    AutoAttach = true,
+                    Flatten = true,
+                    WaitForDebuggerOnStart = true,
+                }
+            );
 
             ((CDPSession)session).SessionAttached += async (_, e) =>
             {
@@ -705,16 +913,24 @@ namespace PuppeteerSharp.Tests.OOPIFTests
 
                 e.Session.MessageReceived += (_, e) =>
                 {
-                    if (e.MessageID.Equals("Network.requestWillBeSent", StringComparison.CurrentCultureIgnoreCase))
+                    if (
+                        e.MessageID.Equals(
+                            "Network.requestWillBeSent",
+                            StringComparison.CurrentCultureIgnoreCase
+                        )
+                    )
                     {
-                        networkEvents.Add(e.MessageData.GetProperty("request").GetProperty("url").GetString());
+                        networkEvents.Add(
+                            e.MessageData.GetProperty("request").GetProperty("url").GetString()
+                        );
                     }
                 };
             };
 
             // Navigate to the empty page and add an OOPIF iframe with at least one request.
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"(frameUrl) => {
+            await Page.EvaluateFunctionAsync(
+                @"(frameUrl) => {
                     const frame = document.createElement('iframe');
                     frame.setAttribute('src', frameUrl);
                     document.body.appendChild(frame);
@@ -722,7 +938,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                         frame.onload = x;
                         frame.onerror = y;
                     });
-                }", TestConstants.ServerUrl.Replace("localhost", "oopifdomain") + "/one-style.html");
+                }",
+                TestConstants.ServerUrl.Replace("localhost", "oopifdomain") + "/one-style.html"
+            );
             await Page.WaitForSelectorAsync("iframe");
 
             // Ensure we found the iframe session.
@@ -730,19 +948,26 @@ namespace PuppeteerSharp.Tests.OOPIFTests
 
             // Resume the iframe and trigger another request.
             var iframeSession = otherSessions[0];
-            await iframeSession.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
-            {
-                Expression = "fetch('/fetch')",
-                AwaitPromise = true,
-            });
+            await iframeSession.SendAsync(
+                "Runtime.evaluate",
+                new RuntimeEvaluateRequest { Expression = "fetch('/fetch')", AwaitPromise = true }
+            );
 
-            Assert.That(networkEvents, Does.Contain($"http://oopifdomain:{TestConstants.Port}/fetch"));
+            Assert.That(
+                networkEvents,
+                Does.Contain($"http://oopifdomain:{TestConstants.Port}/fetch")
+            );
         }
 
-        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should retrieve body for OOPIF document requests")]
+        [
+            Test,
+            PuppeteerTest("oopif.spec", "OOPIF", "should retrieve body for OOPIF document requests")
+        ]
         public async Task ShouldRetrieveBodyForOopifDocumentRequests()
         {
-            var frameUrl = TestConstants.ServerUrl.Replace("localhost", "oopifdomain") + "/oopif-response.html";
+            var frameUrl =
+                TestConstants.ServerUrl.Replace("localhost", "oopifdomain")
+                + "/oopif-response.html";
 
             IResponse testResponse = null;
 
@@ -756,7 +981,8 @@ namespace PuppeteerSharp.Tests.OOPIFTests
 
             // Navigate to the empty page and add an OOPIF iframe.
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync(@"(frameUrl) => {
+            await Page.EvaluateFunctionAsync(
+                @"(frameUrl) => {
                 const frame = document.createElement('iframe');
                 frame.setAttribute('src', frameUrl);
                 document.body.appendChild(frame);
@@ -764,7 +990,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                     frame.onload = x;
                     frame.onerror = y;
                 });
-            }", frameUrl);
+            }",
+                frameUrl
+            );
             await Page.WaitForSelectorAsync("iframe");
 
             Assert.That(testResponse, Is.Not.Null);
@@ -782,14 +1010,18 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await using var page = await browser.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.SetRequestInterceptionAsync(true);
-            page.Request += async (_, e) => await e.Request.RespondAsync(
-                new ResponseData { Body = "{ body: 'YO, GOOGLE.COM'}" });
-            await page.EvaluateFunctionHandleAsync(@"() => {
+            page.Request += async (_, e) =>
+                await e.Request.RespondAsync(
+                    new ResponseData { Body = "{ body: 'YO, GOOGLE.COM'}" }
+                );
+            await page.EvaluateFunctionHandleAsync(
+                @"() => {
                     const frame = document.createElement('iframe');
                     frame.setAttribute('src', 'https://google.com/');
                     document.body.appendChild(frame);
                     return new Promise(x => frame.onload = x);
-                }");
+                }"
+            );
             await page.WaitForSelectorAsync("iframe[src=\"https://google.com/\"]");
             var urls = Array.ConvertAll(page.Frames, frame => frame.Url);
             Array.Sort((Array)urls);
@@ -798,7 +1030,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
 
         private async Task<ElementHandle[]> GetIframesAsync()
         {
-            var frameElements = await Task.WhenAll(Page.Frames.Select(frame => ((Frame)frame).FrameElementAsync()).ToArray());
+            var frameElements = await Task.WhenAll(
+                Page.Frames.Select(frame => ((Frame)frame).FrameElementAsync()).ToArray()
+            );
             return frameElements.Where(element => element != null).ToArray();
         }
     }

@@ -6,22 +6,42 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
 {
     public class GetFeaturesTests : PuppeteerPageBaseTest
     {
-
-        [Test, PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "returns an empty array when no options are provided")]
+        [
+            Test,
+            PuppeteerTest(
+                "ChromeLauncher.test.ts",
+                "getFeatures",
+                "returns an empty array when no options are provided"
+            )
+        ]
         public void ReturnsAnEmptyArrayWhenNoOptionsAreProvided()
         {
             var result = ChromeLauncher.GetFeatures("--foo", Array.Empty<string>());
             Assert.That(result, Is.Empty);
         }
 
-        [Test, PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "returns an empty array when no options match the flag")]
+        [
+            Test,
+            PuppeteerTest(
+                "ChromeLauncher.test.ts",
+                "getFeatures",
+                "returns an empty array when no options match the flag"
+            )
+        ]
         public void ReturnsAnEmptyArrayWhenNoOptionsMatchTheFlag()
         {
             var result = ChromeLauncher.GetFeatures("--foo", new[] { "--bar", "--baz" });
             Assert.That(result, Is.Empty);
         }
 
-        [Test, PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "returns an array of values when options match the flag")]
+        [
+            Test,
+            PuppeteerTest(
+                "ChromeLauncher.test.ts",
+                "getFeatures",
+                "returns an array of values when options match the flag"
+            )
+        ]
         public void ReturnsAnArrayOfValuesWhenOptionsMatchTheFlag()
         {
             var result = ChromeLauncher.GetFeatures("--foo", new[] { "--foo=bar", "--foo=baz" });
@@ -35,17 +55,30 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
             Assert.That(result, Is.Empty);
         }
 
-        [Test, PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "handles equals sign around the flag and value")]
+        [
+            Test,
+            PuppeteerTest(
+                "ChromeLauncher.test.ts",
+                "getFeatures",
+                "handles equals sign around the flag and value"
+            )
+        ]
         public void HandlesEqualsSignAroundTheFlagAndValue()
         {
             var result = ChromeLauncher.GetFeatures("--foo", new[] { "--foo=bar", "--foo=baz" });
             Assert.That(result, Is.EqualTo(new[] { "bar", "baz" }));
         }
 
-        [Test, PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "handles comma-separated values")]
+        [
+            Test,
+            PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "handles comma-separated values")
+        ]
         public void HandlesCommaSeparatedValues()
         {
-            var result = ChromeLauncher.GetFeatures("--foo", new[] { "--foo=bar,baz", "--foo=qux" });
+            var result = ChromeLauncher.GetFeatures(
+                "--foo",
+                new[] { "--foo=bar,baz", "--foo=qux" }
+            );
             Assert.That(result, Is.EqualTo(new[] { "bar", "baz", "qux" }));
         }
     }

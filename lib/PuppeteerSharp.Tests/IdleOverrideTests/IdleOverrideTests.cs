@@ -13,7 +13,8 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
                 @"(element) => {
                     return element.innerText;
                 }",
-                stateElement);
+                stateElement
+            );
         }
 
         private async Task VerifyStateAsync(string expectedState)
@@ -22,14 +23,20 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
             Assert.That(actualState, Is.EqualTo(expectedState));
         }
 
-        [Test, PuppeteerTest("idle_override.spec", "Emulate idle state", "changing idle state emulation causes change of the IdleDetector state")]
+        [
+            Test,
+            PuppeteerTest(
+                "idle_override.spec",
+                "Emulate idle state",
+                "changing idle state emulation causes change of the IdleDetector state"
+            )
+        ]
         public async Task ChangingIdleStateEmulationCausesChangeOfTheIdleDetectorState()
         {
             await Context.OverridePermissionsAsync(
                 TestConstants.ServerUrl + "/idle-detector.html",
-                [
-                    OverridePermission.IdleDetection
-                ]);
+                [OverridePermission.IdleDetection]
+            );
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/idle-detector.html");
 
@@ -37,33 +44,25 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
             var initialState = await GetIdleStateAsync();
 
             // Emulate Idle states and verify IdleDetector updates state accordingly.
-            await Page.EmulateIdleStateAsync(new EmulateIdleOverrides
-            {
-                IsUserActive = false,
-                IsScreenUnlocked = false,
-            });
+            await Page.EmulateIdleStateAsync(
+                new EmulateIdleOverrides { IsUserActive = false, IsScreenUnlocked = false }
+            );
 
             await VerifyStateAsync("Idle state: idle, locked.");
 
-            await Page.EmulateIdleStateAsync(new EmulateIdleOverrides
-            {
-                IsUserActive = true,
-                IsScreenUnlocked = false,
-            });
+            await Page.EmulateIdleStateAsync(
+                new EmulateIdleOverrides { IsUserActive = true, IsScreenUnlocked = false }
+            );
             await VerifyStateAsync("Idle state: active, locked.");
 
-            await Page.EmulateIdleStateAsync(new EmulateIdleOverrides
-            {
-                IsUserActive = true,
-                IsScreenUnlocked = true,
-            });
+            await Page.EmulateIdleStateAsync(
+                new EmulateIdleOverrides { IsUserActive = true, IsScreenUnlocked = true }
+            );
             await VerifyStateAsync("Idle state: active, unlocked.");
 
-            await Page.EmulateIdleStateAsync(new EmulateIdleOverrides
-            {
-                IsUserActive = false,
-                IsScreenUnlocked = true,
-            });
+            await Page.EmulateIdleStateAsync(
+                new EmulateIdleOverrides { IsUserActive = false, IsScreenUnlocked = true }
+            );
             await VerifyStateAsync("Idle state: idle, unlocked.");
 
             // Remove Idle emulation and verify IdleDetector is in initial state.
@@ -71,11 +70,9 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
             await VerifyStateAsync(initialState);
 
             // Emulate idle state again after removing emulation.
-            await Page.EmulateIdleStateAsync(new EmulateIdleOverrides
-            {
-                IsUserActive = false,
-                IsScreenUnlocked = false,
-            });
+            await Page.EmulateIdleStateAsync(
+                new EmulateIdleOverrides { IsUserActive = false, IsScreenUnlocked = false }
+            );
             await VerifyStateAsync("Idle state: idle, locked.");
 
             // Remove emulation second time.

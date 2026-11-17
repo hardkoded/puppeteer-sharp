@@ -8,9 +8,8 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
 {
     public class PSelectorTests : PuppeteerPageBaseTest
     {
-        public PSelectorTests() : base()
-        {
-        }
+        public PSelectorTests()
+            : base() { }
 
         [TearDown]
         public void ClearCustomQueryHandlers()
@@ -18,7 +17,14 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Browser.ClearCustomQueryHandlers();
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work with CSS selectors")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work with CSS selectors"
+            )
+        ]
         public async Task ShouldWorkWithCssSelectors()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -28,7 +34,14 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(id, Is.EqualTo("b"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work with puppeteer pseudo classes")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work with puppeteer pseudo classes"
+            )
+        ]
         public async Task ShouldWorkWithPuppeteerPseudoClasses()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -38,7 +51,14 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(id, Is.EqualTo("b"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work with deep combinators")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work with deep combinators"
+            )
+        ]
         public async Task ShouldWorkWithDeepCombinators()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -51,18 +71,34 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
 
             // div >>> div (deep descendant combinator)
             var elements = await Page.QuerySelectorAllAsync("div >>> div");
-            Assert.That(await elements.ElementAt(1).EvaluateFunctionAsync<string>("element => element.id"), Is.EqualTo("d"));
+            Assert.That(
+                await elements.ElementAt(1).EvaluateFunctionAsync<string>("element => element.id"),
+                Is.EqualTo("d")
+            );
 
             // #c >>>> div
             var elements2 = await Page.QuerySelectorAllAsync("#c >>>> div");
-            Assert.That(await elements2.First().EvaluateFunctionAsync<string>("element => element.id"), Is.EqualTo("d"));
+            Assert.That(
+                await elements2.First().EvaluateFunctionAsync<string>("element => element.id"),
+                Is.EqualTo("d")
+            );
 
             // #c >>> div
             var elements3 = await Page.QuerySelectorAllAsync("#c >>> div");
-            Assert.That(await elements3.First().EvaluateFunctionAsync<string>("element => element.id"), Is.EqualTo("d"));
+            Assert.That(
+                await elements3.First().EvaluateFunctionAsync<string>("element => element.id"),
+                Is.EqualTo("d")
+            );
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work with text selectors")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work with text selectors"
+            )
+        ]
         public async Task ShouldWorkWithTextSelectors()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -72,17 +108,27 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(id, Is.EqualTo("b"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should query light DOM and slotted text of shadow hosts")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should query light DOM and slotted text of shadow hosts"
+            )
+        ]
         public async Task ShouldQueryLightDomAndSlottedTextOfShadowHosts()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
                 <main><h1>Cart</h1><my-button>Checkout</my-button></main>
                 <div id=""wrap""
                   ><my-list><li>One</li><li>Two</li></my-list></div
                 >
-            ");
+            "
+            );
 
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
                 for (const h of document.querySelectorAll('my-button')) {
                     h.attachShadow({mode: 'open'}).innerHTML =
                         '<button><slot></slot></button>';
@@ -90,20 +136,37 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
                 for (const h of document.querySelectorAll('my-list')) {
                     h.attachShadow({mode: 'open'}).innerHTML = '<ul><slot></slot></ul>';
                 }
-            }");
+            }"
+            );
 
             const string tagNames = "els => els.map(e => e.tagName.toLowerCase())";
             var checkout = await Page.QuerySelectorAllHandleAsync("::-p-text(Checkout)");
-            Assert.That(await checkout.EvaluateFunctionAsync<string[]>(tagNames), Is.EqualTo(new[] { "my-button" }));
+            Assert.That(
+                await checkout.EvaluateFunctionAsync<string[]>(tagNames),
+                Is.EqualTo(new[] { "my-button" })
+            );
 
             var two = await Page.QuerySelectorAllHandleAsync("::-p-text(Two)");
-            Assert.That(await two.EvaluateFunctionAsync<string[]>(tagNames), Is.EqualTo(new[] { "li" }));
+            Assert.That(
+                await two.EvaluateFunctionAsync<string[]>(tagNames),
+                Is.EqualTo(new[] { "li" })
+            );
 
             var one = await Page.QuerySelectorAllHandleAsync("#wrap ::-p-text(One)");
-            Assert.That(await one.EvaluateFunctionAsync<string[]>(tagNames), Is.EqualTo(new[] { "li" }));
+            Assert.That(
+                await one.EvaluateFunctionAsync<string[]>(tagNames),
+                Is.EqualTo(new[] { "li" })
+            );
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work ARIA selectors")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work ARIA selectors"
+            )
+        ]
         public async Task ShouldWorkAriaSelectors()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -113,7 +176,14 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(id, Is.EqualTo("b"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work for ARIA selectors in multiple isolated worlds")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work for ARIA selectors in multiple isolated worlds"
+            )
+        ]
         public async Task ShouldWorkForAriaSelectorsInMultipleIsolatedWorlds()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -131,7 +201,14 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(id2, Is.EqualTo("b"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work ARIA selectors with role")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work ARIA selectors with role"
+            )
+        ]
         public async Task ShouldWorkAriaSelectorsWithRole()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -141,17 +218,33 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(id, Is.EqualTo("b"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work ARIA selectors with name and role")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work ARIA selectors with name and role"
+            )
+        ]
         public async Task ShouldWorkAriaSelectorsWithNameAndRole()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
-            var element = await Page.QuerySelectorAsync("::-p-aria([name=\"world\"][role=\"button\"])");
+            var element = await Page.QuerySelectorAsync(
+                "::-p-aria([name=\"world\"][role=\"button\"])"
+            );
             Assert.That(element, Is.Not.Null);
             var id = await element.EvaluateFunctionAsync<string>("element => element.id");
             Assert.That(id, Is.EqualTo("b"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work XPath selectors")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work XPath selectors"
+            )
+        ]
         public async Task ShouldWorkXPathSelectors()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -161,13 +254,23 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(id, Is.EqualTo("b"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work with custom selectors")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work with custom selectors"
+            )
+        ]
         public async Task ShouldWorkWithCustomSelectors()
         {
-            Browser.RegisterCustomQueryHandler("div", new CustomQueryHandler
-            {
-                QueryOne = "(element, selector) => document.querySelector('div')",
-            });
+            Browser.RegisterCustomQueryHandler(
+                "div",
+                new CustomQueryHandler
+                {
+                    QueryOne = "(element, selector) => document.querySelector('div')",
+                }
+            );
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
             var element = await Page.QuerySelectorAsync("::-p-div");
@@ -176,14 +279,25 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(id, Is.EqualTo("a"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work with custom selectors with args")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work with custom selectors with args"
+            )
+        ]
         public async Task ShouldWorkWithCustomSelectorsWithArgs()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
-            Browser.RegisterCustomQueryHandler("div", new CustomQueryHandler
-            {
-                QueryOne = "(element, selector) => selector === 'true' ? document.querySelector('div') : document.querySelector('button')",
-            });
+            Browser.RegisterCustomQueryHandler(
+                "div",
+                new CustomQueryHandler
+                {
+                    QueryOne =
+                        "(element, selector) => selector === 'true' ? document.querySelector('div') : document.querySelector('button')",
+                }
+            );
 
             {
                 var element = await Page.QuerySelectorAsync("::-p-div(true)");
@@ -211,7 +325,14 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             }
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work with :hover")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work with :hover"
+            )
+        ]
         public async Task ShouldWorkWithHover()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -221,31 +342,52 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
 
             var button2 = await Page.QuerySelectorAsync("div ::-p-text(world):hover");
             Assert.That(button2, Is.Not.Null);
-            var textContent = await button2.EvaluateFunctionAsync<string>("span => span.textContent");
+            var textContent = await button2.EvaluateFunctionAsync<string>(
+                "span => span.textContent"
+            );
             Assert.That(textContent, Is.EqualTo("world"));
             var tagName = await button2.EvaluateFunctionAsync<string>("span => span.tagName");
             Assert.That(tagName, Is.EqualTo("BUTTON"));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should match querySelector* ordering")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should match querySelector* ordering"
+            )
+        ]
         public async Task ShouldMatchQuerySelectorOrdering()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
             foreach (var list in Permute(new[] { "div", "button", "span" }))
             {
-                var selector = string.Join(",", list.Select(s => s == "button" ? "::-p-text(world)" : s));
+                var selector = string.Join(
+                    ",",
+                    list.Select(s => s == "button" ? "::-p-text(world)" : s)
+                );
                 var elements = await Page.QuerySelectorAllAsync(selector);
                 var actual = new List<string>();
                 foreach (var element in elements)
                 {
-                    actual.Add(await element.EvaluateFunctionAsync<string>("element => element.id"));
+                    actual.Add(
+                        await element.EvaluateFunctionAsync<string>("element => element.id")
+                    );
                 }
 
                 Assert.That(string.Join(",", actual), Is.EqualTo("a,b,f,c"));
             }
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should work with selector lists")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should work with selector lists"
+            )
+        ]
         public async Task ShouldWorkWithSelectorLists()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -253,7 +395,14 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(elements.Count(), Is.EqualTo(3));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should not have duplicate elements from selector lists")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should not have duplicate elements from selector lists"
+            )
+        ]
         public async Task ShouldNotHaveDuplicateElementsFromSelectorLists()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
@@ -261,24 +410,35 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(elements.Count(), Is.EqualTo(1));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests P selectors", "should handle escapes")]
+        [
+            Test,
+            PuppeteerTest(
+                "queryhandler.spec",
+                "Query handler tests P selectors",
+                "should handle escapes"
+            )
+        ]
         public async Task ShouldHandleEscapes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/p-selectors.html");
             var element = await Page.QuerySelectorAsync(
-                ":scope >>> ::-p-text(My name is Jun \\(pronounced like \"June\"\\))");
+                ":scope >>> ::-p-text(My name is Jun \\(pronounced like \"June\"\\))"
+            );
             Assert.That(element, Is.Not.Null);
 
             var element2 = await Page.QuerySelectorAsync(
-                ":scope >>> ::-p-text(\"My name is Jun (pronounced like \\\"June\\\")\")");
+                ":scope >>> ::-p-text(\"My name is Jun (pronounced like \\\"June\\\")\")"
+            );
             Assert.That(element2, Is.Not.Null);
 
             var element3 = await Page.QuerySelectorAsync(
-                ":scope >>> ::-p-text(My name is Jun \\(pronounced like \"June\"\\)\")");
+                ":scope >>> ::-p-text(My name is Jun \\(pronounced like \"June\"\\)\")"
+            );
             Assert.That(element3, Is.Null);
 
             var element4 = await Page.QuerySelectorAsync(
-                ":scope >>> ::-p-text(\"My name is Jun \\(pronounced like \"June\"\\))");
+                ":scope >>> ::-p-text(\"My name is Jun \\(pronounced like \"June\"\\))"
+            );
             Assert.That(element4, Is.Null);
         }
 

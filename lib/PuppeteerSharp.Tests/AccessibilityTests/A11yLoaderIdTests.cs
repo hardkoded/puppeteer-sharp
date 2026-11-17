@@ -8,22 +8,29 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
 {
     public class A11yLoaderIdTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("a11yLoaderId.spec", "Accessibility loaderId", "should match loaderId for iframes")]
+        [
+            Test,
+            PuppeteerTest(
+                "a11yLoaderId.spec",
+                "Accessibility loaderId",
+                "should match loaderId for iframes"
+            )
+        ]
         public async Task ShouldMatchLoaderIdForIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var frame1 = Page.Frames[1];
-            await frame1.EvaluateFunctionAsync(@"() => {
+            await frame1.EvaluateFunctionAsync(
+                @"() => {
                 const button = document.createElement('button');
                 button.innerText = 'value1';
                 document.body.appendChild(button);
-            }");
-            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-            {
-                InterestingOnly = true,
-                IncludeIframes = true,
-            });
+            }"
+            );
+            var snapshot = await Page.Accessibility.SnapshotAsync(
+                new AccessibilitySnapshotOptions { InterestingOnly = true, IncludeIframes = true }
+            );
 
             var mainLoaderId = ((Frame)Page.MainFrame).LoaderId;
             var frame1LoaderId = ((Frame)frame1).LoaderId;
@@ -63,7 +70,14 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(buttonNode.LoaderId, Is.EqualTo(frame1LoaderId));
         }
 
-        [Test, PuppeteerTest("a11yLoaderId.spec", "Accessibility loaderId", "should not resolve an element handle after a cross-process navigation")]
+        [
+            Test,
+            PuppeteerTest(
+                "a11yLoaderId.spec",
+                "Accessibility loaderId",
+                "should not resolve an element handle after a cross-process navigation"
+            )
+        ]
         public async Task ShouldNotResolveAnElementHandleAfterACrossProcessNavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");

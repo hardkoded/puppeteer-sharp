@@ -76,6 +76,9 @@ namespace PuppeteerSharp
         /// <param name="extensionId">The extension ID.</param>
         /// <param name="existingTargetIds">When set, only targets with these IDs are destroyed.</param>
         /// <returns>A task that resolves when the targets were destroyed.</returns>
-        Task DestroyExtensionServiceWorkerTargetsAsync(string extensionId, IReadOnlyCollection<string> existingTargetIds = null);
+        Task DestroyExtensionServiceWorkerTargetsAsync(
+            string extensionId,
+            IReadOnlyCollection<string> existingTargetIds = null
+        );
     }
 }

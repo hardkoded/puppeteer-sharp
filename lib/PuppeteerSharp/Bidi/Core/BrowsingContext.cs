@@ -42,7 +42,14 @@ internal class BrowsingContext : IDisposable
     private string _reason;
     private Navigation _navigation;
 
-    private BrowsingContext(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener, string clientWindow)
+    private BrowsingContext(
+        UserContext userContext,
+        BrowsingContext parent,
+        string id,
+        string url,
+        string originalOpener,
+        string clientWindow
+    )
     {
         UserContext = userContext;
         Parent = parent;
@@ -131,9 +138,23 @@ internal class BrowsingContext : IDisposable
 
     private BrowsingContext Parent { get; }
 
-    public static BrowsingContext From(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener, string clientWindow = null)
+    public static BrowsingContext From(
+        UserContext userContext,
+        BrowsingContext parent,
+        string id,
+        string url,
+        string originalOpener,
+        string clientWindow = null
+    )
     {
-        var context = new BrowsingContext(userContext, parent, id, url, originalOpener, clientWindow);
+        var context = new BrowsingContext(
+            userContext,
+            parent,
+            id,
+            url,
+            originalOpener,
+            clientWindow
+        );
         context.Initialize();
         return context;
     }
@@ -160,23 +181,27 @@ internal class BrowsingContext : IDisposable
         // The WebDriver BiDi specification only allows closing top-level browsing contexts.
         // Closing a top-level context automatically closes all its children, so there is
         // no need to explicitly close nested contexts.
-        await Session.Driver.BrowsingContext.CloseAsync(new CloseCommandParameters(Id)
-        {
-            PromptUnload = promptUnload,
-        }).ConfigureAwait(false);
+        await Session
+            .Driver.BrowsingContext.CloseAsync(
+                new CloseCommandParameters(Id) { PromptUnload = promptUnload }
+            )
+            .ConfigureAwait(false);
     }
 
     internal async Task NavigateAsync(string url, ReadinessState wait)
     {
-        await Session.Driver.BrowsingContext.NavigateAsync(new NavigateCommandParameters(Id, url)
-        {
-            Wait = wait,
-        }).ConfigureAwait(false);
+        await Session
+            .Driver.BrowsingContext.NavigateAsync(
+                new NavigateCommandParameters(Id, url) { Wait = wait }
+            )
+            .ConfigureAwait(false);
     }
 
     internal async Task ActivateAsync()
     {
-        await Session.Driver.BrowsingContext.ActivateAsync(new ActivateCommandParameters(Id)).ConfigureAwait(false);
+        await Session
+            .Driver.BrowsingContext.ActivateAsync(new ActivateCommandParameters(Id))
+            .ConfigureAwait(false);
     }
 
     internal async Task<string> CaptureScreenshotAsync(ScreenshotParameters options)
@@ -188,13 +213,19 @@ internal class BrowsingContext : IDisposable
             Origin = options.Origin,
         };
 
-        return (await Session.Driver.BrowsingContext.CaptureScreenshotAsync(parameters).ConfigureAwait(false)).Data;
+        return (
+            await Session
+                .Driver.BrowsingContext.CaptureScreenshotAsync(parameters)
+                .ConfigureAwait(false)
+        ).Data;
     }
 
     internal async Task<string> PrintAsync(PrintCommandParameters options)
     {
         options.BrowsingContextId = Id;
-        return (await Session.Driver.BrowsingContext.PrintAsync(options).ConfigureAwait(false)).Data;
+        return (
+            await Session.Driver.BrowsingContext.PrintAsync(options).ConfigureAwait(false)
+        ).Data;
     }
 
     internal async Task SetViewportAsync(SetViewportOptions options = null)
@@ -202,9 +233,14 @@ internal class BrowsingContext : IDisposable
         var parameters = new SetViewportCommandParameters()
         {
             BrowsingContextId = Id,
-            Viewport = options?.Viewport != null
-                ? new Viewport() { Width = options.Viewport.Width, Height = options.Viewport.Height }
-                : null,
+            Viewport =
+                options?.Viewport != null
+                    ? new Viewport()
+                    {
+                        Width = options.Viewport.Width,
+                        Height = options.Viewport.Height,
+                    }
+                    : null,
             DevicePixelRatio = options?.DevicePixelRatio,
         };
 
@@ -220,7 +256,9 @@ internal class BrowsingContext : IDisposable
 
     internal async Task ReleaseActionsAsync()
     {
-        await Session.Driver.Input.ReleaseActionsAsync(new ReleaseActionsCommandParameters(Id)).ConfigureAwait(false);
+        await Session
+            .Driver.Input.ReleaseActionsAsync(new ReleaseActionsCommandParameters(Id))
+            .ConfigureAwait(false);
     }
 
     internal WindowRealm CreateWindowRealm(string sandbox = null)
@@ -235,40 +273,44 @@ internal class BrowsingContext : IDisposable
         return realm;
     }
 
-    internal async Task TraverseHistoryAsync(int delta)
-        => await Session.Driver.BrowsingContext.TraverseHistoryAsync(new TraverseHistoryCommandParameters(Id, delta)).ConfigureAwait(false);
+    internal async Task TraverseHistoryAsync(int delta) =>
+        await Session
+            .Driver.BrowsingContext.TraverseHistoryAsync(
+                new TraverseHistoryCommandParameters(Id, delta)
+            )
+            .ConfigureAwait(false);
 
     internal async Task ReloadAsync(bool? ignoreCache = null)
     {
-        var parameters = new ReloadCommandParameters(Id)
-        {
-            IgnoreCache = ignoreCache,
-        };
+        var parameters = new ReloadCommandParameters(Id) { IgnoreCache = ignoreCache };
         await Session.Driver.BrowsingContext.ReloadAsync(parameters).ConfigureAwait(false);
     }
 
-    internal async Task<string> AddInterceptAsync(WebDriverBiDi.Network.AddInterceptCommandParameters options)
+    internal async Task<string> AddInterceptAsync(
+        WebDriverBiDi.Network.AddInterceptCommandParameters options
+    )
     {
         options.Contexts.Add(Id);
         var result = await Session.Driver.Network.AddInterceptAsync(options).ConfigureAwait(false);
         return result.InterceptId;
     }
 
-    internal async Task<StartScreencastCommandResult> StartScreencastAsync(StartScreencastCommandParameters options)
+    internal async Task<StartScreencastCommandResult> StartScreencastAsync(
+        StartScreencastCommandParameters options
+    )
     {
         options.Context = Id;
         return await Session.Driver.ExecuteCommandAsync(options).ConfigureAwait(false);
     }
 
-    internal async Task<StopScreencastCommandResult> StopScreencastAsync(string screencast)
-        => await Session.Driver.ExecuteCommandAsync(new StopScreencastCommandParameters(screencast)).ConfigureAwait(false);
+    internal async Task<StopScreencastCommandResult> StopScreencastAsync(string screencast) =>
+        await Session
+            .Driver.ExecuteCommandAsync(new StopScreencastCommandParameters(screencast))
+            .ConfigureAwait(false);
 
     internal async Task SetUserAgentAsync(string userAgent)
     {
-        var parameters = new SetUserAgentOverrideCommandParameters
-        {
-            UserAgent = userAgent,
-        };
+        var parameters = new SetUserAgentOverrideCommandParameters { UserAgent = userAgent };
         parameters.Contexts.Add(Id);
         await Session.Driver.Emulation.SetUserAgentOverrideAsync(parameters).ConfigureAwait(false);
     }
@@ -290,7 +332,9 @@ internal class BrowsingContext : IDisposable
             ScreenOrientation = screenOrientation,
         };
         parameters.Contexts.Add(Id);
-        await Session.Driver.Emulation.SetScreenOrientationOverrideAsync(parameters).ConfigureAwait(false);
+        await Session
+            .Driver.Emulation.SetScreenOrientationOverrideAsync(parameters)
+            .ConfigureAwait(false);
     }
 
     internal async Task SetFilesAsync(WebDriverBiDi.Script.SharedReference element, string[] files)
@@ -304,7 +348,10 @@ internal class BrowsingContext : IDisposable
         await Session.Driver.Input.SetFilesAsync(parameters).ConfigureAwait(false);
     }
 
-    internal async Task<IList<NodeRemoteValue>> LocateNodesAsync(Locator locator, SharedReference[] startNodes = null)
+    internal async Task<IList<NodeRemoteValue>> LocateNodesAsync(
+        Locator locator,
+        SharedReference[] startNodes = null
+    )
     {
         var parameters = new LocateNodesCommandParameters(Id, locator);
         if (startNodes?.Length > 0)
@@ -315,11 +362,14 @@ internal class BrowsingContext : IDisposable
             }
         }
 
-        var result = await Session.Driver.BrowsingContext.LocateNodesAsync(parameters).ConfigureAwait(false);
+        var result = await Session
+            .Driver.BrowsingContext.LocateNodesAsync(parameters)
+            .ConfigureAwait(false);
         return result.Nodes.ToList();
     }
 
-    protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
+    protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) =>
+        BrowsingContextCreated?.Invoke(this, e);
 
     private void Initialize()
     {
@@ -332,7 +382,13 @@ internal class BrowsingContext : IDisposable
                 return;
             }
 
-            var browsingContext = From(UserContext, this, args.BrowsingContextId, args.Url, args.OriginalOpener);
+            var browsingContext = From(
+                UserContext,
+                this,
+                args.BrowsingContextId,
+                args.Url,
+                args.OriginalOpener
+            );
 
             lock (_childrenLock)
             {
@@ -475,7 +531,8 @@ internal class BrowsingContext : IDisposable
         };
     }
 
-    private void OnNavigation(BrowserContextNavigationEventArgs args) => Navigation?.Invoke(this, args);
+    private void OnNavigation(BrowserContextNavigationEventArgs args) =>
+        Navigation?.Invoke(this, args);
 
     private void UpdateUrlFromEvent(object sender, NavigationEventArgs e)
     {
@@ -498,13 +555,15 @@ internal class BrowsingContext : IDisposable
 
     private void OnClosed(string reason) => Closed?.Invoke(this, new ClosedEventArgs(reason));
 
-    private void OnWorker(DedicatedWorkerRealm args) => Worker?.Invoke(this, new WorkerRealmEventArgs(args));
+    private void OnWorker(DedicatedWorkerRealm args) =>
+        Worker?.Invoke(this, new WorkerRealmEventArgs(args));
 
     private void OnUserPromptOpened(UserPromptEventArgs args) => UserPrompt?.Invoke(this, args);
 
     private void OnLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs args) => Log?.Invoke(this, args);
 
-    private void OnFileDialogOpened(FileDialogOpenedEventArgs args) => FileDialogOpened?.Invoke(this, args);
+    private void OnFileDialogOpened(FileDialogOpenedEventArgs args) =>
+        FileDialogOpened?.Invoke(this, args);
 }
 
 #endif

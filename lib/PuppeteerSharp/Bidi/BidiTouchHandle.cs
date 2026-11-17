@@ -37,7 +37,12 @@ internal class BidiTouchHandle : ITouchHandle
     private readonly PointerSourceActions _touchSource;
     private readonly TaskQueue _actionsQueue;
 
-    internal BidiTouchHandle(BidiTouchscreen touchScreen, BidiPage page, PointerSourceActions touchSource, TaskQueue actionsQueue)
+    internal BidiTouchHandle(
+        BidiTouchscreen touchScreen,
+        BidiPage page,
+        PointerSourceActions touchSource,
+        TaskQueue actionsQueue
+    )
     {
         _touchScreen = touchScreen;
         _page = page;
@@ -50,13 +55,13 @@ internal class BidiTouchHandle : ITouchHandle
     {
         return _actionsQueue.Enqueue(async () =>
         {
-            _touchSource.Actions.Add(new PointerMoveAction
-            {
-                X = (long)Math.Round(x),
-                Y = (long)Math.Round(y),
-            });
+            _touchSource.Actions.Add(
+                new PointerMoveAction { X = (long)Math.Round(x), Y = (long)Math.Round(y) }
+            );
 
-            await _page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource]).ConfigureAwait(false);
+            await _page
+                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource])
+                .ConfigureAwait(false);
             _touchSource.Actions.Clear();
         });
     }
@@ -68,7 +73,9 @@ internal class BidiTouchHandle : ITouchHandle
         {
             _touchSource.Actions.Add(new PointerUpAction(0));
 
-            await _page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource]).ConfigureAwait(false);
+            await _page
+                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource])
+                .ConfigureAwait(false);
             _touchSource.Actions.Clear();
             _touchScreen.RemoveHandle(this);
         });

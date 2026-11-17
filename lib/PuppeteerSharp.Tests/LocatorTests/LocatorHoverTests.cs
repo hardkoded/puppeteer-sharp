@@ -11,7 +11,8 @@ namespace PuppeteerSharp.Tests.LocatorTests
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button onmouseenter=\"this.innerText = 'hovered';\">test</button>");
+                "<button onmouseenter=\"this.innerText = 'hovered';\">test</button>"
+            );
 
             await Page.Locator("button").HoverAsync();
 

@@ -6,7 +6,8 @@ namespace PuppeteerSharp.Tests.WebglTests
 {
     public class WebglTests : PuppeteerPageBaseTest
     {
-        public WebglTests() : base()
+        public WebglTests()
+            : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.Args =
@@ -22,13 +23,15 @@ namespace PuppeteerSharp.Tests.WebglTests
         [Test, PuppeteerTest("webgl.spec", "webgl Create webgl context", "should work")]
         public async Task ShouldWork()
         {
-            await Page.EvaluateExpressionAsync(@"(() => {
+            await Page.EvaluateExpressionAsync(
+                @"(() => {
                 const canvas = document.createElement('canvas');
                 const gl = canvas.getContext('webgl');
                 if (!gl) {
                     throw new Error('WebGL context not created');
                 }
-            })()");
+            })()"
+            );
         }
     }
 }

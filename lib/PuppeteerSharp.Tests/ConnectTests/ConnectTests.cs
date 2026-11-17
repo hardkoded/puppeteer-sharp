@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.ConnectTests;
 
 public class ConnectTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("connect.spec", "Puppeteer.connect", "should be able to connect using browserUrl, with and without trailing slash")]
+    [
+        Test,
+        PuppeteerTest(
+            "connect.spec",
+            "Puppeteer.connect",
+            "should be able to connect using browserUrl, with and without trailing slash"
+        )
+    ]
     public async Task ShouldBeAbleToConnectUsingBrowserURLWithAndWithoutTrailingSlash()
     {
         var options = TestConstants.DefaultBrowserOptions();
@@ -19,14 +26,23 @@ public class ConnectTests : PuppeteerPageBaseTest
         Assert.That(await page1.EvaluateExpressionAsync<int>("7 * 8"), Is.EqualTo(56));
         browser1.Disconnect();
 
-        var browser2 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserURL = browserURL + "/" });
+        var browser2 = await Puppeteer.ConnectAsync(
+            new ConnectOptions { BrowserURL = browserURL + "/" }
+        );
         var page2 = await browser2.NewPageAsync();
         Assert.That(await page2.EvaluateExpressionAsync<int>("7 * 8"), Is.EqualTo(56));
         browser2.Disconnect();
         await originalBrowser.CloseAsync();
     }
 
-    [Test, PuppeteerTest("connect.spec", "Puppeteer.connect", "should throw when using both browserWSEndpoint and browserURL")]
+    [
+        Test,
+        PuppeteerTest(
+            "connect.spec",
+            "Puppeteer.connect",
+            "should throw when using both browserWSEndpoint and browserURL"
+        )
+    ]
     public async Task ShouldThrowWhenUsingBothBrowserWSEndpointAndBrowserURL()
     {
         var options = TestConstants.DefaultBrowserOptions();
@@ -34,16 +50,27 @@ public class ConnectTests : PuppeteerPageBaseTest
         var originalBrowser = await Puppeteer.LaunchAsync(options);
         var browserURL = "http://127.0.0.1:21222";
 
-        Assert.ThrowsAsync<PuppeteerException>(() => Puppeteer.ConnectAsync(new ConnectOptions
-        {
-            BrowserURL = browserURL,
-            BrowserWSEndpoint = originalBrowser.WebSocketEndpoint
-        }));
+        Assert.ThrowsAsync<PuppeteerException>(() =>
+            Puppeteer.ConnectAsync(
+                new ConnectOptions
+                {
+                    BrowserURL = browserURL,
+                    BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
+                }
+            )
+        );
 
         await originalBrowser.CloseAsync();
     }
 
-    [Test, PuppeteerTest("connect.spec", "Puppeteer.connect", "should throw when trying to connect to non-existing browser")]
+    [
+        Test,
+        PuppeteerTest(
+            "connect.spec",
+            "Puppeteer.connect",
+            "should throw when trying to connect to non-existing browser"
+        )
+    ]
     public async Task ShouldThrowWhenTryingToConnectToNonExistingBrowser()
     {
         var options = TestConstants.DefaultBrowserOptions();
@@ -51,10 +78,9 @@ public class ConnectTests : PuppeteerPageBaseTest
         var originalBrowser = await Puppeteer.LaunchAsync(options);
         var browserURL = "http://127.0.0.1:2122";
 
-        Assert.ThrowsAsync<ProcessException>(() => Puppeteer.ConnectAsync(new ConnectOptions
-        {
-            BrowserURL = browserURL
-        }));
+        Assert.ThrowsAsync<ProcessException>(() =>
+            Puppeteer.ConnectAsync(new ConnectOptions { BrowserURL = browserURL })
+        );
 
         await originalBrowser.CloseAsync();
     }

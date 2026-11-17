@@ -27,8 +27,12 @@ namespace PuppeteerSharp.TestServer
         public string IpPrefix { get; private set; }
 
         internal IList<string> GzipRoutes { get; }
-        public static SimpleServer Create(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: false);
-        public static SimpleServer CreateHttps(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: true);
+
+        public static SimpleServer Create(int port, string contentRoot) =>
+            new SimpleServer(port, contentRoot, isHttps: false);
+
+        public static SimpleServer CreateHttps(int port, string contentRoot) =>
+            new SimpleServer(port, contentRoot, isHttps: true);
 
         private SimpleServer(int port, string contentRoot, bool isHttps)
         {
@@ -40,52 +44,97 @@ namespace PuppeteerSharp.TestServer
             GzipRoutes = new List<string>();
 
             _webHost = new WebHostBuilder()
-                .ConfigureAppConfiguration((context, builder) => builder
-                    .SetBasePath(context.HostingEnvironment.ContentRootPath)
-                    .AddEnvironmentVariables()
+                .ConfigureAppConfiguration(
+                    (context, builder) =>
+                        builder
+                            .SetBasePath(context.HostingEnvironment.ContentRootPath)
+                            .AddEnvironmentVariables()
                 )
-                .Configure(app => app.Use((context, next) =>
-                    {
-                        if (_auths.TryGetValue(context.Request.Path, out var auth) && !Authenticate(auth.username, auth.password, context))
-                        {
-                            context.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"Secure Area\"");
-                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            return context.Response.WriteAsync("HTTP Error 401 Unauthorized: Access is denied");
-                        }
-                        if (_requestSubscribers.TryGetValue(context.Request.Path, out var subscriber))
-                        {
-                            subscriber(context.Request);
-                        }
-                        if (_routes.TryGetValue(context.Request.Path + context.Request.QueryString, out var handler))
-                        {
-                            return handler(context);
-                        }
-
-                        return next();
-                    })
-                    .UseMiddleware<SimpleCompressionMiddleware>(this)
-                    .UseStaticFiles(new StaticFileOptions
-                    {
-                        OnPrepareResponse = fileResponseContext =>
-                        {
-                            if (_csp.TryGetValue(fileResponseContext.Context.Request.Path, out var csp))
+                .Configure(app =>
+                    app.Use(
+                            (context, next) =>
                             {
-                                fileResponseContext.Context.Response.Headers["Content-Security-Policy"] = csp;
-                            }
+                                if (
+                                    _auths.TryGetValue(context.Request.Path, out var auth)
+                                    && !Authenticate(auth.username, auth.password, context)
+                                )
+                                {
+                                    context.Response.Headers.Add(
+                                        "WWW-Authenticate",
+                                        "Basic realm=\"Secure Area\""
+                                    );
+                                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                                    return context.Response.WriteAsync(
+                                        "HTTP Error 401 Unauthorized: Access is denied"
+                                    );
+                                }
+                                if (
+                                    _requestSubscribers.TryGetValue(
+                                        context.Request.Path,
+                                        out var subscriber
+                                    )
+                                )
+                                {
+                                    subscriber(context.Request);
+                                }
+                                if (
+                                    _routes.TryGetValue(
+                                        context.Request.Path + context.Request.QueryString,
+                                        out var handler
+                                    )
+                                )
+                                {
+                                    return handler(context);
+                                }
 
-                            if (fileResponseContext.Context.Request.Path.Value != null && !fileResponseContext.Context.Request.Path.Value.StartsWith("/cached/"))
-                            {
-                                fileResponseContext.Context.Response.Headers["Cache-Control"] = "no-cache, no-store";
-                                fileResponseContext.Context.Response.Headers["Expires"] = "-1";
+                                return next();
                             }
-                        }
-                    }))
+                        )
+                        .UseMiddleware<SimpleCompressionMiddleware>(this)
+                        .UseStaticFiles(
+                            new StaticFileOptions
+                            {
+                                OnPrepareResponse = fileResponseContext =>
+                                {
+                                    if (
+                                        _csp.TryGetValue(
+                                            fileResponseContext.Context.Request.Path,
+                                            out var csp
+                                        )
+                                    )
+                                    {
+                                        fileResponseContext.Context.Response.Headers[
+                                            "Content-Security-Policy"
+                                        ] = csp;
+                                    }
+
+                                    if (
+                                        fileResponseContext.Context.Request.Path.Value != null
+                                        && !fileResponseContext.Context.Request.Path.Value.StartsWith(
+                                            "/cached/"
+                                        )
+                                    )
+                                    {
+                                        fileResponseContext.Context.Response.Headers[
+                                            "Cache-Control"
+                                        ] = "no-cache, no-store";
+                                        fileResponseContext.Context.Response.Headers["Expires"] =
+                                            "-1";
+                                    }
+                                },
+                            }
+                        )
+                )
                 .UseKestrel(options =>
                 {
-                    options.ConfigureEndpointDefaults(lo => lo.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1);
+                    options.ConfigureEndpointDefaults(lo =>
+                        lo.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1
+                    );
                     if (isHttps)
                     {
-                        options.Listen(IPAddress.Loopback, port, listenOptions => listenOptions.UseHttps("testCert.cer"));
+                        options.Listen(IPAddress.Loopback, port, listenOptions =>
+                            listenOptions.UseHttps("testCert.cer")
+                        );
                     }
                     else
                     {
@@ -96,17 +145,15 @@ namespace PuppeteerSharp.TestServer
                 .Build();
         }
 
-        public void SetAuth(string path, string username, string password) => _auths.Add(path, (username, password));
+        public void SetAuth(string path, string username, string password) =>
+            _auths.Add(path, (username, password));
 
         public void SetCSP(string path, string csp) => _csp.Add(path, csp);
 
         public async Task StartAsync()
         {
             await _webHost.StartAsync();
-            var address = _webHost.ServerFeatures
-                .Get<IServerAddressesFeature>()
-                .Addresses
-                .First();
+            var address = _webHost.ServerFeatures.Get<IServerAddressesFeature>().Addresses.First();
             var uri = new Uri(address);
             Port = uri.Port;
             var scheme = _isHttps ? "https" : "http";
@@ -139,10 +186,10 @@ namespace PuppeteerSharp.TestServer
         public void SetRoute(string path, RequestDelegate handler) => _routes.Add(path, handler);
 
         public void SetRedirect(string from, string to) => SetRoute(from, context =>
-        {
-            context.Response.Redirect(to);
-            return Task.CompletedTask;
-        });
+            {
+                context.Response.Redirect(to);
+                return Task.CompletedTask;
+            });
 
         public async Task<T> WaitForRequest<T>(string path, Func<HttpRequest, T> selector)
         {

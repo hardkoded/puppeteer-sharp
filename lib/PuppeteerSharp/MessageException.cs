@@ -12,32 +12,30 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageException"/> class.
         /// </summary>
-        public MessageException()
-        {
-        }
+        public MessageException() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
-        public MessageException(string message) : base(message)
-        {
-        }
+        public MessageException(string message)
+            : base(message) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
-        public MessageException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+        public MessageException(string message, Exception innerException)
+            : base(message, innerException) { }
 
-        internal MessageException(MessageTask callback, ConnectionError error) : base(GetCallbackMessage(callback, error))
-        {
-        }
+        internal MessageException(MessageTask callback, ConnectionError error)
+            : base(GetCallbackMessage(callback, error)) { }
 
-        internal static string GetCallbackMessage(MessageTask callback, ConnectionError connectionError)
+        internal static string GetCallbackMessage(
+            MessageTask callback,
+            ConnectionError connectionError
+        )
         {
             var message = $"Protocol error ({callback.Method}): {connectionError.Message}";
 
@@ -46,7 +44,9 @@ namespace PuppeteerSharp
                 message += $" {connectionError.Data}";
             }
 
-            return !string.IsNullOrEmpty(connectionError.Message) ? RewriteErrorMeesage(message) : string.Empty;
+            return !string.IsNullOrEmpty(connectionError.Message)
+                ? RewriteErrorMeesage(message)
+                : string.Empty;
         }
     }
 }

@@ -13,7 +13,14 @@ namespace PuppeteerSharp.Tests.NetworkTests;
 [TestFixture]
 public class CdpHttpResponseTests
 {
-    [Test, PuppeteerTest("HTTPResponse.test.ts", "CdpHTTPResponse", "should normalize set-cookie using \\n")]
+    [
+        Test,
+        PuppeteerTest(
+            "HTTPResponse.test.ts",
+            "CdpHTTPResponse",
+            "should normalize set-cookie using \\n"
+        )
+    ]
     public void ShouldNormalizeSetCookieUsingNewline()
     {
         var request = CreateRequest();
@@ -23,10 +30,7 @@ public class CdpHttpResponseTests
             RemotePort = 80,
             Status = HttpStatusCode.OK,
             StatusText = "OK",
-            Headers = new Dictionary<string, string>
-            {
-                ["set-cookie"] = "a=b\n  c=d",
-            },
+            Headers = new Dictionary<string, string> { ["set-cookie"] = "a=b\n  c=d" },
         };
 
         var response = new CdpHttpResponse(request, responsePayload, null);
@@ -34,7 +38,14 @@ public class CdpHttpResponseTests
         Assert.That(response.Headers["set-cookie"], Is.EqualTo("a=b\n c=d"));
     }
 
-    [Test, PuppeteerTest("HTTPResponse.test.ts", "CdpHTTPResponse", "should normalize other headers using ,")]
+    [
+        Test,
+        PuppeteerTest(
+            "HTTPResponse.test.ts",
+            "CdpHTTPResponse",
+            "should normalize other headers using ,"
+        )
+    ]
     public void ShouldNormalizeOtherHeadersUsingComma()
     {
         var request = CreateRequest();
@@ -81,6 +92,7 @@ public class CdpHttpResponseTests
                 Initiator = new Initiator { Type = InitiatorType.Other },
             },
             [],
-            loggerFactory);
+            loggerFactory
+        );
     }
 }

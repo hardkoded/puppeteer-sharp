@@ -7,15 +7,18 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsCloseTests : PuppeteerPageBaseTest
     {
-        public PageEventsCloseTests() : base()
-        {
-        }
+        public PageEventsCloseTests()
+            : base() { }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Close", "should work with window.close")]
+        [
+            Test,
+            PuppeteerTest("page.spec", "Page Page.Events.Close", "should work with window.close")
+        ]
         public async Task ShouldWorkWithWindowClose()
         {
             var newPageTaskSource = new TaskCompletionSource<IPage>();
-            Context.TargetCreated += async (_, e) => newPageTaskSource.TrySetResult(await e.Target.PageAsync());
+            Context.TargetCreated += async (_, e) =>
+                newPageTaskSource.TrySetResult(await e.Target.PageAsync());
 
             await Page.EvaluateExpressionAsync("window['newPage'] = window.open('about:blank');");
             var newPage = await newPageTaskSource.Task.WithTimeout();

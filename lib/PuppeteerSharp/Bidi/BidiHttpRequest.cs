@@ -45,7 +45,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     private Payload _continueRequestOverrides = new();
     private ResponseData _responseForRequest;
     private RequestAbortErrorCode _abortErrorReason;
-    private InterceptResolutionState _interceptResolutionState = new(InterceptResolutionAction.None);
+    private InterceptResolutionState _interceptResolutionState = new(
+        InterceptResolutionAction.None
+    );
     private bool _authenticationHandled;
 
     private BidiHttpRequest(Request request, BidiFrame frame, BidiHttpRequest redirect)
@@ -100,11 +102,13 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     /// <inheritdoc/>
     /// <exception cref="NotSupportedException">Always thrown. Worker requests are not available in WebDriver BiDi.</exception>
-    public override WebWorker Worker => throw new NotSupportedException("Worker is not supported in WebDriver BiDi.");
+    public override WebWorker Worker =>
+        throw new NotSupportedException("Worker is not supported in WebDriver BiDi.");
 
     // TODO: I don't like having this static field at all. This will cause memory leaks for sure.
     // We need to move this to a place where we can control its lifecycle.
-    internal static AsyncDictionaryHelper<Request, BidiHttpRequest> Requests { get; } = new("Request {0} not found");
+    internal static AsyncDictionaryHelper<Request, BidiHttpRequest> Requests { get; } =
+        new("Request {0} not found");
 
     internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
 
@@ -151,16 +155,24 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         _continueRequestOverrides = payloadOverrides;
 
-        if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+        if (
+            _interceptResolutionState.Priority is null
+            || priority > _interceptResolutionState.Priority
+        )
         {
-            _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Continue, priority);
+            _interceptResolutionState = new InterceptResolutionState(
+                InterceptResolutionAction.Continue,
+                priority
+            );
             return;
         }
 
         if (priority == _interceptResolutionState.Priority)
         {
-            if (_interceptResolutionState.Action == InterceptResolutionAction.Abort ||
-                _interceptResolutionState.Action == InterceptResolutionAction.Respond)
+            if (
+                _interceptResolutionState.Action == InterceptResolutionAction.Abort
+                || _interceptResolutionState.Action == InterceptResolutionAction.Respond
+            )
             {
                 return;
             }
@@ -192,9 +204,15 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         _responseForRequest = response;
 
-        if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+        if (
+            _interceptResolutionState.Priority is null
+            || priority > _interceptResolutionState.Priority
+        )
         {
-            _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Respond, priority);
+            _interceptResolutionState = new InterceptResolutionState(
+                InterceptResolutionAction.Respond,
+                priority
+            );
             return;
         }
 
@@ -210,7 +228,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     }
 
     /// <inheritdoc />
-    public override async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
+    public override async Task AbortAsync(
+        RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed,
+        int? priority = null
+    )
     {
         VerifyInterception();
 
@@ -227,9 +248,15 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         _abortErrorReason = errorCode;
 
-        if (_interceptResolutionState.Priority is null || priority >= _interceptResolutionState.Priority)
+        if (
+            _interceptResolutionState.Priority is null
+            || priority >= _interceptResolutionState.Priority
+        )
         {
-            _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Abort, priority);
+            _interceptResolutionState = new InterceptResolutionState(
+                InterceptResolutionAction.Abort,
+                priority
+            );
         }
     }
 
@@ -245,12 +272,18 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
         catch (Exception ex)
         {
-            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().ErrorWithException(ex, ex.ToString());
+            BidiPage
+                .BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>()
+                .ErrorWithException(ex, ex.ToString());
             return null;
         }
     }
 
-    internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null)
+    internal static BidiHttpRequest From(
+        Request bidiRequest,
+        BidiFrame frame,
+        BidiHttpRequest redirect = null
+    )
     {
         var isNavigationRequest = bidiRequest.Navigation != null;
         var request = new BidiHttpRequest(bidiRequest, frame, redirect)
@@ -259,7 +292,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             Method = new System.Net.Http.HttpMethod(bidiRequest.Method),
             IsNavigationRequest = isNavigationRequest,
             HasPostData = bidiRequest.HasPostData,
-            ResourceType = MapDestinationToResourceType(bidiRequest.Destination, isNavigationRequest),
+            ResourceType = MapDestinationToResourceType(
+                bidiRequest.Destination,
+                isNavigationRequest
+            ),
         };
         request.Initialize();
         return request;
@@ -315,8 +351,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
-        => _interceptHandlers.Add(pendingHandler);
+    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler) =>
+        _interceptHandlers.Add(pendingHandler);
 
     /// <inheritdoc/>
     protected override void VerifyInterception()
@@ -351,10 +387,13 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         return bidiHeaders;
     }
 
-    private static string GetReasonPhrase(int statusCode)
-        => HttpStatusTextHelper.GetStatusText(statusCode);
+    private static string GetReasonPhrase(int statusCode) =>
+        HttpStatusTextHelper.GetStatusText(statusCode);
 
-    private static ResourceType MapDestinationToResourceType(string destination, bool isNavigationRequest)
+    private static ResourceType MapDestinationToResourceType(
+        string destination,
+        bool isNavigationRequest
+    )
     {
         // Navigation requests are always Document type
         if (isNavigationRequest)
@@ -388,10 +427,12 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         // Match upstream's handleError: only header validation errors are surfaced.
         // In certain cases, the protocol returns an error if the request was already
         // canceled or the page was closed. We should tolerate these errors.
-        if (ex.Message.Contains("Invalid header") ||
-            ex.Message.Contains("Unsafe header") ||
-            ex.Message.Contains("Expected \"header\"") ||
-            ex.Message.Contains("invalid argument"))
+        if (
+            ex.Message.Contains("Invalid header")
+            || ex.Message.Contains("Unsafe header")
+            || ex.Message.Contains("Expected \"header\"")
+            || ex.Message.Contains("invalid argument")
+        )
         {
             System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
         }
@@ -429,23 +470,29 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         try
         {
             // Merge the original request headers with extra headers and user agent headers
-            var mergedHeaders = HasInternalHeaderOverwrite || overrides?.Headers != null
-                ? GetMergedHeaders(overrides?.Headers)
-                : null;
+            var mergedHeaders =
+                HasInternalHeaderOverwrite || overrides?.Headers != null
+                    ? GetMergedHeaders(overrides?.Headers)
+                    : null;
 
             var bidiHeaders = ConvertToBidiHeaders(mergedHeaders);
 
             BytesValue body = null;
             if (overrides?.PostData != null)
             {
-                body = BytesValue.FromBase64String(Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides.PostData)));
+                body = BytesValue.FromBase64String(
+                    Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides.PostData))
+                );
             }
 
-            await _request.ContinueRequestAsync(
-                url: overrides?.Url,
-                method: overrides?.Method?.ToString(),
-                headers: bidiHeaders?.Count > 0 ? bidiHeaders : null,
-                body: body).ConfigureAwait(false);
+            await _request
+                .ContinueRequestAsync(
+                    url: overrides?.Url,
+                    method: overrides?.Method?.ToString(),
+                    headers: bidiHeaders?.Count > 0 ? bidiHeaders : null,
+                    body: body
+                )
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -486,12 +533,19 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 {
                     foreach (var val in values)
                     {
-                        responseHeaders.Add(new Header(keyValuePair.Key.ToLowerInvariant(), val.ToString()));
+                        responseHeaders.Add(
+                            new Header(keyValuePair.Key.ToLowerInvariant(), val.ToString())
+                        );
                     }
                 }
                 else
                 {
-                    responseHeaders.Add(new Header(keyValuePair.Key.ToLowerInvariant(), keyValuePair.Value.ToString()));
+                    responseHeaders.Add(
+                        new Header(
+                            keyValuePair.Key.ToLowerInvariant(),
+                            keyValuePair.Value.ToString()
+                        )
+                    );
                 }
             }
         }
@@ -510,7 +564,12 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         // Add content-length if not present and we have body data
         if (!hasContentLength && response.BodyData is { Length: > 0 })
         {
-            responseHeaders.Add(new Header("content-length", response.BodyData.Length.ToString(CultureInfo.InvariantCulture)));
+            responseHeaders.Add(
+                new Header(
+                    "content-length",
+                    response.BodyData.Length.ToString(CultureInfo.InvariantCulture)
+                )
+            );
         }
 
         if (response.ContentType != null)
@@ -534,11 +593,14 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         try
         {
-            await _request.ProvideResponseAsync(
-                statusCode: (uint)statusCode,
-                reasonPhrase: reasonPhrase,
-                headers: responseHeaders.Count > 0 ? responseHeaders : null,
-                body: body).ConfigureAwait(false);
+            await _request
+                .ProvideResponseAsync(
+                    statusCode: (uint)statusCode,
+                    reasonPhrase: reasonPhrase,
+                    headers: responseHeaders.Count > 0 ? responseHeaders : null,
+                    body: body
+                )
+                .ConfigureAwait(false);
         }
         catch (WebDriverBiDi.WebDriverBiDiConnectionException)
         {
@@ -602,8 +664,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             };
 
             // Use the request interception queue to serialize handler execution for redirects.
-            _ = BidiPage.RequestInterceptionQueue.Enqueue(
-                () => httpRequest.FinalizeInterceptionsAsync());
+            _ = BidiPage.RequestInterceptionQueue.Enqueue(() =>
+                httpRequest.FinalizeInterceptionsAsync()
+            );
         };
 
         _request.ResponseStarted += (_, e) =>
@@ -645,12 +708,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             _interception.Handlers.Add(async () =>
             {
-                await ContinueAsync(
-                    new Payload
-                    {
-                        Headers = Headers,
-                    },
-                    0).ConfigureAwait(false);
+                await ContinueAsync(new Payload { Headers = Headers }, 0).ConfigureAwait(false);
             });
         }
     }
@@ -664,7 +722,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             _authenticationHandled = true;
             _ = ContinueWithAuthSafeAsync(
                 ContinueWithAuthActionType.ProvideCredentials,
-                new AuthCredentials(credentials.Username, credentials.Password));
+                new AuthCredentials(credentials.Username, credentials.Password)
+            );
         }
         else
         {
@@ -672,7 +731,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    private async Task ContinueWithAuthSafeAsync(ContinueWithAuthActionType action, AuthCredentials credentials = null)
+    private async Task ContinueWithAuthSafeAsync(
+        ContinueWithAuthActionType action,
+        AuthCredentials credentials = null
+    )
     {
         try
         {
@@ -681,7 +743,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         catch (Exception ex)
         {
             // The request may have been canceled or the page closed before the challenge was answered.
-            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().FailedToContinueWithAuth(ex);
+            BidiPage
+                .BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>()
+                .FailedToContinueWithAuth(ex);
         }
     }
 }

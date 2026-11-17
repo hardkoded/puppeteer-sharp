@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.FrameTests
 {
     public class FramePageTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("frame.spec", "Frame specs Frame.page", "should retrieve the page from a frame")]
+        [
+            Test,
+            PuppeteerTest(
+                "frame.spec",
+                "Frame specs Frame.page",
+                "should retrieve the page from a frame"
+            )
+        ]
         public async Task ShouldRetrieveThePageFromAFrame()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

@@ -40,7 +40,11 @@ namespace PuppeteerSharp.Helpers
         /// Thrown if both <paramref name="blockList"/> and <paramref name="allowList"/> are specified,
         /// or if either is specified together with <see cref="ProtocolType.WebdriverBiDi"/>.
         /// </exception>
-        public static void AssertSupportedUrlRestrictions(ProtocolType protocol, string[] blockList, string[] allowList)
+        public static void AssertSupportedUrlRestrictions(
+            ProtocolType protocol,
+            string[] blockList,
+            string[] allowList
+        )
         {
             if (blockList is { Length: > 0 } && allowList is { Length: > 0 })
             {
@@ -49,7 +53,9 @@ namespace PuppeteerSharp.Helpers
 
             if (protocol == ProtocolType.WebdriverBiDi && (blockList != null || allowList != null))
             {
-                throw new PuppeteerException("blocklist and allowlist are only supported with the CDP protocol");
+                throw new PuppeteerException(
+                    "blocklist and allowlist are only supported with the CDP protocol"
+                );
             }
         }
     }

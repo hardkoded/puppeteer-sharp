@@ -18,27 +18,41 @@ namespace PuppeteerSharp.BrowserData
         /// </summary>
         public static string DefaultBuildId => "157.0.8103.78";
 
-        internal static async Task<string> ResolveBuildIdAsync(ChromeReleaseChannel channel)
-            => (await GetLastKnownGoodReleaseForChannel(channel).ConfigureAwait(false)).Version;
+        internal static async Task<string> ResolveBuildIdAsync(ChromeReleaseChannel channel) =>
+            (await GetLastKnownGoodReleaseForChannel(channel).ConfigureAwait(false)).Version;
 
-        internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
-            => $"{baseUrl ?? "https://storage.googleapis.com/chrome-for-testing-public"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
+        internal static string ResolveDownloadUrl(
+            Platform platform,
+            string buildId,
+            string baseUrl
+        ) =>
+            $"{baseUrl ?? "https://storage.googleapis.com/chrome-for-testing-public"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
 
-        internal static string RelativeExecutablePath(Platform platform, string buildId)
-            => platform switch
+        internal static string RelativeExecutablePath(Platform platform, string buildId) =>
+            platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
                     "chrome-" + GetFolder(platform, buildId),
                     "Google Chrome for Testing.app",
                     "Contents",
                     "MacOS",
-                    "Google Chrome for Testing"),
-                Platform.Linux or Platform.LinuxArm64 => Path.Combine("chrome-" + GetFolder(platform, buildId), "chrome"),
-                Platform.Win32 or Platform.Win64 => Path.Combine("chrome-" + GetFolder(platform, buildId), "chrome.exe"),
+                    "Google Chrome for Testing"
+                ),
+                Platform.Linux or Platform.LinuxArm64 => Path.Combine(
+                    "chrome-" + GetFolder(platform, buildId),
+                    "chrome"
+                ),
+                Platform.Win32 or Platform.Win64 => Path.Combine(
+                    "chrome-" + GetFolder(platform, buildId),
+                    "chrome.exe"
+                ),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
 
-        internal static string[] ResolveSystemExecutablePaths(Platform platform, ChromeReleaseChannel channel)
+        internal static string[] ResolveSystemExecutablePaths(
+            Platform platform,
+            ChromeReleaseChannel channel
+        )
         {
             switch (platform)
             {
@@ -49,10 +63,22 @@ namespace PuppeteerSharp.BrowserData
                 case Platform.MacOSArm64:
                     return channel switch
                     {
-                        ChromeReleaseChannel.Stable => ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"],
-                        ChromeReleaseChannel.Beta => ["/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta"],
-                        ChromeReleaseChannel.Canary => ["/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"],
-                        ChromeReleaseChannel.Dev => ["/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev"],
+                        ChromeReleaseChannel.Stable =>
+                        [
+                            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                        ],
+                        ChromeReleaseChannel.Beta =>
+                        [
+                            "/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta",
+                        ],
+                        ChromeReleaseChannel.Canary =>
+                        [
+                            "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
+                        ],
+                        ChromeReleaseChannel.Dev =>
+                        [
+                            "/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev",
+                        ],
                         _ => throw new PuppeteerException($"{channel} is not supported"),
                     };
                 case Platform.LinuxArm64:
@@ -70,11 +96,14 @@ namespace PuppeteerSharp.BrowserData
             }
         }
 
-        internal static string GetFolder(Platform platform, string buildId)
-            => platform switch
+        internal static string GetFolder(Platform platform, string buildId) =>
+            platform switch
             {
                 // Chrome for Testing started publishing linux-arm64 builds in 153.0.8001.0.
-                Platform.LinuxArm64 => buildId != null && CompareVersions(buildId, "153.0.8001.0") < 0 ? "linux64" : "linux-arm64",
+                Platform.LinuxArm64 => buildId != null
+                && CompareVersions(buildId, "153.0.8001.0") < 0
+                    ? "linux64"
+                    : "linux-arm64",
                 Platform.Linux => "linux64",
                 Platform.MacOSArm64 => "mac-arm64",
                 Platform.MacOS => "mac-x64",
@@ -116,17 +145,40 @@ namespace PuppeteerSharp.BrowserData
                 throw new PuppeteerException($"Version {version} is not a valid Chrome version");
             }
 
-            return clean.Split('.').Select(part => int.Parse(part, CultureInfo.InvariantCulture)).ToArray();
+            return clean
+                .Split('.')
+                .Select(part => int.Parse(part, CultureInfo.InvariantCulture))
+                .ToArray();
         }
 
         private static string[] GetChromeWindowsLocations(ChromeReleaseChannel channel)
         {
             var suffix = channel switch
             {
-                ChromeReleaseChannel.Stable => Path.Combine("Google", "Chrome", "Application", "chrome.exe"),
-                ChromeReleaseChannel.Beta => Path.Combine("Google", "Chrome Beta", "Application", "chrome.exe"),
-                ChromeReleaseChannel.Canary => Path.Combine("Google", "Chrome SxS", "Application", "chrome.exe"),
-                ChromeReleaseChannel.Dev => Path.Combine("Google", "Chrome Dev", "Application", "chrome.exe"),
+                ChromeReleaseChannel.Stable => Path.Combine(
+                    "Google",
+                    "Chrome",
+                    "Application",
+                    "chrome.exe"
+                ),
+                ChromeReleaseChannel.Beta => Path.Combine(
+                    "Google",
+                    "Chrome Beta",
+                    "Application",
+                    "chrome.exe"
+                ),
+                ChromeReleaseChannel.Canary => Path.Combine(
+                    "Google",
+                    "Chrome SxS",
+                    "Application",
+                    "chrome.exe"
+                ),
+                ChromeReleaseChannel.Dev => Path.Combine(
+                    "Google",
+                    "Chrome Dev",
+                    "Application",
+                    "chrome.exe"
+                ),
                 _ => throw new PuppeteerException($"{channel} is not supported"),
             };
 
@@ -137,7 +189,9 @@ namespace PuppeteerSharp.BrowserData
                 prefixes.Add(programFiles);
             }
 
-            var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            var programFilesX86 = Environment.GetFolderPath(
+                Environment.SpecialFolder.ProgramFilesX86
+            );
             if (!string.IsNullOrEmpty(programFilesX86))
             {
                 prefixes.Add(programFilesX86);
@@ -152,7 +206,9 @@ namespace PuppeteerSharp.BrowserData
             }
 
             // https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/mini_installer/README.md
-            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var localAppData = Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData
+            );
             if (!string.IsNullOrEmpty(localAppData))
             {
                 prefixes.Add(localAppData);
@@ -167,9 +223,15 @@ namespace PuppeteerSharp.BrowserData
             return prefixes.Select(prefix => Path.Combine(prefix, suffix)).ToArray();
         }
 
-        private static async Task<ChromeGoodVersionsResult.ChromeGoodVersionsResultVersion> GetLastKnownGoodReleaseForChannel(ChromeReleaseChannel channel)
+        private static async Task<ChromeGoodVersionsResult.ChromeGoodVersionsResultVersion> GetLastKnownGoodReleaseForChannel(
+            ChromeReleaseChannel channel
+        )
         {
-            var data = await JsonUtils.GetAsync<ChromeGoodVersionsResult>("https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json").ConfigureAwait(false);
+            var data = await JsonUtils
+                .GetAsync<ChromeGoodVersionsResult>(
+                    "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json"
+                )
+                .ConfigureAwait(false);
 
             foreach (var channelKey in data.Channels.Keys.ToArray())
             {
@@ -179,12 +241,7 @@ namespace PuppeteerSharp.BrowserData
             return data.Channels[channel.ToString().ToUpperInvariant()];
         }
 
-        private static string[] ResolveDownloadPath(Platform platform, string buildId)
-            =>
-            [
-                buildId,
-                GetFolder(platform, buildId),
-                $"chrome-{GetFolder(platform, buildId)}.zip"
-            ];
+        private static string[] ResolveDownloadPath(Platform platform, string buildId) =>
+            [buildId, GetFolder(platform, buildId), $"chrome-{GetFolder(platform, buildId)}.zip"];
     }
 }

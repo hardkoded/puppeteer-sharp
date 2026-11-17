@@ -10,7 +10,10 @@ namespace PuppeteerSharp.Helpers
 {
     internal class RemoteObjectHelper
     {
-        internal static object ValueFromRemoteObject<T>(RemoteObject remoteObject, bool stringify = false)
+        internal static object ValueFromRemoteObject<T>(
+            RemoteObject remoteObject,
+            bool stringify = false
+        )
         {
             var unserializableValue = remoteObject.UnserializableValue;
 
@@ -44,7 +47,11 @@ namespace PuppeteerSharp.Helpers
                 : ValueFromType<T>((JsonElement)value, remoteObject.Type, stringify);
         }
 
-        internal static async Task ReleaseObjectAsync(ICDPSession client, RemoteObject remoteObject, ILogger logger)
+        internal static async Task ReleaseObjectAsync(
+            ICDPSession client,
+            RemoteObject remoteObject,
+            ILogger logger
+        )
         {
             if (remoteObject.ObjectId == null)
             {
@@ -53,13 +60,13 @@ namespace PuppeteerSharp.Helpers
 
             try
             {
-                await client.SendAsync(
-                    "Runtime.releaseObject",
-                    new RuntimeReleaseObjectRequest
-                    {
-                        ObjectId = remoteObject.ObjectId,
-                    },
-                    false /* We don't need to wait for the object to be released*/).ConfigureAwait(false);
+                await client
+                    .SendAsync(
+                        "Runtime.releaseObject",
+                        new RuntimeReleaseObjectRequest { ObjectId = remoteObject.ObjectId },
+                        false /* We don't need to wait for the object to be released*/
+                    )
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -69,7 +76,11 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        private static object ValueFromType<T>(JsonElement value, RemoteObjectType objectType, bool stringify = false)
+        private static object ValueFromType<T>(
+            JsonElement value,
+            RemoteObjectType objectType,
+            bool stringify = false
+        )
         {
             if (stringify)
             {
@@ -109,10 +120,18 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        private static object ValueFromUnserializableValue(RemoteObject remoteObject, string unserializableValue)
+        private static object ValueFromUnserializableValue(
+            RemoteObject remoteObject,
+            string unserializableValue
+        )
         {
-            if (remoteObject.Type == RemoteObjectType.Bigint &&
-                                decimal.TryParse(remoteObject.UnserializableValue.Replace("n", string.Empty), out var decimalValue))
+            if (
+                remoteObject.Type == RemoteObjectType.Bigint
+                && decimal.TryParse(
+                    remoteObject.UnserializableValue.Replace("n", string.Empty),
+                    out var decimalValue
+                )
+            )
             {
                 return new BigInteger(decimalValue);
             }
@@ -128,7 +147,9 @@ namespace PuppeteerSharp.Helpers
                 case "-Infinity":
                     return double.NegativeInfinity;
                 default:
-                    throw new PuppeteerException("Unsupported unserializable value: " + unserializableValue);
+                    throw new PuppeteerException(
+                        "Unsupported unserializable value: " + unserializableValue
+                    );
             }
         }
     }

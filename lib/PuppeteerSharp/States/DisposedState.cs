@@ -5,7 +5,11 @@ namespace PuppeteerSharp.States
 {
     internal class DisposedState(StateManager stateManager) : State(stateManager)
     {
-        public override Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout)
+        public override Task EnterFromAsync(
+            LauncherBase launcher,
+            State fromState,
+            TimeSpan timeout
+        )
         {
             if (fromState == StateManager.Exited)
             {
@@ -19,22 +23,31 @@ namespace PuppeteerSharp.States
                 tempUserDataDir
                     .DeleteAsync()
                     .ContinueWith(
-                        t => launcher.ExitCompletionSource.TrySetException(new ObjectDisposedException(launcher.ToString())),
-                        TaskScheduler.Default);
+                        t =>
+                            launcher.ExitCompletionSource.TrySetException(
+                                new ObjectDisposedException(launcher.ToString())
+                            ),
+                        TaskScheduler.Default
+                    );
             }
             else
             {
-                launcher.ExitCompletionSource.TrySetException(new ObjectDisposedException(launcher.ToString()));
+                launcher.ExitCompletionSource.TrySetException(
+                    new ObjectDisposedException(launcher.ToString())
+                );
             }
 
             return Task.CompletedTask;
         }
 
-        public override Task StartAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
+        public override Task StartAsync(LauncherBase p) =>
+            throw new ObjectDisposedException(p.ToString());
 
-        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout) => throw new ObjectDisposedException(launcher.ToString());
+        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout) =>
+            throw new ObjectDisposedException(launcher.ToString());
 
-        public override Task KillAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
+        public override Task KillAsync(LauncherBase p) =>
+            throw new ObjectDisposedException(p.ToString());
 
         public override void Dispose(LauncherBase p)
         {

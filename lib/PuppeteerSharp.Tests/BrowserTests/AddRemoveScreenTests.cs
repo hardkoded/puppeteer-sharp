@@ -6,19 +6,28 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class AddRemoveScreenTests : PuppeteerBrowserBaseTest
     {
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.add|removeScreen", "should add and remove a screen")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.add|removeScreen",
+                "should add and remove a screen"
+            )
+        ]
         public async Task ShouldAddAndRemoveAScreen()
         {
-            var screenInfo = await Browser.AddScreenAsync(new AddScreenParams
-            {
-                Left = 800,
-                Top = 0,
-                Width = 1600,
-                Height = 1200,
-                ColorDepth = 32,
-                WorkAreaInsets = new WorkAreaInsets { Bottom = 80 },
-                Label = "secondary",
-            });
+            var screenInfo = await Browser.AddScreenAsync(
+                new AddScreenParams
+                {
+                    Left = 800,
+                    Top = 0,
+                    Width = 1600,
+                    Height = 1200,
+                    ColorDepth = 32,
+                    WorkAreaInsets = new WorkAreaInsets { Bottom = 80 },
+                    Label = "secondary",
+                }
+            );
 
             Assert.That(screenInfo.AvailHeight, Is.EqualTo(1120));
             Assert.That(screenInfo.AvailLeft, Is.EqualTo(800));

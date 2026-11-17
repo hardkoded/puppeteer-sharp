@@ -11,11 +11,17 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
     public class RequestContinueTests : PuppeteerPageBaseTest
     {
-        public RequestContinueTests() : base()
-        {
-        }
+        public RequestContinueTests()
+            : base() { }
 
-        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should work")]
+        [
+            Test,
+            PuppeteerTest(
+                "requestinterception.spec",
+                "request interception Request.continue",
+                "should work"
+            )
+        ]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -23,36 +29,46 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should amend HTTP headers")]
+        [
+            Test,
+            PuppeteerTest(
+                "requestinterception.spec",
+                "request interception Request.continue",
+                "should amend HTTP headers"
+            )
+        ]
         public async Task ShouldAmendHTTPHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
             {
-                var headers = new Dictionary<string, string>(e.Request.Headers)
-                {
-                    ["FOO"] = "bar"
-                };
+                var headers = new Dictionary<string, string>(e.Request.Headers) { ["FOO"] = "bar" };
                 await e.Request.ContinueAsync(new Payload { Headers = headers });
             };
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var requestTask = Server.WaitForRequest("/sleep.zzz", request => request.Headers["foo"].ToString());
-            await Task.WhenAll(
-                requestTask,
-                Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
+            var requestTask = Server.WaitForRequest("/sleep.zzz", request =>
+                request.Headers["foo"].ToString()
             );
+            await Task.WhenAll(requestTask, Page.EvaluateExpressionAsync("fetch('/sleep.zzz')"));
             Assert.That(requestTask.Result, Is.EqualTo("bar"));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should redirect in a way non-observable to page")]
+        [
+            Test,
+            PuppeteerTest(
+                "requestinterception.spec",
+                "request interception Request.continue",
+                "should redirect in a way non-observable to page"
+            )
+        ]
         public async Task ShouldRedirectInAWayNonObservableToPage()
         {
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
             {
                 var redirectURL = e.Request.Url.Contains("/empty.html")
-                    ? TestConstants.ServerUrl + "/consolelog.html" :
-                    null;
+                    ? TestConstants.ServerUrl + "/consolelog.html"
+                    : null;
                 await e.Request.ContinueAsync(new Payload { Url = redirectURL });
             };
             string consoleMessage = null;
@@ -62,7 +78,14 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(consoleMessage, Is.EqualTo("yellow"));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should amend method")]
+        [
+            Test,
+            PuppeteerTest(
+                "requestinterception.spec",
+                "request interception Request.continue",
+                "should amend method"
+            )
+        ]
         public async Task ShouldAmendMethodData()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -72,27 +95,31 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 await e.Request.ContinueAsync(new Payload { Method = HttpMethod.Post });
             };
 
-            var requestTask = Server.WaitForRequest<string>("/sleep.zzz", request => request.Method);
-
-            await Task.WhenAll(
-                requestTask,
-                Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
+            var requestTask = Server.WaitForRequest<string>("/sleep.zzz", request =>
+                request.Method
             );
+
+            await Task.WhenAll(requestTask, Page.EvaluateExpressionAsync("fetch('/sleep.zzz')"));
 
             Assert.That(requestTask.Result, Is.EqualTo("POST"));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should amend post data")]
+        [
+            Test,
+            PuppeteerTest(
+                "requestinterception.spec",
+                "request interception Request.continue",
+                "should amend post data"
+            )
+        ]
         public async Task ShouldAmendPostData()
         {
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
             {
-                await e.Request.ContinueAsync(new Payload
-                {
-                    Method = HttpMethod.Post,
-                    PostData = "doggo"
-                });
+                await e.Request.ContinueAsync(
+                    new Payload { Method = HttpMethod.Post, PostData = "doggo" }
+                );
             };
             var requestTask = Server.WaitForRequest("/sleep.zzz", async request =>
             {
@@ -102,15 +129,19 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 }
             });
 
-            await Task.WhenAll(
-                requestTask,
-                Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
-            );
+            await Task.WhenAll(requestTask, Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz"));
 
             Assert.That(await requestTask.Result, Is.EqualTo("doggo"));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should fail if the header value is invalid")]
+        [
+            Test,
+            PuppeteerTest(
+                "requestinterception.spec",
+                "request interception Request.continue",
+                "should fail if the header value is invalid"
+            )
+        ]
         public async Task ShouldFailIfTheHeaderValueIsInvalid()
         {
             Exception error = null;
@@ -119,13 +150,15 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             {
                 try
                 {
-                    await e.Request.ContinueAsync(new Payload
-                    {
-                        Headers = new Dictionary<string, string>
+                    await e.Request.ContinueAsync(
+                        new Payload
                         {
-                            ["X-Invalid-Header"] = "a\nb",
-                        },
-                    });
+                            Headers = new Dictionary<string, string>
+                            {
+                                ["X-Invalid-Header"] = "a\nb",
+                            },
+                        }
+                    );
                 }
                 catch (Exception ex)
                 {
@@ -135,18 +168,27 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 await e.Request.ContinueAsync();
             };
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.That(error.Message, Does.Match("Invalid header|Expected \"header\"|invalid argument"));
+            Assert.That(
+                error.Message,
+                Does.Match("Invalid header|Expected \"header\"|invalid argument")
+            );
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should amend both post data and method on navigation")]
+        [
+            Test,
+            PuppeteerTest(
+                "requestinterception.spec",
+                "request interception Request.continue",
+                "should amend both post data and method on navigation"
+            )
+        ]
         public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
         {
             await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync(new Payload
-            {
-                Method = HttpMethod.Post,
-                PostData = "doggo"
-            });
+            Page.Request += async (_, e) =>
+                await e.Request.ContinueAsync(
+                    new Payload { Method = HttpMethod.Post, PostData = "doggo" }
+                );
 
             var serverRequestTask = Server.WaitForRequest("/empty.html", async req =>
             {
@@ -154,10 +196,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 return new { req.Method, Body = body };
             });
 
-            await Task.WhenAll(
-                serverRequestTask,
-                Page.GoToAsync(TestConstants.EmptyPage)
-            );
+            await Task.WhenAll(serverRequestTask, Page.GoToAsync(TestConstants.EmptyPage));
             var serverRequest = await serverRequestTask;
             Assert.That(serverRequest.Result.Method, Is.EqualTo(HttpMethod.Post.Method));
             Assert.That(serverRequest.Result.Body, Is.EqualTo("doggo"));

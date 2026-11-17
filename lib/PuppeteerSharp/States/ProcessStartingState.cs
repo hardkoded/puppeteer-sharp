@@ -13,7 +13,11 @@ namespace PuppeteerSharp.States
 
         public string LineOutputExpression { get; set; } = "^DevTools listening on (ws:\\/\\/.*)";
 
-        public override Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout)
+        public override Task EnterFromAsync(
+            LauncherBase launcher,
+            State fromState,
+            TimeSpan timeout
+        )
         {
             if (!StateManager.TryEnter(launcher, fromState, this))
             {
@@ -27,9 +31,11 @@ namespace PuppeteerSharp.States
 
         public override Task StartAsync(LauncherBase p) => p.StartCompletionSource.Task;
 
-        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout) => StateManager.Exiting.EnterFromAsync(launcher, this, timeout);
+        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout) =>
+            StateManager.Exiting.EnterFromAsync(launcher, this, timeout);
 
-        public override Task KillAsync(LauncherBase p) => StateManager.Killing.EnterFromAsync(p, this);
+        public override Task KillAsync(LauncherBase p) =>
+            StateManager.Killing.EnterFromAsync(p, this);
 
         public override void Dispose(LauncherBase p)
         {
@@ -43,7 +49,8 @@ namespace PuppeteerSharp.States
             {
                 await p.CleanTempUserDataDirAsync().ConfigureAwait(false);
                 throw new ProcessException(
-                    $"Browser was not found at the configured executablePath ({p.ExecutablePath})");
+                    $"Browser was not found at the configured executablePath ({p.ExecutablePath})"
+                );
             }
 
             var usePipe = p.Options.Pipe;
@@ -71,7 +78,9 @@ namespace PuppeteerSharp.States
                     try
                     {
                         p.Process.WaitForExit(StderrDrainTimeoutMs);
-                        exitCode = p.Process.ExitCode.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        exitCode = p.Process.ExitCode.ToString(
+                            System.Globalization.CultureInfo.InvariantCulture
+                        );
                     }
                     catch (Exception)
                     {
@@ -79,11 +88,15 @@ namespace PuppeteerSharp.States
                     }
 
                     p.StartCompletionSource.TrySetException(
-                        new ProcessException($"Failed to launch browser! The browser process exited with code {exitCode}. {p.GetRecentLogs()}"));
+                        new ProcessException(
+                            $"Failed to launch browser! The browser process exited with code {exitCode}. {p.GetRecentLogs()}"
+                        )
+                    );
                 });
             }
 
-            void OnProcessExited(object sender, EventArgs e) => StateManager.Exited.EnterFrom(p, StateManager.CurrentState);
+            void OnProcessExited(object sender, EventArgs e) =>
+                StateManager.Exited.EnterFrom(p, StateManager.CurrentState);
 
             // Always subscribe for DevTools endpoint discovery when not using pipes.
             // Recent stderr lines are captured separately on LauncherBase for both modes.
@@ -129,8 +142,13 @@ namespace PuppeteerSharp.States
                 if (timeout > 0)
                 {
                     cts = new CancellationTokenSource(timeout);
-                    cts.Token.Register(() => p.StartCompletionSource.TrySetException(
-                        new ProcessException($"Timed out after {timeout} ms while trying to connect to Base!")));
+                    cts.Token.Register(() =>
+                        p.StartCompletionSource.TrySetException(
+                            new ProcessException(
+                                $"Timed out after {timeout} ms while trying to connect to Base!"
+                            )
+                        )
+                    );
                 }
 
                 try

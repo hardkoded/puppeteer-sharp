@@ -16,11 +16,13 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
                 task,
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     fetch('/digits/1.png');
                     fetch('/digits/2.png');
                     fetch('/digits/3.png');
-                }")
+                }"
+                )
             );
             Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
         }
@@ -29,32 +31,47 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithPredicate()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var task = Page.WaitForRequestAsync(request => request.Url == TestConstants.ServerUrl + "/digits/2.png");
+            var task = Page.WaitForRequestAsync(request =>
+                request.Url == TestConstants.ServerUrl + "/digits/2.png"
+            );
 
             await Task.WhenAll(
-            task,
-            Page.EvaluateFunctionAsync(@"() => {
+                task,
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                 fetch('/digits/1.png');
                 fetch('/digits/2.png');
                 fetch('/digits/3.png');
-            }")
+            }"
+                )
             );
             Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should work with async predicate")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.waitForRequest",
+                "should work with async predicate"
+            )
+        ]
         public async Task ShouldWorkWithAsyncPredicate()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var task = Page.WaitForRequestAsync(request => request.Url == TestConstants.ServerUrl + "/digits/2.png");
+            var task = Page.WaitForRequestAsync(request =>
+                request.Url == TestConstants.ServerUrl + "/digits/2.png"
+            );
 
             await Task.WhenAll(
                 task,
-                Page.EvaluateFunctionAsync(@"() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => {
                     fetch('/digits/1.png');
                     fetch('/digits/2.png');
                     fetch('/digits/3.png');
-                }")
+                }"
+                )
             );
             Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
         }
@@ -64,35 +81,48 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
-                await Page.WaitForRequestAsync(_ => false, new WaitForOptions(1)));
+                await Page.WaitForRequestAsync(_ => false, new WaitForOptions(1))
+            );
 
             Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should respect default timeout")]
+        [
+            Test,
+            PuppeteerTest("page.spec", "Page Page.waitForRequest", "should respect default timeout")
+        ]
         public async Task ShouldRespectDefaultTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Page.DefaultTimeout = 1;
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
-                await Page.WaitForRequestAsync(_ => false));
+                await Page.WaitForRequestAsync(_ => false)
+            );
 
             Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should work with no timeout")]
+        [
+            Test,
+            PuppeteerTest("page.spec", "Page Page.waitForRequest", "should work with no timeout")
+        ]
         public async Task ShouldWorkWithNoTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var task = Page.WaitForRequestAsync(TestConstants.ServerUrl + "/digits/2.png", new WaitForOptions(0));
+            var task = Page.WaitForRequestAsync(
+                TestConstants.ServerUrl + "/digits/2.png",
+                new WaitForOptions(0)
+            );
 
             await Task.WhenAll(
                 task,
-                Page.EvaluateFunctionAsync(@"() => setTimeout(() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => setTimeout(() => {
                     fetch('/digits/1.png');
                     fetch('/digits/2.png');
                     fetch('/digits/3.png');
-                }, 50)")
+                }, 50)"
+                )
             );
             Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
         }
@@ -105,7 +135,8 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var task = Page.WaitForRequestAsync(
                 TestConstants.ServerUrl + "/abortme",
-                new WaitForOptions { CancellationToken = cts.Token });
+                new WaitForOptions { CancellationToken = cts.Token }
+            );
 
             cts.Cancel();
             Assert.CatchAsync<OperationCanceledException>(() => task);

@@ -55,12 +55,10 @@ internal static class EnumHelper
 #endif
 
     public static TEnum ToEnum<TEnum>(this string value)
-        where TEnum : struct, Enum
-        => StringToEnum<TEnum>.Cache[value];
+        where TEnum : struct, Enum => StringToEnum<TEnum>.Cache[value];
 
     public static string ToValueString<TEnum>(this TEnum value)
-        where TEnum : struct, Enum
-        => EnumToString<TEnum>.Cache[value];
+        where TEnum : struct, Enum => EnumToString<TEnum>.Cache[value];
 
     public static TEnum FromValueString<TEnum>(string value)
         where TEnum : struct, Enum

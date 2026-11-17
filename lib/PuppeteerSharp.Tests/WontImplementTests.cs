@@ -4,72 +4,242 @@ namespace PuppeteerSharp.Tests
 {
     public class WontImplementTests : PuppeteerPageBaseTest
     {
-        [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation")]
-        [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during bad navigation")]
-        [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation of 11 pages")]
+        [PuppeteerTest(
+            "navigation.spec",
+            "Page.goto",
+            "should not leak listeners during navigation"
+        )]
+        [PuppeteerTest(
+            "navigation.spec",
+            "Page.goto",
+            "should not leak listeners during bad navigation"
+        )]
+        [PuppeteerTest(
+            "navigation.spec",
+            "Page.goto",
+            "should not leak listeners during navigation of 11 pages"
+        )]
         // The listener counts (FrameEvent.FrameDetached listenerCount, getEventListeners on an AbortSignal) have no C# equivalent: events are not counted and CancellationToken has no listener list
-        [PuppeteerTest("navigation.spec", "navigation Page.goto", "should remove its listeners when the navigation times out")]
-        [PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should remove the abort listener from the signal")]
-        [PuppeteerTest("navigation.spec", "Page.goto", "should throw if networkidle is passed as an option")]
-        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should report the correct product")] //We don't use the product in this way
-        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "falls back to launching chrome if there is an unknown product but logs a warning")]
+        [PuppeteerTest(
+            "navigation.spec",
+            "navigation Page.goto",
+            "should remove its listeners when the navigation times out"
+        )]
+        [PuppeteerTest(
+            "navigation.spec",
+            "navigation Page.waitForNavigation",
+            "should remove the abort listener from the signal"
+        )]
+        [PuppeteerTest(
+            "navigation.spec",
+            "Page.goto",
+            "should throw if networkidle is passed as an option"
+        )]
+        [PuppeteerTest(
+            "launcher.spec",
+            "Launcher specs Puppeteer Puppeteer.launch",
+            "should report the correct product"
+        )] //We don't use the product in this way
+        [PuppeteerTest(
+            "launcher.spec",
+            "Launcher specs Puppeteer Puppeteer.launch",
+            "falls back to launching chrome if there is an unknown product but logs a warning"
+        )]
         [PuppeteerTest("tracing.spec", "Tracing", "should return null in case of Buffer error")]
-        [PuppeteerTest("tracing.spec", "Tracing", "should properly fail if readProtocolStream errors out")]
+        [PuppeteerTest(
+            "tracing.spec",
+            "Tracing",
+            "should properly fail if readProtocolStream errors out"
+        )]
         // The dumpio+pipe fixture test requires spawning a separate Node.js process with a fixture script
         [PuppeteerTest("fixtures.spec", "Fixtures", "dumpio option should work with pipe option")]
-        [PuppeteerTest("EventEmitter.spec", "once", "only calls the listener once and then removes it")]
+        [PuppeteerTest(
+            "EventEmitter.spec",
+            "once",
+            "only calls the listener once and then removes it"
+        )]
         [PuppeteerTest("EventEmitter.spec", "once", "supports chaining")]
         [PuppeteerTest("EventEmitter.spec", "emit", "calls all the listeners for an event")]
         [PuppeteerTest("EventEmitter.spec", "emit", "passes data through to the listener")]
         [PuppeteerTest("EventEmitter.spec", "emit", "returns true if the event has listeners")]
         [PuppeteerTest("EventEmitter.spec", "emit", "returns false if the event has listeners")]
-        [PuppeteerTest("EventEmitter.spec", "listenerCount", "returns the number of listeners for the given event")]
-        [PuppeteerTest("EventEmitter.spec", "removeAllListeners", "removes every listener from all events by default")]
-        [PuppeteerTest("EventEmitter.spec", "removeAllListeners", "returns the emitter for chaining")]
-        [PuppeteerTest("EventEmitter.spec", "removeAllListeners", "can filter to remove only listeners for a given event name")]
-        [PuppeteerTest("elementhandle.spec", "ElementHandle specs Custom queries", "should work with function shorthands")]
-        [PuppeteerTest("emulation.spec", "Emulation Page.emulateMediaType", "should throw in case of bad argument")]
-        [PuppeteerTest("emulation.spec", "Emulation Page.emulateMediaFeatures", "should throw in case of bad argument")]
-        [PuppeteerTest("emulation.spec", "Emulation Page.emulateVisionDeficiency", "should throw for invalid vision deficiencies")]
-        [PuppeteerTest("waittask.spec", "waittask specs Page.waitFor", "should throw when unknown type")]
-        [PuppeteerTest("waittask.spec", "waittask specs Page.waitFor", "should log a deprecation warning")]
-        [PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should accept a string")]
-        [PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should throw on bad polling value")]
-        [PuppeteerTest("network.spec", "network Page.setExtraHTTPHeaders", "should throw for non-string header values")]
-        [PuppeteerTest("page.spec", "Page removing and adding event handlers", "should correctly fire event handlers as they are added and then removed")]
-        [PuppeteerTest("page.spec", "Page removing and adding event handlers", "should correctly added and removed request events")]
+        [PuppeteerTest(
+            "EventEmitter.spec",
+            "listenerCount",
+            "returns the number of listeners for the given event"
+        )]
+        [PuppeteerTest(
+            "EventEmitter.spec",
+            "removeAllListeners",
+            "removes every listener from all events by default"
+        )]
+        [PuppeteerTest(
+            "EventEmitter.spec",
+            "removeAllListeners",
+            "returns the emitter for chaining"
+        )]
+        [PuppeteerTest(
+            "EventEmitter.spec",
+            "removeAllListeners",
+            "can filter to remove only listeners for a given event name"
+        )]
+        [PuppeteerTest(
+            "elementhandle.spec",
+            "ElementHandle specs Custom queries",
+            "should work with function shorthands"
+        )]
+        [PuppeteerTest(
+            "emulation.spec",
+            "Emulation Page.emulateMediaType",
+            "should throw in case of bad argument"
+        )]
+        [PuppeteerTest(
+            "emulation.spec",
+            "Emulation Page.emulateMediaFeatures",
+            "should throw in case of bad argument"
+        )]
+        [PuppeteerTest(
+            "emulation.spec",
+            "Emulation Page.emulateVisionDeficiency",
+            "should throw for invalid vision deficiencies"
+        )]
+        [PuppeteerTest(
+            "waittask.spec",
+            "waittask specs Page.waitFor",
+            "should throw when unknown type"
+        )]
+        [PuppeteerTest(
+            "waittask.spec",
+            "waittask specs Page.waitFor",
+            "should log a deprecation warning"
+        )]
+        [PuppeteerTest(
+            "waittask.spec",
+            "waittask specs Frame.waitForFunction",
+            "should accept a string"
+        )]
+        [PuppeteerTest(
+            "waittask.spec",
+            "waittask specs Frame.waitForFunction",
+            "should throw on bad polling value"
+        )]
+        [PuppeteerTest(
+            "network.spec",
+            "network Page.setExtraHTTPHeaders",
+            "should throw for non-string header values"
+        )]
+        [PuppeteerTest(
+            "page.spec",
+            "Page removing and adding event handlers",
+            "should correctly fire event handlers as they are added and then removed"
+        )]
+        [PuppeteerTest(
+            "page.spec",
+            "Page removing and adding event handlers",
+            "should correctly added and removed request events"
+        )]
         [PuppeteerTest("page.spec", "Page Page.select", "should throw if passed in non-strings")]
         [PuppeteerTest("page.spec", "Page Page.exposeFunction", "should support throwing \"null\"")]
-        [PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with function shorthands")]
-        [PuppeteerTest("elementhandle.spec", "ElementHandle specs Custom queries", "should wait correctly with waitFor")]
-        [PuppeteerTest("tracing.spec", "Tracing", "should return undefined in case of Buffer error")]
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should listen and shortcut when there are no watchdogs")]
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should listen and shortcut when there are no watchdogs")]
-        [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with function shorthands")]
-        [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with function shorthands and nested arrow functions")]
-        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.toElement", "should work")]
+        [PuppeteerTest(
+            "page.spec",
+            "Page Page.exposeFunction",
+            "should work with function shorthands"
+        )]
+        [PuppeteerTest(
+            "elementhandle.spec",
+            "ElementHandle specs Custom queries",
+            "should wait correctly with waitFor"
+        )]
+        [PuppeteerTest(
+            "tracing.spec",
+            "Tracing",
+            "should return undefined in case of Buffer error"
+        )]
+        [PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "waitForDevicePrompt",
+            "should listen and shortcut when there are no watchdogs"
+        )]
+        [PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.waitForDevice",
+            "should listen and shortcut when there are no watchdogs"
+        )]
+        [PuppeteerTest(
+            "evaluation.spec",
+            "Evaluation specs Page.evaluate",
+            "should work with function shorthands"
+        )]
+        [PuppeteerTest(
+            "evaluation.spec",
+            "Evaluation specs Page.evaluate",
+            "should work with function shorthands and nested arrow functions"
+        )]
+        [PuppeteerTest(
+            "elementhandle.spec",
+            "ElementHandle specs ElementHandle.toElement",
+            "should work"
+        )]
         // These test JavaScript-internal utilities (PuppeteerUtil, createFunction) injected into the isolated realm via LazyArg - no C# equivalent
         [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should work")]
         [PuppeteerTest("injected.spec", "createFunction tests", "should work")]
         // Symbol.dispose / Symbol.asyncDispose are JavaScript-specific disposal patterns (using/await using). C# has IDisposable/IAsyncDisposable which are already tested via DisposeAsync.
-        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle[Symbol.dispose]", "should work")]
-        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle[Symbol.asyncDispose]", "should work")]
+        [PuppeteerTest(
+            "elementhandle.spec",
+            "ElementHandle specs ElementHandle[Symbol.dispose]",
+            "should work"
+        )]
+        [PuppeteerTest(
+            "elementhandle.spec",
+            "ElementHandle specs ElementHandle[Symbol.asyncDispose]",
+            "should work"
+        )]
         // ElementHandle.move() is a JS-specific internal method for moving handles between realms - no C# equivalent
-        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.move", "should work")]
+        [PuppeteerTest(
+            "elementhandle.spec",
+            "ElementHandle specs ElementHandle.move",
+            "should work"
+        )]
         // ElementHandle.touchStart returning a Touch handle for chaining: C# ElementHandle.TouchStartAsync returns Task, not Task<ITouchHandle>
-        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchStart", "should work with the returned Touch")]
+        [PuppeteerTest(
+            "elementhandle.spec",
+            "ElementHandle specs ElementHandle.touchStart",
+            "should work with the returned Touch"
+        )]
         // ElementHandle.touchMove with a pre-existing Touch parameter: C# ElementHandle.TouchMoveAsync takes no parameters
-        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchMove", "should work with a pre-existing Touch")]
+        [PuppeteerTest(
+            "elementhandle.spec",
+            "ElementHandle specs ElementHandle.touchMove",
+            "should work with a pre-existing Touch"
+        )]
         // PuppeteerSharp does not have a DebuggingPort property; users pass --remote-debugging-port as an arg
-        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should not allow setting debuggingPort and pipe")]
+        [PuppeteerTest(
+            "launcher.spec",
+            "Launcher specs Puppeteer Puppeteer.launch",
+            "should not allow setting debuggingPort and pipe"
+        )]
         // AbortSignal is a JS concept; C# uses CancellationToken which is not yet wired into LaunchAsync
-        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should support the AbortSignal")]
+        [PuppeteerTest(
+            "launcher.spec",
+            "Launcher specs Puppeteer Puppeteer.launch",
+            "should support the AbortSignal"
+        )]
         // fromAbortSignal is an rxjs Observable helper over AbortSignal. C# uses CancellationToken, whose registration already runs at once when the token is cancelled (see #3763)
-        [PuppeteerTest("util.test", "util fromAbortSignal", "errors immediately if the signal is already aborted")]
-        [PuppeteerTest("util.test", "util fromAbortSignal", "errors if the signal is aborted after subscribing")]
-        [PuppeteerTest("util.test", "util fromAbortSignal", "does not emit while the signal is not aborted")]
-        public void TheseTestWontBeImplemented()
-        {
-        }
+        [PuppeteerTest(
+            "util.test",
+            "util fromAbortSignal",
+            "errors immediately if the signal is already aborted"
+        )]
+        [PuppeteerTest(
+            "util.test",
+            "util fromAbortSignal",
+            "errors if the signal is aborted after subscribing"
+        )]
+        [PuppeteerTest(
+            "util.test",
+            "util fromAbortSignal",
+            "does not emit while the signal is not aborted"
+        )]
+        public void TheseTestWontBeImplemented() { }
     }
 }

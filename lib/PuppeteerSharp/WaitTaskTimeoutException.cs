@@ -11,23 +11,21 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
-        public WaitTaskTimeoutException()
-        {
-        }
+        public WaitTaskTimeoutException() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
-        public WaitTaskTimeoutException(string message) : base(message)
-        {
-        }
+        public WaitTaskTimeoutException(string message)
+            : base(message) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="timeout">Timeout.</param>
-        public WaitTaskTimeoutException(int timeout) : base($"Waiting failed: {timeout}ms exceeded")
+        public WaitTaskTimeoutException(int timeout)
+            : base($"Waiting failed: {timeout}ms exceeded")
         {
             Timeout = timeout;
         }
@@ -37,7 +35,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="timeout">Timeout.</param>
         /// <param name="elementType">Element type.</param>
-        public WaitTaskTimeoutException(int timeout, string elementType) : base($"waiting for {elementType} failed: timeout {timeout}ms exceeded")
+        public WaitTaskTimeoutException(int timeout, string elementType)
+            : base($"waiting for {elementType} failed: timeout {timeout}ms exceeded")
         {
             Timeout = timeout;
             ElementType = elementType;
@@ -48,9 +47,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
-        public WaitTaskTimeoutException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+        public WaitTaskTimeoutException(string message, Exception innerException)
+            : base(message, innerException) { }
 
         /// <summary>
         /// Timeout that caused the exception.

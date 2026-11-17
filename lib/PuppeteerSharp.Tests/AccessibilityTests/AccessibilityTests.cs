@@ -10,7 +10,8 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should work")]
         public async Task ShouldWork()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <head>
                 <title>Accessibility Test</title>
             </head>
@@ -29,95 +30,108 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                     <option>First Option</option>
                     <option>Second Option</option>
                 </select>
-            </body>");
+            </body>"
+            );
 
             var nodeToCheck = new SerializedAXNode
             {
                 Role = "RootWebArea",
                 Name = "Accessibility Test",
                 Children = new SerializedAXNode[]
+                {
+                    new() { Role = "StaticText", Name = "Hello World" },
+                    new()
                     {
-                        new() {
-                            Role = "StaticText",
-                            Name = "Hello World"
-                        },
-                        new() {
-                            Role = "heading",
-                            Name = "Inputs",
-                            Level = 1
-                        },
-                        new (){
-                            Role = "textbox",
-                            Name = "Empty input",
-                            Focused = true
-                        },
-                        new (){
-                            Role = "textbox",
-                            Name = "readonly input",
-                            Readonly = true
-                        },
-                        new (){
-                            Role = "textbox",
-                            Name = "disabled input",
-                            Disabled= true
-                        },
-                        new (){
-                            Role = "textbox",
-                            Name = "Input with whitespace",
-                            Value= "  "
-                        },
-                        new (){
-                            Role = "textbox",
-                            Name = "",
-                            Value= "value only"
-                        },
-                        new (){
-                            Role = "textbox",
-                            Name = "placeholder",
-                            Value= "and a value"
-                        },
-                        new (){
-                            Role = "textbox",
-                            Name = "placeholder",
-                            Value= "and a value",
-                            Description= "This is a description!"
-                        },
-                        new (){
-                            Role= "combobox",
-                            Name= "",
-                            Value= "First Option",
-                            HasPopup = "menu",
-                            Children=
-                            [
-                                new() {
-                                    Role = "option",
-                                    Name = "First Option",
-                                    Selected= true
-                                },
-                                new() {
-                                    Role = "option",
-                                    Name = "Second Option"
-                                }
-                            ]
-                        }
-                    }
+                        Role = "heading",
+                        Name = "Inputs",
+                        Level = 1,
+                    },
+                    new()
+                    {
+                        Role = "textbox",
+                        Name = "Empty input",
+                        Focused = true,
+                    },
+                    new()
+                    {
+                        Role = "textbox",
+                        Name = "readonly input",
+                        Readonly = true,
+                    },
+                    new()
+                    {
+                        Role = "textbox",
+                        Name = "disabled input",
+                        Disabled = true,
+                    },
+                    new()
+                    {
+                        Role = "textbox",
+                        Name = "Input with whitespace",
+                        Value = "  ",
+                    },
+                    new()
+                    {
+                        Role = "textbox",
+                        Name = "",
+                        Value = "value only",
+                    },
+                    new()
+                    {
+                        Role = "textbox",
+                        Name = "placeholder",
+                        Value = "and a value",
+                    },
+                    new()
+                    {
+                        Role = "textbox",
+                        Name = "placeholder",
+                        Value = "and a value",
+                        Description = "This is a description!",
+                    },
+                    new()
+                    {
+                        Role = "combobox",
+                        Name = "",
+                        Value = "First Option",
+                        HasPopup = "menu",
+                        Children =
+                        [
+                            new()
+                            {
+                                Role = "option",
+                                Name = "First Option",
+                                Selected = true,
+                            },
+                            new() { Role = "option", Name = "Second Option" },
+                        ],
+                    },
+                },
             };
             await Page.FocusAsync("[placeholder='Empty input']");
             var snapshot = await Page.Accessibility.SnapshotAsync();
             Assert.That(snapshot, Is.EqualTo(nodeToCheck));
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should report uninteresting nodes")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "Accessibility",
+                "should report uninteresting nodes"
+            )
+        ]
         public async Task ShouldReportUninterestingNodes()
         {
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
             await Page.FocusAsync("textarea");
 
             // Upstream uses toMatchObject (partial matching), so we assert individual properties
-            var focusedNode = FindFocusedNode(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-            {
-                InterestingOnly = false
-            }));
+            var focusedNode = FindFocusedNode(
+                await Page.Accessibility.SnapshotAsync(
+                    new AccessibilitySnapshotOptions { InterestingOnly = false }
+                )
+            );
             Assert.That(focusedNode.Role, Is.EqualTo("textbox"));
             Assert.That(focusedNode.Name, Is.EqualTo(""));
             Assert.That(focusedNode.Value, Is.EqualTo("hi"));
@@ -131,10 +145,18 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(focusedNode.Children[0].Children[0].Name, Is.EqualTo("hi"));
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "get snapshots while the tree is re-calculated")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "Accessibility",
+                "get snapshots while the tree is re-calculated"
+            )
+        ]
         public async Task GetSnapshotsWhileTheTreeIsReCalculated()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <!DOCTYPE html>
             <html lang=""en"">
             <head>
@@ -165,7 +187,8 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 })
                 </script>
             </body>
-            </html>");
+            </html>"
+            );
 
             var button = await Page.QuerySelectorAsync("button");
             Assert.That(await GetAccessibleNameAsync(Page, button), Is.EqualTo("Show"));
@@ -175,10 +198,11 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
 
         private async Task<string> GetAccessibleNameAsync(IPage page, IElementHandle element)
         {
-            return (await page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-            {
-                Root = element
-            })).Name;
+            return (
+                await page.Accessibility.SnapshotAsync(
+                    new AccessibilitySnapshotOptions { Root = element }
+                )
+            ).Name;
         }
 
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "roledescription")]
@@ -193,7 +217,9 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "orientation")]
         public async Task Orientation()
         {
-            await Page.SetContentAsync("<a href='' role='slider' aria-orientation='vertical'>11</a>");
+            await Page.SetContentAsync(
+                "<a href='' role='slider' aria-orientation='vertical'>11</a>"
+            );
             var snapshot = await Page.Accessibility.SnapshotAsync();
             Assert.That(snapshot.Children[0].Orientation, Is.EqualTo("vertical"));
         }
@@ -209,7 +235,9 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "multiselectable")]
         public async Task MultiSelectable()
         {
-            await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-multiselectable=true>hey</div>");
+            await Page.SetContentAsync(
+                "<div role='grid' tabIndex=-1 aria-multiselectable=true>hey</div>"
+            );
             var snapshot = await Page.Accessibility.SnapshotAsync();
             Assert.That(snapshot.Children[0].Multiselectable, Is.True);
         }
@@ -217,170 +245,253 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "keyshortcuts")]
         public async Task KeyShortcuts()
         {
-            await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-keyshortcuts='foo'>hey</div>");
+            await Page.SetContentAsync(
+                "<div role='grid' tabIndex=-1 aria-keyshortcuts='foo'>hey</div>"
+            );
             var snapshot = await Page.Accessibility.SnapshotAsync();
             Assert.That(snapshot.Children[0].KeyShortcuts, Is.EqualTo("foo"));
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "should not report text nodes inside controls")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "filtering children of leaf nodes",
+                "should not report text nodes inside controls"
+            )
+        ]
         public async Task ShouldNotReportTextNodesInsideControls()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <div role='tablist'>
                 <div role='tab' aria-selected='true'><b>Tab1</b></div>
                 <div role='tab'>Tab2</div>
-            </div>");
+            </div>"
+            );
             Assert.That(
                 await Page.Accessibility.SnapshotAsync(),
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "RootWebArea",
-                    Name = "",
-                    Children = new SerializedAXNode[]
+                Is.EqualTo(
+                    new SerializedAXNode
                     {
-                        new() {
-                            Role = "tab",
-                            Name = "Tab1",
-                            Selected = true
+                        Role = "RootWebArea",
+                        Name = "",
+                        Children = new SerializedAXNode[]
+                        {
+                            new()
+                            {
+                                Role = "tab",
+                                Name = "Tab1",
+                                Selected = true,
+                            },
+                            new() { Role = "tab", Name = "Tab2" },
                         },
-                        new() {
-                            Role = "tab",
-                            Name = "Tab2"
-                        }
                     }
-                }));
+                )
+            );
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "rich text editable fields should have children")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "filtering children of leaf nodes",
+                "rich text editable fields should have children"
+            )
+        ]
         public async Task RichTextEditableFieldsShouldHaveChildren()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <div contenteditable='true'>
                 Edit this image: <img src='fakeimage.png' alt='my fake image'>
-            </div>");
+            </div>"
+            );
             Assert.That(
                 (await Page.Accessibility.SnapshotAsync()).Children[0],
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "generic",
-                    Name = "",
-                    Value = "Edit this image: ",
-                    Children = new SerializedAXNode[]
+                Is.EqualTo(
+                    new SerializedAXNode
                     {
-                        new() {
-                            Role = "StaticText",
-                            Name = "Edit this image: "
+                        Role = "generic",
+                        Name = "",
+                        Value = "Edit this image: ",
+                        Children = new SerializedAXNode[]
+                        {
+                            new() { Role = "StaticText", Name = "Edit this image: " },
+                            new() { Role = "image", Name = "my fake image" },
                         },
-                        new() {
-                            Role = "image",
-                            Name = "my fake image"
-                        }
                     }
-                }));
+                )
+            );
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "rich text editable fields with role should have children")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "filtering children of leaf nodes",
+                "rich text editable fields with role should have children"
+            )
+        ]
         public async Task RichTextEditableFieldsWithRoleShouldHaveChildren()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <div contenteditable='true' role='textbox'>
                 Edit this image: <img src='fakeimage.png' alt='my fake image'>
-            </div>");
+            </div>"
+            );
             Assert.That(
                 (await Page.Accessibility.SnapshotAsync()).Children[0],
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "textbox",
-                    Name = "",
-                    Value = "Edit this image: ",
-                    Multiline = true,
-                    Children = new SerializedAXNode[]
+                Is.EqualTo(
+                    new SerializedAXNode
                     {
-                        new() {
-                            Role = "StaticText",
-                            Name = "Edit this image: "
+                        Role = "textbox",
+                        Name = "",
+                        Value = "Edit this image: ",
+                        Multiline = true,
+                        Children = new SerializedAXNode[]
+                        {
+                            new() { Role = "StaticText", Name = "Edit this image: " },
                         },
                     }
-                }));
+                )
+            );
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "plaintext contenteditable", "plain text field with role should not have children")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "plaintext contenteditable",
+                "plain text field with role should not have children"
+            )
+        ]
         public async Task PlainTextFieldWithRoleShouldNotHaveChildren()
         {
-            await Page.SetContentAsync("<div contenteditable='plaintext-only' role='textbox'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
+            await Page.SetContentAsync(
+                "<div contenteditable='plaintext-only' role='textbox'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>"
+            );
             Assert.That(
                 (await Page.Accessibility.SnapshotAsync()).Children[0],
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "textbox",
-                    Name = "",
-                    Value = "Edit this image:",
-                    Multiline = true,
-                }));
+                Is.EqualTo(
+                    new SerializedAXNode
+                    {
+                        Role = "textbox",
+                        Name = "",
+                        Value = "Edit this image:",
+                        Multiline = true,
+                    }
+                )
+            );
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "plaintext contenteditable", "plain text field with tabindex and without role should not have content")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "plaintext contenteditable",
+                "plain text field with tabindex and without role should not have content"
+            )
+        ]
         public async Task PlainTextFieldWithoutRoleShouldNotHaveContent()
         {
             await Page.SetContentAsync(
-                "<div contenteditable='plaintext-only'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
+                "<div contenteditable='plaintext-only'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>"
+            );
             var snapshot = await Page.Accessibility.SnapshotAsync();
             Assert.That(snapshot.Children[0].Role, Is.EqualTo("generic"));
             Assert.That(snapshot.Children[0].Name, Is.EqualTo(string.Empty));
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "non editable textbox with role and tabIndex and label should not have children")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "filtering children of leaf nodes",
+                "non editable textbox with role and tabIndex and label should not have children"
+            )
+        ]
         public async Task NonEditableTextboxWithRoleAndTabIndexAndLabelShouldNotHaveChildren()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <div role='textbox' tabIndex=0 aria-checked='true' aria-label='my favorite textbox'>
                 this is the inner content
                 <img alt='yo' src='fakeimg.png'>
-            </div>");
+            </div>"
+            );
             Assert.That(
                 (await Page.Accessibility.SnapshotAsync()).Children[0],
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "textbox",
-                    Name = "my favorite textbox",
-                    Value = "this is the inner content "
-                }));
+                Is.EqualTo(
+                    new SerializedAXNode
+                    {
+                        Role = "textbox",
+                        Name = "my favorite textbox",
+                        Value = "this is the inner content ",
+                    }
+                )
+            );
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "checkbox with and tabIndex and label should not have children")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "filtering children of leaf nodes",
+                "checkbox with and tabIndex and label should not have children"
+            )
+        ]
         public async Task CheckboxWithAndTabIndexAndLabelShouldNotHaveChildren()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <div role='checkbox' tabIndex=0 aria-checked='true' aria-label='my favorite checkbox'>
                 this is the inner content
                 <img alt='yo' src='fakeimg.png'>
-            </div>");
+            </div>"
+            );
             Assert.That(
                 (await Page.Accessibility.SnapshotAsync()).Children[0],
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "checkbox",
-                    Name = "my favorite checkbox",
-                    Checked = CheckedState.True
-                }));
+                Is.EqualTo(
+                    new SerializedAXNode
+                    {
+                        Role = "checkbox",
+                        Name = "my favorite checkbox",
+                        Checked = CheckedState.True,
+                    }
+                )
+            );
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "checkbox without label should not have children")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "filtering children of leaf nodes",
+                "checkbox without label should not have children"
+            )
+        ]
         public async Task CheckboxWithoutLabelShouldNotHaveChildren()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <div role='checkbox' aria-checked='true'>
                 this is the inner content
                 <img alt='yo' src='fakeimg.png'>
-            </div>");
+            </div>"
+            );
             Assert.That(
                 (await Page.Accessibility.SnapshotAsync()).Children[0],
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "checkbox",
-                    Name = "this is the inner content yo",
-                    Checked = CheckedState.True
-                }));
+                Is.EqualTo(
+                    new SerializedAXNode
+                    {
+                        Role = "checkbox",
+                        Name = "this is the inner content yo",
+                        Checked = CheckedState.True,
+                    }
+                )
+            );
         }
 
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should work for showcase")]
@@ -430,11 +541,20 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(contentinfo.Name, Is.EqualTo(string.Empty));
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should not report Document as leaf node")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "Accessibility",
+                "should not report Document as leaf node"
+            )
+        ]
         public async Task ShouldNotReportDocumentAsLeafNode()
         {
-            await Page.SetContentAsync(@"
-            <main><span>Hello</span><div> </div><div>World</div></main>");
+            await Page.SetContentAsync(
+                @"
+            <main><span>Hello</span><div> </div><div>World</div></main>"
+            );
 
             var snapshot = await Page.Accessibility.SnapshotAsync();
             Assert.That(snapshot.Role, Is.EqualTo("RootWebArea"));
@@ -451,10 +571,18 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(main.Children[1].Name, Is.EqualTo("World"));
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should capture new accessibility properties and not prune them")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "Accessibility",
+                "should capture new accessibility properties and not prune them"
+            )
+        ]
         public async Task ShouldCaptureNewAccessibilityPropertiesAndNotPruneThem()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
                 <div role=""alert"" aria-busy=""true"">This is an alert</div>
                 <div aria-live=""polite"" aria-atomic=""true"" aria-relevant=""additions text"">
                   This is polite live region
@@ -466,7 +594,8 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 <input aria-invalid=""true"" aria-errormessage=""error"" value=""invalid input"">
                 <div id=""details"">Additional details</div>
                 <div aria-details=""details"">Element with details</div>
-                <div aria-description=""This is a description""></div>");
+                <div aria-description=""This is a description""></div>"
+            );
 
             var snapshot = await Page.Accessibility.SnapshotAsync();
 

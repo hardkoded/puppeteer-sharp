@@ -24,11 +24,12 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             var first = await mutex.AcquireAsync();
             var secondTask = mutex.AcquireAsync();
 
-            _ = Task.Delay(10).ContinueWith(_ =>
-            {
-                results.Add(1);
-                first.Dispose();
-            });
+            _ = Task.Delay(10)
+                .ContinueWith(_ =>
+                {
+                    results.Add(1);
+                    first.Dispose();
+                });
 
             var second = await secondTask;
             results.Add(2);

@@ -51,18 +51,29 @@ namespace PuppeteerSharp.Tests.DialogTests
             Assert.That(result, Is.Null);
         }
 
-        [Test, PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should see dialogs handled by other connections")]
+        [
+            Test,
+            PuppeteerTest(
+                "dialog.spec",
+                "Page.Events.Dialog",
+                "should see dialogs handled by other connections"
+            )
+        ]
         public async Task ShouldSeeDialogsHandledByOtherConnections()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            await using var browser2 = await Puppeteer.ConnectAsync(new ConnectOptions
-            {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint,
-                Protocol = ((Browser)Browser).Protocol,
-            });
+            await using var browser2 = await Puppeteer.ConnectAsync(
+                new ConnectOptions
+                {
+                    BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                    Protocol = ((Browser)Browser).Protocol,
+                }
+            );
 
-            var page2 = (await browser2.PagesAsync()).FirstOrDefault(page => page.Url == TestConstants.EmptyPage);
+            var page2 = (await browser2.PagesAsync()).FirstOrDefault(page =>
+                page.Url == TestConstants.EmptyPage
+            );
             Assert.That(page2, Is.Not.Null, "Could not find page2");
 
             var dialog1Task = WaitForDialogAsync(Page);
@@ -84,7 +95,9 @@ namespace PuppeteerSharp.Tests.DialogTests
 
             static Task<Dialog> WaitForDialogAsync(IPage page)
             {
-                var dialogTask = new TaskCompletionSource<Dialog>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var dialogTask = new TaskCompletionSource<Dialog>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
                 EventHandler<DialogEventArgs> handler = null;
                 handler = (_, e) =>
                 {

@@ -35,7 +35,8 @@ public class CdpTarget : Target
         CdpBrowserContext context,
         ITargetManager targetManager,
         Func<bool, Task<CDPSession>> sessionFactory,
-        TaskQueue screenshotTaskQueue)
+        TaskQueue screenshotTaskQueue
+    )
     {
         TargetInfo = targetInfo;
         Session = session;
@@ -65,16 +66,20 @@ public class CdpTarget : Target
     public string TargetId => TargetInfo.TargetId;
 
     /// <inheritdoc/>
-    public override ITarget Opener => TargetInfo.OpenerId != null ?
-        CdpBrowser.TargetManager.GetAvailableTargets().GetValueOrDefault(TargetInfo.OpenerId) : null;
+    public override ITarget Opener =>
+        TargetInfo.OpenerId != null
+            ? CdpBrowser.TargetManager.GetAvailableTargets().GetValueOrDefault(TargetInfo.OpenerId)
+            : null;
 
     internal Task<InitializationStatus> InitializedTask => InitializedTaskWrapper.Task;
 
-    internal TaskCompletionSource<InitializationStatus> InitializedTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal TaskCompletionSource<InitializationStatus> InitializedTaskWrapper { get; } =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     internal Task CloseTask => CloseTaskWrapper.Task;
 
-    internal TaskCompletionSource<bool> CloseTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal TaskCompletionSource<bool> CloseTaskWrapper { get; } =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     internal Func<bool, Task<CDPSession>> SessionFactory { get; private set; }
 
@@ -100,10 +105,14 @@ public class CdpTarget : Target
         if (Session == null)
         {
             var session = (CdpCDPSession)await CreateCDPSessionAsync().ConfigureAwait(false);
-            return await CdpPage.CreateAsync(session, this, null, ScreenshotTaskQueue).ConfigureAwait(false);
+            return await CdpPage
+                .CreateAsync(session, this, null, ScreenshotTaskQueue)
+                .ConfigureAwait(false);
         }
 
-        return await CdpPage.CreateAsync((CdpCDPSession)Session, this, null, ScreenshotTaskQueue).ConfigureAwait(false);
+        return await CdpPage
+            .CreateAsync((CdpCDPSession)Session, this, null, ScreenshotTaskQueue)
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

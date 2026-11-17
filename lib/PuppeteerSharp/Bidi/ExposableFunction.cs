@@ -51,7 +51,12 @@ internal class ExposableFunction : IAsyncDisposable
     private EventObserver<ScriptMessageEventArgs> _observer;
     private int _disposed;
 
-    private ExposableFunction(BidiFrame frame, string name, Delegate puppeteerFunction, bool isolate = false)
+    private ExposableFunction(
+        BidiFrame frame,
+        string name,
+        Delegate puppeteerFunction,
+        bool isolate = false
+    )
     {
         _frame = frame;
         _name = name;
@@ -74,7 +79,12 @@ internal class ExposableFunction : IAsyncDisposable
     /// <param name="name">The name of the function on globalThis.</param>
     /// <param name="puppeteerFunction">The C# delegate to invoke.</param>
     /// <param name="isolate">When true, install the function in the sandbox (isolated) realm instead of the default realm.</param>
-    public static async Task<ExposableFunction> FromAsync(BidiFrame frame, string name, Delegate puppeteerFunction, bool isolate = false)
+    public static async Task<ExposableFunction> FromAsync(
+        BidiFrame frame,
+        string name,
+        Delegate puppeteerFunction,
+        bool isolate = false
+    )
     {
         var func = new ExposableFunction(frame, name, puppeteerFunction, isolate);
         await func.InitializeAsync().ConfigureAwait(false);
@@ -103,20 +113,27 @@ internal class ExposableFunction : IAsyncDisposable
                 {
                     frame.MainRealm.EvaluateFunctionAsync(
                         @"name => { delete globalThis[name]; }",
-                        _name),
+                        _name
+                    ),
                 };
 
                 // Also delete from child frames
                 foreach (var childFrame in frame.ChildFrames.OfType<BidiFrame>())
                 {
-                    tasks.Add(childFrame.MainRealm.EvaluateFunctionAsync(
-                        @"name => { delete globalThis[name]; }",
-                        _name));
+                    tasks.Add(
+                        childFrame.MainRealm.EvaluateFunctionAsync(
+                            @"name => { delete globalThis[name]; }",
+                            _name
+                        )
+                    );
                 }
 
                 // Remove the preload script
-                tasks.Add(Connection.Script.RemovePreloadScriptAsync(
-                    new RemovePreloadScriptCommandParameters(scriptId)));
+                tasks.Add(
+                    Connection.Script.RemovePreloadScriptAsync(
+                        new RemovePreloadScriptCommandParameters(scriptId)
+                    )
+                );
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
             }
@@ -131,17 +148,17 @@ internal class ExposableFunction : IAsyncDisposable
 
     private async Task InitializeAsync()
     {
-        var channelValue = new ChannelValue(new ChannelProperties(_channel)
-        {
-            Ownership = ResultOwnership.Root,
-        });
+        var channelValue = new ChannelValue(
+            new ChannelProperties(_channel) { Ownership = ResultOwnership.Root }
+        );
 
         // Subscribe to script messages
         _observer = Connection.Script.OnMessage.AddObserver(HandleMessage);
 
         // The function declaration that will be injected
         // This creates a function on globalThis that communicates back via the channel
-        var functionDeclaration = $@"(callback) => {{
+        var functionDeclaration =
+            $@"(callback) => {{
             Object.assign(globalThis, {{
                 [{JsonSerializer.Serialize(_name)}]: function (...args) {{
                     return new Promise((resolve, reject) => {{
@@ -168,7 +185,9 @@ internal class ExposableFunction : IAsyncDisposable
             addPreloadParams.Arguments.Add(channelValue);
             addPreloadParams.Contexts.Add(_frame.BrowsingContext.Id);
 
-            var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
+            var scriptResult = await Connection
+                .Script.AddPreloadScriptAsync(addPreloadParams)
+                .ConfigureAwait(false);
             _scripts.Add((_frame, scriptResult.PreloadScriptId));
         }
 
@@ -178,10 +197,15 @@ internal class ExposableFunction : IAsyncDisposable
             try
             {
                 var target = _isolate
-                    ? (_frame.IsolatedRealm as BidiFrameRealm)?.WindowRealm?.Target ?? context.DefaultRealm.Target
+                    ? (_frame.IsolatedRealm as BidiFrameRealm)?.WindowRealm?.Target
+                        ?? context.DefaultRealm.Target
                     : context.DefaultRealm.Target;
 
-                var callParams = new CallFunctionCommandParameters(functionDeclaration, target, true);
+                var callParams = new CallFunctionCommandParameters(
+                    functionDeclaration,
+                    target,
+                    true
+                );
                 callParams.Arguments.Add(channelValue);
                 await Connection.Script.CallFunctionAsync(callParams).ConfigureAwait(false);
             }
@@ -224,13 +248,19 @@ internal class ExposableFunction : IAsyncDisposable
             try
             {
                 // Get the args from the data
-                var argsHandle = await dataHandle.EvaluateFunctionHandleAsync("([, , args]) => args").ConfigureAwait(false);
+                var argsHandle = await dataHandle
+                    .EvaluateFunctionHandleAsync("([, , args]) => args")
+                    .ConfigureAwait(false);
 
                 // Get all properties (array indices)
                 var properties = await argsHandle.GetPropertiesAsync().ConfigureAwait(false);
                 var args = new List<object>();
 
-                foreach (var kvp in properties.OrderBy(p => int.TryParse(p.Key, out var i) ? i : int.MaxValue))
+                foreach (
+                    var kvp in properties.OrderBy(p =>
+                        int.TryParse(p.Key, out var i) ? i : int.MaxValue
+                    )
+                )
                 {
                     var handle = kvp.Value;
 
@@ -254,15 +284,18 @@ internal class ExposableFunction : IAsyncDisposable
                 catch (Exception ex)
                 {
                     // Unwrap TargetInvocationException to get the actual exception
-                    var actualException = ex is System.Reflection.TargetInvocationException tie && tie.InnerException != null
-                        ? tie.InnerException
-                        : ex;
+                    var actualException =
+                        ex is System.Reflection.TargetInvocationException tie
+                        && tie.InnerException != null
+                            ? tie.InnerException
+                            : ex;
 
                     // Reject with error
                     try
                     {
-                        await dataHandle.EvaluateFunctionAsync(
-                            @"([, reject], name, message, stack) => {
+                        await dataHandle
+                            .EvaluateFunctionAsync(
+                                @"([, reject], name, message, stack) => {
                                 const error = new Error(message);
                                 error.name = name;
                                 if (stack) {
@@ -270,9 +303,11 @@ internal class ExposableFunction : IAsyncDisposable
                                 }
                                 reject(error);
                             }",
-                            actualException.GetType().Name,
-                            actualException.Message,
-                            actualException.StackTrace ?? string.Empty).ConfigureAwait(false);
+                                actualException.GetType().Name,
+                                actualException.Message,
+                                actualException.StackTrace ?? string.Empty
+                            )
+                            .ConfigureAwait(false);
                     }
                     catch
                     {
@@ -285,9 +320,12 @@ internal class ExposableFunction : IAsyncDisposable
                 // Resolve with result
                 try
                 {
-                    await dataHandle.EvaluateFunctionAsync(
-                        "([resolve], result) => { resolve(result); }",
-                        result).ConfigureAwait(false);
+                    await dataHandle
+                        .EvaluateFunctionAsync(
+                            "([resolve], result) => { resolve(result); }",
+                            result
+                        )
+                        .ConfigureAwait(false);
                 }
                 catch
                 {
@@ -323,14 +361,19 @@ internal class ExposableFunction : IAsyncDisposable
             {
                 convertedArgs[i] = parameters[i].DefaultValue;
             }
-            else if (!parameters[i].ParameterType.IsValueType || Nullable.GetUnderlyingType(parameters[i].ParameterType) != null)
+            else if (
+                !parameters[i].ParameterType.IsValueType
+                || Nullable.GetUnderlyingType(parameters[i].ParameterType) != null
+            )
             {
                 // Reference types and nullable value types can accept null
                 convertedArgs[i] = null;
             }
             else
             {
-                throw new ArgumentException($"Missing required argument for parameter '{parameters[i].Name}' at index {i}");
+                throw new ArgumentException(
+                    $"Missing required argument for parameter '{parameters[i].Name}' at index {i}"
+                );
             }
         }
 
@@ -407,12 +450,18 @@ internal class ExposableFunction : IAsyncDisposable
         }
 
         // Find the realm that matches the source realm ID
-        if (frame.MainRealm is BidiFrameRealm mainRealm && mainRealm.WindowRealm.Id == source.RealmId)
+        if (
+            frame.MainRealm is BidiFrameRealm mainRealm
+            && mainRealm.WindowRealm.Id == source.RealmId
+        )
         {
             return mainRealm;
         }
 
-        if (frame.IsolatedRealm is BidiFrameRealm isolatedRealm && isolatedRealm.WindowRealm.Id == source.RealmId)
+        if (
+            frame.IsolatedRealm is BidiFrameRealm isolatedRealm
+            && isolatedRealm.WindowRealm.Id == source.RealmId
+        )
         {
             return isolatedRealm;
         }

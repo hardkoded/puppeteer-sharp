@@ -5,7 +5,11 @@ namespace PuppeteerSharp.States
 {
     internal class StartedState(StateManager stateManager) : State(stateManager)
     {
-        public override Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout)
+        public override Task EnterFromAsync(
+            LauncherBase launcher,
+            State fromState,
+            TimeSpan timeout
+        )
         {
             StateManager.TryEnter(launcher, fromState, this);
             return Task.CompletedTask;
@@ -13,8 +17,10 @@ namespace PuppeteerSharp.States
 
         public override Task StartAsync(LauncherBase p) => Task.CompletedTask;
 
-        public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => new ExitingState(StateManager).EnterFromAsync(p, this, timeout);
+        public override Task ExitAsync(LauncherBase p, TimeSpan timeout) =>
+            new ExitingState(StateManager).EnterFromAsync(p, this, timeout);
 
-        public override Task KillAsync(LauncherBase p) => new KillingState(StateManager).EnterFromAsync(p, this);
+        public override Task KillAsync(LauncherBase p) =>
+            new KillingState(StateManager).EnterFromAsync(p, this);
     }
 }

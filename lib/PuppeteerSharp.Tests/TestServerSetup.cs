@@ -13,11 +13,19 @@ namespace PuppeteerSharp.Tests
         [OneTimeSetUp]
         public async Task InitAllAsync()
         {
-            var browserFetcher = new BrowserFetcher(TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox);
+            var browserFetcher = new BrowserFetcher(
+                TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox
+            );
             var downloaderTask = browserFetcher.DownloadAsync();
 
-            Server = SimpleServer.Create(0, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
-            HttpsServer = SimpleServer.CreateHttps(0, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
+            Server = SimpleServer.Create(
+                0,
+                TestUtils.FindParentDirectory("PuppeteerSharp.TestServer")
+            );
+            HttpsServer = SimpleServer.CreateHttps(
+                0,
+                TestUtils.FindParentDirectory("PuppeteerSharp.TestServer")
+            );
 
             var serverStart = Server.StartAsync();
             var httpsServerStart = HttpsServer.StartAsync();
@@ -28,7 +36,6 @@ namespace PuppeteerSharp.Tests
         }
 
         [OneTimeTearDown]
-        public Task ShutDownAsync()
-            => Task.WhenAll(Server.StopAsync(), HttpsServer.StopAsync());
+        public Task ShutDownAsync() => Task.WhenAll(Server.StopAsync(), HttpsServer.StopAsync());
     }
 }

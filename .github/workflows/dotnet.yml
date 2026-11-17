@@ -23,6 +23,19 @@ env:
   DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
 
 jobs:
+  csharpier:
+    name: csharpier check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Restore tools
+      run: dotnet tool restore
+    - name: Check formatting
+      run: dotnet csharpier check .
   build-cdp-only:
     name: build (CDP only)
     runs-on: ubuntu-latest
@@ -113,9 +126,13 @@ jobs:
       run: |
         New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
         Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $env:GITHUB_WORKSPACE\lib\PuppeteerSharp.TestServer\testCert.cer
-    - name: Check formatting
+    - name: Check code style and analyzers
+      # Whitespace formatting is owned by CSharpier (see the csharpier job), so only the
+      # style and analyzers passes of dotnet format run here.
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'CHROME' && matrix.mode == 'headless' && matrix.protocol == 'cdp' }}
-      run: dotnet format ./lib/PuppeteerSharp.sln --verify-no-changes --exclude-diagnostics CA1865
+      run: |
+        dotnet format style ./lib/PuppeteerSharp.sln --verify-no-changes --exclude-diagnostics CA1865
+        dotnet format analyzers ./lib/PuppeteerSharp.sln --verify-no-changes --exclude-diagnostics CA1865
     - name: Build
       working-directory: lib
       env:

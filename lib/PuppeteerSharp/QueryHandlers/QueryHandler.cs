@@ -18,7 +18,8 @@ namespace PuppeteerSharp.QueryHandlers
                     return _querySelectorAll;
                 }
 
-                const string querySelectorAll = @"async (node, selector, PuppeteerUtil) => {
+                const string querySelectorAll =
+                    @"async (node, selector, PuppeteerUtil) => {
                     const querySelectorAll = 'FUNCTION_DEFINITION';
                     const result = await querySelector(node, selector, PuppeteerUtil);
                     if (result) {
@@ -27,14 +28,13 @@ namespace PuppeteerSharp.QueryHandlers
                 }";
 
                 // Upstream uses a CreateFunction util. We don't need that because we always use strings instead of node functions.
-                _querySelectorAll = querySelectorAll.Replace("'FUNCTION_DEFINITION'", QuerySelector);
+                _querySelectorAll = querySelectorAll.Replace(
+                    "'FUNCTION_DEFINITION'",
+                    QuerySelector
+                );
                 return _querySelectorAll;
             }
-
-            init
-            {
-                _querySelectorAll = value;
-            }
+            init { _querySelectorAll = value; }
         }
 
         internal string QuerySelector
@@ -51,7 +51,8 @@ namespace PuppeteerSharp.QueryHandlers
                     throw new PuppeteerException("Cannot create default query selector");
                 }
 
-                const string querySelector = @"async (node, selector, PuppeteerUtil) => {
+                const string querySelector =
+                    @"async (node, selector, PuppeteerUtil) => {
                     const querySelectorAll = 'FUNCTION_DEFINITION';
                     const results = querySelectorAll(node, selector, PuppeteerUtil);
                     for await (const result of results) {
@@ -64,19 +65,22 @@ namespace PuppeteerSharp.QueryHandlers
                 _querySelector = querySelector.Replace("'FUNCTION_DEFINITION'", QuerySelectorAll);
                 return _querySelector;
             }
-
-            init
-            {
-                _querySelector = value;
-            }
+            init { _querySelector = value; }
         }
 
-        internal virtual async Task<IElementHandle> QueryOneAsync(IElementHandle element, string selector)
+        internal virtual async Task<IElementHandle> QueryOneAsync(
+            IElementHandle element,
+            string selector
+        )
         {
-            var result = await element.EvaluateFunctionHandleAsync(
-                QuerySelector,
-                selector,
-                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)))
+            var result = await element
+                .EvaluateFunctionHandleAsync(
+                    QuerySelector,
+                    selector,
+                    new LazyArg(async context =>
+                        await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                    )
+                )
                 .ConfigureAwait(false);
 
             if (result is ElementHandle elementHandle)
@@ -93,12 +97,15 @@ namespace PuppeteerSharp.QueryHandlers
             ElementHandle element,
             string selector,
             WaitForSelectorOptions options,
-            WaitForFunctionPollingOption polling = WaitForFunctionPollingOption.Mutation)
+            WaitForFunctionPollingOption polling = WaitForFunctionPollingOption.Mutation
+        )
         {
             if (element != null)
             {
                 frame = element.Frame;
-                element = await frame.IsolatedRealm.AdoptHandleAsync(element).ConfigureAwait(false) as ElementHandle;
+                element =
+                    await frame.IsolatedRealm.AdoptHandleAsync(element).ConfigureAwait(false)
+                    as ElementHandle;
             }
 
             try
@@ -113,7 +120,8 @@ namespace PuppeteerSharp.QueryHandlers
                     throw new OperationCanceledException("WaitForSelector has been cancelled.");
                 }
 
-                var predicate = @$"async (PuppeteerUtil, query, selector, root, visible) => {{
+                var predicate =
+                    @$"async (PuppeteerUtil, query, selector, root, visible) => {{
                   if (!PuppeteerUtil) {{
                     return;
                   }}
@@ -127,7 +135,9 @@ namespace PuppeteerSharp.QueryHandlers
 
                 var args = new List<object>
                 {
-                    new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                    new LazyArg(async context =>
+                        await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                    ),
                     QuerySelector,
                     selector,
                     element,
@@ -141,16 +151,22 @@ namespace PuppeteerSharp.QueryHandlers
                     args.Add(waitForVisible);
                 }
 
-                var jsHandle = await frame.IsolatedRealm.WaitForFunctionAsync(
-                    predicate,
-                    new()
-                    {
-                        Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : polling,
-                        Root = element,
-                        Timeout = timeout,
-                        CancellationToken = cancellationToken,
-                    },
-                    args.ToArray()).ConfigureAwait(false);
+                var jsHandle = await frame
+                    .IsolatedRealm.WaitForFunctionAsync(
+                        predicate,
+                        new()
+                        {
+                            Polling =
+                                waitForVisible || waitForHidden
+                                    ? WaitForFunctionPollingOption.Raf
+                                    : polling,
+                            Root = element,
+                            Timeout = timeout,
+                            CancellationToken = cancellationToken,
+                        },
+                        args.ToArray()
+                    )
+                    .ConfigureAwait(false);
 
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -164,7 +180,9 @@ namespace PuppeteerSharp.QueryHandlers
                     return null;
                 }
 
-                return await frame.MainRealm.TransferHandleAsync(elementHandle).ConfigureAwait(false) as IElementHandle;
+                return await frame
+                        .MainRealm.TransferHandleAsync(elementHandle)
+                        .ConfigureAwait(false) as IElementHandle;
             }
             catch (OperationCanceledException)
             {
@@ -172,16 +190,26 @@ namespace PuppeteerSharp.QueryHandlers
             }
             catch (Exception ex)
             {
-                throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: {ex.Message}", ex);
+                throw new WaitTaskTimeoutException(
+                    $"Waiting for selector `{selector}` failed: {ex.Message}",
+                    ex
+                );
             }
         }
 
-        internal virtual async IAsyncEnumerable<IElementHandle> QueryAllAsync(IElementHandle element, string selector)
+        internal virtual async IAsyncEnumerable<IElementHandle> QueryAllAsync(
+            IElementHandle element,
+            string selector
+        )
         {
-            var handle = await element.EvaluateFunctionHandleAsync(
-                QuerySelectorAll,
-                selector,
-                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)))
+            var handle = await element
+                .EvaluateFunctionHandleAsync(
+                    QuerySelectorAll,
+                    selector,
+                    new LazyArg(async context =>
+                        await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                    )
+                )
                 .ConfigureAwait(false);
 
             await foreach (var item in handle.TransposeIterableHandleAsync().ConfigureAwait(false))

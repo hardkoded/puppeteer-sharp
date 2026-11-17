@@ -4,9 +4,8 @@ namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue0648 : PuppeteerPageBaseTest
     {
-        public Issue0648() : base()
-        {
-        }
+        public Issue0648()
+            : base() { }
 
         public async Task ShouldWork()
         {

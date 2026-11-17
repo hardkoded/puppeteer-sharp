@@ -106,12 +106,18 @@ internal class Navigation
         Session.BrowsingContextLoad += OnSessionPageLoaded;
         Session.BrowsingContextNavigationCommitted += OnSessionNavigationCommitted;
 
-        Session.BrowsingContextFragmentNavigated += (sender, args) => HandleNavigation(args, () => OnFragment(new NavigationEventArgs(args.Url)));
-        Session.BrowsingContextNavigationFailed += (sender, args) => HandleNavigation(args, () => OnFailed(new NavigationEventArgs(args.Url)));
-        Session.BrowsingContextNavigationAborted += (sender, args) => HandleNavigation(args, () => OnAborted(new NavigationEventArgs(args.Url)));
+        Session.BrowsingContextFragmentNavigated += (sender, args) =>
+            HandleNavigation(args, () => OnFragment(new NavigationEventArgs(args.Url)));
+        Session.BrowsingContextNavigationFailed += (sender, args) =>
+            HandleNavigation(args, () => OnFailed(new NavigationEventArgs(args.Url)));
+        Session.BrowsingContextNavigationAborted += (sender, args) =>
+            HandleNavigation(args, () => OnAborted(new NavigationEventArgs(args.Url)));
     }
 
-    private void HandleNavigation(WebDriverBiDi.BrowsingContext.NavigationEventArgs args, Action action)
+    private void HandleNavigation(
+        WebDriverBiDi.BrowsingContext.NavigationEventArgs args,
+        Action action
+    )
     {
         // Skip if this navigation is already disposed
         if (IsDisposed)
@@ -136,7 +142,10 @@ internal class Navigation
 
     private void OnAborted(NavigationEventArgs args) => Aborted?.Invoke(this, args);
 
-    private void OnSessionNavigationCommitted(object sender, WebDriverBiDi.BrowsingContext.NavigationEventArgs e)
+    private void OnSessionNavigationCommitted(
+        object sender,
+        WebDriverBiDi.BrowsingContext.NavigationEventArgs e
+    )
     {
         if (e.BrowsingContextId != _browsingContext.Id || e.NavigationId == null)
         {
@@ -158,7 +167,10 @@ internal class Navigation
         Dispose();
     }
 
-    private void OnSessionPageLoaded(object sender, WebDriverBiDi.BrowsingContext.NavigationEventArgs e)
+    private void OnSessionPageLoaded(
+        object sender,
+        WebDriverBiDi.BrowsingContext.NavigationEventArgs e
+    )
     {
         bool committed;
         lock (_committedNavigations)
@@ -169,7 +181,12 @@ internal class Navigation
         // Lifecycle events that come before the commit are from the
         // previous document. Browsers can report them with the ID of the
         // new navigation (e.g. the error page of a failed navigation).
-        if (e.BrowsingContextId != _browsingContext.Id || e.NavigationId == null || !committed || !Matches(e.NavigationId))
+        if (
+            e.BrowsingContextId != _browsingContext.Id
+            || e.NavigationId == null
+            || !committed
+            || !Matches(e.NavigationId)
+        )
         {
             return;
         }
@@ -177,7 +194,8 @@ internal class Navigation
         Dispose();
     }
 
-    private void OnRequestCreated(Request request) => RequestCreated?.Invoke(this, new RequestEventArgs(request));
+    private void OnRequestCreated(Request request) =>
+        RequestCreated?.Invoke(this, new RequestEventArgs(request));
 
     private bool Matches(string navigation)
     {

@@ -6,7 +6,11 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class CreateCDPSessionTests : PuppeteerBrowserBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("puppeteer-sharp", "Browser.CreateCDPSessionAsync", "should work")]
+        [
+            Test,
+            Retry(2),
+            PuppeteerTest("puppeteer-sharp", "Browser.CreateCDPSessionAsync", "should work")
+        ]
         public async Task ShouldWork()
         {
             var session = await Browser.CreateCDPSessionAsync();

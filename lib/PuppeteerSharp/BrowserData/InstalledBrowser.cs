@@ -15,7 +15,12 @@ namespace PuppeteerSharp.BrowserData
         /// <param name="browser">Browser.</param>
         /// <param name="buildId">BuildId.</param>
         /// <param name="platform">Platform.</param>
-        internal InstalledBrowser(Cache cache, SupportedBrowser browser, string buildId, Platform platform)
+        internal InstalledBrowser(
+            Cache cache,
+            SupportedBrowser browser,
+            string buildId,
+            Platform platform
+        )
         {
             Cache = cache;
             Browser = browser;
@@ -59,18 +64,24 @@ namespace PuppeteerSharp.BrowserData
         public string GetExecutablePath()
         {
             var installationDir = Cache.GetInstallationDir(Browser, Platform, BuildId);
-            return Path.Combine(
-                installationDir,
-                GetExecutablePath(Browser, Platform, BuildId));
+            return Path.Combine(installationDir, GetExecutablePath(Browser, Platform, BuildId));
         }
 
-        private static string GetExecutablePath(SupportedBrowser browser, Platform platform, string buildId) => browser switch
-        {
-            SupportedBrowser.Chrome => Chrome.RelativeExecutablePath(platform, buildId),
-            SupportedBrowser.ChromeHeadlessShell => ChromeHeadlessShell.RelativeExecutablePath(platform, buildId),
-            SupportedBrowser.Chromium => Chromium.RelativeExecutablePath(platform, buildId),
-            SupportedBrowser.Firefox => Firefox.RelativeExecutablePath(platform, buildId),
-            _ => throw new NotSupportedException(),
-        };
+        private static string GetExecutablePath(
+            SupportedBrowser browser,
+            Platform platform,
+            string buildId
+        ) =>
+            browser switch
+            {
+                SupportedBrowser.Chrome => Chrome.RelativeExecutablePath(platform, buildId),
+                SupportedBrowser.ChromeHeadlessShell => ChromeHeadlessShell.RelativeExecutablePath(
+                    platform,
+                    buildId
+                ),
+                SupportedBrowser.Chromium => Chromium.RelativeExecutablePath(platform, buildId),
+                SupportedBrowser.Firefox => Firefox.RelativeExecutablePath(platform, buildId),
+                _ => throw new NotSupportedException(),
+            };
     }
 }

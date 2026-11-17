@@ -127,7 +127,8 @@ internal class Request : IDisposable
         string url = null,
         string method = null,
         List<Header> headers = null,
-        BytesValue body = null)
+        BytesValue body = null
+    )
     {
         var commandParams = new ContinueRequestCommandParameters(Id)
         {
@@ -149,7 +150,8 @@ internal class Request : IDisposable
         uint? statusCode = null,
         string reasonPhrase = null,
         List<Header> headers = null,
-        BytesValue body = null)
+        BytesValue body = null
+    )
     {
         var commandParams = new ProvideResponseCommandParameters(Id)
         {
@@ -161,12 +163,12 @@ internal class Request : IDisposable
         await Session.Driver.Network.ProvideResponseAsync(commandParams).ConfigureAwait(false);
     }
 
-    internal async Task ContinueWithAuthAsync(ContinueWithAuthActionType action, AuthCredentials credentials = null)
+    internal async Task ContinueWithAuthAsync(
+        ContinueWithAuthActionType action,
+        AuthCredentials credentials = null
+    )
     {
-        var commandParams = new ContinueWithAuthCommandParameters(Id)
-        {
-            Action = action,
-        };
+        var commandParams = new ContinueWithAuthCommandParameters(Id) { Action = action };
 
         if (action == ContinueWithAuthActionType.ProvideCredentials && credentials != null)
         {
@@ -213,16 +215,20 @@ internal class Request : IDisposable
         {
             var commandParams = new GetDataCommandParameters(Id, DataType.Response);
 
-            var result = await Session.Driver.Network.GetDataAsync(commandParams).ConfigureAwait(false);
+            var result = await Session
+                .Driver.Network.GetDataAsync(commandParams)
+                .ConfigureAwait(false);
             return result.Bytes.ValueAsByteArray;
         }
-        catch (WebDriverBiDi.WebDriverBiDiException ex) when (
-            ex.Message.Contains("No resource with given identifier found") ||
-            ex.Message.Contains("no such network data"))
+        catch (WebDriverBiDi.WebDriverBiDiException ex)
+            when (ex.Message.Contains("No resource with given identifier found")
+                || ex.Message.Contains("no such network data")
+            )
         {
             throw new PuppeteerException(
                 "Could not load response body for this request. This might happen if the request is a preflight request.",
-                ex);
+                ex
+            );
         }
     }
 
@@ -237,18 +243,19 @@ internal class Request : IDisposable
 
         Session.NetworkBeforeRequestSent += (_, args) =>
         {
-            if (args.BrowsingContextId != _browsingContext.Id ||
-               args.Request.RequestId != Id)
+            if (args.BrowsingContextId != _browsingContext.Id || args.Request.RequestId != Id)
             {
                 return;
             }
 
             // This is a workaround to detect if a beforeRequestSent is for a request
             // sent after continueWithAuth. Currently, only emitted in Firefox.
-            var previousRequestHasAuth = _eventArgs.Request.Headers.Any(
-                header => header.Name.Equals("authorization", StringComparison.OrdinalIgnoreCase));
-            var newRequestHasAuth = args.Request.Headers.Any(
-                header => header.Name.Equals("authorization", StringComparison.OrdinalIgnoreCase));
+            var previousRequestHasAuth = _eventArgs.Request.Headers.Any(header =>
+                header.Name.Equals("authorization", StringComparison.OrdinalIgnoreCase)
+            );
+            var newRequestHasAuth = args.Request.Headers.Any(header =>
+                header.Name.Equals("authorization", StringComparison.OrdinalIgnoreCase)
+            );
             var isAfterAuth = newRequestHasAuth && !previousRequestHasAuth;
 
             if (args.RedirectCount != _eventArgs.RedirectCount + 1 && !isAfterAuth)
@@ -281,7 +288,11 @@ internal class Request : IDisposable
 
         Session.NetworkFetchError += (_, args) =>
         {
-            if (args.BrowsingContextId != _browsingContext.Id || args.Request.RequestId != Id || args.RedirectCount != _eventArgs.RedirectCount)
+            if (
+                args.BrowsingContextId != _browsingContext.Id
+                || args.Request.RequestId != Id
+                || args.RedirectCount != _eventArgs.RedirectCount
+            )
             {
                 return;
             }
@@ -296,9 +307,11 @@ internal class Request : IDisposable
 
         Session.NetworkResponseStarted += (_, args) =>
         {
-            if (args.BrowsingContextId != _browsingContext.Id ||
-                args.Request.RequestId != Id ||
-                _eventArgs.RedirectCount != args.RedirectCount)
+            if (
+                args.BrowsingContextId != _browsingContext.Id
+                || args.Request.RequestId != Id
+                || _eventArgs.RedirectCount != args.RedirectCount
+            )
             {
                 return;
             }
@@ -312,9 +325,11 @@ internal class Request : IDisposable
 
         Session.NetworkResponseComplete += (_, args) =>
         {
-            if (args.BrowsingContextId != _browsingContext.Id ||
-                args.Request.RequestId != Id ||
-                _eventArgs.RedirectCount != args.RedirectCount)
+            if (
+                args.BrowsingContextId != _browsingContext.Id
+                || args.Request.RequestId != Id
+                || _eventArgs.RedirectCount != args.RedirectCount
+            )
             {
                 return;
             }
@@ -329,8 +344,12 @@ internal class Request : IDisposable
             // redirect count, so the request is kept until then. A redirect status
             // without a Location header is a final response, and any other status,
             // including 304 Not Modified, completes the request.
-            if (RedirectStatuses.Contains((int)_response.Status) &&
-                _response.Headers.Any(header => header.Name.Equals("location", StringComparison.OrdinalIgnoreCase)))
+            if (
+                RedirectStatuses.Contains((int)_response.Status)
+                && _response.Headers.Any(header =>
+                    header.Name.Equals("location", StringComparison.OrdinalIgnoreCase)
+                )
+            )
             {
                 return;
             }
@@ -339,13 +358,16 @@ internal class Request : IDisposable
         };
     }
 
-    private void OnSuccess(ResponseEventArgs responseEventArgs) => Success?.Invoke(this, responseEventArgs);
+    private void OnSuccess(ResponseEventArgs responseEventArgs) =>
+        Success?.Invoke(this, responseEventArgs);
 
-    private void OnResponseStarted(ResponseEventArgs responseEventArgs) => ResponseStarted?.Invoke(this, responseEventArgs);
+    private void OnResponseStarted(ResponseEventArgs responseEventArgs) =>
+        ResponseStarted?.Invoke(this, responseEventArgs);
 
     private void OnAuthenticate() => Authenticate?.Invoke(this, EventArgs.Empty);
 
-    private void OnRedirect(Request redirect) => Redirect?.Invoke(this, new RequestEventArgs(redirect));
+    private void OnRedirect(Request redirect) =>
+        Redirect?.Invoke(this, new RequestEventArgs(redirect));
 
     private void OnError(string error) => Error?.Invoke(this, new ErrorEventArgs(error));
 }

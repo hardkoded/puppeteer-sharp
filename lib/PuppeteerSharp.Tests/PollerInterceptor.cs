@@ -4,7 +4,8 @@ using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests
 {
-    public sealed class PollerInterceptor(IConnectionTransport connectionTransport) : IConnectionTransport
+    public sealed class PollerInterceptor(IConnectionTransport connectionTransport)
+        : IConnectionTransport
     {
         public event EventHandler<byte[]> MessageSent;
 

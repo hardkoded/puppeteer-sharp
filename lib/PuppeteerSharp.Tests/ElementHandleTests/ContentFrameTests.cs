@@ -8,13 +8,21 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
     {
         private readonly LaunchOptions _headfulOptions;
 
-        public ContentFrameTests() : base()
+        public ContentFrameTests()
+            : base()
         {
             _headfulOptions = TestConstants.DefaultBrowserOptions();
             _headfulOptions.Headless = false;
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.contentFrame", "should work")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.contentFrame",
+                "should work"
+            )
+        ]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

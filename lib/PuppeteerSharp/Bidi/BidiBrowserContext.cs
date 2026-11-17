@@ -42,7 +42,11 @@ public class BidiBrowserContext : BrowserContext
     private readonly List<(string Origin, string Permission)> _overrides = [];
     private readonly ILogger<BidiBrowserContext> _logger;
 
-    private BidiBrowserContext(BidiBrowser browser, UserContext userContext, BidiBrowserContextOptions options)
+    private BidiBrowserContext(
+        BidiBrowser browser,
+        UserContext userContext,
+        BidiBrowserContextOptions options
+    )
     {
         UserContext = userContext;
         Browser = browser;
@@ -57,7 +61,10 @@ public class BidiBrowserContext : BrowserContext
     internal UserContext UserContext { get; }
 
     /// <inheritdoc />
-    public override async Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions)
+    public override async Task OverridePermissionsAsync(
+        string origin,
+        IEnumerable<OverridePermission> permissions
+    )
     {
         var permissionsSet = new HashSet<OverridePermission>(permissions);
 
@@ -91,11 +98,13 @@ public class BidiBrowserContext : BrowserContext
                         if (t.IsFaulted)
                         {
                             // Log the error but don't throw
-                            ((BidiBrowser)Browser).LoggerFactory?.CreateLogger<BidiBrowserContext>()
+                            ((BidiBrowser)Browser)
+                                .LoggerFactory?.CreateLogger<BidiBrowserContext>()
                                 .FailedToDenyPermission(t.Exception, permission);
                         }
                     },
-                    TaskScheduler.Default);
+                    TaskScheduler.Default
+                );
             }
 
             tasks.Add(task);
@@ -105,7 +114,10 @@ public class BidiBrowserContext : BrowserContext
     }
 
     /// <inheritdoc />
-    public override async Task SetPermissionAsync(string origin, params PermissionEntry[] permissions)
+    public override async Task SetPermissionAsync(
+        string origin,
+        params PermissionEntry[] permissions
+    )
     {
         if (origin == "*")
         {
@@ -123,7 +135,9 @@ public class BidiBrowserContext : BrowserContext
         {
             if (entry.Permission.AllowWithoutSanitization == true)
             {
-                throw new PuppeteerException("allowWithoutSanitization is not supported by WebDriver BiDi");
+                throw new PuppeteerException(
+                    "allowWithoutSanitization is not supported by WebDriver BiDi"
+                );
             }
 
             if (entry.Permission.PanTiltZoom == true)
@@ -142,19 +156,26 @@ public class BidiBrowserContext : BrowserContext
             }
         }
 
-        await Task.WhenAll(permissions.Select(entry =>
-        {
-            var state = entry.State switch
-            {
-                PermissionState.Granted => BidiPermissionState.Granted,
-                PermissionState.Denied => BidiPermissionState.Denied,
-                PermissionState.Prompt => BidiPermissionState.Prompt,
-                _ => throw new ArgumentOutOfRangeException(nameof(entry), entry.State, "Unknown permission state"),
-            };
+        await Task.WhenAll(
+                permissions.Select(entry =>
+                {
+                    var state = entry.State switch
+                    {
+                        PermissionState.Granted => BidiPermissionState.Granted,
+                        PermissionState.Denied => BidiPermissionState.Denied,
+                        PermissionState.Prompt => BidiPermissionState.Prompt,
+                        _ => throw new ArgumentOutOfRangeException(
+                            nameof(entry),
+                            entry.State,
+                            "Unknown permission state"
+                        ),
+                    };
 
-            _overrides.Add((origin, entry.Permission.Name));
-            return UserContext.SetPermissionsAsync(origin, entry.Permission.Name, state);
-        })).ConfigureAwait(false);
+                    _overrides.Add((origin, entry.Permission.Name));
+                    return UserContext.SetPermissionsAsync(origin, entry.Permission.Name, state);
+                })
+            )
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -163,18 +184,23 @@ public class BidiBrowserContext : BrowserContext
         var tasks = new List<Task>();
         foreach (var (origin, permission) in _overrides.ToArray())
         {
-            tasks.Add(UserContext.SetPermissionsAsync(origin, permission, BidiPermissionState.Prompt)
-                .ContinueWith(
-                    t =>
-                    {
-                        if (t.IsFaulted)
+            tasks.Add(
+                UserContext
+                    .SetPermissionsAsync(origin, permission, BidiPermissionState.Prompt)
+                    .ContinueWith(
+                        t =>
                         {
-                            // Log the error but don't throw
-                            ((BidiBrowser)Browser).LoggerFactory?.CreateLogger<BidiBrowserContext>()
-                                .FailedToResetPermission(t.Exception, permission);
-                        }
-                    },
-                    TaskScheduler.Default));
+                            if (t.IsFaulted)
+                            {
+                                // Log the error but don't throw
+                                ((BidiBrowser)Browser)
+                                    .LoggerFactory?.CreateLogger<BidiBrowserContext>()
+                                    .FailedToResetPermission(t.Exception, permission);
+                            }
+                        },
+                        TaskScheduler.Default
+                    )
+            );
         }
 
         _overrides.Clear();
@@ -185,26 +211,40 @@ public class BidiBrowserContext : BrowserContext
     public override async Task<CookieParam[]> GetCookiesAsync()
     {
         var cookies = await UserContext.GetCookiesAsync().ConfigureAwait(false);
-        return cookies.Select(cookie => BidiCookieHelper.BidiToPuppeteerCookie(cookie, returnCompositePartitionKey: true)).ToArray();
+        return cookies
+            .Select(cookie =>
+                BidiCookieHelper.BidiToPuppeteerCookie(cookie, returnCompositePartitionKey: true)
+            )
+            .ToArray();
     }
 
     /// <inheritdoc />
     public override async Task SetCookieAsync(params CookieData[] cookies)
     {
-        await Task.WhenAll(cookies.Select(async cookie =>
-        {
-            var domain = cookie.Domain;
-            var bidiCookie = BidiCookieHelper.PuppeteerCookieDataToBidiCookie(cookie, domain);
-            var partitionKey = BidiCookieHelper.ConvertCookiesPartitionKeyFromPuppeteerToBiDi(cookie.PartitionKey);
+        await Task.WhenAll(
+                cookies.Select(async cookie =>
+                {
+                    var domain = cookie.Domain;
+                    var bidiCookie = BidiCookieHelper.PuppeteerCookieDataToBidiCookie(
+                        cookie,
+                        domain
+                    );
+                    var partitionKey =
+                        BidiCookieHelper.ConvertCookiesPartitionKeyFromPuppeteerToBiDi(
+                            cookie.PartitionKey
+                        );
 
-            await UserContext.SetCookieAsync(
-                bidiCookie,
-                partitionKey).ConfigureAwait(false);
-        })).ConfigureAwait(false);
+                    await UserContext
+                        .SetCookieAsync(bidiCookie, partitionKey)
+                        .ConfigureAwait(false);
+                })
+            )
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public override Task<IPage[]> PagesAsync(bool includeAll = false) => Task.FromResult(_pages.Values.Cast<IPage>().ToArray());
+    public override Task<IPage[]> PagesAsync(bool includeAll = false) =>
+        Task.FromResult(_pages.Values.Cast<IPage>().ToArray());
 
     /// <inheritdoc />
     public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
@@ -212,13 +252,14 @@ public class BidiBrowserContext : BrowserContext
         var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
         guard?.Dispose();
 
-        var type = options?.Type == CreatePageType.Window
-            ? WebDriverBiDi.BrowsingContext.CreateType.Window
-            : WebDriverBiDi.BrowsingContext.CreateType.Tab;
+        var type =
+            options?.Type == CreatePageType.Window
+                ? WebDriverBiDi.BrowsingContext.CreateType.Window
+                : WebDriverBiDi.BrowsingContext.CreateType.Tab;
 
-        var context = await UserContext.CreateBrowserContextAsync(
-            type,
-            background: options?.Background).ConfigureAwait(false);
+        var context = await UserContext
+            .CreateBrowserContextAsync(type, background: options?.Background)
+            .ConfigureAwait(false);
 
         if (!_pages.TryGetValue(context, out var page))
         {
@@ -243,7 +284,9 @@ public class BidiBrowserContext : BrowserContext
             try
             {
                 var windowId = await page.WindowIdAsync().ConfigureAwait(false);
-                await Browser.SetWindowBoundsAsync(windowId, options.WindowBounds).ConfigureAwait(false);
+                await Browser
+                    .SetWindowBoundsAsync(windowId, options.WindowBounds)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -269,7 +312,8 @@ public class BidiBrowserContext : BrowserContext
         }
         catch (Exception ex)
         {
-            ((BidiBrowser)Browser).LoggerFactory?.CreateLogger<BidiBrowserContext>()
+            ((BidiBrowser)Browser)
+                .LoggerFactory?.CreateLogger<BidiBrowserContext>()
                 .FailedToCloseBrowserContext(ex);
         }
 
@@ -277,23 +321,25 @@ public class BidiBrowserContext : BrowserContext
     }
 
     /// <inheritdoc />
-    public override ITarget[] Targets()
-        => _targets.SelectMany(target =>
-            (ITarget[])[
-                target.Value.BidiPageTarget,
-                .. target.Value.FrameTargets.Values.ToArray(),
-                .. target.Value.WorkerTargets.Values.ToArray(),
-            ]).ToArray();
+    public override ITarget[] Targets() =>
+        _targets
+            .SelectMany(target =>
+                (ITarget[])
+                    [
+                        target.Value.BidiPageTarget,
+                        .. target.Value.FrameTargets.Values.ToArray(),
+                        .. target.Value.WorkerTargets.Values.ToArray(),
+                    ]
+            )
+            .ToArray();
 
     internal static BidiBrowserContext From(
         BidiBrowser browser,
         UserContext userContext,
-        BidiBrowserContextOptions options)
+        BidiBrowserContextOptions options
+    )
     {
-        var context = new BidiBrowserContext(browser, userContext, options)
-        {
-            Id = userContext.Id,
-        };
+        var context = new BidiBrowserContext(browser, userContext, options) { Id = userContext.Id };
         context.Initialize();
         return context;
     }
@@ -319,7 +365,11 @@ public class BidiBrowserContext : BrowserContext
             OverridePermission.LocalFonts => "local-fonts",
             OverridePermission.KeyboardLock => "keyboard-lock",
             OverridePermission.PointerLock => "pointer-lock",
-            _ => throw new ArgumentOutOfRangeException(nameof(permission), permission, "Unknown permission"),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(permission),
+                permission,
+                "Unknown permission"
+            ),
         };
     }
 
@@ -377,10 +427,13 @@ public class BidiBrowserContext : BrowserContext
         page.FrameNavigated += (_, e) =>
         {
             var bidiFrame = (BidiFrame)e.Frame;
-            OnTargetChanged(new TargetChangedArgs(
-                targetInfo.FrameTargets.TryGetValue(bidiFrame, out var frameTarget)
-                    ? frameTarget
-                    : pageTarget));
+            OnTargetChanged(
+                new TargetChangedArgs(
+                    targetInfo.FrameTargets.TryGetValue(bidiFrame, out var frameTarget)
+                        ? frameTarget
+                        : pageTarget
+                )
+            );
         };
 
         page.FrameDetached += (_, e) =>
@@ -427,7 +480,8 @@ public class BidiBrowserContext : BrowserContext
 
         public ConcurrentDictionary<BidiFrame, BidiFrameTarget> FrameTargets { get; set; } = new();
 
-        public ConcurrentDictionary<BidiWebWorker, BidiWorkerTarget> WorkerTargets { get; set; } = new();
+        public ConcurrentDictionary<BidiWebWorker, BidiWorkerTarget> WorkerTargets { get; set; } =
+            new();
     }
 }
 

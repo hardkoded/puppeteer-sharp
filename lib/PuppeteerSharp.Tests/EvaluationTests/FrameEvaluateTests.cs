@@ -7,7 +7,14 @@ namespace PuppeteerSharp.Tests.EvaluationTests
 {
     public class FrameEvaluateTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have different execution contexts")]
+        [
+            Test,
+            PuppeteerTest(
+                "evaluation.spec",
+                "Evaluation specs Frame.evaluate",
+                "should have different execution contexts"
+            )
+        ]
         public async Task ShouldHaveDifferentExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -20,11 +27,24 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             await frame1.EvaluateExpressionAsync("window.FOO = 'foo'");
             await frame2.EvaluateExpressionAsync("window.FOO = 'bar'");
 
-            Assert.That(await frame1.EvaluateExpressionAsync<string>("window.FOO"), Is.EqualTo("foo"));
-            Assert.That(await frame2.EvaluateExpressionAsync<string>("window.FOO"), Is.EqualTo("bar"));
+            Assert.That(
+                await frame1.EvaluateExpressionAsync<string>("window.FOO"),
+                Is.EqualTo("foo")
+            );
+            Assert.That(
+                await frame2.EvaluateExpressionAsync<string>("window.FOO"),
+                Is.EqualTo("bar")
+            );
         }
 
-        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have correct execution contexts")]
+        [
+            Test,
+            PuppeteerTest(
+                "evaluation.spec",
+                "Evaluation specs Frame.evaluate",
+                "should have correct execution contexts"
+            )
+        ]
         public async Task ShouldHaveCorrectExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -33,19 +53,38 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             var frame1 = Page.MainFrame;
             var frame2 = await Page.FirstChildFrameAsync();
 
-            Assert.That(await frame1.EvaluateExpressionAsync<string>("document.body.textContent.trim()"), Is.EqualTo(""));
-            Assert.That(await frame2.EvaluateExpressionAsync<string>("document.body.textContent.trim()"), Is.EqualTo("Hi, I'm frame"));
+            Assert.That(
+                await frame1.EvaluateExpressionAsync<string>("document.body.textContent.trim()"),
+                Is.EqualTo("")
+            );
+            Assert.That(
+                await frame2.EvaluateExpressionAsync<string>("document.body.textContent.trim()"),
+                Is.EqualTo("Hi, I'm frame")
+            );
         }
 
-        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should execute after cross-site navigation")]
+        [
+            Test,
+            PuppeteerTest(
+                "evaluation.spec",
+                "Evaluation specs Frame.evaluate",
+                "should execute after cross-site navigation"
+            )
+        ]
         public async Task ShouldExecuteAfterCrossSiteNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var mainFrame = Page.MainFrame;
-            Assert.That(await mainFrame.EvaluateExpressionAsync<string>("window.location.href"), Does.Contain("localhost"));
+            Assert.That(
+                await mainFrame.EvaluateExpressionAsync<string>("window.location.href"),
+                Does.Contain("localhost")
+            );
 
             await Page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/empty.html");
-            Assert.That(await mainFrame.EvaluateExpressionAsync<string>("window.location.href"), Does.Contain("127"));
+            Assert.That(
+                await mainFrame.EvaluateExpressionAsync<string>("window.location.href"),
+                Does.Contain("127")
+            );
         }
     }
 }

@@ -9,7 +9,10 @@ namespace PuppeteerSharp
     /// </summary>
     public static class PredefinedNetworkConditions
     {
-        private static readonly Dictionary<string, NetworkConditions> Conditions = new Dictionary<string, NetworkConditions>
+        private static readonly Dictionary<string, NetworkConditions> Conditions = new Dictionary<
+            string,
+            NetworkConditions
+        >
         {
             [NetworkConditions.Slow3G] = new NetworkConditions
             {
@@ -60,9 +63,13 @@ namespace PuppeteerSharp
             },
         };
 
-        private static readonly Lazy<IReadOnlyDictionary<string, NetworkConditions>> _readOnlyConditions =
-            new(() => new ReadOnlyDictionary<string, NetworkConditions>(Conditions));
+        private static readonly Lazy<
+            IReadOnlyDictionary<string, NetworkConditions>
+        > _readOnlyConditions = new(() =>
+            new ReadOnlyDictionary<string, NetworkConditions>(Conditions)
+        );
 
-        internal static IReadOnlyDictionary<string, NetworkConditions> ToReadOnly() => _readOnlyConditions.Value;
+        internal static IReadOnlyDictionary<string, NetworkConditions> ToReadOnly() =>
+            _readOnlyConditions.Value;
     }
 }

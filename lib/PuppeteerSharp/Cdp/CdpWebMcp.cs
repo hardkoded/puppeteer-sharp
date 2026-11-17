@@ -40,11 +40,13 @@ namespace PuppeteerSharp.Cdp;
 [SuppressMessage(
     "Microsoft.Design",
     "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
-    Justification = "Listener subscriptions are disposed in UpdateClient via DisposableActionsStack.")]
+    Justification = "Listener subscriptions are disposed in UpdateClient via DisposableActionsStack."
+)]
 public class CdpWebMcp
 {
     private readonly FrameManager _frameManager;
-    private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, WebMcpTool>> _tools = new();
+    private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, WebMcpTool>> _tools =
+        new();
     private readonly ConcurrentDictionary<string, WebMcpToolCall> _pendingCalls = new();
     private DisposableActionsStack _subscriptions = new();
     private CDPSession _client;
@@ -72,8 +74,7 @@ public class CdpWebMcp
     /// Gets all WebMCP tools registered on the page.
     /// </summary>
     /// <returns>Array of registered tools.</returns>
-    public WebMcpTool[] Tools()
-        => _tools.Values.SelectMany(d => d.Values).ToArray();
+    public WebMcpTool[] Tools() => _tools.Values.SelectMany(d => d.Values).ToArray();
 
     internal async Task InitializeAsync()
     {
@@ -89,14 +90,17 @@ public class CdpWebMcp
 
     internal async Task<string> InvokeToolAsync(WebMcpTool tool, object input)
     {
-        var response = await _client.SendAsync<WebMcpInvokeToolResponse>(
-            "WebMCP.invokeTool",
-            new
-            {
-                frameId = tool.Frame?.Id ?? string.Empty,
-                toolName = tool.Name,
-                input,
-            }).ConfigureAwait(false);
+        var response = await _client
+            .SendAsync<WebMcpInvokeToolResponse>(
+                "WebMCP.invokeTool",
+                new
+                {
+                    frameId = tool.Frame?.Id ?? string.Empty,
+                    toolName = tool.Name,
+                    input,
+                }
+            )
+            .ConfigureAwait(false);
         return response?.InvocationId;
     }
 
@@ -104,9 +108,9 @@ public class CdpWebMcp
     {
         try
         {
-            await _client.SendAsync(
-                "WebMCP.cancelInvocation",
-                new { invocationId }).ConfigureAwait(false);
+            await _client
+                .SendAsync("WebMCP.cancelInvocation", new { invocationId })
+                .ConfigureAwait(false);
         }
         catch
         {
@@ -159,7 +163,10 @@ public class CdpWebMcp
             }
 
             var isNewFrame = !_tools.ContainsKey(tool.FrameId);
-            var frameTools = _tools.GetOrAdd(tool.FrameId, _ => new ConcurrentDictionary<string, WebMcpTool>());
+            var frameTools = _tools.GetOrAdd(tool.FrameId, _ => new ConcurrentDictionary<
+                string,
+                WebMcpTool
+            >());
             if (isNewFrame)
             {
                 ListenToContextCleared(frame as CdpFrame);
@@ -182,12 +189,15 @@ public class CdpWebMcp
                 Name = tool.Name,
                 Description = tool.Description,
                 InputSchema = tool.InputSchema,
-                Annotations = tool.Annotations == null ? null : new WebMcpAnnotation
-                {
-                    ReadOnly = tool.Annotations.ReadOnly,
-                    UntrustedContent = tool.Annotations.UntrustedContent,
-                    Autosubmit = tool.Annotations.Autosubmit,
-                },
+                Annotations =
+                    tool.Annotations == null
+                        ? null
+                        : new WebMcpAnnotation
+                        {
+                            ReadOnly = tool.Annotations.ReadOnly,
+                            UntrustedContent = tool.Annotations.UntrustedContent,
+                            Autosubmit = tool.Annotations.Autosubmit,
+                        },
                 Frame = frame,
                 Location = location,
                 WebMcp = this,
@@ -208,8 +218,10 @@ public class CdpWebMcp
         var removed = new List<WebMcpTool>();
         foreach (var tool in e.Tools)
         {
-            if (_tools.TryGetValue(tool.FrameId, out var frameTools) &&
-                frameTools.TryGetValue(tool.Name, out var removedTool))
+            if (
+                _tools.TryGetValue(tool.FrameId, out var frameTools)
+                && frameTools.TryGetValue(tool.Name, out var removedTool)
+            )
             {
                 removed.Add(removedTool);
                 frameTools.TryRemove(tool.Name, out _);
@@ -218,14 +230,19 @@ public class CdpWebMcp
 
         if (removed.Count > 0)
         {
-            ToolsRemoved?.Invoke(this, new WebMcpToolsRemovedEventArgs { Tools = removed.ToArray() });
+            ToolsRemoved?.Invoke(
+                this,
+                new WebMcpToolsRemovedEventArgs { Tools = removed.ToArray() }
+            );
         }
     }
 
     private void OnToolInvoked(WebMcpToolInvokedProtocolEvent e)
     {
-        if (!_tools.TryGetValue(e.FrameId, out var frameTools) ||
-            !frameTools.TryGetValue(e.ToolName, out var tool))
+        if (
+            !_tools.TryGetValue(e.FrameId, out var frameTools)
+            || !frameTools.TryGetValue(e.ToolName, out var tool)
+        )
         {
             return;
         }

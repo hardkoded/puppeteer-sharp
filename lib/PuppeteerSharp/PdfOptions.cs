@@ -12,9 +12,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="PuppeteerSharp.PdfOptions"/> class.
         /// </summary>
-        public PdfOptions()
-        {
-        }
+        public PdfOptions() { }
 
         /// <summary>
         /// Scale of the webpage rendering. Defaults to <c>1</c>. Scale amount must be between 0.1 and 2.

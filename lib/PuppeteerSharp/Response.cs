@@ -12,13 +12,10 @@ using PuppeteerSharp.Helpers.Json;
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
-    public abstract class Response<TRequest>
-        : IResponse
+    public abstract class Response<TRequest> : IResponse
         where TRequest : IRequest
     {
-        internal Response()
-        {
-        }
+        internal Response() { }
 
         /// <inheritdoc/>
         public RemoteAddress RemoteAddress { get; protected init; }
@@ -72,7 +69,8 @@ namespace PuppeteerSharp
         public abstract Task<Stream> StreamAsync();
 
         /// <inheritdoc/>
-        public async Task<string> TextAsync() => Encoding.UTF8.GetString(await BufferAsync().ConfigureAwait(false));
+        public async Task<string> TextAsync() =>
+            Encoding.UTF8.GetString(await BufferAsync().ConfigureAwait(false));
 
         /// <inheritdoc/>
         public async Task<JsonDocument> JsonAsync(JsonDocumentOptions options = default)
@@ -85,14 +83,24 @@ namespace PuppeteerSharp
         public async Task<T> JsonAsync<T>(JsonSerializerOptions options = default)
         {
             var content = await TextAsync().ConfigureAwait(false);
-            return JsonSerializer.Deserialize<T>(content, options ?? JsonHelper.DefaultJsonSerializerSettings.Value);
+            return JsonSerializer.Deserialize<T>(
+                content,
+                options ?? JsonHelper.DefaultJsonSerializerSettings.Value
+            );
         }
 
         /// <inheritdoc/>
         public async Task<HttpResponseMessage> AsFetchResponseAsync()
         {
-            var isNullBodyStatus = Status is HttpStatusCode.SwitchingProtocols or HttpStatusCode.NoContent or HttpStatusCode.ResetContent or HttpStatusCode.NotModified;
-            var content = isNullBodyStatus ? null : new ByteArrayContent(await BufferAsync().ConfigureAwait(false));
+            var isNullBodyStatus =
+                Status
+                is HttpStatusCode.SwitchingProtocols
+                    or HttpStatusCode.NoContent
+                    or HttpStatusCode.ResetContent
+                    or HttpStatusCode.NotModified;
+            var content = isNullBodyStatus
+                ? null
+                : new ByteArrayContent(await BufferAsync().ConfigureAwait(false));
             var response = new HttpResponseMessage(Status)
             {
                 Content = content,
@@ -101,7 +109,9 @@ namespace PuppeteerSharp
 
             foreach (var header in Headers)
             {
-                var isContentHeader = content != null && header.Key.StartsWith("content-", StringComparison.OrdinalIgnoreCase);
+                var isContentHeader =
+                    content != null
+                    && header.Key.StartsWith("content-", StringComparison.OrdinalIgnoreCase);
                 var target = isContentHeader ? (HttpHeaders)content.Headers : response.Headers;
 
                 // Set-Cookie values are joined with newlines, so each one becomes its own header entry.

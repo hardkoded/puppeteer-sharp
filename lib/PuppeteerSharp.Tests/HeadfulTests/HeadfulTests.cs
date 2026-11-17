@@ -7,7 +7,14 @@ namespace PuppeteerSharp.Tests.HeadfulTests
 {
     public class HeadfulTests : PuppeteerBaseTest
     {
-        [Test, PuppeteerTest("headful.spec", "headful tests HEADFUL", "headless should be able to read cookies written by headful")]
+        [
+            Test,
+            PuppeteerTest(
+                "headful.spec",
+                "headful tests HEADFUL",
+                "headless should be able to read cookies written by headful"
+            )
+        ]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
             using var userDataDir = new TempDirectory();
@@ -20,17 +27,26 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             {
                 await headfulPage.GoToAsync(TestConstants.EmptyPage);
                 await headfulPage.EvaluateExpressionAsync(
-                    "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
+                    "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'"
+                );
             }
 
             await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "foo");
 
             options.Headless = true;
-            await using (var headlessBrowser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            await using (
+                var headlessBrowser = await Puppeteer.LaunchAsync(
+                    options,
+                    TestConstants.LoggerFactory
+                )
+            )
             {
                 var headlessPage = await headlessBrowser.NewPageAsync();
                 await headlessPage.GoToAsync(TestConstants.EmptyPage);
-                Assert.That(await headlessPage.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("foo=true"));
+                Assert.That(
+                    await headlessPage.EvaluateExpressionAsync<string>("document.cookie"),
+                    Is.EqualTo("foo=true")
+                );
             }
         }
     }

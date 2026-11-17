@@ -17,7 +17,8 @@ namespace Example.GetAllLinks
             using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync("http://www.google.com");
-                var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
+                var jsSelectAllAnchors =
+                    @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
                 var urls = await page.EvaluateExpressionAsync<string[]>(jsSelectAllAnchors);
                 foreach (string url in urls)
                 {

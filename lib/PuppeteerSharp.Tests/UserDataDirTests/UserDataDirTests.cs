@@ -10,7 +10,14 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
 {
     public class UserDataDirTests : PuppeteerBaseTest
     {
-        [Test, PuppeteerTest("userDataDir.spec", "userDataDir", "should not launch the browser twice with the same userDataDir with pipe=false")]
+        [
+            Test,
+            PuppeteerTest(
+                "userDataDir.spec",
+                "userDataDir",
+                "should not launch the browser twice with the same userDataDir with pipe=false"
+            )
+        ]
         public async Task ShouldNotLaunchBrowserTwiceWithSameUserDataDir()
         {
             using var userDataDir = new TempDirectory();
@@ -34,7 +41,14 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
             await browser.CloseAsync();
         }
 
-        [Test, PuppeteerTest("userDataDir.spec", "userDataDir", "should not launch the browser twice with the same userDataDir with pipe=true")]
+        [
+            Test,
+            PuppeteerTest(
+                "userDataDir.spec",
+                "userDataDir",
+                "should not launch the browser twice with the same userDataDir with pipe=true"
+            )
+        ]
         public async Task ShouldNotLaunchBrowserTwiceWithSameUserDataDirWithPipe()
         {
             using var userDataDir = new TempDirectory();
@@ -58,7 +72,14 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
             await browser.CloseAsync();
         }
 
-        [Test, PuppeteerTest("userDataDir.test", "userDataDir", "should report a permission error when the userDataDir is not writable")]
+        [
+            Test,
+            PuppeteerTest(
+                "userDataDir.test",
+                "userDataDir",
+                "should report a permission error when the userDataDir is not writable"
+            )
+        ]
         public async Task ShouldReportPermissionErrorWhenUserDataDirIsNotWritable()
         {
             // Windows ignores the read-only bit for the directory owner, and root
@@ -70,13 +91,16 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
 
             using var userDataDir = new TempDirectory();
             const FileAccessPermissions readOnlyPermissions =
-                FileAccessPermissions.UserRead | FileAccessPermissions.UserExecute |
-                FileAccessPermissions.GroupRead | FileAccessPermissions.GroupExecute |
-                FileAccessPermissions.OtherRead | FileAccessPermissions.OtherExecute;
+                FileAccessPermissions.UserRead
+                | FileAccessPermissions.UserExecute
+                | FileAccessPermissions.GroupRead
+                | FileAccessPermissions.GroupExecute
+                | FileAccessPermissions.OtherRead
+                | FileAccessPermissions.OtherExecute;
             const FileAccessPermissions writablePermissions =
-                FileAccessPermissions.UserReadWriteExecute |
-                FileAccessPermissions.GroupReadWriteExecute |
-                FileAccessPermissions.OtherReadWriteExecute;
+                FileAccessPermissions.UserReadWriteExecute
+                | FileAccessPermissions.GroupReadWriteExecute
+                | FileAccessPermissions.OtherReadWriteExecute;
 
             var chmodResult = LinuxSysCall.Chmod(userDataDir.Path, readOnlyPermissions);
             Assert.That(chmodResult, Is.EqualTo(0));
@@ -102,8 +126,10 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
 
         private static bool IsRunningAsRoot()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux) &&
-                !RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            if (
+                !RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                && !RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+            )
             {
                 return false;
             }

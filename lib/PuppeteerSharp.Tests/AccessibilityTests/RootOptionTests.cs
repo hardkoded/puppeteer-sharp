@@ -15,12 +15,11 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
 
             var button = await Page.QuerySelectorAsync("button");
             Assert.That(
-                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }),
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "button",
-                    Name = "My Button"
-                }));
+                await Page.Accessibility.SnapshotAsync(
+                    new AccessibilitySnapshotOptions { Root = button }
+                ),
+                Is.EqualTo(new SerializedAXNode { Role = "button", Name = "My Button" })
+            );
         }
 
         [Test, PuppeteerTest("accessibility.spec", "root option", "should work an input")]
@@ -30,88 +29,105 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
 
             var input = await Page.QuerySelectorAsync("input");
             Assert.That(
-                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = input }),
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "textbox",
-                    Name = "My Input",
-                    Value = "My Value"
-                }));
+                await Page.Accessibility.SnapshotAsync(
+                    new AccessibilitySnapshotOptions { Root = input }
+                ),
+                Is.EqualTo(
+                    new SerializedAXNode
+                    {
+                        Role = "textbox",
+                        Name = "My Input",
+                        Value = "My Value",
+                    }
+                )
+            );
         }
 
         [Test, PuppeteerTest("accessibility.spec", "root option", "should work a menu")]
         public async Task ShouldWorkAMenu()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <div role=""menu"" title=""My Menu"" >
               <div role=""menuitem"">First Item</div>
               <div role=""menuitem"">Second Item</div>
               <div role=""menuitem"">Third Item</div>
             </div>
-            ");
+            "
+            );
 
             var menu = await Page.QuerySelectorAsync("div[role=\"menu\"]");
-            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = menu });
+            var snapshot = await Page.Accessibility.SnapshotAsync(
+                new AccessibilitySnapshotOptions { Root = menu }
+            );
             var nodeToCheck = new SerializedAXNode
             {
                 Role = "menu",
                 Name = "My Menu",
                 Orientation = "vertical",
                 Children = new[]
-                    {
-                        new SerializedAXNode
-                        {
-                            Role = "menuitem",
-                            Name = "First Item"
-                        },
-                        new SerializedAXNode
-                        {
-                            Role = "menuitem",
-                            Name = "Second Item"
-                        },
-                        new SerializedAXNode
-                        {
-                            Role = "menuitem",
-                            Name = "Third Item"
-                        }
-                    }
+                {
+                    new SerializedAXNode { Role = "menuitem", Name = "First Item" },
+                    new SerializedAXNode { Role = "menuitem", Name = "Second Item" },
+                    new SerializedAXNode { Role = "menuitem", Name = "Third Item" },
+                },
             };
 
             Assert.That(snapshot, Is.EqualTo(nodeToCheck));
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "root option", "should return null when the element is no longer in DOM")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "root option",
+                "should return null when the element is no longer in DOM"
+            )
+        ]
         public async Task ShouldReturnNullWhenTheElementIsNoLongerInDOM()
         {
             await Page.SetContentAsync("<button>My Button</button>");
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.remove()", button);
-            Assert.That(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }), Is.Null);
+            Assert.That(
+                await Page.Accessibility.SnapshotAsync(
+                    new AccessibilitySnapshotOptions { Root = button }
+                ),
+                Is.Null
+            );
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "root option", "should support the interestingOnly option")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "root option",
+                "should support the interestingOnly option"
+            )
+        ]
         public async Task ShouldSupportTheInterestingOnlyOption()
         {
-            await Page.SetContentAsync("<div><button>My Button</button></div><div class=\"uninteresting\"></div>");
+            await Page.SetContentAsync(
+                "<div><button>My Button</button></div><div class=\"uninteresting\"></div>"
+            );
             var div = await Page.QuerySelectorAsync("div.uninteresting");
-            Assert.That(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-            {
-                Root = div
-            }), Is.Null);
+            Assert.That(
+                await Page.Accessibility.SnapshotAsync(
+                    new AccessibilitySnapshotOptions { Root = div }
+                ),
+                Is.Null
+            );
 
             var divWithButton = await Page.QuerySelectorAsync("div");
-            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-            {
-                Root = divWithButton
-            });
+            var snapshot = await Page.Accessibility.SnapshotAsync(
+                new AccessibilitySnapshotOptions { Root = divWithButton }
+            );
             Assert.That(snapshot.Name, Is.EqualTo("My Button"));
             Assert.That(snapshot.Role, Is.EqualTo("button"));
 
-            var fullSnapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-            {
-                Root = divWithButton,
-                InterestingOnly = false
-            });
+            var fullSnapshot = await Page.Accessibility.SnapshotAsync(
+                new AccessibilitySnapshotOptions { Root = divWithButton, InterestingOnly = false }
+            );
             Assert.That(fullSnapshot.Role, Is.EqualTo("generic"));
             Assert.That(fullSnapshot.Name, Is.EqualTo(""));
             Assert.That(fullSnapshot.Children, Has.Length.EqualTo(1));
@@ -122,33 +138,48 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(fullSnapshot.Children[0].Children[0].Name, Is.EqualTo("My Button"));
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "root option", "should get an ElementHandle from a snapshot item")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "root option",
+                "should get an ElementHandle from a snapshot item"
+            )
+        ]
         public async Task ShouldGetAnElementHandleFromASnapshotItem()
         {
             await Page.SetContentAsync("<button>My Button</button>");
 
             var button = await Page.QuerySelectorAsync("button");
-            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button });
+            var snapshot = await Page.Accessibility.SnapshotAsync(
+                new AccessibilitySnapshotOptions { Root = button }
+            );
             Assert.That(snapshot.Role, Is.EqualTo("button"));
             Assert.That(snapshot.Name, Is.EqualTo("My Button"));
 
             var buttonHandle = await snapshot.ElementHandleAsync();
             Assert.That(
                 await buttonHandle.EvaluateFunctionAsync<string>("button => button.innerHTML"),
-                Is.EqualTo("My Button"));
+                Is.EqualTo("My Button")
+            );
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "root option", "should get the parent ElementHandle from a text node accessibility node")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "root option",
+                "should get the parent ElementHandle from a text node accessibility node"
+            )
+        ]
         public async Task ShouldGetTheParentElementHandleFromATextNodeAccessibilityNode()
         {
             await Page.SetContentAsync("<div><b>Hello, </b> world!</div>");
             var div = await Page.QuerySelectorAsync("div");
 
-            var parentSnapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-            {
-                Root = div,
-                InterestingOnly = false,
-            });
+            var parentSnapshot = await Page.Accessibility.SnapshotAsync(
+                new AccessibilitySnapshotOptions { Root = div, InterestingOnly = false }
+            );
 
             Assert.That(parentSnapshot.Role, Is.EqualTo("generic"));
             Assert.That(parentSnapshot.Name, Is.EqualTo(""));
@@ -159,36 +190,52 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(parentSnapshot.Children[1].Name, Is.EqualTo("world!"));
 
             var textNode = await div.EvaluateFunctionHandleAsync("el => el.lastChild");
-            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = textNode as IElementHandle ?? (IElementHandle)textNode });
+            var snapshot = await Page.Accessibility.SnapshotAsync(
+                new AccessibilitySnapshotOptions
+                {
+                    Root = textNode as IElementHandle ?? (IElementHandle)textNode,
+                }
+            );
 
             // Get the element handle from the text node.
             // This should be the parent's handle, not the text node's.
             var parentNodeHandle = await parentSnapshot.ElementHandleAsync();
             var textNodeHandle = await snapshot.ElementHandleAsync();
 
-            var parentInnerHtml = await parentNodeHandle.EvaluateFunctionAsync<string>("el => el.innerHTML");
-            var textNodeInnerHtml = await textNodeHandle.EvaluateFunctionAsync<string>("el => el.innerHTML");
+            var parentInnerHtml = await parentNodeHandle.EvaluateFunctionAsync<string>(
+                "el => el.innerHTML"
+            );
+            var textNodeInnerHtml = await textNodeHandle.EvaluateFunctionAsync<string>(
+                "el => el.innerHTML"
+            );
 
             Assert.That(parentInnerHtml, Is.EqualTo(textNodeInnerHtml));
             Assert.That(textNodeInnerHtml, Is.EqualTo("<b>Hello, </b> world!"));
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "elementHandle()", "should get the shadow host ElementHandle from a text node in a shadow root")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "elementHandle()",
+                "should get the shadow host ElementHandle from a text node in a shadow root"
+            )
+        ]
         public async Task ShouldGetTheShadowHostElementHandleFromATextNodeInAShadowRoot()
         {
             await Page.SetContentAsync("<div id=\"host\"></div>");
-            await Page.EvaluateExpressionAsync(@"
+            await Page.EvaluateExpressionAsync(
+                @"
                 document
                     .querySelector('#host')
                     .attachShadow({mode: 'open'}).textContent = 'Shadow text';
-            ");
+            "
+            );
             var host = await Page.QuerySelectorAsync("#host");
 
-            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-            {
-                Root = host,
-                InterestingOnly = false,
-            });
+            var snapshot = await Page.Accessibility.SnapshotAsync(
+                new AccessibilitySnapshotOptions { Root = host, InterestingOnly = false }
+            );
             var textNode = snapshot.Children.First(child => child.Name == "Shadow text");
             Assert.That(textNode.Role, Is.EqualTo("StaticText"));
 
@@ -196,21 +243,33 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(textNodeHandle, Is.Not.Null);
             Assert.That(
                 await textNodeHandle.EvaluateFunctionAsync<string>("element => element.id"),
-                Is.EqualTo("host"));
+                Is.EqualTo("host")
+            );
         }
 
-        [Test, PuppeteerTest("accessibility.spec", "root option", "should work with nested button inside h1 with interestingOnly:true")]
+        [
+            Test,
+            PuppeteerTest(
+                "accessibility.spec",
+                "root option",
+                "should work with nested button inside h1 with interestingOnly:true"
+            )
+        ]
         public async Task ShouldWorkWithNestedButtonInsideH1WithInterestingOnlyTrue()
         {
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(
+                @"
             <main>
                 <h2>
                     <button>My Button</button>
                 </h2>
-            </main>");
+            </main>"
+            );
 
             var button = await Page.QuerySelectorAsync("button");
-            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button });
+            var snapshot = await Page.Accessibility.SnapshotAsync(
+                new AccessibilitySnapshotOptions { Root = button }
+            );
             Assert.That(snapshot.Role, Is.EqualTo("button"));
             Assert.That(snapshot.Name, Is.EqualTo("My Button"));
         }

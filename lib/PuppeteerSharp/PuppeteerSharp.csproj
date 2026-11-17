@@ -45,7 +45,11 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="ReactiveExtensionsSharp" Version="0.3.0" />
-    <PackageReference Include="WebDriverBiDi" Version="0.0.61" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) " />
+    <PackageReference
+      Include="WebDriverBiDi"
+      Version="0.0.61"
+      Condition=" !$(DefineConstants.Contains('CDP_ONLY')) "
+    />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.12" />
@@ -59,7 +63,11 @@
     <ChromiumBidiVersion>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)Bidi/chromium-bidi.version').Trim())</ChromiumBidiVersion>
     <MapperTabPath>$(MSBuildThisFileDirectory)Bidi/mapperTab.js</MapperTabPath>
   </PropertyGroup>
-  <Target Name="DownloadMapperTab" BeforeTargets="PrepareForBuild" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) AND !Exists('$(MapperTabPath)') ">
+  <Target
+    Name="DownloadMapperTab"
+    BeforeTargets="PrepareForBuild"
+    Condition=" !$(DefineConstants.Contains('CDP_ONLY')) AND !Exists('$(MapperTabPath)') "
+  >
     <PropertyGroup>
       <_DownloadDir>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'chromium-bidi-download-$([System.Guid]::NewGuid())'))</_DownloadDir>
       <_TarballPath>$(_DownloadDir)/chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballPath>
@@ -67,20 +75,59 @@
       <_RepositoryRoot>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..', '..'))</_RepositoryRoot>
     </PropertyGroup>
     <MakeDir Directories="$(_DownloadDir)" />
-    <Exec WorkingDirectory="$(_RepositoryRoot)"
-          Command="npm pack chromium-bidi@$(ChromiumBidiVersion) --ignore-scripts --pack-destination &quot;$(_DownloadDir)&quot;" />
+    <Exec
+      WorkingDirectory="$(_RepositoryRoot)"
+      Command="npm pack chromium-bidi@$(ChromiumBidiVersion) --ignore-scripts --pack-destination &quot;$(_DownloadDir)&quot;"
+    />
     <!-- Use a unique temp dir per target execution: the same TFM can be built concurrently (e.g. via project references), and sharing a dir races on Windows -->
     <MakeDir Directories="$(_ExtractDir)" />
     <Exec Command="tar -xzf &quot;$(_TarballPath)&quot; --strip-components=3 -C &quot;$(_ExtractDir)&quot; package/lib/iife/mapperTab.js" />
-    <Copy SourceFiles="$(_ExtractDir)/mapperTab.js" DestinationFiles="$(MapperTabPath)" SkipUnchangedFiles="true" Condition=" !Exists('$(MapperTabPath)') " ContinueOnError="true" />
+    <Copy
+      SourceFiles="$(_ExtractDir)/mapperTab.js"
+      DestinationFiles="$(MapperTabPath)"
+      SkipUnchangedFiles="true"
+      Condition=" !Exists('$(MapperTabPath)') "
+      ContinueOnError="true"
+    />
     <RemoveDir Directories="$(_DownloadDir)" ContinueOnError="true" />
-    <Message Importance="high" Text="Downloaded chromium-bidi v$(ChromiumBidiVersion) mapperTab.js" />
+    <Message
+      Importance="high"
+      Text="Downloaded chromium-bidi v$(ChromiumBidiVersion) mapperTab.js"
+    />
   </Target>
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />
-    <EmbeddedResource Include="Bidi\mapperTab.js" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) " />
+    <EmbeddedResource
+      Include="Bidi\mapperTab.js"
+      Condition=" !$(DefineConstants.Contains('CDP_ONLY')) "
+    />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
+  <!--
+    Installs the Husky.Net git hooks (.husky/pre-push runs `dotnet csharpier check .`) for contributors.
+    Skipped on CI (CI=true), when HUSKY=0, and when the sources are not a git checkout.
+  -->
+  <PropertyGroup>
+    <RepoRootDirectory>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../../'))</RepoRootDirectory>
+  </PropertyGroup>
+  <Target
+    Name="Husky"
+    BeforeTargets="Restore;CollectPackageReferences"
+    Condition=" '$(CI)' != 'true' AND '$(HUSKY)' != '0' AND Exists('$(RepoRootDirectory).git') "
+  >
+    <Exec
+      Command="dotnet tool restore"
+      WorkingDirectory="$(RepoRootDirectory)"
+      StandardOutputImportance="Low"
+      StandardErrorImportance="High"
+    />
+    <Exec
+      Command="dotnet husky install"
+      WorkingDirectory="$(RepoRootDirectory)"
+      StandardOutputImportance="Low"
+      StandardErrorImportance="High"
+    />
+  </Target>
 </Project>

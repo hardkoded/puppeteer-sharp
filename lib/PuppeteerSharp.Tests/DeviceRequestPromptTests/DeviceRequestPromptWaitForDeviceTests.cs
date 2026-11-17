@@ -8,7 +8,14 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return first matching device")]
+    [
+        Test,
+        PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.waitForDevice",
+            "should return first matching device"
+        )
+    ]
     public async Task ShouldReturnFirstMatchingDevice()
     {
         var client = new MockCDPSession();
@@ -16,7 +23,11 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         var prompt = new DeviceRequestPrompt(
             client,
             timeoutSettings,
-            new DeviceAccessDeviceRequestPromptedResponse() { Id = "00000000000000000000000000000000" });
+            new DeviceAccessDeviceRequestPromptedResponse()
+            {
+                Id = "00000000000000000000000000000000",
+            }
+        );
         var promptTask = prompt.WaitForDeviceAsync(device => device.Name == "My Device 1");
 
         var promptData = new DeviceAccessDeviceRequestPromptedResponse()
@@ -28,15 +39,17 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
                 {
                     Name = "My Device 0",
                     Id = "0000",
-                }
-            ]
+                },
+            ],
         };
 
-        client.OnMessage(new ConnectionResponse()
-        {
-            Method = "DeviceAccess.deviceRequestPrompted",
-            Params = promptData.ToJsonElement(),
-        });
+        client.OnMessage(
+            new ConnectionResponse()
+            {
+                Method = "DeviceAccess.deviceRequestPrompted",
+                Params = promptData.ToJsonElement(),
+            }
+        );
 
         promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
@@ -52,21 +65,30 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
                 {
                     Name = "My Device 1",
                     Id = "0001",
-                }
-            ]
+                },
+            ],
         };
 
-        client.OnMessage(new ConnectionResponse()
-        {
-            Method = "DeviceAccess.deviceRequestPrompted",
-            Params = promptData.ToJsonElement(),
-        });
+        client.OnMessage(
+            new ConnectionResponse()
+            {
+                Method = "DeviceAccess.deviceRequestPrompted",
+                Params = promptData.ToJsonElement(),
+            }
+        );
 
         var device = await promptTask;
         Assert.That(device.Name, Is.EqualTo("My Device 1"));
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return first matching device from already known devices")]
+    [
+        Test,
+        PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.waitForDevice",
+            "should return first matching device from already known devices"
+        )
+    ]
     public async Task ShouldReturnFirstMatchingDeviceFromAlreadyKnownDevices()
     {
         var client = new MockCDPSession();
@@ -79,14 +101,30 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
                 Id = "000",
                 Devices =
                 [
-                    new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice() { Name = "My Device 0", Id = "0000", },
-                    new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice() { Name = "My Device 1", Id = "0001", }
-                ]
-            });
+                    new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
+                    {
+                        Name = "My Device 0",
+                        Id = "0000",
+                    },
+                    new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
+                    {
+                        Name = "My Device 1",
+                        Id = "0001",
+                    },
+                ],
+            }
+        );
         await prompt.WaitForDeviceAsync(device => device.Name == "My Device 1");
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return device in the devices list")]
+    [
+        Test,
+        PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.waitForDevice",
+            "should return device in the devices list"
+        )
+    ]
     public async Task ShouldReturnDeviceInTheDevicesList()
     {
         var client = new MockCDPSession();
@@ -94,10 +132,8 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         var prompt = new DeviceRequestPrompt(
             client,
             timeoutSettings,
-            new DeviceAccessDeviceRequestPromptedResponse()
-            {
-                Id = "000",
-            });
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" }
+        );
 
         var promptTask = prompt.WaitForDeviceAsync(device => device.Name == "My Device 1");
 
@@ -108,26 +144,37 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             {
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 0", Id = "0000",
+                    Name = "My Device 0",
+                    Id = "0000",
                 },
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 1", Id = "0001",
-                }
-            }
+                    Name = "My Device 1",
+                    Id = "0001",
+                },
+            },
         };
 
-        client.OnMessage(new ConnectionResponse()
-        {
-            Method = "DeviceAccess.deviceRequestPrompted",
-            Params = promptData.ToJsonElement(),
-        });
+        client.OnMessage(
+            new ConnectionResponse()
+            {
+                Method = "DeviceAccess.deviceRequestPrompted",
+                Params = promptData.ToJsonElement(),
+            }
+        );
 
         var device = await promptTask;
         Assert.That(prompt.Devices.ToArray(), Does.Contain(device));
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should respect timeout")]
+    [
+        Test,
+        PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.waitForDevice",
+            "should respect timeout"
+        )
+    ]
     public void ShouldRespectTimeout()
     {
         var client = new MockCDPSession();
@@ -135,14 +182,21 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         var prompt = new DeviceRequestPrompt(
             client,
             timeoutSettings,
-            new DeviceAccessDeviceRequestPromptedResponse()
-            {
-                Id = "000",
-            });
-        Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(1)));
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" }
+        );
+        Assert.ThrowsAsync<TimeoutException>(() =>
+            prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(1))
+        );
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should respect default timeout when there is no custom timeout")]
+    [
+        Test,
+        PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.waitForDevice",
+            "should respect default timeout when there is no custom timeout"
+        )
+    ]
     public void ShouldRespectDefaultTimeoutWhenThereIsNoCustomTimeout()
     {
         var client = new MockCDPSession();
@@ -150,15 +204,22 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         var prompt = new DeviceRequestPrompt(
             client,
             timeoutSettings,
-            new DeviceAccessDeviceRequestPromptedResponse()
-            {
-                Id = "000",
-            });
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" }
+        );
         timeoutSettings.Timeout = 1;
-        Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1"));
+        Assert.ThrowsAsync<TimeoutException>(() =>
+            prompt.WaitForDeviceAsync(device => device.Name == "My Device 1")
+        );
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should prioritize exact timeout over default timeout")]
+    [
+        Test,
+        PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.waitForDevice",
+            "should prioritize exact timeout over default timeout"
+        )
+    ]
     public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
     {
         var client = new MockCDPSession();
@@ -166,15 +227,22 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         var prompt = new DeviceRequestPrompt(
             client,
             timeoutSettings,
-            new DeviceAccessDeviceRequestPromptedResponse()
-            {
-                Id = "000",
-            });
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" }
+        );
         timeoutSettings.Timeout = 0;
-        Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(1)));
+        Assert.ThrowsAsync<TimeoutException>(() =>
+            prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(1))
+        );
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should work with no timeout")]
+    [
+        Test,
+        PuppeteerTest(
+            "DeviceRequestPrompt.test.ts",
+            "DeviceRequestPrompt.waitForDevice",
+            "should work with no timeout"
+        )
+    ]
     public async Task ShouldWorkWithNoTimeout()
     {
         var client = new MockCDPSession();
@@ -182,11 +250,12 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         var prompt = new DeviceRequestPrompt(
             client,
             timeoutSettings,
-            new DeviceAccessDeviceRequestPromptedResponse()
-            {
-                Id = "000",
-            });
-        var deviceTask = prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(0));
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" }
+        );
+        var deviceTask = prompt.WaitForDeviceAsync(
+            device => device.Name == "My Device 1",
+            new WaitForOptions(0)
+        );
 
         var promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
@@ -198,14 +267,16 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
                     Name = "My Device 0",
                     Id = "0000",
                 },
-            ]
+            ],
         };
 
-        client.OnMessage(new ConnectionResponse()
-        {
-            Method = "DeviceAccess.deviceRequestPrompted",
-            Params = promptData.ToJsonElement(),
-        });
+        client.OnMessage(
+            new ConnectionResponse()
+            {
+                Method = "DeviceAccess.deviceRequestPrompted",
+                Params = promptData.ToJsonElement(),
+            }
+        );
 
         promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
@@ -214,16 +285,19 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             {
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 1", Id = "0001",
-                }
-            }
+                    Name = "My Device 1",
+                    Id = "0001",
+                },
+            },
         };
 
-        client.OnMessage(new ConnectionResponse()
-        {
-            Method = "DeviceAccess.deviceRequestPrompted",
-            Params = promptData.ToJsonElement(),
-        });
+        client.OnMessage(
+            new ConnectionResponse()
+            {
+                Method = "DeviceAccess.deviceRequestPrompted",
+                Params = promptData.ToJsonElement(),
+            }
+        );
 
         await deviceTask;
     }

@@ -32,7 +32,6 @@ namespace PuppeteerSharp
                     _messageReceived += value;
                 }
             }
-
             remove
             {
                 lock (_messageReceivedLock)
@@ -85,7 +84,11 @@ namespace PuppeteerSharp
         private protected virtual bool BufferEarlyMessages => false;
 
         /// <inheritdoc/>
-        public async Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
+        public async Task<T> SendAsync<T>(
+            string method,
+            object args = null,
+            CommandOptions options = null
+        )
         {
             var content = await SendAsync(method, args, true, options).ConfigureAwait(false);
             Debug.Assert(content != null, nameof(content) + " != null");
@@ -93,7 +96,12 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public abstract Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null);
+        public abstract Task<JsonElement?> SendAsync(
+            string method,
+            object args = null,
+            bool waitForCallback = true,
+            CommandOptions options = null
+        );
 
         /// <inheritdoc/>
         public abstract Task DetachAsync();
@@ -101,15 +109,17 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract void Close(string closeReason);
 
-        internal void OnSessionReady(CDPSession session) => Ready?.Invoke(this, new SessionEventArgs(session));
+        internal void OnSessionReady(CDPSession session) =>
+            Ready?.Invoke(this, new SessionEventArgs(session));
 
-        internal void OnSessionAttached(CDPSession session)
-            => SessionAttached?.Invoke(this, new SessionEventArgs(session));
+        internal void OnSessionAttached(CDPSession session) =>
+            SessionAttached?.Invoke(this, new SessionEventArgs(session));
 
-        internal void OnSessionDetached(CDPSession session)
-            => SessionDetached?.Invoke(this, new SessionEventArgs(session));
+        internal void OnSessionDetached(CDPSession session) =>
+            SessionDetached?.Invoke(this, new SessionEventArgs(session));
 
-        internal void OnSwapped(CDPSession session) => Swapped?.Invoke(this, new SessionEventArgs(session));
+        internal void OnSwapped(CDPSession session) =>
+            Swapped?.Invoke(this, new SessionEventArgs(session));
 
         /// <summary>
         /// Replays any buffered method-events to all current subscribers and switches the session to

@@ -10,19 +10,20 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-#if !CDP_ONLY
-using PuppeteerSharp.Bidi;
-#endif
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
+using CdpConnection = PuppeteerSharp.Cdp.Connection;
+#if !CDP_ONLY
+using PuppeteerSharp.Bidi;
+#endif
+
 #if !CDP_ONLY
 using WebDriverBiDi;
 using BidiTransport = WebDriverBiDi.Protocol.Transport;
 #endif
-using CdpConnection = PuppeteerSharp.Cdp.Connection;
 
 namespace PuppeteerSharp
 {
@@ -39,7 +40,8 @@ namespace PuppeteerSharp
         /// Initializes a new instance of the <see cref="Launcher"/> class.
         /// </summary>
         /// <param name="loggerFactory">Logger factory.</param>
-        public Launcher(ILoggerFactory loggerFactory = null) => _loggerFactory = loggerFactory ?? new LoggerFactory();
+        public Launcher(ILoggerFactory loggerFactory = null) =>
+            _loggerFactory = loggerFactory ?? new LoggerFactory();
 
         /// <summary>
         /// Gets the process, if any was created by this launcher.
@@ -56,7 +58,11 @@ namespace PuppeteerSharp
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
-        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for disposing the returned object.")]
+        [SuppressMessage(
+            "Microsoft.Reliability",
+            "CA2000:Dispose objects before losing scope",
+            Justification = "The caller is responsible for disposing the returned object."
+        )]
         public async Task<IBrowser> LaunchAsync(LaunchOptions options)
         {
             if (options == null)
@@ -77,16 +83,25 @@ namespace PuppeteerSharp
                 options.Protocol = ProtocolType.WebdriverBiDi;
             }
 
-            UrlRestrictionsValidator.AssertSupportedUrlRestrictions(options.Protocol, options.BlockList, options.Allowlist);
+            UrlRestrictionsValidator.AssertSupportedUrlRestrictions(
+                options.Protocol,
+                options.BlockList,
+                options.Allowlist
+            );
 
             var executable = options.ExecutablePath;
             if (executable == null)
             {
                 var buildId = options.Browser switch
                 {
-                    SupportedBrowser.Firefox => await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false),
-                    SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell => Chrome.DefaultBuildId,
-                    SupportedBrowser.Chromium => await Chromium.ResolveBuildIdAsync(BrowserFetcher.GetCurrentPlatform()).ConfigureAwait(false),
+                    SupportedBrowser.Firefox => await Firefox
+                        .GetDefaultBuildIdAsync()
+                        .ConfigureAwait(false),
+                    SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell =>
+                        Chrome.DefaultBuildId,
+                    SupportedBrowser.Chromium => await Chromium
+                        .ResolveBuildIdAsync(BrowserFetcher.GetCurrentPlatform())
+                        .ConfigureAwait(false),
                     _ => throw new ArgumentException("Invalid browser"),
                 };
                 executable = GetExecutablePath(options, buildId);
@@ -94,7 +109,9 @@ namespace PuppeteerSharp
 
             Process = options.Browser switch
             {
-                SupportedBrowser.Chrome or SupportedBrowser.Chromium or SupportedBrowser.ChromeHeadlessShell => new ChromeLauncher(executable, options),
+                SupportedBrowser.Chrome
+                or SupportedBrowser.Chromium
+                or SupportedBrowser.ChromeHeadlessShell => new ChromeLauncher(executable, options),
                 SupportedBrowser.Firefox => new FirefoxLauncher(executable, options),
                 _ => throw new ArgumentException("Invalid browser"),
             };
@@ -105,7 +122,8 @@ namespace PuppeteerSharp
                 // Firefox outputs a native BiDi endpoint.
                 if (options.Protocol == ProtocolType.WebdriverBiDi && Process is FirefoxLauncher)
                 {
-                    Process.StateManager.LineOutputExpression = "^WebDriver BiDi listening on (ws:\\/\\/.*)$";
+                    Process.StateManager.LineOutputExpression =
+                        "^WebDriver BiDi listening on (ws:\\/\\/.*)$";
                 }
 
                 await Process.StartAsync().ConfigureAwait(false);
@@ -123,14 +141,20 @@ namespace PuppeteerSharp
                         if (Process is FirefoxLauncher)
                         {
                             // Firefox has native BiDi support
-                            driver = await CreateBidiDriverAsync(Process.EndPoint + "/session", options).ConfigureAwait(false);
+                            driver = await CreateBidiDriverAsync(
+                                    Process.EndPoint + "/session",
+                                    options
+                                )
+                                .ConfigureAwait(false);
                         }
                         else
                         {
                             // Chrome: bridge BiDi over CDP using the chromium-bidi mapper
-                            var bidiOverCdpTransport = await BidiOverCdpTransport.CreateAsync(
-                                Process.EndPoint, options, _loggerFactory).ConfigureAwait(false);
-                            driver = await CreateBidiDriverAsync(bidiOverCdpTransport, options).ConfigureAwait(false);
+                            var bidiOverCdpTransport = await BidiOverCdpTransport
+                                .CreateAsync(Process.EndPoint, options, _loggerFactory)
+                                .ConfigureAwait(false);
+                            driver = await CreateBidiDriverAsync(bidiOverCdpTransport, options)
+                                .ConfigureAwait(false);
                         }
 
                         var bidiProcess = Process;
@@ -139,14 +163,24 @@ namespace PuppeteerSharp
                             try
                             {
                                 var closeTimeout = TimeSpan.FromMilliseconds(5000);
-                                await bidiProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                                await bidiProcess
+                                    .EnsureExitAsync(closeTimeout)
+                                    .ConfigureAwait(false);
                             }
                             catch
                             {
                                 await bidiProcess.KillAsync().ConfigureAwait(false);
                             }
                         };
-                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process, bidiCloseCallback).ConfigureAwait(false);
+                        browser = await BidiBrowser
+                            .CreateAsync(
+                                driver,
+                                options,
+                                _loggerFactory,
+                                Process,
+                                bidiCloseCallback
+                            )
+                            .ConfigureAwait(false);
 #else
                         throw new ArgumentException("Invalid browser. Only CDP is supported");
 #endif
@@ -156,7 +190,11 @@ namespace PuppeteerSharp
                         if (options.Pipe && Process is ChromeLauncher chromeLauncher)
                         {
                             chromeLauncher.InitializePipeTransport();
-                            connection = CdpConnection.CreateFromTransport(chromeLauncher.PipeTransport, options, _loggerFactory);
+                            connection = CdpConnection.CreateFromTransport(
+                                chromeLauncher.PipeTransport,
+                                options,
+                                _loggerFactory
+                            );
                         }
                         else
                         {
@@ -171,7 +209,9 @@ namespace PuppeteerSharp
                             try
                             {
                                 var closeTimeout = TimeSpan.FromMilliseconds(5000);
-                                await cdpProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                                await cdpProcess
+                                    .EnsureExitAsync(closeTimeout)
+                                    .ConfigureAwait(false);
                             }
                             catch
                             {
@@ -195,22 +235,35 @@ namespace PuppeteerSharp
                                 issuesEnabled: options.IssuesEnabled,
                                 blockList: options.BlockList,
                                 allowList: options.Allowlist,
-                                downloadBehavior: options.DownloadBehavior)
+                                downloadBehavior: options.DownloadBehavior
+                            )
                             .ConfigureAwait(false);
                     }
 
                     if (options.EnableExtensions is { Paths: { } extensionPaths })
                     {
-                        var extensionsEnabledInIncognito = options.ExtensionsEnabledInIncognito ?? [];
+                        var extensionsEnabledInIncognito = options.ExtensionsEnabledInIncognito
+                            ?? [];
                         await Task.WhenAll(
-                            extensionPaths.Select(path => browser.InstallExtensionAsync(
-                                path,
-                                new ExtensionInstallOptions { EnabledInIncognito = extensionsEnabledInIncognito.Contains(path) }))).ConfigureAwait(false);
+                                extensionPaths.Select(path =>
+                                    browser.InstallExtensionAsync(
+                                        path,
+                                        new ExtensionInstallOptions
+                                        {
+                                            EnabledInIncognito =
+                                                extensionsEnabledInIncognito.Contains(path),
+                                        }
+                                    )
+                                )
+                            )
+                            .ConfigureAwait(false);
                     }
 
                     if (options.WaitForInitialPage)
                     {
-                        await browser.WaitForTargetAsync(t => t.Type == TargetType.Page).ConfigureAwait(false);
+                        await browser
+                            .WaitForTargetAsync(t => t.Type == TargetType.Page)
+                            .ConfigureAwait(false);
                     }
 
                     return browser;
@@ -226,9 +279,8 @@ namespace PuppeteerSharp
                         // Pipe mode does not wait on the DevTools endpoint, so stderr
                         // ProcessSingleton lines can arrive slightly after the connection
                         // failure. Wait briefly for the process to exit / flush logs.
-                        await Task.WhenAny(
-                            Process.ExitCompletionSource.Task,
-                            Task.Delay(500)).ConfigureAwait(false);
+                        await Task.WhenAny(Process.ExitCompletionSource.Task, Task.Delay(500))
+                            .ConfigureAwait(false);
                         ThrowIfBrowserAlreadyRunning(ex, userDataDir, Process);
                     }
 
@@ -250,7 +302,8 @@ namespace PuppeteerSharp
                 {
                     throw new ProcessException(
                         "Missing X server to start the headful browser. Either set Headless to true or use xvfb-run to run your Puppeteer script.",
-                        ex);
+                        ex
+                    );
                 }
 
                 throw;
@@ -271,16 +324,29 @@ namespace PuppeteerSharp
 
             EnsureSingleLaunchOrConnect();
 
-            if (!string.IsNullOrEmpty(options.BrowserURL) && !string.IsNullOrEmpty(options.BrowserWSEndpoint))
+            if (
+                !string.IsNullOrEmpty(options.BrowserURL)
+                && !string.IsNullOrEmpty(options.BrowserWSEndpoint)
+            )
             {
-                throw new PuppeteerException("Exactly one of browserWSEndpoint or browserURL must be passed to puppeteer.connect");
+                throw new PuppeteerException(
+                    "Exactly one of browserWSEndpoint or browserURL must be passed to puppeteer.connect"
+                );
             }
 
-            UrlRestrictionsValidator.AssertSupportedUrlRestrictions(options.Protocol, options.BlockList, options.Allowlist);
+            UrlRestrictionsValidator.AssertSupportedUrlRestrictions(
+                options.Protocol,
+                options.BlockList,
+                options.Allowlist
+            );
 
             var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
                 ? options.BrowserWSEndpoint
-                : await GetWSEndpointAsync(options.BrowserURL, ConnectionOptionsHelper.GetEffectiveHeaders(options)).ConfigureAwait(false);
+                : await GetWSEndpointAsync(
+                        options.BrowserURL,
+                        ConnectionOptionsHelper.GetEffectiveHeaders(options)
+                    )
+                    .ConfigureAwait(false);
 
             if (options.Protocol == ProtocolType.WebdriverBiDi)
             {
@@ -312,14 +378,20 @@ namespace PuppeteerSharp
             SupportedBrowser browser,
             ChromeReleaseChannel channel,
             bool validatePath = true,
-            Platform? platform = null)
+            Platform? platform = null
+        )
         {
             if (browser != SupportedBrowser.Chrome)
             {
-                throw new PuppeteerException($"System browser detection is not supported for {browser} yet.");
+                throw new PuppeteerException(
+                    $"System browser detection is not supported for {browser} yet."
+                );
             }
 
-            var paths = Chrome.ResolveSystemExecutablePaths(platform ?? BrowserFetcher.GetCurrentPlatform(), channel);
+            var paths = Chrome.ResolveSystemExecutablePaths(
+                platform ?? BrowserFetcher.GetCurrentPlatform(),
+                channel
+            );
 
             foreach (var path in paths)
             {
@@ -335,7 +407,8 @@ namespace PuppeteerSharp
             }
 
             throw new PuppeteerException(
-                $"Could not find Google Chrome executable for channel '{channel}' at:\n - {string.Join("\n - ", paths)}");
+                $"Could not find Google Chrome executable for channel '{channel}' at:\n - {string.Join("\n - ", paths)}"
+            );
         }
 
         internal static string GetWSEndpointURL(string browserURL)
@@ -348,7 +421,11 @@ namespace PuppeteerSharp
             }.Uri.ToString();
         }
 
-        private static void ThrowIfBrowserAlreadyRunning(Exception ex, string userDataDir, LauncherBase process)
+        private static void ThrowIfBrowserAlreadyRunning(
+            Exception ex,
+            string userDataDir,
+            LauncherBase process
+        )
         {
             if (!IsBrowserAlreadyRunning(ex, userDataDir, process))
             {
@@ -362,21 +439,32 @@ namespace PuppeteerSharp
             {
                 throw new ProcessException(
                     $"The browser cannot write to {userDataDir}. Make the UserDataDir writable or use a different one.",
-                    ex);
+                    ex
+                );
             }
 
             throw new ProcessException(
                 $"The browser is already running for {userDataDir}. Use a different UserDataDir or stop the running browser first.",
-                ex);
+                ex
+            );
         }
 
-        private static bool IsBrowserAlreadyRunning(Exception ex, string userDataDir, LauncherBase process)
+        private static bool IsBrowserAlreadyRunning(
+            Exception ex,
+            string userDataDir,
+            LauncherBase process
+        )
         {
             // Prefer recent stderr logs (available even under Pipe=true) over the
             // exception text, matching upstream browserProcess.getRecentLogs().
             var logs = process?.GetRecentLogs() ?? string.Empty;
             var message = string.IsNullOrEmpty(logs) ? ex.ToString() : logs + "\n" + ex;
-            if (message.Contains("Failed to create a ProcessSingleton for your profile directory", StringComparison.Ordinal))
+            if (
+                message.Contains(
+                    "Failed to create a ProcessSingleton for your profile directory",
+                    StringComparison.Ordinal
+                )
+            )
             {
                 return true;
             }
@@ -384,8 +472,10 @@ namespace PuppeteerSharp
             // On Windows we will not get logs due to the singleton process
             // handover. See
             // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/process_singleton_win.cc;l=46;drc=fc7952f0422b5073515a205a04ec9c3a1ae81658
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
-                File.Exists(Path.Combine(userDataDir, "lockfile")))
+            if (
+                RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                && File.Exists(Path.Combine(userDataDir, "lockfile"))
+            )
             {
                 return true;
             }
@@ -421,7 +511,10 @@ namespace PuppeteerSharp
         }
 
 #if !CDP_ONLY
-        private static async Task<BiDiDriver> CreateBidiDriverAsync(BidiOverCdpTransport transport, IConnectionOptions options)
+        private static async Task<BiDiDriver> CreateBidiDriverAsync(
+            BidiOverCdpTransport transport,
+            IConnectionOptions options
+        )
         {
             PuppeteerConnection puppeteerConnection = null;
             BidiTransport bidiTransport = null;
@@ -432,7 +525,10 @@ namespace PuppeteerSharp
                 puppeteerConnection = new PuppeteerConnection(transport);
                 bidiTransport = new BidiTransport(puppeteerConnection);
 #pragma warning restore CA2000
-                driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout), bidiTransport);
+                driver = new BiDiDriver(
+                    TimeSpan.FromMilliseconds(options.ProtocolTimeout),
+                    bidiTransport
+                );
                 await driver.StartAsync("bidi-over-cdp://local").ConfigureAwait(false);
                 return driver;
             }
@@ -459,11 +555,16 @@ namespace PuppeteerSharp
             }
         }
 
-        private static async Task<BiDiDriver> CreateBidiDriverAsync(string browserWSEndpoint, IConnectionOptions options)
+        private static async Task<BiDiDriver> CreateBidiDriverAsync(
+            string browserWSEndpoint,
+            IConnectionOptions options
+        )
         {
             if (options.TransportFactory != null)
             {
-                var transport = await options.TransportFactory(new Uri(browserWSEndpoint), options, CancellationToken.None).ConfigureAwait(false);
+                var transport = await options
+                    .TransportFactory(new Uri(browserWSEndpoint), options, CancellationToken.None)
+                    .ConfigureAwait(false);
                 PuppeteerConnection puppeteerConnection = null;
                 BidiTransport bidiTransport = null;
                 BiDiDriver driver = null;
@@ -473,7 +574,10 @@ namespace PuppeteerSharp
                     puppeteerConnection = new PuppeteerConnection(transport);
                     bidiTransport = new BidiTransport(puppeteerConnection);
 #pragma warning restore CA2000
-                    driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout), bidiTransport);
+                    driver = new BiDiDriver(
+                        TimeSpan.FromMilliseconds(options.ProtocolTimeout),
+                        bidiTransport
+                    );
                     await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
                     return driver;
                 }
@@ -505,13 +609,19 @@ namespace PuppeteerSharp
             return defaultDriver;
         }
 
-        private async Task<IBrowser> ConnectBidiAsync(string browserWSEndpoint, ConnectOptions options)
+        private async Task<IBrowser> ConnectBidiAsync(
+            string browserWSEndpoint,
+            ConnectOptions options
+        )
         {
             BiDiDriver driver = null;
             try
             {
-                driver = await CreateBidiDriverAsync(browserWSEndpoint, options).ConfigureAwait(false);
-                return await BidiBrowser.CreateAsync(driver, options, _loggerFactory, null).ConfigureAwait(false);
+                driver = await CreateBidiDriverAsync(browserWSEndpoint, options)
+                    .ConfigureAwait(false);
+                return await BidiBrowser
+                    .CreateAsync(driver, options, _loggerFactory, null)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -525,20 +635,31 @@ namespace PuppeteerSharp
         }
 #endif
 
-        private async Task<IBrowser> ConnectCdpAsync(string browserWSEndpoint, ConnectOptions options)
+        private async Task<IBrowser> ConnectCdpAsync(
+            string browserWSEndpoint,
+            ConnectOptions options
+        )
         {
             CdpConnection connection = null;
             try
             {
-                connection = await CdpConnection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
+                connection = await CdpConnection
+                    .Create(browserWSEndpoint, options, _loggerFactory)
+                    .ConfigureAwait(false);
 
-                var version = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
+                var version = await connection
+                    .SendAsync<BrowserGetVersionResponse>("Browser.getVersion")
+                    .ConfigureAwait(false);
 
-                var browser = version.Product.ToLower(CultureInfo.CurrentCulture).Contains("firefox")
-                  ? SupportedBrowser.Firefox
-                  : SupportedBrowser.Chromium;
+                var browser = version
+                    .Product.ToLower(CultureInfo.CurrentCulture)
+                    .Contains("firefox")
+                    ? SupportedBrowser.Firefox
+                    : SupportedBrowser.Chromium;
 
-                var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts").ConfigureAwait(false);
+                var response = await connection
+                    .SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts")
+                    .ConfigureAwait(false);
                 return await CdpBrowser
                     .CreateAsync(
                         browser,
@@ -556,7 +677,8 @@ namespace PuppeteerSharp
                         options.IssuesEnabled,
                         options.BlockList,
                         options.Allowlist,
-                        options.DownloadBehavior)
+                        options.DownloadBehavior
+                    )
                     .ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -566,11 +688,20 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task<string> GetWSEndpointAsync(string browserURL, Dictionary<string, string> headers)
+        private async Task<string> GetWSEndpointAsync(
+            string browserURL,
+            Dictionary<string, string> headers
+        )
         {
             try
             {
-                if (Uri.TryCreate(GetWSEndpointURL(browserURL), UriKind.Absolute, out var endpointURL))
+                if (
+                    Uri.TryCreate(
+                        GetWSEndpointURL(browserURL),
+                        UriKind.Absolute,
+                        out var endpointURL
+                    )
+                )
                 {
                     string data;
                     using (var client = new HttpClient())
@@ -589,14 +720,22 @@ namespace PuppeteerSharp
                         data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     }
 
-                    return JsonSerializer.Deserialize<WSEndpointResponse>(data, JsonHelper.DefaultJsonSerializerSettings.Value).WebSocketDebuggerUrl;
+                    return JsonSerializer
+                        .Deserialize<WSEndpointResponse>(
+                            data,
+                            JsonHelper.DefaultJsonSerializerSettings.Value
+                        )
+                        .WebSocketDebuggerUrl;
                 }
 
                 throw new PuppeteerException($"Invalid URL {browserURL}");
             }
             catch (Exception ex)
             {
-                throw new ProcessException($"Failed to fetch browser webSocket url from {browserURL}.", ex);
+                throw new ProcessException(
+                    $"Failed to fetch browser webSocket url from {browserURL}.",
+                    ex
+                );
             }
         }
 
@@ -604,7 +743,9 @@ namespace PuppeteerSharp
         {
             if (_processLaunched)
             {
-                throw new InvalidOperationException("Unable to create or connect to another process");
+                throw new InvalidOperationException(
+                    "Unable to create or connect to another process"
+                );
             }
 
             _processLaunched = true;
@@ -618,7 +759,10 @@ namespace PuppeteerSharp
             {
                 if (!File.Exists(executablePath))
                 {
-                    throw new FileNotFoundException("Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable", executablePath);
+                    throw new FileNotFoundException(
+                        "Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable",
+                        executablePath
+                    );
                 }
 
                 return executablePath;
@@ -626,9 +770,12 @@ namespace PuppeteerSharp
 
             return new InstalledBrowser(
                 new Cache(),
-                headlessMode == HeadlessMode.Shell && _browser == SupportedBrowser.Chrome ? SupportedBrowser.ChromeHeadlessShell : _browser,
+                headlessMode == HeadlessMode.Shell && _browser == SupportedBrowser.Chrome
+                    ? SupportedBrowser.ChromeHeadlessShell
+                    : _browser,
                 buildId,
-                BrowserFetcher.GetCurrentPlatform()).GetExecutablePath();
+                BrowserFetcher.GetCurrentPlatform()
+            ).GetExecutablePath();
         }
 
         private string GetExecutablePath(LaunchOptions options, string buildId)

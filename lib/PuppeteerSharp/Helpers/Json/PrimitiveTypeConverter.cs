@@ -13,7 +13,11 @@ namespace PuppeteerSharp.Helpers.Json
     /// </summary>
     internal sealed class PrimitiveTypeConverter : JsonConverter<object>
     {
-        public override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override object? Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options
+        )
         {
             if (reader.TokenType == JsonTokenType.Null)
             {
@@ -38,7 +42,11 @@ namespace PuppeteerSharp.Helpers.Json
             return JsonSerializer.Deserialize(ref reader, typeToConvert, options);
         }
 
-        public override void Write(Utf8JsonWriter writer, object value, JsonSerializerOptions options)
+        public override void Write(
+            Utf8JsonWriter writer,
+            object value,
+            JsonSerializerOptions options
+        )
         {
             if (value is null)
             {

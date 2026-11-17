@@ -6,32 +6,48 @@ namespace PuppeteerSharp.Tests.InjectedTests
 {
     public class InjectedTests : PuppeteerPageBaseTest
     {
-        public InjectedTests() : base()
-        {
-        }
+        public InjectedTests()
+            : base() { }
 
         [Test, PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should work")]
         public async Task ShouldWork()
         {
             var world = (Page.MainFrame as Frame).IsolatedRealm;
-            var result = await world.EvaluateFunctionAsync<bool>(@"
+            var result = await world.EvaluateFunctionAsync<bool>(
+                @"
                       PuppeteerUtil => {
                         return typeof PuppeteerUtil === 'object';
                       }",
-                      new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)));
+                new LazyArg(async context =>
+                    await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                )
+            );
             Assert.That(result, Is.True);
         }
 
         [TestCase("mutation")]
         [TestCase("raf")]
         [TestCase("interval")]
-        [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should not start a stopped mutation poller")]
-        [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should not start a stopped raf poller")]
-        [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should not start a stopped interval poller")]
+        [PuppeteerTest(
+            "injected.spec",
+            "PuppeteerUtil tests",
+            "should not start a stopped mutation poller"
+        )]
+        [PuppeteerTest(
+            "injected.spec",
+            "PuppeteerUtil tests",
+            "should not start a stopped raf poller"
+        )]
+        [PuppeteerTest(
+            "injected.spec",
+            "PuppeteerUtil tests",
+            "should not start a stopped interval poller"
+        )]
         public async Task ShouldNotStartAStoppedPoller(string kind)
         {
             var world = (Page.MainFrame as Frame).IsolatedRealm;
-            var calls = await world.EvaluateFunctionAsync<int>(@"
+            var calls = await world.EvaluateFunctionAsync<int>(
+                @"
                 async ({MutationPoller, RAFPoller, IntervalPoller}, kind) => {
                     let calls = 0;
                     const predicate = async () => {
@@ -53,21 +69,37 @@ namespace PuppeteerSharp.Tests.InjectedTests
                     await poller.start();
                     return calls;
                 }",
-                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
-                kind);
+                new LazyArg(async context =>
+                    await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                ),
+                kind
+            );
             Assert.That(calls, Is.EqualTo(0));
         }
 
         [TestCase("mutation")]
         [TestCase("raf")]
         [TestCase("interval")]
-        [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should not restart a stopped mutation poller after its first predicate await")]
-        [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should not restart a stopped raf poller after its first predicate await")]
-        [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should not restart a stopped interval poller after its first predicate await")]
+        [PuppeteerTest(
+            "injected.spec",
+            "PuppeteerUtil tests",
+            "should not restart a stopped mutation poller after its first predicate await"
+        )]
+        [PuppeteerTest(
+            "injected.spec",
+            "PuppeteerUtil tests",
+            "should not restart a stopped raf poller after its first predicate await"
+        )]
+        [PuppeteerTest(
+            "injected.spec",
+            "PuppeteerUtil tests",
+            "should not restart a stopped interval poller after its first predicate await"
+        )]
         public async Task ShouldNotRestartAStoppedPollerAfterItsFirstPredicateAwait(string kind)
         {
             var world = (Page.MainFrame as Frame).IsolatedRealm;
-            var calls = await world.EvaluateFunctionAsync<int>(@"
+            var calls = await world.EvaluateFunctionAsync<int>(
+                @"
                 async ({MutationPoller, RAFPoller, IntervalPoller}, kind) => {
                     let release;
                     const pending = new Promise(resolve => { release = resolve; });
@@ -98,8 +130,11 @@ namespace PuppeteerSharp.Tests.InjectedTests
                     await poller.stop();
                     return calls;
                 }",
-                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
-                kind);
+                new LazyArg(async context =>
+                    await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                ),
+                kind
+            );
             Assert.That(calls, Is.EqualTo(1));
         }
 
@@ -107,12 +142,15 @@ namespace PuppeteerSharp.Tests.InjectedTests
         public async Task CreateFunctionShouldWork()
         {
             var world = (Page.MainFrame as Frame).IsolatedRealm;
-            var result = await (Page.MainFrame as Frame)
-                .IsolatedRealm.EvaluateFunctionAsync<int>(@"({createFunction}, fnString) => {
+            var result = await (Page.MainFrame as Frame).IsolatedRealm.EvaluateFunctionAsync<int>(
+                @"({createFunction}, fnString) => {
                     return createFunction(fnString)(4);
                 }",
-                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
-                "() => 4");
+                new LazyArg(async context =>
+                    await context.GetPuppeteerUtilAsync().ConfigureAwait(false)
+                ),
+                "() => 4"
+            );
             Assert.That(result, Is.EqualTo(4));
         }
     }

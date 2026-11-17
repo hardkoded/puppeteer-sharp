@@ -33,13 +33,15 @@ namespace PuppeteerSharp.Helpers.Json;
 internal sealed class HttpMethodConverter : JsonConverter<HttpMethod>
 {
     /// <inheritdoc cref="JsonConverter"/>
-    public override bool CanConvert(Type objectType) => typeof(HttpMethod).IsAssignableFrom(objectType);
+    public override bool CanConvert(Type objectType) =>
+        typeof(HttpMethod).IsAssignableFrom(objectType);
 
     /// <inheritdoc cref="JsonConverter"/>
     public override HttpMethod Read(
         ref Utf8JsonReader reader,
         Type objectType,
-        JsonSerializerOptions options)
+        JsonSerializerOptions options
+    )
     {
         var readerString = reader.GetString() ?? string.Empty;
         return new HttpMethod(readerString);
@@ -49,7 +51,8 @@ internal sealed class HttpMethodConverter : JsonConverter<HttpMethod>
     public override void Write(
         Utf8JsonWriter writer,
         HttpMethod value,
-        JsonSerializerOptions options)
+        JsonSerializerOptions options
+    )
     {
         if (value != null && writer != null)
         {

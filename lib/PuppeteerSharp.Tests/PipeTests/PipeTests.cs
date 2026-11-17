@@ -13,7 +13,10 @@ namespace PuppeteerSharp.Tests.PipeTests
             var options = TestConstants.DefaultBrowserOptions();
             options.Pipe = true;
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
             Assert.That(await browser.PagesAsync(), Has.Exactly(1).Items);
             Assert.That(browser.WebSocketEndpoint, Is.EqualTo(string.Empty));
             var page = await browser.NewPageAsync();
@@ -28,20 +31,33 @@ namespace PuppeteerSharp.Tests.PipeTests
             options.Args = ["--remote-debugging-pipe", .. options.Args];
             options.Pipe = true;
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
             Assert.That(browser.WebSocketEndpoint, Is.EqualTo(string.Empty));
             var page = await browser.NewPageAsync();
             Assert.That(await page.EvaluateExpressionAsync<int>("11 * 11"), Is.EqualTo(121));
             await page.CloseAsync();
         }
 
-        [Test, PuppeteerTest("pipe.spec", "Puppeteer.launch", "should fire \"disconnected\" when closing with pipe")]
+        [
+            Test,
+            PuppeteerTest(
+                "pipe.spec",
+                "Puppeteer.launch",
+                "should fire \"disconnected\" when closing with pipe"
+            )
+        ]
         public async Task ShouldFireDisconnectedWhenClosingWithPipe()
         {
             var options = TestConstants.DefaultBrowserOptions();
             options.Pipe = true;
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
             var disconnectedTask = WaitForBrowserDisconnect(browser);
             // Emulate user exiting browser.
             browser.Process.Kill();

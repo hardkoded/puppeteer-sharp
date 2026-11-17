@@ -9,18 +9,31 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseFromCacheTests : PuppeteerPageBaseTest
     {
-        public ResponseFromCacheTests() : base()
-        {
-        }
+        public ResponseFromCacheTests()
+            : base() { }
 
-        [Test, PuppeteerTest("network.spec", "network Response.fromCache", "should return |false| for non-cached content")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.fromCache",
+                "should return |false| for non-cached content"
+            )
+        ]
         public async Task ShouldReturnFalseForNonCachedContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(response.FromCache, Is.False);
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.fromCache", "should work for stylesheet")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Response.fromCache",
+                "should work for stylesheet"
+            )
+        ]
         public async Task ShouldWorkForStylesheet()
         {
             var responses = new Dictionary<string, IResponse>();
@@ -41,7 +54,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(responses["one-style.html"].FromCache, Is.False);
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.fromCache", "should work for script")]
+        [
+            Test,
+            PuppeteerTest("network.spec", "network Response.fromCache", "should work for script")
+        ]
         public async Task ShouldWorkForScript()
         {
             var responses = new Dictionary<string, IResponse>();
@@ -58,7 +74,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(responses, Has.Count.EqualTo(2));
             Assert.That(responses["one-script.js"].Status, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(responses["one-script.js"].FromCache, Is.True);
-            Assert.That(responses["one-script.html"].Status, Is.EqualTo(HttpStatusCode.NotModified));
+            Assert.That(
+                responses["one-script.html"].Status,
+                Is.EqualTo(HttpStatusCode.NotModified)
+            );
             Assert.That(responses["one-script.html"].FromCache, Is.False);
         }
     }

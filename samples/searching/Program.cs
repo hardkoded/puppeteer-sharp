@@ -29,13 +29,16 @@ namespace Example.Searching
                 // Wait for the results page to load and display the results.
                 var resultsSelector = ".gsc-results .gsc-thumbnail-inside a.gs-title";
                 await page.WaitForSelectorAsync(resultsSelector);
-                var links = await page.EvaluateFunctionAsync(@"(resultsSelector) => {
+                var links = await page.EvaluateFunctionAsync(
+                    @"(resultsSelector) => {
     const anchors = Array.from(document.querySelectorAll(resultsSelector));
     return anchors.map(anchor => {
       const title = anchor.textContent.split('|')[0].trim();
       return `${title} - ${anchor.href}`;
     });
-}", resultsSelector);
+}",
+                    resultsSelector
+                );
 
                 foreach (var link in links)
                 {

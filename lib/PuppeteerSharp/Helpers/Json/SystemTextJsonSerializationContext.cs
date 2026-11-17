@@ -274,7 +274,6 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(JsonElement))]
 [JsonSerializable(typeof(string))]
 [JsonSerializable(typeof(List<object>))]
-
 // Primitive list
 [JsonSerializable(typeof(bool))]
 [JsonSerializable(typeof(byte))]
@@ -306,7 +305,5 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(Int128))]
 [JsonSerializable(typeof(UInt128))]
 #endif
-internal partial class SystemTextJsonSerializationContext : JsonSerializerContext
-{
-}
+internal partial class SystemTextJsonSerializationContext : JsonSerializerContext { }
 #endif

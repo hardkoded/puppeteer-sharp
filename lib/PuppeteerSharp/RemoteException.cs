@@ -19,12 +19,14 @@ namespace PuppeteerSharp
             string name,
             IReadOnlyList<ConsoleMessageLocation> stackTrace,
             ConsoleMessageLocation location,
-            IJSHandle handle)
+            IJSHandle handle
+        )
         {
             Text = text;
             Name = name;
             StackTrace = stackTrace ?? [];
-            Location = (StackTrace.Count > 0 ? StackTrace[0] : location) ?? new ConsoleMessageLocation();
+            Location = (StackTrace.Count > 0 ? StackTrace[0] : location)
+                ?? new ConsoleMessageLocation();
             Handle = handle;
         }
 

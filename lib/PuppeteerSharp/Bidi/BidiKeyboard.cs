@@ -42,7 +42,9 @@ internal class BidiKeyboard(BidiPage page) : Keyboard
     {
         _keySource.Actions.Clear();
         _keySource.Actions.Add(new KeyDownAction(GetBidiKeyValue(key, validateKey: true)));
-        await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_keySource]).ConfigureAwait(false);
+        await page
+            .BidiMainFrame.BrowsingContext.PerformActionsAsync([_keySource])
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -50,7 +52,9 @@ internal class BidiKeyboard(BidiPage page) : Keyboard
     {
         _keySource.Actions.Clear();
         _keySource.Actions.Add(new KeyUpAction(GetBidiKeyValue(key, validateKey: true)));
-        await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_keySource]).ConfigureAwait(false);
+        await page
+            .BidiMainFrame.BrowsingContext.PerformActionsAsync([_keySource])
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -64,15 +68,14 @@ internal class BidiKeyboard(BidiPage page) : Keyboard
 
         if (delay > 0)
         {
-            _keySource.Actions.Add(new PauseAction
-            {
-                Duration = TimeSpan.FromMilliseconds(delay),
-            });
+            _keySource.Actions.Add(new PauseAction { Duration = TimeSpan.FromMilliseconds(delay) });
         }
 
         _keySource.Actions.Add(new KeyUpAction(keyValue));
 
-        await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_keySource]).ConfigureAwait(false);
+        await page
+            .BidiMainFrame.BrowsingContext.PerformActionsAsync([_keySource])
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -102,15 +105,16 @@ internal class BidiKeyboard(BidiPage page) : Keyboard
                 var keyValue = GetBidiKeyValue(letter);
 
                 _keySource.Actions.Add(new KeyDownAction(keyValue));
-                _keySource.Actions.Add(new PauseAction
-                {
-                    Duration = TimeSpan.FromMilliseconds(delay),
-                });
+                _keySource.Actions.Add(
+                    new PauseAction { Duration = TimeSpan.FromMilliseconds(delay) }
+                );
                 _keySource.Actions.Add(new KeyUpAction(keyValue));
             }
         }
 
-        await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_keySource]).ConfigureAwait(false);
+        await page
+            .BidiMainFrame.BrowsingContext.PerformActionsAsync([_keySource])
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -130,9 +134,12 @@ internal class BidiKeyboard(BidiPage page) : Keyboard
         }
 
         var frame = await page.FocusedFrameAsync().ConfigureAwait(false);
-        await frame.IsolatedRealm.EvaluateFunctionAsync(
-            "async (char) => { document.execCommand('insertText', false, char); }",
-            charText).ConfigureAwait(false);
+        await frame
+            .IsolatedRealm.EvaluateFunctionAsync(
+                "async (char) => { document.execCommand('insertText', false, char); }",
+                charText
+            )
+            .ConfigureAwait(false);
     }
 
     private static string GetBidiKeyValue(string key, bool validateKey = false)

@@ -26,5 +26,6 @@ internal class ExecutionUtils
 {
     public const string InternalUrl = "pptr:internal";
 
-    public static string GetSourceUrlComment(string url = null) => $"//# sourceURL={url ?? InternalUrl}";
+    public static string GetSourceUrlComment(string url = null) =>
+        $"//# sourceURL={url ?? InternalUrl}";
 }

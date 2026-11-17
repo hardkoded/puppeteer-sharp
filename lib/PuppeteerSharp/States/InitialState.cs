@@ -5,8 +5,8 @@ namespace PuppeteerSharp.States
 {
     internal class InitialState(StateManager stateManager) : State(stateManager)
     {
-        public override Task StartAsync(LauncherBase p)
-            => StateManager.Starting.EnterFromAsync(p, this, TimeSpan.Zero);
+        public override Task StartAsync(LauncherBase p) =>
+            StateManager.Starting.EnterFromAsync(p, this, TimeSpan.Zero);
 
         public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout)
         {
@@ -20,7 +20,7 @@ namespace PuppeteerSharp.States
             return Task.CompletedTask;
         }
 
-        public override Task WaitForExitAsync(LauncherBase p)
-            => Task.FromException(new InvalidOperationException("wait for exit"));
+        public override Task WaitForExitAsync(LauncherBase p) =>
+            Task.FromException(new InvalidOperationException("wait for exit"));
     }
 }

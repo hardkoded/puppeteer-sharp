@@ -10,9 +10,8 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class WaitForNetworkIdleTests : PuppeteerPageBaseTest
     {
-        public WaitForNetworkIdleTests() : base()
-        {
-        }
+        public WaitForNetworkIdleTests()
+            : base() { }
 
         [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work")]
         public async Task ShouldWork()
@@ -24,13 +23,15 @@ namespace PuppeteerSharp.Tests.PageTests
             var task = Page.WaitForNetworkIdleAsync()
                 .ContinueWith(x =>
                 {
-                    if (x.IsFaulted) throw x.Exception;
+                    if (x.IsFaulted)
+                        throw x.Exception;
                     return t1 = DateTime.UtcNow;
                 });
 
             await Task.WhenAll(
                 task,
-                Page.EvaluateFunctionAsync(@"async () => {
+                Page.EvaluateFunctionAsync(
+                        @"async () => {
                     await Promise.all([
                             fetch('/digits/1.png'),
                             fetch('/digits/2.png'),
@@ -39,11 +40,14 @@ namespace PuppeteerSharp.Tests.PageTests
                     await fetch('/digits/3.png');
                     await new Promise((resolve) => setTimeout(resolve, 200));
                     await fetch('/digits/4.png');
-                }").ContinueWith(x =>
-                {
-                    if (x.IsFaulted) throw x.Exception;
-                    t2 = DateTime.UtcNow;
-                })
+                }"
+                    )
+                    .ContinueWith(x =>
+                    {
+                        if (x.IsFaulted)
+                            throw x.Exception;
+                        t2 = DateTime.UtcNow;
+                    })
             );
 
             Assert.That(t1, Is.GreaterThan(t2));
@@ -55,14 +59,18 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
-                await Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 1 }));
+                await Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 1 })
+            );
 
             Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
         }
 
         // This should work on Firefox, this ignore should be temporal
         // PRs are welcome :)
-        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should respect idleTime")]
+        [
+            Test,
+            PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should respect idleTime")
+        ]
         public async Task ShouldRespectIdleTimeout()
         {
             var t1 = DateTime.UtcNow;
@@ -72,29 +80,41 @@ namespace PuppeteerSharp.Tests.PageTests
             var task = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { IdleTime = 10 })
                 .ContinueWith(x =>
                 {
-                    if (x.IsFaulted) throw x.Exception;
+                    if (x.IsFaulted)
+                        throw x.Exception;
                     return t1 = DateTime.UtcNow;
                 });
 
             await Task.WhenAll(
                 task,
-                Page.EvaluateFunctionAsync(@"async () => {
+                Page.EvaluateFunctionAsync(
+                        @"async () => {
                     await Promise.all([
                     fetch('/digits/1.png'),
                     fetch('/digits/2.png'),
                     ]);
                     await new Promise((resolve) => setTimeout(resolve, 250));
-                }").ContinueWith(x =>
-                {
-                    if (x.IsFaulted) throw x.Exception;
-                    return t2 = DateTime.UtcNow;
-                })
+                }"
+                    )
+                    .ContinueWith(x =>
+                    {
+                        if (x.IsFaulted)
+                            throw x.Exception;
+                        return t2 = DateTime.UtcNow;
+                    })
             );
 
             Assert.That(t2, Is.GreaterThan(t1));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with aborted requests")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.waitForNetworkIdle",
+                "should work with aborted requests"
+            )
+        ]
         public async Task ShouldWorkWithAbortedRequests()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/abort-request.html");
@@ -115,7 +135,14 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(error, Is.False);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with delayed response")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.waitForNetworkIdle",
+                "should work with delayed response"
+            )
+        ]
         public async Task ShouldWorkWithDelayedResponse()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -128,10 +155,14 @@ namespace PuppeteerSharp.Tests.PageTests
             });
 
             var stopwatch = Stopwatch.StartNew();
-            var idleTask = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { IdleTime = 100 });
+            var idleTask = Page.WaitForNetworkIdleAsync(
+                new WaitForNetworkIdleOptions { IdleTime = 100 }
+            );
 
             // Start the fetch which will be delayed
-            var fetchTask = Page.EvaluateFunctionAsync("async () => { await fetch('/fetch-request-b.js'); }");
+            var fetchTask = Page.EvaluateFunctionAsync(
+                "async () => { await fetch('/fetch-request-b.js'); }"
+            );
 
             // Wait for the server to receive the request
             var response = await responseTcs.Task;
@@ -152,18 +183,27 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(t1 - t2, Is.GreaterThanOrEqualTo(100));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with no timeout")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.waitForNetworkIdle",
+                "should work with no timeout"
+            )
+        ]
         public async Task ShouldWorkWithNoTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             await Task.WhenAll(
                 Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 0 }),
-                Page.EvaluateFunctionAsync(@"() => setTimeout(() => {
+                Page.EvaluateFunctionAsync(
+                    @"() => setTimeout(() => {
                         fetch('/digits/1.png');
                         fetch('/digits/2.png');
                         fetch('/digits/3.png');
-                    }, 50)")
+                    }, 50)"
+                )
             );
         }
 
@@ -174,14 +214,15 @@ namespace PuppeteerSharp.Tests.PageTests
 
             using var cts = new CancellationTokenSource();
 
-            var task = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions
-            {
-                CancellationToken = cts.Token,
-            });
-            var promise = Page.EvaluateFunctionAsync(@"async () => {
+            var task = Page.WaitForNetworkIdleAsync(
+                new WaitForNetworkIdleOptions { CancellationToken = cts.Token }
+            );
+            var promise = Page.EvaluateFunctionAsync(
+                @"async () => {
                 await Promise.all([fetch('/digits/1.png')]);
                 await fetch('/digits/2.png');
-            }");
+            }"
+            );
 
             cts.Cancel();
             Assert.CatchAsync<OperationCanceledException>(() => task);

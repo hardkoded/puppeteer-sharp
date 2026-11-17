@@ -24,39 +24,67 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             var json = JsonSerializer.Serialize(cookie);
 
             // Assert - Verify it's serialized as an object with topLevelSite and hasCrossSiteAncestor
-            Assert.That(json, Does.Contain("\"PartitionKey\":{\"topLevelSite\":\"https://example.com\",\"hasCrossSiteAncestor\":false}"));
+            Assert.That(
+                json,
+                Does.Contain(
+                    "\"PartitionKey\":{\"topLevelSite\":\"https://example.com\",\"hasCrossSiteAncestor\":false}"
+                )
+            );
 
             // Act - Deserialize back
             var deserialized = JsonSerializer.Deserialize<CookieParam>(json);
 
             // Assert - Verify round-trip works
-            Assert.That(deserialized.PartitionKey, Is.EqualTo(new CookiePartitionKey { SourceOrigin = "https://example.com", HasCrossSiteAncestor = false }));
+            Assert.That(
+                deserialized.PartitionKey,
+                Is.EqualTo(
+                    new CookiePartitionKey
+                    {
+                        SourceOrigin = "https://example.com",
+                        HasCrossSiteAncestor = false,
+                    }
+                )
+            );
         }
 
         [Test]
         public void ShouldDeserializeCdpObjectFormat()
         {
             // Arrange - CDP returns object format
-            var cdpJson = @"{""Name"":""test"",""Value"":""value"",""PartitionKey"":{""topLevelSite"":""https://example.com"",""hasCrossSiteAncestor"":false}}";
+            var cdpJson =
+                @"{""Name"":""test"",""Value"":""value"",""PartitionKey"":{""topLevelSite"":""https://example.com"",""hasCrossSiteAncestor"":false}}";
 
             // Act
             var cookie = JsonSerializer.Deserialize<CookieParam>(cdpJson);
 
             // Assert - Should extract the topLevelSite value into SourceOrigin
-            Assert.That(cookie.PartitionKey, Is.EqualTo(new CookiePartitionKey { SourceOrigin = "https://example.com", HasCrossSiteAncestor = false }));
+            Assert.That(
+                cookie.PartitionKey,
+                Is.EqualTo(
+                    new CookiePartitionKey
+                    {
+                        SourceOrigin = "https://example.com",
+                        HasCrossSiteAncestor = false,
+                    }
+                )
+            );
         }
 
         [Test]
         public void ShouldDeserializeStringFormat()
         {
             // Arrange - User-saved format (simple string)
-            var stringJson = @"{""Name"":""test"",""Value"":""value"",""PartitionKey"":""https://example.com""}";
+            var stringJson =
+                @"{""Name"":""test"",""Value"":""value"",""PartitionKey"":""https://example.com""}";
 
             // Act
             var cookie = JsonSerializer.Deserialize<CookieParam>(stringJson);
 
             // Assert
-            Assert.That(cookie.PartitionKey, Is.EqualTo(new CookiePartitionKey { SourceOrigin = "https://example.com" }));
+            Assert.That(
+                cookie.PartitionKey,
+                Is.EqualTo(new CookiePartitionKey { SourceOrigin = "https://example.com" })
+            );
         }
 
         [Test]
@@ -109,7 +137,10 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             // Assert - Verify all data is preserved
             Assert.That(loadedCookies, Has.Length.EqualTo(2));
             Assert.That(loadedCookies[0].Name, Is.EqualTo("cookie1"));
-            Assert.That(loadedCookies[0].PartitionKey.SourceOrigin, Is.EqualTo("https://example.com"));
+            Assert.That(
+                loadedCookies[0].PartitionKey.SourceOrigin,
+                Is.EqualTo("https://example.com")
+            );
             Assert.That(loadedCookies[1].Name, Is.EqualTo("cookie2"));
             Assert.That(loadedCookies[1].PartitionKey.SourceOrigin, Is.EqualTo("https://test.com"));
         }

@@ -26,19 +26,27 @@ namespace PuppeteerSharp.Browsers
             var browser = parts[0].ToLowerInvariant() switch
             {
                 "chrome" => SupportedBrowser.Chrome,
-                "chrome-headless-shell" or "chromeheadlessshell" => SupportedBrowser.ChromeHeadlessShell,
+                "chrome-headless-shell" or "chromeheadlessshell" =>
+                    SupportedBrowser.ChromeHeadlessShell,
                 "chromium" => SupportedBrowser.Chromium,
                 "firefox" => SupportedBrowser.Firefox,
-                _ => throw new ArgumentException($"Unknown browser '{parts[0]}'. Supported: chrome, chrome-headless-shell, chromium, firefox."),
+                _ => throw new ArgumentException(
+                    $"Unknown browser '{parts[0]}'. Supported: chrome, chrome-headless-shell, chromium, firefox."
+                ),
             };
 
-            return new BrowserSpec(browser, parts.Length > 1 && parts[1].Length > 0 ? parts[1] : null);
+            return new BrowserSpec(
+                browser,
+                parts.Length > 1 && parts[1].Length > 0 ? parts[1] : null
+            );
         }
 
         public bool TryGetTag(out BrowserTag tag)
         {
             tag = BrowserTag.Latest;
-            return Version != null && Enum.TryParse(Version.Replace("-", string.Empty), true, out tag) && !int.TryParse(Version, out _);
+            return Version != null
+                && Enum.TryParse(Version.Replace("-", string.Empty), true, out tag)
+                && !int.TryParse(Version, out _);
         }
     }
 }

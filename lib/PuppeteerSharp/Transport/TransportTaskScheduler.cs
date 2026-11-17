@@ -9,5 +9,8 @@ namespace PuppeteerSharp.Transport
     /// </summary>
     /// <param name="taskFactory">Delegate that creates the task to be scheduled.</param>
     /// <param name="cancellationToken">Cancellation token for the task to be scheduled.</param>
-    public delegate void TransportTaskScheduler(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken);
+    public delegate void TransportTaskScheduler(
+        Func<CancellationToken, Task> taskFactory,
+        CancellationToken cancellationToken
+    );
 }

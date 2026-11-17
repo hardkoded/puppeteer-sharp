@@ -7,7 +7,14 @@ namespace PuppeteerSharp.Tests.CookiesTests
 {
     public class CookiesTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should return no cookies in pristine browser context")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should return no cookies in pristine browser context"
+            )
+        ]
         public async Task ShouldReturnNoCookiesInPristineBrowserContext()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -35,7 +42,14 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookie.Session, Is.True);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report httpOnly cookie")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should properly report httpOnly cookie"
+            )
+        ]
         public async Task ShouldProperlyReportHttpOnlyCookie()
         {
             Server.SetRoute("/empty.html", context =>
@@ -49,7 +63,14 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookies[0].HttpOnly, Is.True);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report \"Strict\" sameSite cookie")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should properly report \"Strict\" sameSite cookie"
+            )
+        ]
         public async Task ShouldProperlyReportSStrictSameSiteCookie()
         {
             Server.SetRoute("/empty.html", context =>
@@ -63,7 +84,14 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookies[0].SameSite, Is.EqualTo(SameSite.Strict));
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report \"Lax\" sameSite cookie")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should properly report \"Lax\" sameSite cookie"
+            )
+        ]
         public async Task ShouldProperlyReportLaxSameSiteCookie()
         {
             Server.SetRoute("/empty.html", context =>
@@ -77,16 +105,25 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookies[0].SameSite, Is.EqualTo(SameSite.Lax));
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report \"Default\" sameSite cookie")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should properly report \"Default\" sameSite cookie"
+            )
+        ]
         public async Task ShouldProperlyReportDefaultSameSiteCookie()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Name = "a",
-                Value = "b",
-                SameSite = SameSite.Default,
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Name = "a",
+                    Value = "b",
+                    SameSite = SameSite.Default,
+                }
+            );
             var cookies = await Page.GetCookiesAsync();
             Assert.That(cookies, Has.Exactly(1).Items);
             Assert.That(cookies[0].Name, Is.EqualTo("a"));
@@ -94,10 +131,18 @@ namespace PuppeteerSharp.Tests.CookiesTests
             // Different browsers have different sameSite values for the "Default" sameSite.
             Assert.That(
                 new SameSite?[] { SameSite.Default, SameSite.Lax, null },
-                Does.Contain(cookies[0].SameSite));
+                Does.Contain(cookies[0].SameSite)
+            );
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should report \"Default\" sameSite cookie when not specified")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should report \"Default\" sameSite cookie when not specified"
+            )
+        ]
         public async Task ShouldReportDefaultSameSiteCookieWhenNotSpecified()
         {
             Server.SetRoute("/empty.html", context =>
@@ -114,16 +159,25 @@ namespace PuppeteerSharp.Tests.CookiesTests
             }
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get multiple cookies")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should get multiple cookies"
+            )
+        ]
         public async Task ShouldGetMultipleCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(await Page.GetCookiesAsync(), Is.Empty);
 
-            await Page.EvaluateFunctionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(
+                @"() => {
                 document.cookie = 'username=John Doe';
                 document.cookie = 'password=1234';
-            }");
+            }"
+            );
 
             var cookies = (await Page.GetCookiesAsync()).OrderBy(c => c.Name).ToList();
 
@@ -150,7 +204,14 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookie.Session, Is.True);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from multiple urls")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should get cookies from multiple urls"
+            )
+        ]
         public async Task ShouldGetCookiesFromMultipleUrls()
         {
             await Page.SetCookieAsync(
@@ -158,22 +219,24 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 {
                     Url = "https://foo.com",
                     Name = "doggo",
-                    Value = "woofs"
+                    Value = "woofs",
                 },
                 new CookieParam
                 {
                     Url = "https://bar.com",
                     Name = "catto",
-                    Value = "purrs"
+                    Value = "purrs",
                 },
                 new CookieParam
                 {
                     Url = "https://baz.com",
                     Name = "birdo",
-                    Value = "tweets"
+                    Value = "tweets",
                 }
             );
-            var cookies = (await Page.GetCookiesAsync("https://foo.com", "https://baz.com")).OrderBy(c => c.Name).ToList();
+            var cookies = (await Page.GetCookiesAsync("https://foo.com", "https://baz.com"))
+                .OrderBy(c => c.Name)
+                .ToList();
 
             Assert.That(cookies, Has.Count.EqualTo(2));
 
@@ -200,88 +263,145 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookie.Session, Is.True);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should not get cookies from subdomain")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should not get cookies from subdomain"
+            )
+        ]
         public async Task ShouldNotGetCookiesFromSubdomain()
         {
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = "https://base_domain.com",
-                Name = "doggo",
-                Value = "woofs"
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = "https://base_domain.com",
+                    Name = "doggo",
+                    Value = "woofs",
+                }
+            );
             Assert.That(await Page.GetCookiesAsync("https://sub_domain.base_domain.com"), Is.Empty);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from subdomain if the domain field allows it")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should get cookies from subdomain if the domain field allows it"
+            )
+        ]
         public async Task ShouldGetCookiesFromSubdomainIfTheDomainFieldAllowsIt()
         {
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = "https://base_domain.com",
-                Domain = ".base_domain.com",
-                Name = "doggo",
-                Value = "woofs",
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = "https://base_domain.com",
+                    Domain = ".base_domain.com",
+                    Name = "doggo",
+                    Value = "woofs",
+                }
+            );
             var cookies = await Page.GetCookiesAsync("https://sub_domain.base_domain.com");
             Assert.That(cookies, Has.Exactly(1).Items);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from the domain itself if the domain field allows subdomains")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should get cookies from the domain itself if the domain field allows subdomains"
+            )
+        ]
         public async Task ShouldGetCookiesFromTheDomainItselfIfTheDomainFieldAllowsSubdomains()
         {
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = "https://base_domain.com",
-                Domain = ".base_domain.com",
-                Name = "doggo",
-                Value = "woofs",
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = "https://base_domain.com",
+                    Domain = ".base_domain.com",
+                    Name = "doggo",
+                    Value = "woofs",
+                }
+            );
             var cookies = await Page.GetCookiesAsync("https://base_domain.com");
             Assert.That(cookies, Has.Exactly(1).Items);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should not get cookies from subdomain if the cookie is for top-level domain")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should not get cookies from subdomain if the cookie is for top-level domain"
+            )
+        ]
         public async Task ShouldNotGetCookiesFromSubdomainIfTheCookieIsForTopLevelDomain()
         {
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = "https://base_domain.com",
-                Domain = "base_domain.com",
-                Name = "doggo",
-                Value = "woofs",
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = "https://base_domain.com",
+                    Domain = "base_domain.com",
+                    Name = "doggo",
+                    Value = "woofs",
+                }
+            );
             var cookies = await Page.GetCookiesAsync("https://sub_domain.base_domain.com");
             Assert.That(cookies, Is.Empty);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from nested path")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should get cookies from nested path"
+            )
+        ]
         public async Task ShouldGetCookiesFromNestedPath()
         {
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = "https://foo.com",
-                Path = "/some_path",
-                Name = "doggo",
-                Value = "woofs"
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = "https://foo.com",
+                    Path = "/some_path",
+                    Name = "doggo",
+                    Value = "woofs",
+                }
+            );
 
             var cookies = await Page.GetCookiesAsync("https://foo.com/some_path/nested_path");
 
             Assert.That(cookies, Has.Exactly(1).Items);
         }
 
-        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should not get cookies from not nested path")]
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.cookies",
+                "should not get cookies from not nested path"
+            )
+        ]
         public async Task ShouldNotGetCookiesFromNotNestedPath()
         {
-            await Page.SetCookieAsync(new CookieParam
-            {
-                Url = "https://foo.com",
-                Path = "/some_path",
-                Name = "doggo",
-                Value = "woofs"
-            });
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Url = "https://foo.com",
+                    Path = "/some_path",
+                    Name = "doggo",
+                    Value = "woofs",
+                }
+            );
 
-            Assert.That(await Page.GetCookiesAsync("https://foo.com/some_path_looks_like_nested"), Is.Empty);
+            Assert.That(
+                await Page.GetCookiesAsync("https://foo.com/some_path_looks_like_nested"),
+                Is.Empty
+            );
         }
     }
 }

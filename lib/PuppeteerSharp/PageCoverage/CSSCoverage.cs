@@ -11,7 +11,8 @@ namespace PuppeteerSharp.PageCoverage
 {
     internal class CSSCoverage
     {
-        private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets = new();
+        private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets =
+            new();
         private readonly DeferredTaskQueue _callbackQueue = new();
         private readonly ILogger _logger;
 
@@ -45,7 +46,8 @@ namespace PuppeteerSharp.PageCoverage
             return Task.WhenAll(
                 _client.SendAsync("DOM.enable"),
                 _client.SendAsync("CSS.enable"),
-                _client.SendAsync("CSS.startRuleUsageTracking"));
+                _client.SendAsync("CSS.startRuleUsageTracking")
+            );
         }
 
         internal async Task<CoverageEntry[]> StopAsync()
@@ -57,16 +59,17 @@ namespace PuppeteerSharp.PageCoverage
 
             _enabled = false;
 
-            var trackingResponse = await _client.SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking").ConfigureAwait(false);
+            var trackingResponse = await _client
+                .SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking")
+                .ConfigureAwait(false);
 
             // Wait until we've stopped CSS tracking before stopping listening for messages and finishing up, so that
             // any pending OnStyleSheetAddedAsync tasks can collect the remaining style sheet coverage.
             _client.MessageReceived -= Client_MessageReceived;
             await _callbackQueue.DrainAsync().ConfigureAwait(false);
 
-            await Task.WhenAll(
-                _client.SendAsync("CSS.disable"),
-                _client.SendAsync("DOM.disable")).ConfigureAwait(false);
+            await Task.WhenAll(_client.SendAsync("CSS.disable"), _client.SendAsync("DOM.disable"))
+                .ConfigureAwait(false);
 
             var styleSheetIdToCoverage = new Dictionary<string, List<CoverageRange>>();
             foreach (var entry in trackingResponse.RuleUsage)
@@ -78,12 +81,14 @@ namespace PuppeteerSharp.PageCoverage
                     styleSheetIdToCoverage[entry.StyleSheetId] = ranges;
                 }
 
-                ranges.Add(new CoverageRange
-                {
-                    StartOffset = entry.StartOffset,
-                    EndOffset = entry.EndOffset,
-                    Count = entry.Used ? 1 : 0,
-                });
+                ranges.Add(
+                    new CoverageRange
+                    {
+                        StartOffset = entry.StartOffset,
+                        EndOffset = entry.EndOffset,
+                        Count = entry.Used ? 1 : 0,
+                    }
+                );
             }
 
             var coverage = new List<CoverageEntry>();
@@ -94,12 +99,14 @@ namespace PuppeteerSharp.PageCoverage
                 var text = kv.Value.Source;
                 styleSheetIdToCoverage.TryGetValue(styleSheetId, out var responseRanges);
                 var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? []);
-                coverage.Add(new CoverageEntry
-                {
-                    Url = url,
-                    Ranges = ranges,
-                    Text = text,
-                });
+                coverage.Add(
+                    new CoverageEntry
+                    {
+                        Url = url,
+                        Ranges = ranges,
+                        Text = text,
+                    }
+                );
             }
 
             return coverage.ToArray();
@@ -112,8 +119,13 @@ namespace PuppeteerSharp.PageCoverage
                 switch (e.MessageID)
                 {
                     case "CSS.styleSheetAdded":
-                        await _callbackQueue.Enqueue(()
-                            => OnStyleSheetAddedAsync(e.MessageData.ToObject<CSSStyleSheetAddedResponse>())).ConfigureAwait(false);
+                        await _callbackQueue
+                            .Enqueue(() =>
+                                OnStyleSheetAddedAsync(
+                                    e.MessageData.ToObject<CSSStyleSheetAddedResponse>()
+                                )
+                            )
+                            .ConfigureAwait(false);
                         break;
                     case "Runtime.executionContextsCleared":
                         OnExecutionContextsCleared();
@@ -122,13 +134,16 @@ namespace PuppeteerSharp.PageCoverage
             }
             catch (Exception ex)
             {
-                var message = $"CSSCoverage failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                var message =
+                    $"CSSCoverage failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.ErrorWithException(ex, message);
                 _client.Close(message);
             }
         }
 
-        private async Task OnStyleSheetAddedAsync(CSSStyleSheetAddedResponse styleSheetAddedResponse)
+        private async Task OnStyleSheetAddedAsync(
+            CSSStyleSheetAddedResponse styleSheetAddedResponse
+        )
         {
             if (string.IsNullOrEmpty(styleSheetAddedResponse.Header.SourceURL))
             {
@@ -137,12 +152,20 @@ namespace PuppeteerSharp.PageCoverage
 
             try
             {
-                var response = await _client.SendAsync<CssGetStyleSheetTextResponse>("CSS.getStyleSheetText", new CssGetStyleSheetTextRequest
-                {
-                    StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId,
-                }).ConfigureAwait(false);
+                var response = await _client
+                    .SendAsync<CssGetStyleSheetTextResponse>(
+                        "CSS.getStyleSheetText",
+                        new CssGetStyleSheetTextRequest
+                        {
+                            StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId,
+                        }
+                    )
+                    .ConfigureAwait(false);
 
-                _stylesheets.TryAdd(styleSheetAddedResponse.Header.StyleSheetId, (styleSheetAddedResponse.Header.SourceURL, response.Text));
+                _stylesheets.TryAdd(
+                    styleSheetAddedResponse.Header.StyleSheetId,
+                    (styleSheetAddedResponse.Header.SourceURL, response.Text)
+                );
             }
             catch (Exception ex)
             {

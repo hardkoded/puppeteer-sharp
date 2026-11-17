@@ -5,7 +5,8 @@ using WebDriverBiDi;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal sealed class StopScreencastCommandParameters : CommandParameters<StopScreencastCommandResult>
+internal sealed class StopScreencastCommandParameters
+    : CommandParameters<StopScreencastCommandResult>
 {
     public StopScreencastCommandParameters(string screencast)
     {

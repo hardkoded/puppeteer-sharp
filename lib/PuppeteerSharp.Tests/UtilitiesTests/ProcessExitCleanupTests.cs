@@ -11,7 +11,9 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         [Test]
         public void RemovesATemporaryProfileSynchronouslyOnProcessExit()
         {
-            var userDataDir = Directory.CreateTempSubdirectory("puppeteer-process-exit-cleanup-").FullName;
+            var userDataDir = Directory
+                .CreateTempSubdirectory("puppeteer-process-exit-cleanup-")
+                .FullName;
             File.WriteAllText(Path.Combine(userDataDir, "profile"), "profile");
             var processEmitter = new ProcessEmitter();
 
@@ -24,7 +26,9 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         [Test]
         public void CanUnregisterCleanupAfterTheBrowserProcessExits()
         {
-            var userDataDir = Directory.CreateTempSubdirectory("puppeteer-process-exit-cleanup-").FullName;
+            var userDataDir = Directory
+                .CreateTempSubdirectory("puppeteer-process-exit-cleanup-")
+                .FullName;
             var processEmitter = new ProcessEmitter();
             var unregister = ProcessExitCleanup.Register(userDataDir, _ => { }, processEmitter);
 
@@ -38,8 +42,12 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         [Test]
         public void UsesOneProcessExitListenerForMultipleTemporaryProfiles()
         {
-            var firstDir = Directory.CreateTempSubdirectory("puppeteer-process-exit-cleanup-").FullName;
-            var secondDir = Directory.CreateTempSubdirectory("puppeteer-process-exit-cleanup-").FullName;
+            var firstDir = Directory
+                .CreateTempSubdirectory("puppeteer-process-exit-cleanup-")
+                .FullName;
+            var secondDir = Directory
+                .CreateTempSubdirectory("puppeteer-process-exit-cleanup-")
+                .FullName;
             var processEmitter = new ProcessEmitter();
 
             ProcessExitCleanup.Register(firstDir, _ => { }, processEmitter);

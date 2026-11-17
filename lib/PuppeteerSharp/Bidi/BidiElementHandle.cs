@@ -33,7 +33,8 @@ using WebDriverBiDi.Script;
 namespace PuppeteerSharp.Bidi;
 
 #pragma warning disable CA2000
-internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHandle(BidiJSHandle.From(value, realm))
+internal class BidiElementHandle(RemoteValue value, BidiRealm realm)
+    : ElementHandle(BidiJSHandle.From(value, realm))
 #pragma warning restore CA2000
 {
     /// <summary>
@@ -45,7 +46,8 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
 
     internal override Realm Realm => realm;
 
-    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry => CustomQuerySelectorRegistry.Default;
+    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry =>
+        CustomQuerySelectorRegistry.Default;
 
     internal BidiFrame BidiFrame => realm.Environment as BidiFrame;
 
@@ -61,15 +63,17 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
         // Resolve file paths to absolute paths if needed
         if (resolveFilePaths)
         {
-            filePaths = filePaths.Select(file =>
-            {
-                if (Path.IsPathRooted(file))
+            filePaths = filePaths
+                .Select(file =>
                 {
-                    return file;
-                }
+                    if (Path.IsPathRooted(file))
+                    {
+                        return file;
+                    }
 
-                return Path.GetFullPath(file);
-            }).ToArray();
+                    return Path.GetFullPath(file);
+                })
+                .ToArray();
         }
 
         await BidiFrame.SetFilesAsync(this, filePaths).ConfigureAwait(false);
@@ -77,12 +81,15 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
 
     public override async Task<IFrame> ContentFrameAsync()
     {
-        var handle = await EvaluateFunctionHandleAsync(@"element => {
+        var handle = await EvaluateFunctionHandleAsync(
+                @"element => {
             if (element instanceof HTMLIFrameElement || element instanceof HTMLFrameElement) {
                 return element.contentWindow;
             }
             return;
-        }").ConfigureAwait(false);
+        }"
+            )
+            .ConfigureAwait(false);
 
         // Get the RemoteValue from either BidiJSHandle or BidiElementHandle (which wraps BidiJSHandle)
         RemoteValue value = handle switch
@@ -94,7 +101,10 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
 
         await handle.DisposeAsync().ConfigureAwait(false);
 
-        if (value?.Type == RemoteValueType.Window && value is WindowProxyRemoteValue windowProxyValue)
+        if (
+            value?.Type == RemoteValueType.Window
+            && value is WindowProxyRemoteValue windowProxyValue
+        )
         {
             var contextId = windowProxyValue.Value.BrowsingContextId;
             return BidiFrame.BidiPage.Frames.FirstOrDefault(frame => frame.Id == contextId);
@@ -107,14 +117,18 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
     {
         if (!BidiFrame.BidiPage.BidiBrowser.CdpSupported)
         {
-            throw new PuppeteerException("BackendNodeId is not supported in the current configuration.");
+            throw new PuppeteerException(
+                "BackendNodeId is not supported in the current configuration."
+            );
         }
 
-        throw new PuppeteerException("BackendNodeId is not supported in the current configuration.");
+        throw new PuppeteerException(
+            "BackendNodeId is not supported in the current configuration."
+        );
     }
 
-    public override Task AutofillAsync(AutofillData data)
-        => throw new PuppeteerException("Autofill is not supported in the current configuration.");
+    public override Task AutofillAsync(AutofillData data) =>
+        throw new PuppeteerException("Autofill is not supported in the current configuration.");
 
     internal async IAsyncEnumerable<IElementHandle> QueryAXTreeAsync(string name, string role)
     {

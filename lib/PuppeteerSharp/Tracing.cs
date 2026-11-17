@@ -25,7 +25,6 @@ namespace PuppeteerSharp
     /// </example>
 #pragma warning disable CA1724
     public class Tracing : ITracing
-
 #pragma warning restore CA1724
     {
         private static readonly List<string> _defaultCategories = new List<string>
@@ -63,7 +62,9 @@ namespace PuppeteerSharp
         {
             if (_recording)
             {
-                throw new InvalidOperationException("Cannot start recording trace while already recording trace.");
+                throw new InvalidOperationException(
+                    "Cannot start recording trace while already recording trace."
+                );
             }
 
             var categories = new List<string>(options?.Categories ?? _defaultCategories);
@@ -76,22 +77,26 @@ namespace PuppeteerSharp
             var excludedCategories = categories
                 .FindAll(category => category.StartsWith("-", StringComparison.Ordinal))
                 .ConvertAll(category => category.Substring(1));
-            var includedCategories = categories
-                .FindAll(category => !category.StartsWith("-", StringComparison.Ordinal));
+            var includedCategories = categories.FindAll(category =>
+                !category.StartsWith("-", StringComparison.Ordinal)
+            );
 
             _path = options?.Path;
             _recording = true;
 
-            return _client.SendAsync("Tracing.start", new TracingStartRequest
-            {
-                TransferMode = "ReturnAsStream",
-                TraceConfig = new TracingTraceConfig
+            return _client.SendAsync(
+                "Tracing.start",
+                new TracingStartRequest
                 {
-                    ExcludedCategories = excludedCategories.ToArray(),
-                    IncludedCategories = includedCategories.ToArray(),
-                    TraceBufferSizeInKb = options?.BufferSize,
-                },
-            });
+                    TransferMode = "ReturnAsStream",
+                    TraceConfig = new TracingTraceConfig
+                    {
+                        ExcludedCategories = excludedCategories.ToArray(),
+                        IncludedCategories = includedCategories.ToArray(),
+                        TraceBufferSizeInKb = options?.BufferSize,
+                    },
+                }
+            );
         }
 
         /// <summary>
@@ -100,7 +105,9 @@ namespace PuppeteerSharp
         /// <returns>Stop task.</returns>
         public async Task<string> StopAsync()
         {
-            var taskWrapper = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var taskWrapper = new TaskCompletionSource<string>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
 
             async void EventHandler(object sender, MessageEventArgs e)
             {
@@ -109,8 +116,12 @@ namespace PuppeteerSharp
                     if (e.MessageID == "Tracing.tracingComplete")
                     {
                         var stream = e.MessageData.ToObject<TracingCompleteResponse>().Stream;
-                        using var outputStream = !string.IsNullOrEmpty(_path) ? AsyncFileHelper.CreateStream(_path, FileMode.Create) : null;
-                        var tracingData = await ProtocolStreamReader.ReadProtocolStreamStringAsync(_client, stream, outputStream).ConfigureAwait(false);
+                        using var outputStream = !string.IsNullOrEmpty(_path)
+                            ? AsyncFileHelper.CreateStream(_path, FileMode.Create)
+                            : null;
+                        var tracingData = await ProtocolStreamReader
+                            .ReadProtocolStreamStringAsync(_client, stream, outputStream)
+                            .ConfigureAwait(false);
 
                         _client.MessageReceived -= EventHandler;
                         taskWrapper.TrySetResult(tracingData);
@@ -118,7 +129,8 @@ namespace PuppeteerSharp
                 }
                 catch (Exception ex)
                 {
-                    var message = $"Tracing failed to process the tracing complete. {ex.Message}. {ex.StackTrace}";
+                    var message =
+                        $"Tracing failed to process the tracing complete. {ex.Message}. {ex.StackTrace}";
                     _logger.ErrorWithException(ex, message);
                     _client.MessageReceived -= EventHandler;
                     taskWrapper.TrySetException(ex);

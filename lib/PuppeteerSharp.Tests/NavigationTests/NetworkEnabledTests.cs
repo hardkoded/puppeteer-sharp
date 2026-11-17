@@ -19,7 +19,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(page.Url, Is.EqualTo(TestConstants.EmptyPage));
             Assert.That(
                 await page.EvaluateExpressionAsync<string>("window.location.href"),
-                Is.EqualTo(TestConstants.EmptyPage));
+                Is.EqualTo(TestConstants.EmptyPage)
+            );
         }
     }
 }

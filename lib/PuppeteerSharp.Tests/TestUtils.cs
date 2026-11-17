@@ -7,7 +7,12 @@ namespace PuppeteerSharp.Tests
 {
     public static class TestUtils
     {
-        public static async Task ShortWaitForCollectionToHaveAtLeastNElementsAsync(ICollection collection, int minLength, int attempts = 3, int timeout = 50)
+        public static async Task ShortWaitForCollectionToHaveAtLeastNElementsAsync(
+            ICollection collection,
+            int minLength,
+            int attempts = 3,
+            int timeout = 50
+        )
         {
             for (var i = 0; i < attempts; i++)
             {
@@ -57,7 +62,11 @@ namespace PuppeteerSharp.Tests
                     if (inWhitespace)
                     {
                         inWhitespace = false;
-                        if (sb.Length > 0 && char.IsLetterOrDigit(sb[sb.Length - 1]) && char.IsLetterOrDigit(ch))
+                        if (
+                            sb.Length > 0
+                            && char.IsLetterOrDigit(sb[sb.Length - 1])
+                            && char.IsLetterOrDigit(ch)
+                        )
                         {
                             sb.Append(' ');
                         }
@@ -69,7 +78,10 @@ namespace PuppeteerSharp.Tests
             return sb.ToString();
         }
 
-        internal static async Task WaitForCookieInChromiumFileAsync(string path, string valueToCheck)
+        internal static async Task WaitForCookieInChromiumFileAsync(
+            string path,
+            string valueToCheck
+        )
         {
             var attempts = 0;
             const int maxAttempts = 10;
@@ -81,7 +93,10 @@ namespace PuppeteerSharp.Tests
 
                 try
                 {
-                    if (File.Exists(cookiesFile) && File.ReadAllText(cookiesFile).Contains(valueToCheck))
+                    if (
+                        File.Exists(cookiesFile)
+                        && File.ReadAllText(cookiesFile).Contains(valueToCheck)
+                    )
                     {
                         return;
                     }
@@ -96,12 +111,11 @@ namespace PuppeteerSharp.Tests
                 await Task.Delay(100);
             }
         }
+
         internal static bool IsFavicon(IRequest request) => request.Url.Contains("favicon.ico");
-        internal static string CurateProtocol(string protocol)
-            => protocol
-                .ToLower()
-                .Replace(" ", string.Empty)
-                .Replace(".", string.Empty);
+
+        internal static string CurateProtocol(string protocol) =>
+            protocol.ToLower().Replace(" ", string.Empty).Replace(".", string.Empty);
 
         /// <summary>
         /// Wraps the given body content in a proper HTML5 document structure

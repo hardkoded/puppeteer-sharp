@@ -31,7 +31,14 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     private const string Hop3Url = "https://sub.example.com/page";
 
     // There are some missing calls in this function, but this is enough.
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should process extra info on multiple redirects")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager",
+            "should process extra info on multiple redirects"
+        )
+    ]
     public async Task ShouldProcessExtraInfoOnMultipleRedirects()
     {
         var client = Substitute.For<ICDPSession>();
@@ -45,75 +52,105 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
-                {
-                    RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
-                    LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
-                    Request = new Request() { Url = "http://localhost:8907/redirect/1.html", Method = HttpMethod.Get },
-                    Initiator = new Initiator { Type = InitiatorType.Other },
-                    RedirectHasExtraInfo = false,
-                    Type = ResourceType.Document,
-                    FrameId = "099A5216AF03AAFEC988F214B024DF08",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse
+                    {
+                        RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
+                        LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
+                        Request = new Request()
+                        {
+                            Url = "http://localhost:8907/redirect/1.html",
+                            Method = HttpMethod.Get,
+                        },
+                        Initiator = new Initiator { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = false,
+                        Type = ResourceType.Document,
+                        FrameId = "099A5216AF03AAFEC988F214B024DF08",
+                    },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
-                {
-                    RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
-                    LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
-                    Request = new Request() { Url = "http://localhost:8907/redirect/2.html", Method = HttpMethod.Get, },
-                    Initiator = new Initiator { Type = InitiatorType.Other },
-                    RedirectHasExtraInfo = true,
-                    RedirectResponse = new ResponsePayload
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse
                     {
-                        Url = "http://localhost:8907/redirect/1.html",
-                        Status = System.Net.HttpStatusCode.Found,
-                        StatusText = "Found",
-                        RemoteIPAddress = "[::1]",
-                        RemotePort = 8907,
-                        FromDiskCache = false,
-                        FromServiceWorker = false,
+                        RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
+                        LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
+                        Request = new Request()
+                        {
+                            Url = "http://localhost:8907/redirect/2.html",
+                            Method = HttpMethod.Get,
+                        },
+                        Initiator = new Initiator { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = true,
+                        RedirectResponse = new ResponsePayload
+                        {
+                            Url = "http://localhost:8907/redirect/1.html",
+                            Status = System.Net.HttpStatusCode.Found,
+                            StatusText = "Found",
+                            RemoteIPAddress = "[::1]",
+                            RemotePort = 8907,
+                            FromDiskCache = false,
+                            FromServiceWorker = false,
+                        },
+                        Type = ResourceType.Document,
+                        FrameId = "099A5216AF03AAFEC988F214B024DF08",
                     },
-                    Type = ResourceType.Document,
-                    FrameId = "099A5216AF03AAFEC988F214B024DF08",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
-                {
-                    RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
-                    LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
-                    Request = new Request { Url = "http://localhost:8907/redirect/3.html", Method = HttpMethod.Get, },
-                    Initiator = new Initiator { Type = InitiatorType.Other },
-                    RedirectHasExtraInfo = true,
-                    RedirectResponse = new ResponsePayload
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse
                     {
-                        Url = "http://localhost:8907/redirect/2.html",
-                        Status = System.Net.HttpStatusCode.Found,
-                        StatusText = "Found",
-                        RemoteIPAddress = "[::1]",
-                        RemotePort = 8907,
-                        FromDiskCache = false,
-                        FromServiceWorker = false,
+                        RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
+                        LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
+                        Request = new Request
+                        {
+                            Url = "http://localhost:8907/redirect/3.html",
+                            Method = HttpMethod.Get,
+                        },
+                        Initiator = new Initiator { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = true,
+                        RedirectResponse = new ResponsePayload
+                        {
+                            Url = "http://localhost:8907/redirect/2.html",
+                            Status = System.Net.HttpStatusCode.Found,
+                            StatusText = "Found",
+                            RemoteIPAddress = "[::1]",
+                            RemotePort = 8907,
+                            FromDiskCache = false,
+                            FromServiceWorker = false,
+                        },
+                        Type = ResourceType.Document,
+                        FrameId = "099A5216AF03AAFEC988F214B024DF08",
                     },
-                    Type = ResourceType.Document,
-                    FrameId = "099A5216AF03AAFEC988F214B024DF08",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
-        "should handle \"double pause\" (crbug.com/1196004) Fetch.requestPaused events for the same Network.requestWillBeSent event")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager",
+            "should handle \"double pause\" (crbug.com/1196004) Fetch.requestPaused events for the same Network.requestWillBeSent event"
+        )
+    ]
     public async Task ShouldHandleDoublePause()
     {
         var client = Substitute.For<ICDPSession>();
@@ -135,68 +172,86 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
-                {
-                    RequestId = "11ACE9783588040D644B905E8B55285B",
-                    LoaderId = "11ACE9783588040D644B905E8B55285B",
-                    Request = new Request()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse
                     {
-                        Url = "https://www.google.com/",
-                        Method = HttpMethod.Get,
-                        Headers = new Dictionary<string, string>(),
+                        RequestId = "11ACE9783588040D644B905E8B55285B",
+                        LoaderId = "11ACE9783588040D644B905E8B55285B",
+                        Request = new Request()
+                        {
+                            Url = "https://www.google.com/",
+                            Method = HttpMethod.Get,
+                            Headers = new Dictionary<string, string>(),
+                        },
+                        Initiator = new Initiator { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = false,
+                        Type = ResourceType.Document,
+                        FrameId = "84AC261A351B86932B775B76D1DD79F8",
                     },
-                    Initiator = new Initiator { Type = InitiatorType.Other },
-                    RedirectHasExtraInfo = false,
-                    Type = ResourceType.Document,
-                    FrameId = "84AC261A351B86932B775B76D1DD79F8",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Fetch.requestPaused",
-                MessageData = JsonSerializer.SerializeToElement(new FetchRequestPausedResponse
-                {
-                    RequestId = "interception-job-1.0",
-                    Request = new Request
+                MessageData = JsonSerializer.SerializeToElement(
+                    new FetchRequestPausedResponse
                     {
-                        Url = "https://www.google.com/",
-                        Method = HttpMethod.Get,
-                        Headers = new Dictionary<string, string>(),
+                        RequestId = "interception-job-1.0",
+                        Request = new Request
+                        {
+                            Url = "https://www.google.com/",
+                            Method = HttpMethod.Get,
+                            Headers = new Dictionary<string, string>(),
+                        },
+                        FrameId = "84AC261A351B86932B775B76D1DD79F8",
+                        ResourceType = ResourceType.Document,
+                        NetworkId = "11ACE9783588040D644B905E8B55285B",
                     },
-                    FrameId = "84AC261A351B86932B775B76D1DD79F8",
-                    ResourceType = ResourceType.Document,
-                    NetworkId = "11ACE9783588040D644B905E8B55285B",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Fetch.requestPaused",
-                MessageData = JsonSerializer.SerializeToElement(new FetchRequestPausedResponse
-                {
-                    RequestId = "interception-job-2.0",
-                    Request = new Request()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new FetchRequestPausedResponse
                     {
-                        Url = "https://www.google.com/",
-                        Method = HttpMethod.Get,
-                        Headers = new Dictionary<string, string>(),
+                        RequestId = "interception-job-2.0",
+                        Request = new Request()
+                        {
+                            Url = "https://www.google.com/",
+                            Method = HttpMethod.Get,
+                            Headers = new Dictionary<string, string>(),
+                        },
+                        FrameId = "84AC261A351B86932B775B76D1DD79F8",
+                        ResourceType = ResourceType.Document,
+                        NetworkId = "11ACE9783588040D644B905E8B55285B",
                     },
-                    FrameId = "84AC261A351B86932B775B76D1DD79F8",
-                    ResourceType = ResourceType.Document,
-                    NetworkId = "11ACE9783588040D644B905E8B55285B",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         Assert.That(requests, Has.Count.EqualTo(1));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
-        "should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager",
+            "should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)"
+        )
+    ]
     public async Task ShouldHandleResponseReceivedExtraInfo()
     {
         var client = Substitute.For<ICDPSession>();
@@ -217,80 +272,109 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
-                {
-                    RequestId = "1360.2",
-                    LoaderId = "9E86B0282CC98B77FB0ABD49156DDFDD",
-                    Request = new Request { Url = "http://this.is.a.test.com:1080/test.js", Method = HttpMethod.Get, },
-                    Initiator = new Initiator()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse
                     {
-                        Type = InitiatorType.Parser,
-                        Url = "http://this.is.the.start.page.com/",
-                        LineNumber = 9,
-                        ColumnNumber = 80
+                        RequestId = "1360.2",
+                        LoaderId = "9E86B0282CC98B77FB0ABD49156DDFDD",
+                        Request = new Request
+                        {
+                            Url = "http://this.is.a.test.com:1080/test.js",
+                            Method = HttpMethod.Get,
+                        },
+                        Initiator = new Initiator()
+                        {
+                            Type = InitiatorType.Parser,
+                            Url = "http://this.is.the.start.page.com/",
+                            LineNumber = 9,
+                            ColumnNumber = 80,
+                        },
+                        RedirectHasExtraInfo = false,
+                        Type = ResourceType.Script,
+                        FrameId = "60E6C35E7E519F28E646056820095498",
                     },
-                    RedirectHasExtraInfo = false,
-                    Type = ResourceType.Script,
-                    FrameId = "60E6C35E7E519F28E646056820095498",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
-                {
-                    RequestId = "1360.2",
-                    Response = new ResponsePayload()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedResponse
                     {
-                        Url = "http://this.is.a.test.com:1080",
-                        Status = HttpStatusCode.OK,
-                        StatusText = "OK",
-                        Headers = new Dictionary<string, string>
+                        RequestId = "1360.2",
+                        Response = new ResponsePayload()
                         {
-                            { "connection", "keep-alive" }, { "content-length", "85862" },
+                            Url = "http://this.is.a.test.com:1080",
+                            Status = HttpStatusCode.OK,
+                            StatusText = "OK",
+                            Headers = new Dictionary<string, string>
+                            {
+                                { "connection", "keep-alive" },
+                                { "content-length", "85862" },
+                            },
+                            RemoteIPAddress = "127.0.0.1",
+                            RemotePort = 1080,
+                            FromDiskCache = false,
+                            FromServiceWorker = false,
                         },
-                        RemoteIPAddress = "127.0.0.1",
-                        RemotePort = 1080,
-                        FromDiskCache = false,
-                        FromServiceWorker = false,
+                        HasExtraInfo = true,
                     },
-                    HasExtraInfo = true,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
-                {
-                    RequestId = "1360.2",
-                    Headers = new Dictionary<string, string>
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedExtraInfoResponse
                     {
-                        { "connection", "keep-alive" }, { "content-length", "85862" },
+                        RequestId = "1360.2",
+                        Headers = new Dictionary<string, string>
+                        {
+                            { "connection", "keep-alive" },
+                            { "content-length", "85862" },
+                        },
+                        StatusCode = HttpStatusCode.OK,
+                        HeadersText =
+                            "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
                     },
-                    StatusCode = HttpStatusCode.OK,
-                    HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.loadingFinished",
-                MessageData = JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse { RequestId = "1360.2", }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                MessageData = JsonSerializer.SerializeToElement(
+                    new LoadingFinishedEventResponse { RequestId = "1360.2" },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         Assert.That(requests, Has.Count.EqualTo(1));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
-        "should resolve the response once the late responseReceivedExtraInfo event arrives")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager",
+            "should resolve the response once the late responseReceivedExtraInfo event arrives"
+        )
+    ]
     public async Task ShouldResolveTheResponseOnceTheLateResponseReceivedExtraInfoEventArrives()
     {
         var client = Substitute.For<ICDPSession>();
@@ -310,67 +394,79 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse()
-                {
-                    RequestId = "LOADERID",
-                    LoaderId = "LOADERID",
-                    Request = new Request()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse()
                     {
-                        Url = "http://10.1.0.39:42915/empty.html",
-                        Method = HttpMethod.Get,
-                        Headers = new Dictionary<string, string>
+                        RequestId = "LOADERID",
+                        LoaderId = "LOADERID",
+                        Request = new Request()
                         {
-                            { "Upgrade-Insecure-Requests", "1" },
+                            Url = "http://10.1.0.39:42915/empty.html",
+                            Method = HttpMethod.Get,
+                            Headers = new Dictionary<string, string>
                             {
-                                "User-Agent",
-                                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+                                { "Upgrade-Insecure-Requests", "1" },
+                                {
+                                    "User-Agent",
+                                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+                                },
                             },
                         },
+                        Initiator = new Initiator() { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = false,
+                        Type = ResourceType.Document,
                     },
-                    Initiator = new Initiator() { Type = InitiatorType.Other, },
-                    RedirectHasExtraInfo = false,
-                    Type = ResourceType.Document,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
-                {
-                    RequestId = "LOADERID",
-                    Response = new ResponsePayload()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedResponse
                     {
-                        Url = "http://10.1.0.39:42915/empty.html",
-                        Status = HttpStatusCode.OK,
-                        StatusText = "OK",
-                        Headers = new Dictionary<string, string>
+                        RequestId = "LOADERID",
+                        Response = new ResponsePayload()
                         {
-                            { "Cache-Control", "no-cache, no-store" },
-                            { "Connection", "keep-alive" },
-                            { "Content-Length", "0" },
-                            { "Content-Type", "text/html; charset=utf-8" },
-                            { "Date", "Wed, 10 Aug 2022 08:45:57 GMT" },
-                            { "Keep-Alive", "timeout=5" },
+                            Url = "http://10.1.0.39:42915/empty.html",
+                            Status = HttpStatusCode.OK,
+                            StatusText = "OK",
+                            Headers = new Dictionary<string, string>
+                            {
+                                { "Cache-Control", "no-cache, no-store" },
+                                { "Connection", "keep-alive" },
+                                { "Content-Length", "0" },
+                                { "Content-Type", "text/html; charset=utf-8" },
+                                { "Date", "Wed, 10 Aug 2022 08:45:57 GMT" },
+                                { "Keep-Alive", "timeout=5" },
+                            },
+                            RemoteIPAddress = "10.1.0.39",
+                            RemotePort = 42915,
+                            FromDiskCache = false,
+                            FromServiceWorker = false,
                         },
-                        RemoteIPAddress = "10.1.0.39",
-                        RemotePort = 42915,
-                        FromDiskCache = false,
-                        FromServiceWorker = false,
+                        HasExtraInfo = true,
                     },
-                    HasExtraInfo = true,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.loadingFinished",
-                MessageData = JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse() { RequestId = "LOADERID", }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                MessageData = JsonSerializer.SerializeToElement(
+                    new LoadingFinishedEventResponse() { RequestId = "LOADERID" },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         Assert.That(pendingRequests, Has.Count.EqualTo(1));
         Assert.That(finishedRequests, Is.Empty);
@@ -381,25 +477,37 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
-                {
-                    RequestId = "LOADERID",
-                    Headers = new Dictionary<string, string>
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedExtraInfoResponse
                     {
-                        { "connection", "keep-alive" }, { "content-length", "85862" },
+                        RequestId = "LOADERID",
+                        Headers = new Dictionary<string, string>
+                        {
+                            { "connection", "keep-alive" },
+                            { "content-length", "85862" },
+                        },
+                        StatusCode = HttpStatusCode.OK,
+                        HeadersText =
+                            "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
                     },
-                    StatusCode = HttpStatusCode.OK,
-                    HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         Assert.That(pendingRequests, Has.Count.EqualTo(1));
         Assert.That(finishedRequests, Has.Count.EqualTo(1));
         Assert.That(pendingRequests[0].Response, Is.Not.Null);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
-        "should send responses for iframe that don't receive loadingFinished event")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager",
+            "should send responses for iframe that don't receive loadingFinished event"
+        )
+    ]
     public async Task ShouldSendResponsesForIframeThatDontReceiveLoadingFinishedEvent()
     {
         var client = Substitute.For<ICDPSession>();
@@ -419,73 +527,94 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
-                {
-                    RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
-                    LoaderId = "94051D839ACF29E53A3D1273FB20B4C4",
-                    Request = new Request
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse
                     {
-                        Url = "http://localhost:8080/iframe.html",
-                        Method = HttpMethod.Get,
-                        Headers = new Dictionary<string, string>(),
+                        RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
+                        LoaderId = "94051D839ACF29E53A3D1273FB20B4C4",
+                        Request = new Request
+                        {
+                            Url = "http://localhost:8080/iframe.html",
+                            Method = HttpMethod.Get,
+                            Headers = new Dictionary<string, string>(),
+                        },
+                        Initiator = new Initiator { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = false,
+                        Type = ResourceType.Document,
+                        FrameId = "1",
                     },
-                    Initiator = new Initiator { Type = InitiatorType.Other },
-                    RedirectHasExtraInfo = false,
-                    Type = ResourceType.Document,
-                    FrameId = "1",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
-                {
-                    RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
-                    Headers = new Dictionary<string, string>
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedExtraInfoResponse
                     {
-                        { "connection", "keep-alive" }, { "content-length", "85862" },
+                        RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
+                        Headers = new Dictionary<string, string>
+                        {
+                            { "connection", "keep-alive" },
+                            { "content-length", "85862" },
+                        },
+                        StatusCode = HttpStatusCode.OK,
+                        HeadersText =
+                            "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
                     },
-                    StatusCode = HttpStatusCode.OK,
-                    HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
-                {
-                    RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
-                    Response = new ResponsePayload()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedResponse
                     {
-                        Url = "http://this.is.a.test.com:1080",
-                        Status = HttpStatusCode.OK,
-                        StatusText = "OK",
-                        Headers = new Dictionary<string, string>
+                        RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
+                        Response = new ResponsePayload()
                         {
-                            { "connection", "keep-alive" }, { "content-length", "85862" },
+                            Url = "http://this.is.a.test.com:1080",
+                            Status = HttpStatusCode.OK,
+                            StatusText = "OK",
+                            Headers = new Dictionary<string, string>
+                            {
+                                { "connection", "keep-alive" },
+                                { "content-length", "85862" },
+                            },
+                            RemoteIPAddress = "127.0.0.1",
+                            RemotePort = 1080,
+                            FromDiskCache = false,
+                            FromServiceWorker = false,
                         },
-                        RemoteIPAddress = "127.0.0.1",
-                        RemotePort = 1080,
-                        FromDiskCache = false,
-                        FromServiceWorker = false,
+                        HasExtraInfo = true,
                     },
-                    HasExtraInfo = true,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         Assert.That(responses, Has.Count.EqualTo(1));
         Assert.That(requests, Has.Count.EqualTo(1));
         Assert.That(requests[0].Response, Is.Not.Null);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
-        "should send responses for iframe that don't receive loadingFinished event")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager",
+            "should send responses for iframe that don't receive loadingFinished event"
+        )
+    ]
     public async Task ShouldSendResponsesForIframeThatDontReceiveLoadingFinishedEvent2()
     {
         var client = Substitute.For<ICDPSession>();
@@ -505,84 +634,105 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
-                {
-                    RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
-                    LoaderId = "E18BEB94B486CA8771F9AFA2030FEA37",
-                    Request = new Request
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse
                     {
-                        Url = "http://localhost:8080/iframe.html",
-                        Method = HttpMethod.Get,
-                        Headers = new Dictionary<string, string>(),
+                        RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
+                        LoaderId = "E18BEB94B486CA8771F9AFA2030FEA37",
+                        Request = new Request
+                        {
+                            Url = "http://localhost:8080/iframe.html",
+                            Method = HttpMethod.Get,
+                            Headers = new Dictionary<string, string>(),
+                        },
+                        Initiator = new Initiator { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = false,
+                        Type = ResourceType.Document,
+                        FrameId = "F9C89A517341F1EFFE63310141630189",
                     },
-                    Initiator = new Initiator { Type = InitiatorType.Other },
-                    RedirectHasExtraInfo = false,
-                    Type = ResourceType.Document,
-                    FrameId = "F9C89A517341F1EFFE63310141630189",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
-                {
-                    RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
-                    Response = new ResponsePayload()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedResponse
                     {
-                        Url = "http://this.is.a.test.com:1080",
-                        Status = HttpStatusCode.OK,
-                        StatusText = "OK",
-                        Headers = new Dictionary<string, string>
+                        RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
+                        Response = new ResponsePayload()
                         {
-                            { "connection", "keep-alive" }, { "content-length", "85862" },
+                            Url = "http://this.is.a.test.com:1080",
+                            Status = HttpStatusCode.OK,
+                            StatusText = "OK",
+                            Headers = new Dictionary<string, string>
+                            {
+                                { "connection", "keep-alive" },
+                                { "content-length", "85862" },
+                            },
+                            RemoteIPAddress = "127.0.0.1",
+                            RemotePort = 1080,
+                            FromDiskCache = false,
+                            FromServiceWorker = false,
                         },
-                        RemoteIPAddress = "127.0.0.1",
-                        RemotePort = 1080,
-                        FromDiskCache = false,
-                        FromServiceWorker = false,
+                        HasExtraInfo = true,
                     },
-                    HasExtraInfo = true,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.loadingFinished",
-                MessageData =
-                    JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new LoadingFinishedEventResponse()
                     {
                         RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
-                    }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
-                {
-                    RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
-                    Headers = new Dictionary<string, string>
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedExtraInfoResponse
                     {
-                        { "connection", "keep-alive" }, { "content-length", "85862" },
+                        RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
+                        Headers = new Dictionary<string, string>
+                        {
+                            { "connection", "keep-alive" },
+                            { "content-length", "85862" },
+                        },
+                        StatusCode = HttpStatusCode.OK,
+                        HeadersText =
+                            "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
                     },
-                    StatusCode = HttpStatusCode.OK,
-                    HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         Assert.That(requests, Has.Count.EqualTo(1));
         Assert.That(responses, Has.Count.EqualTo(1));
         Assert.That(requests[0].Response, Is.Not.Null);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should handle cached redirects")]
+    [
+        Test,
+        PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should handle cached redirects")
+    ]
     public async Task ShouldHandleCachedRedirects()
     {
         var client = Substitute.For<ICDPSession>();
@@ -599,232 +749,285 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse()
-                {
-                    RequestId = "6D76C8ACAECE880C722FA515AD380015",
-                    LoaderId = "6D76C8ACAECE880C722FA515AD380015",
-                    Request = new Request()
-                    {
-                        Url = "http://10.1.0.39:42915/empty.html",
-                        Method = HttpMethod.Get,
-                        Headers = new Dictionary<string, string>
-                        {
-                            { "Upgrade-Insecure-Requests", "1" },
-                            {
-                                "User-Agent",
-                                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
-                            },
-                        },
-                    },
-                    Initiator = new Initiator() { Type = InitiatorType.Other, },
-                    RedirectHasExtraInfo = false,
-                    Type = ResourceType.Document,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
-
-        client.MessageReceived += Raise.EventWith(
-            client,
-            new MessageEventArgs()
-            {
-                MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
-                {
-                    RequestId = "6D76C8ACAECE880C722FA515AD380015",
-                    Headers = new Dictionary<string, string>
-                    {
-                        { "connection", "keep-alive" }, { "content-length", "85862" },
-                    },
-                    StatusCode = HttpStatusCode.OK,
-                    HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
-
-        client.MessageReceived += Raise.EventWith(
-            client,
-            new MessageEventArgs()
-            {
-                MessageID = "Network.responseReceived",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
-                {
-                    RequestId = "6D76C8ACAECE880C722FA515AD380015",
-                    Response = new ResponsePayload()
-                    {
-                        Url = "http://10.1.0.39:42915/empty.html",
-                        Status = HttpStatusCode.OK,
-                        StatusText = "OK",
-                        Headers = new Dictionary<string, string>
-                        {
-                            { "Cache-Control", "no-cache, no-store" },
-                            { "Connection", "keep-alive" },
-                            { "Content-Length", "0" },
-                            { "Content-Type", "text/html; charset=utf-8" },
-                            { "Date", "Wed, 10 Aug 2022 08:45:57 GMT" },
-                            { "Keep-Alive", "timeout=5" },
-                        },
-                        RemoteIPAddress = "10.1.0.39",
-                        RemotePort = 42915,
-                        FromDiskCache = false,
-                        FromServiceWorker = false,
-                    },
-                    HasExtraInfo = true,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
-
-        client.MessageReceived += Raise.EventWith(
-            client,
-            new MessageEventArgs()
-            {
-                MessageID = "Network.loadingFinished",
-                MessageData =
-                    JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse()
                     {
                         RequestId = "6D76C8ACAECE880C722FA515AD380015",
-                    }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
-
-        client.MessageReceived += Raise.EventWith(
-            client,
-            new MessageEventArgs()
-            {
-                MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse()
-                {
-                    RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    LoaderId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    Request = new Request()
-                    {
-                        Url = "http://10.1.0.39:42915/empty.html",
-                        Method = HttpMethod.Get,
-                        Headers = new Dictionary<string, string>
+                        LoaderId = "6D76C8ACAECE880C722FA515AD380015",
+                        Request = new Request()
                         {
-                            { "Upgrade-Insecure-Requests", "1" },
+                            Url = "http://10.1.0.39:42915/empty.html",
+                            Method = HttpMethod.Get,
+                            Headers = new Dictionary<string, string>
                             {
-                                "User-Agent",
-                                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+                                { "Upgrade-Insecure-Requests", "1" },
+                                {
+                                    "User-Agent",
+                                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+                                },
                             },
                         },
+                        Initiator = new Initiator() { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = false,
+                        Type = ResourceType.Document,
                     },
-                    Initiator = new Initiator() { Type = InitiatorType.Other, },
-                    RedirectHasExtraInfo = false,
-                    Type = ResourceType.Document,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
-                {
-                    RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    Headers = new Dictionary<string, string>
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedExtraInfoResponse
                     {
-                        { "connection", "keep-alive" }, { "content-length", "85862" },
-                    },
-                    StatusCode = HttpStatusCode.Redirect,
-                    HeadersText = "HTTP/1.1 302 Found\\r\\nLocation: http://localhost:3000/#from-redirect\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
-
-        client.MessageReceived += Raise.EventWith(
-            client,
-            new MessageEventArgs()
-            {
-                MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse()
-                {
-                    RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    LoaderId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    Request = new Request()
-                    {
-                        Url = "http://10.1.0.39:42915/empty.html",
-                        Method = HttpMethod.Get,
+                        RequestId = "6D76C8ACAECE880C722FA515AD380015",
                         Headers = new Dictionary<string, string>
                         {
-                            { "Upgrade-Insecure-Requests", "1" },
-                            {
-                                "User-Agent",
-                                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
-                            },
+                            { "connection", "keep-alive" },
+                            { "content-length", "85862" },
                         },
+                        StatusCode = HttpStatusCode.OK,
+                        HeadersText =
+                            "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
                     },
-                    Initiator = new Initiator() { Type = InitiatorType.Other, },
-                    RedirectHasExtraInfo = true,
-                    RedirectResponse = new ResponsePayload()
-                    {
-                        Url = "http://localhost:3000/redirect",
-                        Status = HttpStatusCode.Redirect,
-                        StatusText = "Found",
-                    },
-                    Type = ResourceType.Document,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
-                {
-                    RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    Response = new ResponsePayload()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedResponse
                     {
-                        Url = "http://10.1.0.39:42915/empty.html",
-                        Status = HttpStatusCode.OK,
-                        StatusText = "OK",
-                        Headers = new Dictionary<string, string>
+                        RequestId = "6D76C8ACAECE880C722FA515AD380015",
+                        Response = new ResponsePayload()
                         {
-                            { "Cache-Control", "no-cache, no-store" },
-                            { "Connection", "keep-alive" },
-                            { "Content-Length", "0" },
-                            { "Content-Type", "text/html; charset=utf-8" },
-                            { "Date", "Wed, 10 Aug 2022 08:45:57 GMT" },
-                            { "Keep-Alive", "timeout=5" },
+                            Url = "http://10.1.0.39:42915/empty.html",
+                            Status = HttpStatusCode.OK,
+                            StatusText = "OK",
+                            Headers = new Dictionary<string, string>
+                            {
+                                { "Cache-Control", "no-cache, no-store" },
+                                { "Connection", "keep-alive" },
+                                { "Content-Length", "0" },
+                                { "Content-Type", "text/html; charset=utf-8" },
+                                { "Date", "Wed, 10 Aug 2022 08:45:57 GMT" },
+                                { "Keep-Alive", "timeout=5" },
+                            },
+                            RemoteIPAddress = "10.1.0.39",
+                            RemotePort = 42915,
+                            FromDiskCache = false,
+                            FromServiceWorker = false,
                         },
-                        RemoteIPAddress = "10.1.0.39",
-                        RemotePort = 42915,
-                        FromDiskCache = true,
-                        FromServiceWorker = false,
+                        HasExtraInfo = true,
                     },
-                    HasExtraInfo = true,
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
-
-        client.MessageReceived += Raise.EventWith(
-            client,
-            new MessageEventArgs()
-            {
-                MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
-                {
-                    RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    Headers = new Dictionary<string, string>
-                    {
-                        { "connection", "keep-alive" }, { "content-length", "85862" },
-                    },
-                    StatusCode = HttpStatusCode.Redirect,
-                    HeadersText = "HTTP/1.1 302 Found",
-                }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.loadingFinished",
-                MessageData =
-                    JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse()
+                MessageData = JsonSerializer.SerializeToElement(
+                    new LoadingFinishedEventResponse()
+                    {
+                        RequestId = "6D76C8ACAECE880C722FA515AD380015",
+                    },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
+
+        client.MessageReceived += Raise.EventWith(
+            client,
+            new MessageEventArgs()
+            {
+                MessageID = "Network.requestWillBeSent",
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse()
                     {
                         RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    }, JsonHelper.DefaultJsonSerializerSettings.Value)
-            });
+                        LoaderId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
+                        Request = new Request()
+                        {
+                            Url = "http://10.1.0.39:42915/empty.html",
+                            Method = HttpMethod.Get,
+                            Headers = new Dictionary<string, string>
+                            {
+                                { "Upgrade-Insecure-Requests", "1" },
+                                {
+                                    "User-Agent",
+                                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+                                },
+                            },
+                        },
+                        Initiator = new Initiator() { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = false,
+                        Type = ResourceType.Document,
+                    },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
 
-        Assert.That(responses.Select(response => response.Status), Is.EqualTo(new[] { HttpStatusCode.OK, HttpStatusCode.Found, HttpStatusCode.OK }));
+        client.MessageReceived += Raise.EventWith(
+            client,
+            new MessageEventArgs()
+            {
+                MessageID = "Network.responseReceivedExtraInfo",
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedExtraInfoResponse
+                    {
+                        RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
+                        Headers = new Dictionary<string, string>
+                        {
+                            { "connection", "keep-alive" },
+                            { "content-length", "85862" },
+                        },
+                        StatusCode = HttpStatusCode.Redirect,
+                        HeadersText =
+                            "HTTP/1.1 302 Found\\r\\nLocation: http://localhost:3000/#from-redirect\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n",
+                    },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
+
+        client.MessageReceived += Raise.EventWith(
+            client,
+            new MessageEventArgs()
+            {
+                MessageID = "Network.requestWillBeSent",
+                MessageData = JsonSerializer.SerializeToElement(
+                    new RequestWillBeSentResponse()
+                    {
+                        RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
+                        LoaderId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
+                        Request = new Request()
+                        {
+                            Url = "http://10.1.0.39:42915/empty.html",
+                            Method = HttpMethod.Get,
+                            Headers = new Dictionary<string, string>
+                            {
+                                { "Upgrade-Insecure-Requests", "1" },
+                                {
+                                    "User-Agent",
+                                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+                                },
+                            },
+                        },
+                        Initiator = new Initiator() { Type = InitiatorType.Other },
+                        RedirectHasExtraInfo = true,
+                        RedirectResponse = new ResponsePayload()
+                        {
+                            Url = "http://localhost:3000/redirect",
+                            Status = HttpStatusCode.Redirect,
+                            StatusText = "Found",
+                        },
+                        Type = ResourceType.Document,
+                    },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
+
+        client.MessageReceived += Raise.EventWith(
+            client,
+            new MessageEventArgs()
+            {
+                MessageID = "Network.responseReceived",
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedResponse
+                    {
+                        RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
+                        Response = new ResponsePayload()
+                        {
+                            Url = "http://10.1.0.39:42915/empty.html",
+                            Status = HttpStatusCode.OK,
+                            StatusText = "OK",
+                            Headers = new Dictionary<string, string>
+                            {
+                                { "Cache-Control", "no-cache, no-store" },
+                                { "Connection", "keep-alive" },
+                                { "Content-Length", "0" },
+                                { "Content-Type", "text/html; charset=utf-8" },
+                                { "Date", "Wed, 10 Aug 2022 08:45:57 GMT" },
+                                { "Keep-Alive", "timeout=5" },
+                            },
+                            RemoteIPAddress = "10.1.0.39",
+                            RemotePort = 42915,
+                            FromDiskCache = true,
+                            FromServiceWorker = false,
+                        },
+                        HasExtraInfo = true,
+                    },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
+
+        client.MessageReceived += Raise.EventWith(
+            client,
+            new MessageEventArgs()
+            {
+                MessageID = "Network.responseReceivedExtraInfo",
+                MessageData = JsonSerializer.SerializeToElement(
+                    new ResponseReceivedExtraInfoResponse
+                    {
+                        RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
+                        Headers = new Dictionary<string, string>
+                        {
+                            { "connection", "keep-alive" },
+                            { "content-length", "85862" },
+                        },
+                        StatusCode = HttpStatusCode.Redirect,
+                        HeadersText = "HTTP/1.1 302 Found",
+                    },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
+
+        client.MessageReceived += Raise.EventWith(
+            client,
+            new MessageEventArgs()
+            {
+                MessageID = "Network.loadingFinished",
+                MessageData = JsonSerializer.SerializeToElement(
+                    new LoadingFinishedEventResponse()
+                    {
+                        RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
+                    },
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                ),
+            }
+        );
+
+        Assert.That(
+            responses.Select(response => response.Status),
+            Is.EqualTo(new[] { HttpStatusCode.OK, HttpStatusCode.Found, HttpStatusCode.OK })
+        );
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should not override the user agent when nothing is emulated")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager",
+            "should not override the user agent when nothing is emulated"
+        )
+    ]
     public async Task ShouldNotOverrideTheUserAgentWhenNothingIsEmulated()
     {
         var client = Substitute.For<ICDPSession>();
@@ -833,13 +1036,34 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
-        await client.DidNotReceive().SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+        await client
+            .DidNotReceive()
+            .SendAsync(
+                "Network.setUserAgentOverride",
+                Arg.Any<NetworkSetUserAgentOverrideRequest>(),
+                Arg.Any<bool>(),
+                Arg.Any<CommandOptions>()
+            );
 
         await manager.SetUserAgentAsync("custom-user-agent", null);
-        await client.Received(1).SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+        await client
+            .Received(1)
+            .SendAsync(
+                "Network.setUserAgentOverride",
+                Arg.Any<NetworkSetUserAgentOverrideRequest>(),
+                Arg.Any<bool>(),
+                Arg.Any<CommandOptions>()
+            );
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should reset the override when the emulated accept-language is cleared")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager",
+            "should reset the override when the emulated accept-language is cleared"
+        )
+    ]
     public async Task ShouldResetTheOverrideWhenTheEmulatedAcceptLanguageIsCleared()
     {
         var client = Substitute.For<ICDPSession>();
@@ -848,20 +1072,54 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
-        await client.DidNotReceive().SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+        await client
+            .DidNotReceive()
+            .SendAsync(
+                "Network.setUserAgentOverride",
+                Arg.Any<NetworkSetUserAgentOverrideRequest>(),
+                Arg.Any<bool>(),
+                Arg.Any<CommandOptions>()
+            );
 
         await manager.SetAcceptLanguageAsync("fr-FR");
-        await client.Received(1).SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+        await client
+            .Received(1)
+            .SendAsync(
+                "Network.setUserAgentOverride",
+                Arg.Any<NetworkSetUserAgentOverrideRequest>(),
+                Arg.Any<bool>(),
+                Arg.Any<CommandOptions>()
+            );
 
         await manager.SetAcceptLanguageAsync(null);
-        await client.Received(2).SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+        await client
+            .Received(2)
+            .SendAsync(
+                "Network.setUserAgentOverride",
+                Arg.Any<NetworkSetUserAgentOverrideRequest>(),
+                Arg.Any<bool>(),
+                Arg.Any<CommandOptions>()
+            );
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should not throw on target close error")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager error handling",
+            "should not throw on target close error"
+        )
+    ]
     public async Task ShouldNotThrowOnTargetCloseError()
     {
         var client = Substitute.For<ICDPSession>();
-        client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
+        client
+            .SendAsync(
+                Arg.Any<string>(),
+                Arg.Any<object>(),
+                Arg.Any<bool>(),
+                Arg.Any<CommandOptions>()
+            )
             .Returns<JsonElement?>(_ => throw new TargetClosedException("error"));
 
         using var loggerFactory = new LoggerFactory();
@@ -874,11 +1132,24 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         await manager.SetUserAgentAsync("test", null);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should not throw on unsupported errors")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager error handling",
+            "should not throw on unsupported errors"
+        )
+    ]
     public async Task ShouldNotThrowOnUnsupportedErrors()
     {
         var client = Substitute.For<ICDPSession>();
-        client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
+        client
+            .SendAsync(
+                Arg.Any<string>(),
+                Arg.Any<object>(),
+                Arg.Any<bool>(),
+                Arg.Any<CommandOptions>()
+            )
             .Returns<JsonElement?>(_ => throw new PuppeteerException("Not supported"));
 
         using var loggerFactory = new LoggerFactory();
@@ -891,31 +1162,59 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         await manager.SetUserAgentAsync("test", null);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should throw on non-TargetClose errors")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager error handling",
+            "should throw on non-TargetClose errors"
+        )
+    ]
     public async Task ShouldThrowOnNonTargetCloseErrors()
     {
         var client = Substitute.For<ICDPSession>();
-        client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
+        client
+            .SendAsync(
+                Arg.Any<string>(),
+                Arg.Any<object>(),
+                Arg.Any<bool>(),
+                Arg.Any<CommandOptions>()
+            )
             .Returns<JsonElement?>(_ => throw new PuppeteerException("error"));
 
         using var loggerFactory = new LoggerFactory();
         var manager = CreateNetworkManager(loggerFactory);
 
         Assert.ThrowsAsync<PuppeteerException>(async () => await manager.AddClientAsync(client));
-        Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetCacheEnabledAsync(true));
-        Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetExtraHTTPHeadersAsync(new Dictionary<string, string>()));
+        Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await manager.SetCacheEnabledAsync(true)
+        );
+        Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await manager.SetExtraHTTPHeadersAsync(new Dictionary<string, string>())
+        );
         Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetOfflineModeAsync(true));
-        Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetUserAgentAsync("test", null));
+        Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await manager.SetUserAgentAsync("test", null)
+        );
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should not throw if browser().userAgent() throws")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager error handling",
+            "should not throw if browser().userAgent() throws"
+        )
+    ]
     public async Task ShouldNotThrowIfUserAgentThrows()
     {
         var client = Substitute.For<ICDPSession>();
 
         var frameManagerMock = Substitute.For<IFrameProvider>();
         var browserMock = Substitute.For<IBrowser>();
-        browserMock.GetUserAgentAsync().Returns<string>(_ => throw new TargetClosedException("Target closed"));
+        browserMock
+            .GetUserAgentAsync()
+            .Returns<string>(_ => throw new TargetClosedException("Target closed"));
         frameManagerMock.Browser.Returns(browserMock);
 
         using var loggerFactory = new LoggerFactory();
@@ -924,13 +1223,22 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         await manager.AddClientAsync(client);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should continue the restarted request with the same overrides")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager restarted requests (crbug.com/1196004)",
+            "should continue the restarted request with the same overrides"
+        )
+    ]
     public async Task ShouldContinueTheRestartedRequestWithTheSameOverrides()
     {
         using var loggerFactory = new LoggerFactory();
-        var harness = await RestartHarness.CreateAsync(
-            loggerFactory,
-            request => request.ContinueAsync(new Payload { Headers = new Dictionary<string, string> { ["x-test"] = "1" } }));
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request =>
+            request.ContinueAsync(
+                new Payload { Headers = new Dictionary<string, string> { ["x-test"] = "1" } }
+            )
+        );
 
         harness.EmitRequestWillBeSent();
         harness.EmitRequestPaused("interception-job-1.0");
@@ -939,19 +1247,29 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         Assert.That(harness.Requests, Has.Count.EqualTo(1));
         Assert.That(
-            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => $"{c.RequestId}|{c.Headers[0].Name}={c.Headers[0].Value}"),
-            Is.EqualTo(new[] { "interception-job-1.0|x-test=1", "interception-job-2.0|x-test=1" }));
+            harness
+                .Sent<FetchContinueRequestRequest>("Fetch.continueRequest")
+                .Select(c => $"{c.RequestId}|{c.Headers[0].Name}={c.Headers[0].Value}"),
+            Is.EqualTo(new[] { "interception-job-1.0|x-test=1", "interception-job-2.0|x-test=1" })
+        );
         Assert.That(harness.Finished.Select(r => r.Url), Is.EqualTo(new[] { FontUrl }));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should detect the restart when the URL and method were overridden")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager restarted requests (crbug.com/1196004)",
+            "should detect the restart when the URL and method were overridden"
+        )
+    ]
     public async Task ShouldDetectTheRestartWhenTheUrlAndMethodWereOverridden()
     {
         const string url = "https://example.com/fonts/other.woff2";
         using var loggerFactory = new LoggerFactory();
-        var harness = await RestartHarness.CreateAsync(
-            loggerFactory,
-            request => request.ContinueAsync(new Payload { Url = url, Method = HttpMethod.Post }));
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request =>
+            request.ContinueAsync(new Payload { Url = url, Method = HttpMethod.Post })
+        );
 
         harness.EmitRequestWillBeSent();
         harness.EmitRequestPaused("interception-job-1.0");
@@ -962,48 +1280,80 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         Assert.That(harness.Requests, Has.Count.EqualTo(1));
         Assert.That(
-            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => $"{c.RequestId}|{c.Url}|{c.Method}"),
-            Is.EqualTo(new[] { $"interception-job-1.0|{url}|POST", $"interception-job-2.0|{url}|POST" }));
+            harness
+                .Sent<FetchContinueRequestRequest>("Fetch.continueRequest")
+                .Select(c => $"{c.RequestId}|{c.Url}|{c.Method}"),
+            Is.EqualTo(
+                new[] { $"interception-job-1.0|{url}|POST", $"interception-job-2.0|{url}|POST" }
+            )
+        );
         Assert.That(harness.Finished.Select(r => r.Url), Is.EqualTo(new[] { FontUrl }));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should not mistake a same-URL redirect for a restart")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager restarted requests (crbug.com/1196004)",
+            "should not mistake a same-URL redirect for a restart"
+        )
+    ]
     public async Task ShouldNotMistakeASameUrlRedirectForARestart()
     {
         using var loggerFactory = new LoggerFactory();
-        var harness = await RestartHarness.CreateAsync(loggerFactory, request => request.ContinueAsync());
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request =>
+            request.ContinueAsync()
+        );
 
         harness.EmitRequestWillBeSent();
         harness.EmitRequestPaused("interception-job-1.0");
 
         // The redirect's Fetch.requestPaused can arrive before its Network.requestWillBeSent.
-        harness.EmitRequestPaused("interception-job-2.0", redirectedRequestId: "interception-job-1.0");
-        harness.EmitRequestWillBeSent(redirectResponse: new ResponsePayload
-        {
-            Url = FontUrl,
-            Status = HttpStatusCode.TemporaryRedirect,
-            StatusText = "Temporary Redirect",
-            Headers = new Dictionary<string, string> { ["location"] = FontUrl },
-        });
+        harness.EmitRequestPaused(
+            "interception-job-2.0",
+            redirectedRequestId: "interception-job-1.0"
+        );
+        harness.EmitRequestWillBeSent(
+            redirectResponse: new ResponsePayload
+            {
+                Url = FontUrl,
+                Status = HttpStatusCode.TemporaryRedirect,
+                StatusText = "Temporary Redirect",
+                Headers = new Dictionary<string, string> { ["location"] = FontUrl },
+            }
+        );
         harness.FinishRequest();
 
         Assert.That(harness.Requests, Has.Count.EqualTo(2));
         Assert.That(harness.Requests[1].RedirectChain, Is.EqualTo(new[] { harness.Requests[0] }));
         Assert.That(
-            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => c.RequestId),
-            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
+            harness
+                .Sent<FetchContinueRequestRequest>("Fetch.continueRequest")
+                .Select(c => c.RequestId),
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" })
+        );
         Assert.That(
             harness.Finished.Select(r => (int)r.Response.Status),
-            Is.EqualTo(new[] { 307, 200 }));
+            Is.EqualTo(new[] { 307, 200 })
+        );
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should detect the restart when the URL has a fragment")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager restarted requests (crbug.com/1196004)",
+            "should detect the restart when the URL has a fragment"
+        )
+    ]
     public async Task ShouldDetectTheRestartWhenTheUrlHasAFragment()
     {
         // CDP reports the fragment separately from the URL.
         const string url = "https://example.com/fonts/font.eot?";
         using var loggerFactory = new LoggerFactory();
-        var harness = await RestartHarness.CreateAsync(loggerFactory, request => request.ContinueAsync());
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request =>
+            request.ContinueAsync()
+        );
 
         harness.EmitRequestWillBeSent(url: url, urlFragment: "#iefix");
         harness.EmitRequestPaused("interception-job-1.0", url: url, urlFragment: "#iefix");
@@ -1012,17 +1362,32 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         Assert.That(harness.Requests, Has.Count.EqualTo(1));
         Assert.That(
-            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => c.RequestId),
-            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
-        Assert.That(harness.Finished.Select(r => r.Url), Is.EqualTo(new[] { "https://example.com/fonts/font.eot?#iefix" }));
+            harness
+                .Sent<FetchContinueRequestRequest>("Fetch.continueRequest")
+                .Select(c => c.RequestId),
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" })
+        );
+        Assert.That(
+            harness.Finished.Select(r => r.Url),
+            Is.EqualTo(new[] { "https://example.com/fonts/font.eot?#iefix" })
+        );
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should detect the restart when it pauses the original URL despite an override")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager restarted requests (crbug.com/1196004)",
+            "should detect the restart when it pauses the original URL despite an override"
+        )
+    ]
     public async Task ShouldDetectTheRestartWhenItPausesTheOriginalUrlDespiteAnOverride()
     {
         const string url = "https://example.com/fonts/other.woff2";
         using var loggerFactory = new LoggerFactory();
-        var harness = await RestartHarness.CreateAsync(loggerFactory, request => request.ContinueAsync(new Payload { Url = url }));
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request =>
+            request.ContinueAsync(new Payload { Url = url })
+        );
 
         harness.EmitRequestWillBeSent();
         harness.EmitRequestPaused("interception-job-1.0");
@@ -1031,17 +1396,27 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         Assert.That(harness.Requests, Has.Count.EqualTo(1));
         Assert.That(
-            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => $"{c.RequestId}|{c.Url}"),
-            Is.EqualTo(new[] { $"interception-job-1.0|{url}", $"interception-job-2.0|{url}" }));
+            harness
+                .Sent<FetchContinueRequestRequest>("Fetch.continueRequest")
+                .Select(c => $"{c.RequestId}|{c.Url}"),
+            Is.EqualTo(new[] { $"interception-job-1.0|{url}", $"interception-job-2.0|{url}" })
+        );
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should respond to the restarted request when the user responded")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager restarted requests (crbug.com/1196004)",
+            "should respond to the restarted request when the user responded"
+        )
+    ]
     public async Task ShouldRespondToTheRestartedRequestWhenTheUserResponded()
     {
         using var loggerFactory = new LoggerFactory();
-        var harness = await RestartHarness.CreateAsync(
-            loggerFactory,
-            request => request.RespondAsync(new ResponseData { Status = HttpStatusCode.OK, Body = "font" }));
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request =>
+            request.RespondAsync(new ResponseData { Status = HttpStatusCode.OK, Body = "font" })
+        );
 
         harness.EmitRequestWillBeSent();
         harness.EmitRequestPaused("interception-job-1.0");
@@ -1050,17 +1425,25 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(harness.Requests, Has.Count.EqualTo(1));
         Assert.That(
             harness.Sent<FetchFulfillRequest>("Fetch.fulfillRequest").Select(c => c.RequestId),
-            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" })
+        );
         Assert.That(harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest"), Is.Empty);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should respond to the restarted request when the user responded cooperatively")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager restarted requests (crbug.com/1196004)",
+            "should respond to the restarted request when the user responded cooperatively"
+        )
+    ]
     public async Task ShouldRespondToTheRestartedRequestWhenTheUserRespondedCooperatively()
     {
         using var loggerFactory = new LoggerFactory();
-        var harness = await RestartHarness.CreateAsync(
-            loggerFactory,
-            request => request.RespondAsync(new ResponseData { Status = HttpStatusCode.OK, Body = "font" }, 0));
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request =>
+            request.RespondAsync(new ResponseData { Status = HttpStatusCode.OK, Body = "font" }, 0)
+        );
 
         harness.EmitRequestWillBeSent();
         harness.EmitRequestPaused("interception-job-1.0");
@@ -1072,17 +1455,25 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(harness.Requests, Has.Count.EqualTo(1));
         Assert.That(
             harness.Sent<FetchFulfillRequest>("Fetch.fulfillRequest").Select(c => c.RequestId),
-            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" })
+        );
         Assert.That(harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest"), Is.Empty);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should abort the restarted request when the user aborted")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager restarted requests (crbug.com/1196004)",
+            "should abort the restarted request when the user aborted"
+        )
+    ]
     public async Task ShouldAbortTheRestartedRequestWhenTheUserAborted()
     {
         using var loggerFactory = new LoggerFactory();
-        var harness = await RestartHarness.CreateAsync(
-            loggerFactory,
-            request => request.AbortAsync(RequestAbortErrorCode.BlockedByClient));
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request =>
+            request.AbortAsync(RequestAbortErrorCode.BlockedByClient)
+        );
 
         harness.EmitRequestWillBeSent();
         harness.EmitRequestPaused("interception-job-1.0");
@@ -1090,19 +1481,37 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         Assert.That(harness.Requests, Has.Count.EqualTo(1));
         Assert.That(
-            harness.Sent<FetchFailRequest>("Fetch.failRequest").Select(c => $"{c.RequestId}|{c.ErrorReason}"),
-            Is.EqualTo(new[] { "interception-job-1.0|BlockedByClient", "interception-job-2.0|BlockedByClient" }));
+            harness
+                .Sent<FetchFailRequest>("Fetch.failRequest")
+                .Select(c => $"{c.RequestId}|{c.ErrorReason}"),
+            Is.EqualTo(
+                new[]
+                {
+                    "interception-job-1.0|BlockedByClient",
+                    "interception-job-2.0|BlockedByClient",
+                }
+            )
+        );
         Assert.That(harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest"), Is.Empty);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should report the worker when Fetch.requestPaused arrives first")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager worker requests",
+            "should report the worker when Fetch.requestPaused arrives first"
+        )
+    ]
     public async Task ShouldReportTheWorkerWhenFetchRequestPausedArrivesFirst()
     {
         using var loggerFactory = new LoggerFactory();
         var pageSession = new RecordingCdpSession();
         var workerSession = new RecordingCdpSession();
         var worker = (WebWorker)RuntimeHelpers.GetUninitializedObject(typeof(CdpWebWorker));
-        var manager = CreateNetworkManager(loggerFactory, session => session == workerSession ? worker : null);
+        var manager = CreateNetworkManager(loggerFactory, session =>
+            session == workerSession ? worker : null
+        );
         await manager.AddClientAsync(pageSession);
         await manager.AddClientAsync(workerSession);
         await manager.SetRequestInterceptionAsync(true);
@@ -1114,31 +1523,54 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             _ = e.Request.ContinueAsync();
         };
 
-        pageSession.Emit("Fetch.requestPaused", new FetchRequestPausedResponse
-        {
-            RequestId = "interception-job-1.0",
-            Request = new Request { Url = WorkerUrl, Method = HttpMethod.Get, Headers = new Dictionary<string, string>() },
-            ResourceType = ResourceType.Fetch,
-            NetworkId = WorkerNetworkId,
-        });
+        pageSession.Emit(
+            "Fetch.requestPaused",
+            new FetchRequestPausedResponse
+            {
+                RequestId = "interception-job-1.0",
+                Request = new Request
+                {
+                    Url = WorkerUrl,
+                    Method = HttpMethod.Get,
+                    Headers = new Dictionary<string, string>(),
+                },
+                ResourceType = ResourceType.Fetch,
+                NetworkId = WorkerNetworkId,
+            }
+        );
         workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent(WorkerUrl));
 
         Assert.That(requests, Has.Count.EqualTo(1));
         Assert.That(requests[0].Worker, Is.SameAs(worker));
         Assert.That(requests[0].Frame, Is.Null);
         Assert.That(requests[0].Page, Is.Null);
-        Assert.That(pageSession.Sent.Count(c => c.Method == "Fetch.continueRequest"), Is.EqualTo(1));
-        Assert.That(workerSession.Sent.Count(c => c.Method == "Fetch.continueRequest"), Is.EqualTo(0));
+        Assert.That(
+            pageSession.Sent.Count(c => c.Method == "Fetch.continueRequest"),
+            Is.EqualTo(1)
+        );
+        Assert.That(
+            workerSession.Sent.Count(c => c.Method == "Fetch.continueRequest"),
+            Is.EqualTo(0)
+        );
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should keep the worker across redirects")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager worker requests",
+            "should keep the worker across redirects"
+        )
+    ]
     public async Task ShouldKeepTheWorkerAcrossRedirects()
     {
         using var loggerFactory = new LoggerFactory();
         var pageSession = new RecordingCdpSession();
         var workerSession = new RecordingCdpSession();
         var worker = (WebWorker)RuntimeHelpers.GetUninitializedObject(typeof(CdpWebWorker));
-        var manager = CreateNetworkManager(loggerFactory, session => session == workerSession ? worker : null);
+        var manager = CreateNetworkManager(loggerFactory, session =>
+            session == workerSession ? worker : null
+        );
         await manager.AddClientAsync(pageSession);
         await manager.AddClientAsync(workerSession);
         await manager.SetRequestInterceptionAsync(true);
@@ -1155,13 +1587,19 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent(url1));
         pageSession.Emit("Fetch.requestPaused", WorkerRequestPaused("interception-job-1.0", url1));
-        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent(url2, new ResponsePayload
-        {
-            Url = url1,
-            Status = HttpStatusCode.Found,
-            StatusText = "Found",
-            Headers = new Dictionary<string, string>(),
-        }));
+        workerSession.Emit(
+            "Network.requestWillBeSent",
+            WorkerRequestWillBeSent(
+                url2,
+                new ResponsePayload
+                {
+                    Url = url1,
+                    Status = HttpStatusCode.Found,
+                    StatusText = "Found",
+                    Headers = new Dictionary<string, string>(),
+                }
+            )
+        );
         pageSession.Emit("Fetch.requestPaused", WorkerRequestPaused("interception-job-2.0", url2));
 
         Assert.That(requests, Has.Count.EqualTo(2));
@@ -1170,19 +1608,33 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(requests[1].RedirectChain, Has.Length.EqualTo(1));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should not fail pending worker requests when the whole connection closes")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager worker requests",
+            "should not fail pending worker requests when the whole connection closes"
+        )
+    ]
     public async Task ShouldNotFailPendingWorkerRequestsWhenTheWholeConnectionCloses()
     {
         using var loggerFactory = new LoggerFactory();
-        var (manager, _, workerSession, requests, failed) = await SetupWorkerNetworkManagerAsync(loggerFactory, false);
-        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent("http://localhost/hang"));
+        var (manager, _, workerSession, requests, failed) = await SetupWorkerNetworkManagerAsync(
+            loggerFactory,
+            false
+        );
+        workerSession.Emit(
+            "Network.requestWillBeSent",
+            WorkerRequestWillBeSent("http://localhost/hang")
+        );
         Assert.That(requests, Has.Count.EqualTo(1));
         Assert.That(manager.NumRequestsInProgress, Is.EqualTo(1));
 
         workerSession.Connection = Connection.CreateFromTransport(
             Substitute.For<IConnectionTransport>(),
             new ConnectOptions(),
-            loggerFactory);
+            loggerFactory
+        );
         workerSession.Connection.IsClosed = true;
         workerSession.RaiseDisconnected();
 
@@ -1190,13 +1642,26 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(manager.NumRequestsInProgress, Is.EqualTo(0));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should fail pending requests when the worker session disconnects")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager worker requests",
+            "should fail pending requests when the worker session disconnects"
+        )
+    ]
     public async Task ShouldFailPendingRequestsWhenTheWorkerSessionDisconnects()
     {
         using var loggerFactory = new LoggerFactory();
-        var (manager, _, workerSession, requests, failed) = await SetupWorkerNetworkManagerAsync(loggerFactory, false);
+        var (manager, _, workerSession, requests, failed) = await SetupWorkerNetworkManagerAsync(
+            loggerFactory,
+            false
+        );
 
-        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent("http://localhost/hang"));
+        workerSession.Emit(
+            "Network.requestWillBeSent",
+            WorkerRequestWillBeSent("http://localhost/hang")
+        );
         Assert.That(requests, Has.Count.EqualTo(1));
         Assert.That(manager.NumRequestsInProgress, Is.EqualTo(1));
 
@@ -1207,13 +1672,26 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(manager.NumRequestsInProgress, Is.EqualTo(0));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should not fail pending page requests when a session disconnects")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager worker requests",
+            "should not fail pending page requests when a session disconnects"
+        )
+    ]
     public async Task ShouldNotFailPendingPageRequestsWhenASessionDisconnects()
     {
         using var loggerFactory = new LoggerFactory();
-        var (manager, pageSession, _, requests, failed) = await SetupWorkerNetworkManagerAsync(loggerFactory, false);
+        var (manager, pageSession, _, requests, failed) = await SetupWorkerNetworkManagerAsync(
+            loggerFactory,
+            false
+        );
 
-        pageSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent("http://localhost/hang"));
+        pageSession.Emit(
+            "Network.requestWillBeSent",
+            WorkerRequestWillBeSent("http://localhost/hang")
+        );
         pageSession.RaiseDisconnected();
 
         Assert.That(requests, Has.Count.EqualTo(1));
@@ -1221,22 +1699,42 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(manager.NumRequestsInProgress, Is.EqualTo(1));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should not emit requestfailed for worker requests that were never surfaced")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager worker requests",
+            "should not emit requestfailed for worker requests that were never surfaced"
+        )
+    ]
     public async Task ShouldNotEmitRequestFailedForWorkerRequestsThatWereNeverSurfaced()
     {
         using var loggerFactory = new LoggerFactory();
-        var (_, _, workerSession, requests, failed) = await SetupWorkerNetworkManagerAsync(loggerFactory, true);
+        var (_, _, workerSession, requests, failed) = await SetupWorkerNetworkManagerAsync(
+            loggerFactory,
+            true
+        );
 
         // With interception enabled, no request is emitted until
         // Fetch.requestPaused arrives, which never happens here.
-        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent("http://localhost/hang"));
+        workerSession.Emit(
+            "Network.requestWillBeSent",
+            WorkerRequestWillBeSent("http://localhost/hang")
+        );
         workerSession.RaiseDisconnected();
 
         Assert.That(requests, Is.Empty);
         Assert.That(failed, Is.Empty);
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should emit requestfailed when Network.loadingFailed arrives before Fetch.requestPaused (github.com/puppeteer/puppeteer/issues/15575)")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager",
+            "should emit requestfailed when Network.loadingFailed arrives before Fetch.requestPaused (github.com/puppeteer/puppeteer/issues/15575)"
+        )
+    ]
     public async Task ShouldEmitRequestFailedWhenNetworkLoadingFailedArrivesBeforeFetchRequestPaused()
     {
         using var loggerFactory = new LoggerFactory();
@@ -1265,33 +1763,48 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         manager.RequestFinished += (_, _) => events.Add("requestfinished");
 
         const string url = "http://127.0.0.1:1337/arbitrary-endpoint";
-        session.Emit("Network.requestWillBeSent", new RequestWillBeSentResponse
-        {
-            RequestId = "58462.1",
-            LoaderId = string.Empty,
-            Request = new Request { Url = url, Method = HttpMethod.Get, Headers = [] },
-            Initiator = new Initiator { Type = InitiatorType.Script },
-            RedirectHasExtraInfo = false,
-            Type = ResourceType.Fetch,
-            FrameId = "frame-1",
-        });
-        session.Emit("Network.loadingFailed", new LoadingFailedEventResponse
-        {
-            RequestId = "58462.1",
-            ErrorText = "net::ERR_ABORTED",
-        });
+        session.Emit(
+            "Network.requestWillBeSent",
+            new RequestWillBeSentResponse
+            {
+                RequestId = "58462.1",
+                LoaderId = string.Empty,
+                Request = new Request
+                {
+                    Url = url,
+                    Method = HttpMethod.Get,
+                    Headers = [],
+                },
+                Initiator = new Initiator { Type = InitiatorType.Script },
+                RedirectHasExtraInfo = false,
+                Type = ResourceType.Fetch,
+                FrameId = "frame-1",
+            }
+        );
+        session.Emit(
+            "Network.loadingFailed",
+            new LoadingFailedEventResponse { RequestId = "58462.1", ErrorText = "net::ERR_ABORTED" }
+        );
 
         Assert.That(requests, Is.Empty);
         Assert.That(failedRequests, Is.Empty);
 
-        session.Emit("Fetch.requestPaused", new FetchRequestPausedResponse
-        {
-            RequestId = "interception-job-1.0",
-            Request = new Request { Url = url, Method = HttpMethod.Get, Headers = [] },
-            FrameId = "frame-1",
-            ResourceType = ResourceType.Fetch,
-            NetworkId = "58462.1",
-        });
+        session.Emit(
+            "Fetch.requestPaused",
+            new FetchRequestPausedResponse
+            {
+                RequestId = "interception-job-1.0",
+                Request = new Request
+                {
+                    Url = url,
+                    Method = HttpMethod.Get,
+                    Headers = [],
+                },
+                FrameId = "frame-1",
+                ResourceType = ResourceType.Fetch,
+                NetworkId = "58462.1",
+            }
+        );
 
         Assert.That(requests, Has.Count.EqualTo(1));
         await WaitForAsync(() => failedRequests.Count > 0);
@@ -1301,52 +1814,117 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(failedRequests[0].FailureText, Is.EqualTo("net::ERR_ABORTED"));
     }
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)", "should handle an internal redirect that is not paused by Fetch.requestPaused (pauseFirst=false)")]
-    public Task ShouldHandleAnInternalRedirectThatIsNotPausedByFetchRequestPausedPauseFirstFalse()
-        => HandleInternalUnpausedRedirectAsync(false);
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)",
+            "should handle an internal redirect that is not paused by Fetch.requestPaused (pauseFirst=false)"
+        )
+    ]
+    public Task ShouldHandleAnInternalRedirectThatIsNotPausedByFetchRequestPausedPauseFirstFalse() =>
+        HandleInternalUnpausedRedirectAsync(false);
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)", "should handle an internal redirect that is not paused by Fetch.requestPaused (pauseFirst=true)")]
-    public Task ShouldHandleAnInternalRedirectThatIsNotPausedByFetchRequestPausedPauseFirstTrue()
-        => HandleInternalUnpausedRedirectAsync(true);
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)",
+            "should handle an internal redirect that is not paused by Fetch.requestPaused (pauseFirst=true)"
+        )
+    ]
+    public Task ShouldHandleAnInternalRedirectThatIsNotPausedByFetchRequestPausedPauseFirstTrue() =>
+        HandleInternalUnpausedRedirectAsync(true);
 
-    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)", "should handle delayed responseReceivedExtraInfo across an unpaused internal redirect")]
+    [
+        Test,
+        PuppeteerTest(
+            "NetworkManager.test.ts",
+            "NetworkManager internal unpaused redirects (github.com/puppeteer/puppeteer/issues/12183)",
+            "should handle delayed responseReceivedExtraInfo across an unpaused internal redirect"
+        )
+    ]
     public async Task ShouldHandleDelayedResponseReceivedExtraInfoAcrossAnUnpausedInternalRedirect()
     {
         using var loggerFactory = new LoggerFactory();
-        var (session, requests, responses, continued) = await SetupInternalRedirectAsync(loggerFactory);
+        var (session, requests, responses, continued) = await SetupInternalRedirectAsync(
+            loggerFactory
+        );
 
         // Hop 1: https://example.com/start -> 301 to http://sub.example.com/page
         session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop1Url));
-        session.Emit("Fetch.requestPaused", InternalRedirectPaused("interception-job-1.0", Hop1Url));
+        session.Emit(
+            "Fetch.requestPaused",
+            InternalRedirectPaused("interception-job-1.0", Hop1Url)
+        );
 
         // Hop 2 arrives BEFORE Hop 1's responseReceivedExtraInfo
-        session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop2Url, InternalRedirectResponse(Hop1Url, HttpStatusCode.MovedPermanently, "Moved Permanently", Hop2Url), true));
+        session.Emit(
+            "Network.requestWillBeSent",
+            InternalRedirectWillBeSent(
+                Hop2Url,
+                InternalRedirectResponse(
+                    Hop1Url,
+                    HttpStatusCode.MovedPermanently,
+                    "Moved Permanently",
+                    Hop2Url
+                ),
+                true
+            )
+        );
 
         // Hop 3's requestWillBeSent also arrives BEFORE Hop 1's
         // responseReceivedExtraInfo, queueing Hop 2 in the queued redirect info while
         // storing Hop 3 in the requestWillBeSent map.
-        session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop3Url, InternalRedirectResponse(Hop2Url, HttpStatusCode.TemporaryRedirect, "Temporary Redirect", Hop3Url)));
+        session.Emit(
+            "Network.requestWillBeSent",
+            InternalRedirectWillBeSent(
+                Hop3Url,
+                InternalRedirectResponse(
+                    Hop2Url,
+                    HttpStatusCode.TemporaryRedirect,
+                    "Temporary Redirect",
+                    Hop3Url
+                )
+            )
+        );
 
         // Now Hop 1's delayed responseReceivedExtraInfo arrives, replaying Hop 2.
-        session.Emit("Network.responseReceivedExtraInfo", new ResponseReceivedExtraInfoResponse
-        {
-            RequestId = InternalRedirectNetworkId,
-            Headers = new Dictionary<string, string> { ["location"] = Hop2Url },
-            StatusCode = HttpStatusCode.MovedPermanently,
-        });
+        session.Emit(
+            "Network.responseReceivedExtraInfo",
+            new ResponseReceivedExtraInfoResponse
+            {
+                RequestId = InternalRedirectNetworkId,
+                Headers = new Dictionary<string, string> { ["location"] = Hop2Url },
+                StatusCode = HttpStatusCode.MovedPermanently,
+            }
+        );
 
         // Hop 3's Fetch.requestPaused arrives and must still find Hop 3's stored
         // requestWillBeSent.
-        session.Emit("Fetch.requestPaused", InternalRedirectPaused("interception-job-2.0", Hop3Url));
+        session.Emit(
+            "Fetch.requestPaused",
+            InternalRedirectPaused("interception-job-2.0", Hop3Url)
+        );
 
-        session.Emit("Network.responseReceivedExtraInfo", new ResponseReceivedExtraInfoResponse
-        {
-            RequestId = InternalRedirectNetworkId,
-            Headers = new Dictionary<string, string> { ["content-type"] = "text/html" },
-            StatusCode = HttpStatusCode.OK,
-        });
+        session.Emit(
+            "Network.responseReceivedExtraInfo",
+            new ResponseReceivedExtraInfoResponse
+            {
+                RequestId = InternalRedirectNetworkId,
+                Headers = new Dictionary<string, string> { ["content-type"] = "text/html" },
+                StatusCode = HttpStatusCode.OK,
+            }
+        );
         session.Emit("Network.responseReceived", InternalRedirectFinalResponse());
-        session.Emit("Network.loadingFinished", new LoadingFinishedEventResponse { RequestId = InternalRedirectNetworkId, EncodedDataLength = 100 });
+        session.Emit(
+            "Network.loadingFinished",
+            new LoadingFinishedEventResponse
+            {
+                RequestId = InternalRedirectNetworkId,
+                EncodedDataLength = 100,
+            }
+        );
 
         await WaitForAsync(() => requests.Count == 3);
         await Task.WhenAll(continued);
@@ -1356,13 +1934,20 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(requests[2].RedirectChain, Is.EqualTo(new[] { requests[0], requests[1] }));
     }
 
-    private static async Task<(NetworkManager Manager, RecordingCdpSession PageSession, RecordingCdpSession WorkerSession, List<IRequest> Requests, List<IRequest> Failed)>
-        SetupWorkerNetworkManagerAsync(ILoggerFactory loggerFactory, bool interception)
+    private static async Task<(
+        NetworkManager Manager,
+        RecordingCdpSession PageSession,
+        RecordingCdpSession WorkerSession,
+        List<IRequest> Requests,
+        List<IRequest> Failed
+    )> SetupWorkerNetworkManagerAsync(ILoggerFactory loggerFactory, bool interception)
     {
         var pageSession = new RecordingCdpSession();
         var workerSession = new RecordingCdpSession();
         var worker = (WebWorker)RuntimeHelpers.GetUninitializedObject(typeof(CdpWebWorker));
-        var manager = CreateNetworkManager(loggerFactory, session => session == workerSession ? worker : null);
+        var manager = CreateNetworkManager(loggerFactory, session =>
+            session == workerSession ? worker : null
+        );
         await manager.AddClientAsync(pageSession);
         await manager.AddClientAsync(workerSession);
         if (interception)
@@ -1397,30 +1982,69 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     private static async Task HandleInternalUnpausedRedirectAsync(bool pauseFirst)
     {
         using var loggerFactory = new LoggerFactory();
-        var (session, requests, responses, continued) = await SetupInternalRedirectAsync(loggerFactory);
+        var (session, requests, responses, continued) = await SetupInternalRedirectAsync(
+            loggerFactory
+        );
 
         // Hop 1: https://example.com/start -> 301 to http://sub.example.com/page
         session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop1Url));
-        session.Emit("Fetch.requestPaused", InternalRedirectPaused("interception-job-1.0", Hop1Url));
-        session.Emit("Network.requestWillBeSentExtraInfo", new RequestWillBeSentExtraInfoResponse
-        {
-            RequestId = InternalRedirectNetworkId,
-            Headers = [],
-        });
-        session.Emit("Network.responseReceivedExtraInfo", new ResponseReceivedExtraInfoResponse
-        {
-            RequestId = InternalRedirectNetworkId,
-            Headers = new Dictionary<string, string> { ["location"] = Hop2Url },
-            StatusCode = HttpStatusCode.MovedPermanently,
-        });
+        session.Emit(
+            "Fetch.requestPaused",
+            InternalRedirectPaused("interception-job-1.0", Hop1Url)
+        );
+        session.Emit(
+            "Network.requestWillBeSentExtraInfo",
+            new RequestWillBeSentExtraInfoResponse
+            {
+                RequestId = InternalRedirectNetworkId,
+                Headers = [],
+            }
+        );
+        session.Emit(
+            "Network.responseReceivedExtraInfo",
+            new ResponseReceivedExtraInfoResponse
+            {
+                RequestId = InternalRedirectNetworkId,
+                Headers = new Dictionary<string, string> { ["location"] = Hop2Url },
+                StatusCode = HttpStatusCode.MovedPermanently,
+            }
+        );
 
         // Hop 2: http://sub.example.com/page (internally upgraded via 307
         // without Fetch.requestPaused)
-        session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop2Url, InternalRedirectResponse(Hop1Url, HttpStatusCode.MovedPermanently, "Moved Permanently", Hop2Url), true));
+        session.Emit(
+            "Network.requestWillBeSent",
+            InternalRedirectWillBeSent(
+                Hop2Url,
+                InternalRedirectResponse(
+                    Hop1Url,
+                    HttpStatusCode.MovedPermanently,
+                    "Moved Permanently",
+                    Hop2Url
+                ),
+                true
+            )
+        );
 
         // Hop 3: https://sub.example.com/page (paused by Fetch.requestPaused)
-        void EmitHop3Paused() => session.Emit("Fetch.requestPaused", InternalRedirectPaused("interception-job-2.0", Hop3Url));
-        void EmitHop3WillBeSent() => session.Emit("Network.requestWillBeSent", InternalRedirectWillBeSent(Hop3Url, InternalRedirectResponse(Hop2Url, HttpStatusCode.TemporaryRedirect, "Temporary Redirect", Hop3Url)));
+        void EmitHop3Paused() =>
+            session.Emit(
+                "Fetch.requestPaused",
+                InternalRedirectPaused("interception-job-2.0", Hop3Url)
+            );
+        void EmitHop3WillBeSent() =>
+            session.Emit(
+                "Network.requestWillBeSent",
+                InternalRedirectWillBeSent(
+                    Hop3Url,
+                    InternalRedirectResponse(
+                        Hop2Url,
+                        HttpStatusCode.TemporaryRedirect,
+                        "Temporary Redirect",
+                        Hop3Url
+                    )
+                )
+            );
 
         if (pauseFirst)
         {
@@ -1433,19 +2057,32 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             EmitHop3Paused();
         }
 
-        session.Emit("Network.requestWillBeSentExtraInfo", new RequestWillBeSentExtraInfoResponse
-        {
-            RequestId = InternalRedirectNetworkId,
-            Headers = [],
-        });
-        session.Emit("Network.responseReceivedExtraInfo", new ResponseReceivedExtraInfoResponse
-        {
-            RequestId = InternalRedirectNetworkId,
-            Headers = new Dictionary<string, string> { ["content-type"] = "text/html" },
-            StatusCode = HttpStatusCode.OK,
-        });
+        session.Emit(
+            "Network.requestWillBeSentExtraInfo",
+            new RequestWillBeSentExtraInfoResponse
+            {
+                RequestId = InternalRedirectNetworkId,
+                Headers = [],
+            }
+        );
+        session.Emit(
+            "Network.responseReceivedExtraInfo",
+            new ResponseReceivedExtraInfoResponse
+            {
+                RequestId = InternalRedirectNetworkId,
+                Headers = new Dictionary<string, string> { ["content-type"] = "text/html" },
+                StatusCode = HttpStatusCode.OK,
+            }
+        );
         session.Emit("Network.responseReceived", InternalRedirectFinalResponse());
-        session.Emit("Network.loadingFinished", new LoadingFinishedEventResponse { RequestId = InternalRedirectNetworkId, EncodedDataLength = 100 });
+        session.Emit(
+            "Network.loadingFinished",
+            new LoadingFinishedEventResponse
+            {
+                RequestId = InternalRedirectNetworkId,
+                EncodedDataLength = 100,
+            }
+        );
 
         await WaitForAsync(() => requests.Count == 3);
         await Task.WhenAll(continued);
@@ -1454,13 +2091,19 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(responses.Select(r => (int)r.Status), Is.EqualTo(new[] { 301, 307, 200 }));
         Assert.That(requests[2].RedirectChain, Is.EqualTo(new[] { requests[0], requests[1] }));
         Assert.That(
-            session.Sent
-                .Where(c => c.Method == "Fetch.continueRequest")
+            session
+                .Sent.Where(c => c.Method == "Fetch.continueRequest")
                 .Select(c => ((FetchContinueRequestRequest)c.Args).RequestId),
-            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" })
+        );
     }
 
-    private static async Task<(RecordingCdpSession Session, List<IRequest> Requests, List<IResponse> Responses, List<Task> Continued)> SetupInternalRedirectAsync(ILoggerFactory loggerFactory)
+    private static async Task<(
+        RecordingCdpSession Session,
+        List<IRequest> Requests,
+        List<IResponse> Responses,
+        List<Task> Continued
+    )> SetupInternalRedirectAsync(ILoggerFactory loggerFactory)
     {
         var session = new RecordingCdpSession();
         var manager = CreateNetworkManager(loggerFactory);
@@ -1479,12 +2122,21 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         return (session, requests, responses, continued);
     }
 
-    private static RequestWillBeSentResponse InternalRedirectWillBeSent(string url, ResponsePayload redirectResponse = null, bool redirectHasExtraInfo = false)
-        => new()
+    private static RequestWillBeSentResponse InternalRedirectWillBeSent(
+        string url,
+        ResponsePayload redirectResponse = null,
+        bool redirectHasExtraInfo = false
+    ) =>
+        new()
         {
             RequestId = InternalRedirectNetworkId,
             LoaderId = InternalRedirectNetworkId,
-            Request = new Request { Url = url, Method = HttpMethod.Get, Headers = [] },
+            Request = new Request
+            {
+                Url = url,
+                Method = HttpMethod.Get,
+                Headers = [],
+            },
             RedirectResponse = redirectResponse,
             Initiator = new Initiator { Type = InitiatorType.Other },
             RedirectHasExtraInfo = redirectHasExtraInfo,
@@ -1492,17 +2144,31 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             FrameId = InternalRedirectFrameId,
         };
 
-    private static FetchRequestPausedResponse InternalRedirectPaused(string requestId, string url) => new()
-    {
-        RequestId = requestId,
-        Request = new Request { Url = url, Method = HttpMethod.Get, Headers = [] },
-        FrameId = InternalRedirectFrameId,
-        ResourceType = ResourceType.Document,
-        NetworkId = InternalRedirectNetworkId,
-    };
+    private static FetchRequestPausedResponse InternalRedirectPaused(
+        string requestId,
+        string url
+    ) =>
+        new()
+        {
+            RequestId = requestId,
+            Request = new Request
+            {
+                Url = url,
+                Method = HttpMethod.Get,
+                Headers = [],
+            },
+            FrameId = InternalRedirectFrameId,
+            ResourceType = ResourceType.Document,
+            NetworkId = InternalRedirectNetworkId,
+        };
 
-    private static ResponsePayload InternalRedirectResponse(string url, HttpStatusCode status, string statusText, string location)
-        => new()
+    private static ResponsePayload InternalRedirectResponse(
+        string url,
+        HttpStatusCode status,
+        string statusText,
+        string location
+    ) =>
+        new()
         {
             Url = url,
             Status = status,
@@ -1510,38 +2176,53 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             Headers = new Dictionary<string, string> { ["location"] = location },
         };
 
-    private static ResponseReceivedResponse InternalRedirectFinalResponse() => new()
-    {
-        RequestId = InternalRedirectNetworkId,
-        HasExtraInfo = true,
-        Response = new ResponsePayload
+    private static ResponseReceivedResponse InternalRedirectFinalResponse() =>
+        new()
         {
-            Url = Hop3Url,
-            Status = HttpStatusCode.OK,
-            StatusText = "OK",
-            Headers = [],
-        },
-    };
+            RequestId = InternalRedirectNetworkId,
+            HasExtraInfo = true,
+            Response = new ResponsePayload
+            {
+                Url = Hop3Url,
+                Status = HttpStatusCode.OK,
+                StatusText = "OK",
+                Headers = [],
+            },
+        };
 
-    private static RequestWillBeSentResponse WorkerRequestWillBeSent(string url, ResponsePayload redirectResponse = null)
-        => new()
+    private static RequestWillBeSentResponse WorkerRequestWillBeSent(
+        string url,
+        ResponsePayload redirectResponse = null
+    ) =>
+        new()
         {
             RequestId = WorkerNetworkId,
             LoaderId = string.Empty,
-            Request = new Request { Url = url, Method = HttpMethod.Get, Headers = new Dictionary<string, string>() },
+            Request = new Request
+            {
+                Url = url,
+                Method = HttpMethod.Get,
+                Headers = new Dictionary<string, string>(),
+            },
             RedirectResponse = redirectResponse,
             Initiator = new Initiator { Type = InitiatorType.Script },
             RedirectHasExtraInfo = false,
             Type = ResourceType.Fetch,
         };
 
-    private static FetchRequestPausedResponse WorkerRequestPaused(string requestId, string url) => new()
-    {
-        RequestId = requestId,
-        Request = new Request { Url = url, Method = HttpMethod.Get, Headers = new Dictionary<string, string>() },
-        ResourceType = ResourceType.Fetch,
-        NetworkId = WorkerNetworkId,
-    };
+    private static FetchRequestPausedResponse WorkerRequestPaused(string requestId, string url) =>
+        new()
+        {
+            RequestId = requestId,
+            Request = new Request
+            {
+                Url = url,
+                Method = HttpMethod.Get,
+                Headers = new Dictionary<string, string>(),
+            },
+            ResourceType = ResourceType.Fetch,
+            NetworkId = WorkerNetworkId,
+        };
 
     private sealed class RecordingCdpSession : CDPSession
     {
@@ -1551,7 +2232,12 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         internal override CDPSession ParentSession => null;
 
-        public override Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
+        public override Task<JsonElement?> SendAsync(
+            string method,
+            object args = null,
+            bool waitForCallback = true,
+            CommandOptions options = null
+        )
         {
             lock (Sent)
             {
@@ -1563,18 +2249,21 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         public override Task DetachAsync() => Task.CompletedTask;
 
-        public override void Close(string closeReason)
-        {
-        }
+        public override void Close(string closeReason) { }
 
         public void RaiseDisconnected() => OnDisconnected();
 
-        public void Emit(string messageId, object data)
-            => OnMessageReceived(new MessageEventArgs
-            {
-                MessageID = messageId,
-                MessageData = JsonSerializer.SerializeToElement(data, JsonHelper.DefaultJsonSerializerSettings.Value),
-            });
+        public void Emit(string messageId, object data) =>
+            OnMessageReceived(
+                new MessageEventArgs
+                {
+                    MessageID = messageId,
+                    MessageData = JsonSerializer.SerializeToElement(
+                        data,
+                        JsonHelper.DefaultJsonSerializerSettings.Value
+                    ),
+                }
+            );
     }
 
     private sealed class RestartHarness
@@ -1587,7 +2276,10 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         public List<IRequest> Finished { get; } = [];
 
-        public static async Task<RestartHarness> CreateAsync(ILoggerFactory loggerFactory, Func<IRequest, Task> onRequest)
+        public static async Task<RestartHarness> CreateAsync(
+            ILoggerFactory loggerFactory,
+            Func<IRequest, Task> onRequest
+        )
         {
             var client = new RecordingCdpSession();
             var manager = CreateNetworkManager(loggerFactory);
@@ -1612,71 +2304,93 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             }
         }
 
-        public void EmitRequestWillBeSent(string url = FontUrl, string urlFragment = null, ResponsePayload redirectResponse = null)
-            => _client.Emit("Network.requestWillBeSent", new RequestWillBeSentResponse
-            {
-                RequestId = RestartNetworkId,
-                LoaderId = "11ACE9783588040D644B905E8B55285B",
-                Request = new Request
+        public void EmitRequestWillBeSent(
+            string url = FontUrl,
+            string urlFragment = null,
+            ResponsePayload redirectResponse = null
+        ) =>
+            _client.Emit(
+                "Network.requestWillBeSent",
+                new RequestWillBeSentResponse
                 {
-                    Url = url,
-                    UrlFragment = urlFragment,
-                    Method = HttpMethod.Get,
-                    Headers = new Dictionary<string, string>(),
-                },
-                RedirectResponse = redirectResponse,
-                Initiator = new Initiator { Type = InitiatorType.Parser },
-                RedirectHasExtraInfo = false,
-                Type = ResourceType.Font,
-                FrameId = RestartFrameId,
-            });
+                    RequestId = RestartNetworkId,
+                    LoaderId = "11ACE9783588040D644B905E8B55285B",
+                    Request = new Request
+                    {
+                        Url = url,
+                        UrlFragment = urlFragment,
+                        Method = HttpMethod.Get,
+                        Headers = new Dictionary<string, string>(),
+                    },
+                    RedirectResponse = redirectResponse,
+                    Initiator = new Initiator { Type = InitiatorType.Parser },
+                    RedirectHasExtraInfo = false,
+                    Type = ResourceType.Font,
+                    FrameId = RestartFrameId,
+                }
+            );
 
         public void EmitRequestPaused(
             string requestId,
             string url = FontUrl,
             string urlFragment = null,
             HttpMethod method = null,
-            string redirectedRequestId = null)
-            => _client.Emit("Fetch.requestPaused", new FetchRequestPausedResponse
-            {
-                RequestId = requestId,
-                Request = new Request
+            string redirectedRequestId = null
+        ) =>
+            _client.Emit(
+                "Fetch.requestPaused",
+                new FetchRequestPausedResponse
                 {
-                    Url = url,
-                    UrlFragment = urlFragment,
-                    Method = method ?? HttpMethod.Get,
-                    Headers = new Dictionary<string, string>(),
-                },
-                FrameId = RestartFrameId,
-                ResourceType = ResourceType.Font,
-                NetworkId = RestartNetworkId,
-                RedirectedRequestId = redirectedRequestId,
-            });
+                    RequestId = requestId,
+                    Request = new Request
+                    {
+                        Url = url,
+                        UrlFragment = urlFragment,
+                        Method = method ?? HttpMethod.Get,
+                        Headers = new Dictionary<string, string>(),
+                    },
+                    FrameId = RestartFrameId,
+                    ResourceType = ResourceType.Font,
+                    NetworkId = RestartNetworkId,
+                    RedirectedRequestId = redirectedRequestId,
+                }
+            );
 
         public void FinishRequest()
         {
-            _client.Emit("Network.responseReceived", new ResponseReceivedResponse
-            {
-                RequestId = RestartNetworkId,
-                Response = new ResponsePayload
+            _client.Emit(
+                "Network.responseReceived",
+                new ResponseReceivedResponse
                 {
-                    Url = FontUrl,
-                    Status = HttpStatusCode.OK,
-                    StatusText = "OK",
-                    Headers = new Dictionary<string, string>(),
-                },
-            });
-            _client.Emit("Network.loadingFinished", new LoadingFinishedEventResponse { RequestId = RestartNetworkId });
+                    RequestId = RestartNetworkId,
+                    Response = new ResponsePayload
+                    {
+                        Url = FontUrl,
+                        Status = HttpStatusCode.OK,
+                        StatusText = "OK",
+                        Headers = new Dictionary<string, string>(),
+                    },
+                }
+            );
+            _client.Emit(
+                "Network.loadingFinished",
+                new LoadingFinishedEventResponse { RequestId = RestartNetworkId }
+            );
         }
     }
 
-    private static NetworkManager CreateNetworkManager(ILoggerFactory loggerFactory, Func<CDPSession, WebWorker> workerForSession = null)
+    private static NetworkManager CreateNetworkManager(
+        ILoggerFactory loggerFactory,
+        Func<CDPSession, WebWorker> workerForSession = null
+    )
     {
         var frameManagerMock = Substitute.For<IFrameProvider>();
         var browserMock = Substitute.For<IBrowser>();
         browserMock.GetUserAgentAsync().Returns("user-agent");
         frameManagerMock.Browser.Returns(browserMock);
-        frameManagerMock.Worker(Arg.Any<CDPSession>()).Returns(ci => workerForSession?.Invoke(ci.Arg<CDPSession>()));
+        frameManagerMock
+            .Worker(Arg.Any<CDPSession>())
+            .Returns(ci => workerForSession?.Invoke(ci.Arg<CDPSession>()));
 
         return new NetworkManager(frameManagerMock, loggerFactory);
     }

@@ -7,14 +7,18 @@ namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class BrowserTargetEventsTests : PuppeteerBrowserBaseTest
     {
-        public BrowserTargetEventsTests() : base()
-        {
-        }
+        public BrowserTargetEventsTests()
+            : base() { }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Browser target events", "should work")]
+        [
+            Test,
+            PuppeteerTest("launcher.spec", "Launcher specs Browser target events", "should work")
+        ]
         public async Task ShouldWork()
         {
-            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            await using var browser = await Puppeteer.LaunchAsync(
+                TestConstants.DefaultBrowserOptions()
+            );
             var events = new List<string>();
 
             Browser.TargetCreated += (_, _) => events.Add("CREATED");

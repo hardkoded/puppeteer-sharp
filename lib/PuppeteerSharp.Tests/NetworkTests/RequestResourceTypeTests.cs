@@ -7,7 +7,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestResourceTypeTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("network.spec", "network Request.resourceType", "should work for document type")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.resourceType",
+                "should work for document type"
+            )
+        ]
         public async Task ShouldWorkForDocumentType()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -15,7 +22,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.ResourceType, Is.EqualTo(ResourceType.Document));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.resourceType", "should work for stylesheets")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.resourceType",
+                "should work for stylesheets"
+            )
+        ]
         public async Task ShouldWorkForStylesheets()
         {
             var cssRequests = new List<IRequest>();

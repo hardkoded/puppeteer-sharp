@@ -6,11 +6,17 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsDOMContentLoadedTests : PuppeteerPageBaseTest
     {
-        public PageEventsDOMContentLoadedTests() : base()
-        {
-        }
+        public PageEventsDOMContentLoadedTests()
+            : base() { }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.DOMContentLoaded", "should fire when expected")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.Events.DOMContentLoaded",
+                "should fire when expected"
+            )
+        ]
         public async Task ShouldFireWhenExpected()
         {
             var _ = Page.GoToAsync(TestConstants.AboutBlank);

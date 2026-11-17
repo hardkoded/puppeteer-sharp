@@ -4,7 +4,8 @@ namespace PuppeteerSharp.QueryHandlers
     {
         internal XPathQueryHandler()
         {
-            QuerySelectorAll = @"(element, selector, {xpathQuerySelectorAll}) => {
+            QuerySelectorAll =
+                @"(element, selector, {xpathQuerySelectorAll}) => {
                 return xpathQuerySelectorAll(element, selector);
             }";
         }

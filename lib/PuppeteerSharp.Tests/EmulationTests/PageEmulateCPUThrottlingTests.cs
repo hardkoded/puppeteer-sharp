@@ -6,11 +6,17 @@ namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class PageEmulateCPUThrottlingTests : PuppeteerPageBaseTest
     {
-        public PageEmulateCPUThrottlingTests() : base()
-        {
-        }
+        public PageEmulateCPUThrottlingTests()
+            : base() { }
 
-        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateCPUThrottling", "should change the CPU throttling rate successfully")]
+        [
+            Test,
+            PuppeteerTest(
+                "emulation.spec",
+                "Emulation Page.emulateCPUThrottling",
+                "should change the CPU throttling rate successfully"
+            )
+        ]
         public async Task ShouldChangeTheCPUThrottlingRateSuccessfully()
         {
             await Page.EmulateCPUThrottlingAsync(100);

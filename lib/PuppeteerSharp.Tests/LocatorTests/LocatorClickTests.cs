@@ -14,7 +14,8 @@ namespace PuppeteerSharp.Tests.LocatorTests
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             await Page.Locator("button").ClickAsync();
 
@@ -23,12 +24,20 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(text, Is.EqualTo("clicked"));
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator Locator.click", "should work for multiple selectors")]
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator Locator.click",
+                "should work for multiple selectors"
+            )
+        ]
         public async Task ShouldWorkForMultipleSelectors()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             await Page.Locator("::-p-text(test), ::-p-xpath(/button)").ClickAsync();
 
@@ -37,12 +46,20 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(text, Is.EqualTo("clicked"));
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator Locator.click", "should work if the element is out of viewport")]
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator Locator.click",
+                "should work if the element is out of viewport"
+            )
+        ]
         public async Task ShouldWorkIfTheElementIsOutOfViewport()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button style=\"margin-top: 600px;\" onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button style=\"margin-top: 600px;\" onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             await Page.Locator("button").ClickAsync();
 
@@ -51,12 +68,20 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(text, Is.EqualTo("clicked"));
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator Locator.click", "should work with element handles")]
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator Locator.click",
+                "should work with element handles"
+            )
+        ]
         public async Task ShouldWorkWithElementHandles()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button style=\"margin-top: 600px;\" onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button style=\"margin-top: 600px;\" onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             var button = await Page.QuerySelectorAsync("button");
             Assert.That(button, Is.Not.Null);
@@ -67,12 +92,20 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(text, Is.EqualTo("clicked"));
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator Locator.click", "should work if the element becomes visible later")]
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator Locator.click",
+                "should work if the element becomes visible later"
+            )
+        ]
         public async Task ShouldWorkIfTheElementBecomesVisibleLater()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button style=\"display: none;\" onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button style=\"display: none;\" onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             var button = await Page.QuerySelectorAsync("button");
             var resultTask = Page.Locator("button").ClickAsync();
@@ -87,12 +120,20 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(text, Is.EqualTo("clicked"));
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator Locator.click", "should work if the element becomes enabled later")]
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator Locator.click",
+                "should work if the element becomes enabled later"
+            )
+        ]
         public async Task ShouldWorkIfTheElementBecomesEnabledLater()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button disabled onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button disabled onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             var button = await Page.QuerySelectorAsync("button");
             var resultTask = Page.Locator("button").ClickAsync();
@@ -107,12 +148,20 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(text, Is.EqualTo("clicked"));
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator Locator.click", "should work if multiple conditions are satisfied later")]
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator Locator.click",
+                "should work if multiple conditions are satisfied later"
+            )
+        ]
         public async Task ShouldWorkIfMultipleConditionsAreSatisfiedLater()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button style=\"margin-top: 600px;\" style=\"display: none;\" disabled onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button style=\"margin-top: 600px;\" style=\"display: none;\" disabled onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             var button = await Page.QuerySelectorAsync("button");
             var resultTask = Page.Locator("button").ClickAsync();
@@ -120,10 +169,12 @@ namespace PuppeteerSharp.Tests.LocatorTests
             var text = await button.EvaluateFunctionAsync<string>("el => el.innerText");
             Assert.That(text, Is.EqualTo("test"));
 
-            await button.EvaluateFunctionAsync(@"el => {
+            await button.EvaluateFunctionAsync(
+                @"el => {
                 el.disabled = false;
                 el.style.display = 'block';
-            }");
+            }"
+            );
             await resultTask;
 
             text = await button.EvaluateFunctionAsync<string>("el => el.innerText");
@@ -135,7 +186,8 @@ namespace PuppeteerSharp.Tests.LocatorTests
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button style=\"display: none;\" onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button style=\"display: none;\" onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
             {
@@ -145,12 +197,16 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(exception.Message, Does.Contain("Timed out after waiting 5000ms"));
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator Locator.click", "should retry clicks on errors")]
+        [
+            Test,
+            PuppeteerTest("locator.spec", "Locator Locator.click", "should retry clicks on errors")
+        ]
         public async Task ShouldRetryClicksOnErrors()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button style=\"display: none;\" onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button style=\"display: none;\" onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
             {
@@ -165,13 +221,13 @@ namespace PuppeteerSharp.Tests.LocatorTests
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<button style=\"display: none;\" onclick=\"this.innerText = 'clicked';\">test</button>");
+                "<button style=\"display: none;\" onclick=\"this.innerText = 'clicked';\">test</button>"
+            );
 
             using var cts = new CancellationTokenSource();
-            var resultTask = Page.Locator("button").SetTimeout(5000).ClickAsync(new LocatorClickOptions
-            {
-                CancellationToken = cts.Token,
-            });
+            var resultTask = Page.Locator("button")
+                .SetTimeout(5000)
+                .ClickAsync(new LocatorClickOptions { CancellationToken = cts.Token });
 
             await Task.Delay(2000);
             cts.Cancel();
@@ -185,7 +241,8 @@ namespace PuppeteerSharp.Tests.LocatorTests
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync(
-                "<iframe src=\"data:text/html,<button onclick=&quot;this.innerText = 'clicked';&quot;>test</button>\"></iframe>");
+                "<iframe src=\"data:text/html,<button onclick=&quot;this.innerText = 'clicked';&quot;>test</button>\"></iframe>"
+            );
 
             var frame = await Page.WaitForFrameAsync(f => f.Url.StartsWith("data"));
 

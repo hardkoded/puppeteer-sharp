@@ -11,34 +11,30 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="TargetClosedException"/> class.
         /// </summary>
-        public TargetClosedException()
-        {
-        }
+        public TargetClosedException() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TargetClosedException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
-        public TargetClosedException(string message) : base(message)
-        {
-        }
+        public TargetClosedException(string message)
+            : base(message) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TargetClosedException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
-        public TargetClosedException(string message, System.Exception innerException) : base(message, innerException)
-        {
-        }
+        public TargetClosedException(string message, System.Exception innerException)
+            : base(message, innerException) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TargetClosedException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="closeReason">Close reason.</param>
-        public TargetClosedException(string message, string closeReason) : base($"{message} ({closeReason})")
-            => CloseReason = closeReason;
+        public TargetClosedException(string message, string closeReason)
+            : base($"{message} ({closeReason})") => CloseReason = closeReason;
 
         /// <summary>
         /// Close Reason.

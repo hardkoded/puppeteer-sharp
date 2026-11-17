@@ -24,11 +24,16 @@ namespace PuppeteerSharp.Tests
         public static string EmptyPage { get; private set; }
         public static string CrossProcessUrl { get; private set; }
         public static readonly bool IsChrome = PuppeteerTestAttribute.IsChrome;
-        public static readonly DeviceDescriptor IPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
-        public static readonly DeviceDescriptor IPhone6Landscape = Puppeteer.Devices[DeviceDescriptorName.IPhone6Landscape];
+        public static readonly DeviceDescriptor IPhone = Puppeteer.Devices[
+            DeviceDescriptorName.IPhone6
+        ];
+        public static readonly DeviceDescriptor IPhone6Landscape = Puppeteer.Devices[
+            DeviceDescriptorName.IPhone6Landscape
+        ];
 
         public static ILoggerFactory LoggerFactory { get; private set; }
-        public static string FileToUpload => Path.Combine(AppContext.BaseDirectory, "Assets", "file-to-upload.txt");
+        public static string FileToUpload =>
+            Path.Combine(AppContext.BaseDirectory, "Assets", "file-to-upload.txt");
 
         public static readonly IEnumerable<string> NestedFramesDumpResult = new List<string>()
         {
@@ -36,7 +41,7 @@ namespace PuppeteerSharp.Tests
             "    http://localhost:<PORT>/frames/two-frames.html (2frames)",
             "        http://localhost:<PORT>/frames/frame.html (uno)",
             "        http://localhost:<PORT>/frames/frame.html (dos)",
-            "    http://localhost:<PORT>/frames/frame.html (aframe)"
+            "    http://localhost:<PORT>/frames/frame.html (aframe)",
         };
 
         public static void Initialize(SimpleServer server, SimpleServer httpsServer)
@@ -52,23 +57,30 @@ namespace PuppeteerSharp.Tests
             CrossProcessUrl = ServerIpUrl;
         }
 
-        public static LaunchOptions DefaultBrowserOptions() => new()
-        {
-            SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
-            HeadlessMode = PuppeteerTestAttribute.Headless,
-            Browser = IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
-            EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
-            Timeout = 0,
-            Pipe = PuppeteerTestAttribute.IsPipe,
-            Protocol = PuppeteerTestAttribute.IsCdp ? ProtocolType.Cdp : ProtocolType.WebdriverBiDi,
+        public static LaunchOptions DefaultBrowserOptions() =>
+            new()
+            {
+                SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
+                HeadlessMode = PuppeteerTestAttribute.Headless,
+                Browser = IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
+                EnqueueAsyncMessages = Convert.ToBoolean(
+                    Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"
+                ),
+                Timeout = 0,
+                Pipe = PuppeteerTestAttribute.IsPipe,
+                Protocol = PuppeteerTestAttribute.IsCdp
+                    ? ProtocolType.Cdp
+                    : ProtocolType.WebdriverBiDi,
 
-            // TODO(crbug.com/579030694): Remove once OrganizerPanel stops eagerly loading WebUI.
-            Args = IsChrome ? new[] { "--disable-features=OrganizerPanel" } : Array.Empty<string>(),
+                // TODO(crbug.com/579030694): Remove once OrganizerPanel stops eagerly loading WebUI.
+                Args = IsChrome
+                    ? new[] { "--disable-features=OrganizerPanel" }
+                    : Array.Empty<string>(),
 #if NETCOREAPP
-            EnqueueTransportMessages = false
+                EnqueueTransportMessages = false
 #else
-            EnqueueTransportMessages = true
+                EnqueueTransportMessages = true
 #endif
-        };
+            };
     }
 }

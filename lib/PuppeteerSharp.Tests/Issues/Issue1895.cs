@@ -4,9 +4,8 @@ namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue1895 : PuppeteerPageBaseTest
     {
-        public Issue1895() : base()
-        {
-        }
+        public Issue1895()
+            : base() { }
 
         public async Task ItNavigatesToSannySoft()
         {

@@ -8,21 +8,32 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class TouchStartTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchStart", "should work")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.touchStart",
+                "should work"
+            )
+        ]
         public async Task ShouldWork()
         {
             await SetupTouchEventReporting();
 
-            await Page.EvaluateExpressionAsync(@"
+            await Page.EvaluateExpressionAsync(
+                @"
                 document.body.style.padding = '0';
                 document.body.style.margin = '0';
                 document.body.innerHTML = '<div style=""cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;""></div>';
-            ");
+            "
+            );
 
             var divHandle = await Page.QuerySelectorAsync("div");
             await divHandle.TouchStartAsync();
 
-            var events = await Page.EvaluateExpressionAsync<TouchEventReport[]>("window.__touchEvents");
+            var events = await Page.EvaluateExpressionAsync<TouchEventReport[]>(
+                "window.__touchEvents"
+            );
 
             // margin + middle point offset
             var expectedX = 45 + 60;
@@ -37,22 +48,33 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(events[0].Touches[0][1], Is.EqualTo(expectedY));
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchStart", "should work with the returned Touch")]
+        [
+            Test,
+            PuppeteerTest(
+                "elementhandle.spec",
+                "ElementHandle specs ElementHandle.touchStart",
+                "should work with the returned Touch"
+            )
+        ]
         public async Task ShouldWorkWithTheReturnedTouch()
         {
             await SetupTouchEventReporting();
 
-            await Page.EvaluateExpressionAsync(@"
+            await Page.EvaluateExpressionAsync(
+                @"
                 document.body.style.padding = '0';
                 document.body.style.margin = '0';
                 document.body.innerHTML = '<div style=""cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;""></div>';
-            ");
+            "
+            );
 
             var divHandle = await Page.QuerySelectorAsync("div");
             var touch = await divHandle.TouchStartAsync();
             await touch.MoveAsync(150, 150);
 
-            var events = await Page.EvaluateExpressionAsync<TouchEventReport[]>("window.__touchEvents");
+            var events = await Page.EvaluateExpressionAsync<TouchEventReport[]>(
+                "window.__touchEvents"
+            );
 
             // margin + middle point offset
             var expectedX = 45 + 60;
@@ -79,7 +101,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
         private async Task SetupTouchEventReporting()
         {
-            await Page.EvaluateExpressionAsync(@"
+            await Page.EvaluateExpressionAsync(
+                @"
                 window.__touchEvents = [];
                 document.body.addEventListener('touchstart', reportTouchEvent);
                 document.body.addEventListener('touchmove', reportTouchEvent);
@@ -90,7 +113,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                         touches: [...e.touches].map(t => [t.pageX, t.pageY]),
                     });
                 }
-            ");
+            "
+            );
         }
 
         public class TouchEventReport

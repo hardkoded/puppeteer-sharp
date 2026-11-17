@@ -37,9 +37,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher(SupportedBrowser browser, ILoggerFactory loggerFactory = null)
-            : this(new BrowserFetcherOptions { Browser = browser }, loggerFactory)
-        {
-        }
+            : this(new BrowserFetcherOptions { Browser = browser }, loggerFactory) { }
 
         /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher(BrowserFetcherOptions options, ILoggerFactory loggerFactory = null)
@@ -52,7 +50,8 @@ namespace PuppeteerSharp
             Browser = options.Browser;
             CacheDir = string.IsNullOrEmpty(options.Path) ? GetBrowsersLocation() : options.Path;
             Platform = options.Platform ?? GetCurrentPlatform();
-            _customFileDownload = options.CustomFileDownload ?? DownloadFileUsingHttpClientTaskAsync;
+            _customFileDownload = options.CustomFileDownload
+                ?? DownloadFileUsingHttpClientTaskAsync;
             _skipChromeHeadlessShellDownload = options.SkipChromeHeadlessShellDownload;
             _logger = loggerFactory?.CreateLogger<BrowserFetcher>();
         }
@@ -103,9 +102,14 @@ namespace PuppeteerSharp
         {
             var buildId = Browser switch
             {
-                SupportedBrowser.Firefox => await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false),
-                SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell => Chrome.DefaultBuildId,
-                SupportedBrowser.Chromium => await Chromium.ResolveBuildIdAsync(Platform).ConfigureAwait(false),
+                SupportedBrowser.Firefox => await Firefox
+                    .GetDefaultBuildIdAsync()
+                    .ConfigureAwait(false),
+                SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell =>
+                    Chrome.DefaultBuildId,
+                SupportedBrowser.Chromium => await Chromium
+                    .ResolveBuildIdAsync(Platform)
+                    .ConfigureAwait(false),
                 _ => throw new PuppeteerException($"{Browser} not supported."),
             };
 
@@ -120,12 +124,12 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public IEnumerable<InstalledBrowser> GetInstalledBrowsers()
-            => new Cache(CacheDir).GetInstalledBrowsers();
+        public IEnumerable<InstalledBrowser> GetInstalledBrowsers() =>
+            new Cache(CacheDir).GetInstalledBrowsers();
 
         /// <inheritdoc/>
-        public void Uninstall(string buildId)
-            => new Cache(CacheDir).Uninstall(Browser, Platform, buildId);
+        public void Uninstall(string buildId) =>
+            new Cache(CacheDir).Uninstall(Browser, Platform, buildId);
 
         /// <inheritdoc/>
         public async Task<InstalledBrowser> DownloadAsync(string buildId)
@@ -134,43 +138,53 @@ namespace PuppeteerSharp
 
             if (Browser == SupportedBrowser.Chrome && !_skipChromeHeadlessShellDownload)
             {
-                await DownloadAsync(SupportedBrowser.ChromeHeadlessShell, buildId).ConfigureAwait(false);
+                await DownloadAsync(SupportedBrowser.ChromeHeadlessShell, buildId)
+                    .ConfigureAwait(false);
             }
 
             return installedBrowser;
         }
 
         /// <inheritdoc/>
-        public string GetExecutablePath(string buildId)
-            => new InstalledBrowser(
+        public string GetExecutablePath(string buildId) =>
+            new InstalledBrowser(
                 new Cache(CacheDir),
                 Browser,
                 buildId,
-                Platform).GetExecutablePath();
+                Platform
+            ).GetExecutablePath();
 
         internal static Platform GetCurrentPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                return RuntimeInformation.OSArchitecture == Architecture.Arm64 ? Platform.MacOSArm64 : Platform.MacOS;
+                return RuntimeInformation.OSArchitecture == Architecture.Arm64
+                    ? Platform.MacOSArm64
+                    : Platform.MacOS;
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return RuntimeInformation.OSArchitecture == Architecture.Arm64 ? Platform.LinuxArm64 : Platform.Linux;
+                return RuntimeInformation.OSArchitecture == Architecture.Arm64
+                    ? Platform.LinuxArm64
+                    : Platform.Linux;
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return RuntimeInformation.OSArchitecture == Architecture.X64 ||
-                       (RuntimeInformation.OSArchitecture == Architecture.Arm64 && IsWindows11()) ? Platform.Win64 : Platform.Win32;
+                return
+                    RuntimeInformation.OSArchitecture == Architecture.X64
+                    || (RuntimeInformation.OSArchitecture == Architecture.Arm64 && IsWindows11())
+                    ? Platform.Win64
+                    : Platform.Win32;
             }
 
             return Platform.Unknown;
         }
 
-        internal static bool IsWindows11()
-            => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version.Build >= 22000;
+        internal static bool IsWindows11() =>
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            && Environment.OSVersion.Version.Build >= 22000;
 
         internal static string GetBrowsersLocation()
         {
@@ -178,13 +192,19 @@ namespace PuppeteerSharp
             var assemblyName = assembly.GetName().Name + ".dll";
             DirectoryInfo assemblyDirectory = new(AppContext.BaseDirectory);
 
-            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
+            if (
+                !assemblyDirectory.Exists
+                || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName))
+            )
             {
                 var assemblyLocation = assembly.Location;
 
                 if (string.IsNullOrEmpty(assemblyLocation))
                 {
-                    var singleFilePublishFilePathForBrowserExecutables = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), PublishSingleFileLocalApplicationDataFolderName);
+                    var singleFilePublishFilePathForBrowserExecutables = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        PublishSingleFileLocalApplicationDataFolderName
+                    );
                     if (!Directory.Exists(singleFilePublishFilePathForBrowserExecutables))
                     {
                         Directory.CreateDirectory(singleFilePublishFilePathForBrowserExecutables);
@@ -196,7 +216,10 @@ namespace PuppeteerSharp
                 assemblyDirectory = new FileInfo(assemblyLocation).Directory;
             }
 
-            if (!assemblyDirectory!.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
+            if (
+                !assemblyDirectory!.Exists
+                || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName))
+            )
             {
                 assemblyDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
             }
@@ -204,14 +227,28 @@ namespace PuppeteerSharp
             return assemblyDirectory.FullName;
         }
 
-        private static string GetDownloadURL(SupportedBrowser browser, Platform platform, string baseUrl, string buildId) => browser switch
-        {
-            SupportedBrowser.Chrome => Chrome.ResolveDownloadUrl(platform, buildId, baseUrl),
-            SupportedBrowser.ChromeHeadlessShell => ChromeHeadlessShell.ResolveDownloadUrl(platform, buildId, baseUrl),
-            SupportedBrowser.Chromium => Chromium.ResolveDownloadUrl(platform, buildId, baseUrl),
-            SupportedBrowser.Firefox => Firefox.ResolveDownloadUrl(platform, buildId, baseUrl),
-            _ => throw new NotSupportedException(),
-        };
+        private static string GetDownloadURL(
+            SupportedBrowser browser,
+            Platform platform,
+            string baseUrl,
+            string buildId
+        ) =>
+            browser switch
+            {
+                SupportedBrowser.Chrome => Chrome.ResolveDownloadUrl(platform, buildId, baseUrl),
+                SupportedBrowser.ChromeHeadlessShell => ChromeHeadlessShell.ResolveDownloadUrl(
+                    platform,
+                    buildId,
+                    baseUrl
+                ),
+                SupportedBrowser.Chromium => Chromium.ResolveDownloadUrl(
+                    platform,
+                    buildId,
+                    baseUrl
+                ),
+                SupportedBrowser.Firefox => Firefox.ResolveDownloadUrl(platform, buildId, baseUrl),
+                _ => throw new NotSupportedException(),
+            };
 
         private static void ExtractTar(string zipPath, string folderPath)
         {
@@ -291,7 +328,8 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                var fallbackUrl = await TryResolveFallbackDownloadUrlAsync(browser, buildId).ConfigureAwait(false);
+                var fallbackUrl = await TryResolveFallbackDownloadUrlAsync(browser, buildId)
+                    .ConfigureAwait(false);
                 if (fallbackUrl != null)
                 {
                     _logger?.FailedToDownloadFallingBack(url, fallbackUrl);
@@ -301,12 +339,18 @@ namespace PuppeteerSharp
                     }
                     catch (Exception fallbackEx)
                     {
-                        throw new PuppeteerException($"Failed to download {browser} for {Platform} from {fallbackUrl}", fallbackEx);
+                        throw new PuppeteerException(
+                            $"Failed to download {browser} for {Platform} from {fallbackUrl}",
+                            fallbackEx
+                        );
                     }
                 }
                 else
                 {
-                    throw new PuppeteerException($"Failed to download {browser} for {Platform} from {url}", ex);
+                    throw new PuppeteerException(
+                        $"Failed to download {browser} for {Platform} from {url}",
+                        ex
+                    );
                 }
             }
 
@@ -322,8 +366,10 @@ namespace PuppeteerSharp
         {
             // On Windows for Chrome invoke setup.exe to configure sandboxes.
             if (
-                installedBrowser.Platform is Platform.Win32 or Platform.Win64 &&
-                installedBrowser.Browser == SupportedBrowser.Chrome && installedBrowser.Platform == GetCurrentPlatform())
+                installedBrowser.Platform is Platform.Win32 or Platform.Win64
+                && installedBrowser.Browser == SupportedBrowser.Chrome
+                && installedBrowser.Platform == GetCurrentPlatform()
+            )
             {
                 try
                 {
@@ -337,7 +383,8 @@ namespace PuppeteerSharp
 
                     using var process = new Process();
                     process.StartInfo.FileName = setupExePath;
-                    process.StartInfo.Arguments = $"--configure-browser-in-directory=\"{browserDir.FullName}\"";
+                    process.StartInfo.Arguments =
+                        $"--configure-browser-in-directory=\"{browserDir.FullName}\"";
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.UseShellExecute = false;
                     process.Start();
@@ -366,7 +413,9 @@ namespace PuppeteerSharp
                     destinationDirectoryInfo.Create();
                 }
 
-                var mountAndCopyTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var mountAndCopyTcs = new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
 
                 using var process = new Process();
                 process.EnableRaisingEvents = true;
@@ -389,11 +438,15 @@ namespace PuppeteerSharp
                     }
 
                     var mountPath = volumes.Captures[0];
-                    var appFile = new DirectoryInfo(mountPath.Value).GetDirectories("*.app").FirstOrDefault();
+                    var appFile = new DirectoryInfo(mountPath.Value)
+                        .GetDirectories("*.app")
+                        .FirstOrDefault();
 
                     if (appFile == null)
                     {
-                        mountAndCopyTcs.TrySetException(new PuppeteerException($"Cannot find app in {mountPath.Value}"));
+                        mountAndCopyTcs.TrySetException(
+                            new PuppeteerException($"Cannot find app in {mountPath.Value}")
+                        );
                         return;
                     }
 
@@ -409,7 +462,9 @@ namespace PuppeteerSharp
                 process.BeginOutputReadLine();
                 process.WaitForExit();
 
-                await mountAndCopyTcs.Task.WithTimeout(Puppeteer.DefaultTimeout).ConfigureAwait(false);
+                await mountAndCopyTcs
+                    .Task.WithTimeout(Puppeteer.DefaultTimeout)
+                    .ConfigureAwait(false);
             }
             finally
             {
@@ -444,43 +499,65 @@ namespace PuppeteerSharp
                         BrowserTag.Latest => Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly),
                         BrowserTag.Beta => Firefox.ResolveBuildIdAsync(FirefoxChannel.Beta),
                         BrowserTag.Nightly => Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly),
-                        BrowserTag.DevEdition => Firefox.ResolveBuildIdAsync(FirefoxChannel.DevEdition),
+                        BrowserTag.DevEdition => Firefox.ResolveBuildIdAsync(
+                            FirefoxChannel.DevEdition
+                        ),
                         BrowserTag.Stable => Firefox.ResolveBuildIdAsync(FirefoxChannel.Stable),
                         BrowserTag.Esr => Firefox.ResolveBuildIdAsync(FirefoxChannel.Esr),
-                        _ => throw new PuppeteerException($"{tag} is not supported for {Browser}. Use 'latest' instead."),
+                        _ => throw new PuppeteerException(
+                            $"{tag} is not supported for {Browser}. Use 'latest' instead."
+                        ),
                     };
                 case SupportedBrowser.Chrome:
                     return tag switch
                     {
-                        BrowserTag.Latest => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Canary),
+                        BrowserTag.Latest => Chrome.ResolveBuildIdAsync(
+                            ChromeReleaseChannel.Canary
+                        ),
                         BrowserTag.Beta => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Beta),
-                        BrowserTag.Canary => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Canary),
+                        BrowserTag.Canary => Chrome.ResolveBuildIdAsync(
+                            ChromeReleaseChannel.Canary
+                        ),
                         BrowserTag.Dev => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Dev),
-                        BrowserTag.Stable => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable),
+                        BrowserTag.Stable => Chrome.ResolveBuildIdAsync(
+                            ChromeReleaseChannel.Stable
+                        ),
                         _ => throw new PuppeteerException($"{tag} is not supported for {Browser}."),
                     };
                 case SupportedBrowser.ChromeHeadlessShell:
                     return tag switch
                     {
-                        BrowserTag.Latest => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Canary),
+                        BrowserTag.Latest => Chrome.ResolveBuildIdAsync(
+                            ChromeReleaseChannel.Canary
+                        ),
                         BrowserTag.Beta => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Beta),
-                        BrowserTag.Canary => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Canary),
+                        BrowserTag.Canary => Chrome.ResolveBuildIdAsync(
+                            ChromeReleaseChannel.Canary
+                        ),
                         BrowserTag.Dev => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Dev),
-                        BrowserTag.Stable => Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable),
+                        BrowserTag.Stable => Chrome.ResolveBuildIdAsync(
+                            ChromeReleaseChannel.Stable
+                        ),
                         _ => throw new PuppeteerException($"{tag} is not available for {Browser}."),
                     };
                 case SupportedBrowser.Chromium:
                     return tag switch
                     {
                         BrowserTag.Latest => Chromium.ResolveBuildIdAsync(Platform),
-                        _ => throw new PuppeteerException($"{tag} is not supported for {Browser}. Use 'latest' instead."),
+                        _ => throw new PuppeteerException(
+                            $"{tag} is not supported for {Browser}. Use 'latest' instead."
+                        ),
                     };
                 default:
                     throw new PuppeteerException($"{Browser} not supported.");
             }
         }
 
-        private async Task UnpackArchiveAsync(string archivePath, string outputPath, string archiveName)
+        private async Task UnpackArchiveAsync(
+            string archivePath,
+            string outputPath,
+            string archiveName
+        )
         {
             if (archivePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
@@ -523,7 +600,10 @@ namespace PuppeteerSharp
 
                     if (File.Exists(execPath))
                     {
-                        var code = LinuxSysCall.Chmod(execPath, LinuxSysCall.ExecutableFilePermissions);
+                        var code = LinuxSysCall.Chmod(
+                            execPath,
+                            LinuxSysCall.ExecutableFilePermissions
+                        );
 
                         if (code != 0)
                         {
@@ -534,7 +614,10 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task<string> TryResolveFallbackDownloadUrlAsync(SupportedBrowser browser, string buildId)
+        private async Task<string> TryResolveFallbackDownloadUrlAsync(
+            SupportedBrowser browser,
+            string buildId
+        )
         {
             if (!string.IsNullOrEmpty(BaseUrl))
             {
@@ -555,10 +638,13 @@ namespace PuppeteerSharp
 
             try
             {
-                var dashboardUrl = $"https://googlechromelabs.github.io/chrome-for-testing/{buildId}.json";
+                var dashboardUrl =
+                    $"https://googlechromelabs.github.io/chrome-for-testing/{buildId}.json";
                 _logger?.TryingDashboardUrl(dashboardUrl);
 
-                var version = await JsonUtils.GetAsync<ChromeDashboardVersionResult>(dashboardUrl).ConfigureAwait(false);
+                var version = await JsonUtils
+                    .GetAsync<ChromeDashboardVersionResult>(dashboardUrl)
+                    .ConfigureAwait(false);
                 var platform = Chrome.GetFolder(Platform, buildId);
 
                 if (version.Downloads.TryGetValue(dashboardKey, out var entries))

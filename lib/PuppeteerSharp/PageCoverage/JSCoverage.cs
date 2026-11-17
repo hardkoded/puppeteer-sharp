@@ -53,13 +53,20 @@ namespace PuppeteerSharp.PageCoverage
 
             return Task.WhenAll(
                 _client.SendAsync("Profiler.enable"),
-                _client.SendAsync("Profiler.startPreciseCoverage", new ProfilerStartPreciseCoverageRequest
-                {
-                    CallCount = _includeRawScriptCoverage,
-                    Detailed = _useBlockCoverage,
-                }),
+                _client.SendAsync(
+                    "Profiler.startPreciseCoverage",
+                    new ProfilerStartPreciseCoverageRequest
+                    {
+                        CallCount = _includeRawScriptCoverage,
+                        Detailed = _useBlockCoverage,
+                    }
+                ),
                 _client.SendAsync("Debugger.enable"),
-                _client.SendAsync("Debugger.setSkipAllPauses", new DebuggerSetSkipAllPausesRequest { Skip = true }));
+                _client.SendAsync(
+                    "Debugger.setSkipAllPauses",
+                    new DebuggerSetSkipAllPausesRequest { Skip = true }
+                )
+            );
         }
 
         internal async Task<JSCoverageEntry[]> StopAsync()
@@ -71,12 +78,16 @@ namespace PuppeteerSharp.PageCoverage
 
             _enabled = false;
 
-            var profileResponseTask = _client.SendAsync<ProfilerTakePreciseCoverageResponse>("Profiler.takePreciseCoverage");
+            var profileResponseTask = _client.SendAsync<ProfilerTakePreciseCoverageResponse>(
+                "Profiler.takePreciseCoverage"
+            );
             await Task.WhenAll(
-               profileResponseTask,
-               _client.SendAsync("Profiler.stopPreciseCoverage"),
-               _client.SendAsync("Profiler.disable"),
-               _client.SendAsync("Debugger.disable")).ConfigureAwait(false);
+                    profileResponseTask,
+                    _client.SendAsync("Profiler.stopPreciseCoverage"),
+                    _client.SendAsync("Profiler.disable"),
+                    _client.SendAsync("Debugger.disable")
+                )
+                .ConfigureAwait(false);
             _client.MessageReceived -= Client_MessageReceived;
 
             var coverage = new List<JSCoverageEntry>();
@@ -88,21 +99,25 @@ namespace PuppeteerSharp.PageCoverage
                     url = "debugger://VM" + entry.ScriptId;
                 }
 
-                if (string.IsNullOrEmpty(url) ||
-                    !_scriptSources.TryGetValue(entry.ScriptId, out var text))
+                if (
+                    string.IsNullOrEmpty(url)
+                    || !_scriptSources.TryGetValue(entry.ScriptId, out var text)
+                )
                 {
                     continue;
                 }
 
                 var flattenRanges = entry.Functions.SelectMany(f => f.Ranges);
                 var ranges = Coverage.ConvertToDisjointRanges(flattenRanges);
-                coverage.Add(new JSCoverageEntry
-                {
-                    Url = url,
-                    Ranges = ranges,
-                    Text = text,
-                    RawScriptCoverage = _includeRawScriptCoverage ? entry : null,
-                });
+                coverage.Add(
+                    new JSCoverageEntry
+                    {
+                        Url = url,
+                        Ranges = ranges,
+                        Text = text,
+                        RawScriptCoverage = _includeRawScriptCoverage ? entry : null,
+                    }
+                );
             }
 
             return [.. coverage];
@@ -115,7 +130,10 @@ namespace PuppeteerSharp.PageCoverage
                 switch (e.MessageID)
                 {
                     case "Debugger.scriptParsed":
-                        await OnScriptParsedAsync(e.MessageData.ToObject<DebuggerScriptParsedResponse>()).ConfigureAwait(false);
+                        await OnScriptParsedAsync(
+                                e.MessageData.ToObject<DebuggerScriptParsedResponse>()
+                            )
+                            .ConfigureAwait(false);
                         break;
                     case "Runtime.executionContextsCleared":
                         OnExecutionContextsCleared();
@@ -124,7 +142,8 @@ namespace PuppeteerSharp.PageCoverage
             }
             catch (Exception ex)
             {
-                var message = $"JSCoverage failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                var message =
+                    $"JSCoverage failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.ErrorWithException(ex, message);
                 _client.Close(message);
             }
@@ -132,18 +151,25 @@ namespace PuppeteerSharp.PageCoverage
 
         private async Task OnScriptParsedAsync(DebuggerScriptParsedResponse scriptParseResponse)
         {
-            if (scriptParseResponse.Url == ExecutionContext.EvaluationScriptUrl ||
-                (string.IsNullOrEmpty(scriptParseResponse.Url) && !_reportAnonymousScripts))
+            if (
+                scriptParseResponse.Url == ExecutionContext.EvaluationScriptUrl
+                || (string.IsNullOrEmpty(scriptParseResponse.Url) && !_reportAnonymousScripts)
+            )
             {
                 return;
             }
 
             try
             {
-                var response = await _client.SendAsync<DebuggerGetScriptSourceResponse>("Debugger.getScriptSource", new DebuggerGetScriptSourceRequest
-                {
-                    ScriptId = scriptParseResponse.ScriptId,
-                }).ConfigureAwait(false);
+                var response = await _client
+                    .SendAsync<DebuggerGetScriptSourceResponse>(
+                        "Debugger.getScriptSource",
+                        new DebuggerGetScriptSourceRequest
+                        {
+                            ScriptId = scriptParseResponse.ScriptId,
+                        }
+                    )
+                    .ConfigureAwait(false);
                 _scriptURLs.TryAdd(scriptParseResponse.ScriptId, scriptParseResponse.Url);
                 _scriptSources.TryAdd(scriptParseResponse.ScriptId, response.ScriptSource);
             }

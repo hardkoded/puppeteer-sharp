@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.DumpIO
             {
                 Headless = true,
                 DumpIO = true,
-                ExecutablePath = args[0]
+                ExecutablePath = args[0],
             };
 
             if (args[1] == "firefox")

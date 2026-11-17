@@ -21,18 +21,17 @@ public class PrerenderScreencastTests : PuppeteerPageBaseTest
                 Interlocked.Increment(ref screencastFramesReceived);
                 frameReceived.TrySetResult(true);
 
-                await Page.Client.SendAsync("Page.screencastFrameAck", new
-                {
-                    sessionId = e.MessageData.GetProperty("sessionId").GetInt32(),
-                });
+                await Page.Client.SendAsync(
+                    "Page.screencastFrameAck",
+                    new { sessionId = e.MessageData.GetProperty("sessionId").GetInt32() }
+                );
             }
         };
 
-        await Page.Client.SendAsync("Page.startScreencast", new
-        {
-            format = "png",
-            everyNthFrame = 1,
-        });
+        await Page.Client.SendAsync(
+            "Page.startScreencast",
+            new { format = "png", everyNthFrame = 1 }
+        );
 
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");
 
@@ -40,10 +39,7 @@ public class PrerenderScreencastTests : PuppeteerPageBaseTest
         await button.ClickAsync();
 
         var link = await Page.WaitForSelectorAsync("a");
-        await Task.WhenAll(
-            Page.WaitForNavigationAsync(),
-            link.ClickAsync()
-        );
+        await Task.WhenAll(Page.WaitForNavigationAsync(), link.ClickAsync());
 
         var input = await Page.WaitForSelectorAsync("input");
         await input.TypeAsync("ab", new Input.TypeOptions { Delay = 100 });

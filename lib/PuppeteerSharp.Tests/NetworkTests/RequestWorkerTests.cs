@@ -6,11 +6,17 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestWorkerTests : PuppeteerPageBaseTest
     {
-        public RequestWorkerTests() : base()
-        {
-        }
+        public RequestWorkerTests()
+            : base() { }
 
-        [Test, PuppeteerTest("network.test", "network Request.worker", "should return null for page navigation requests")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.test",
+                "network Request.worker",
+                "should return null for page navigation requests"
+            )
+        ]
         public async Task ShouldReturnNullForPageNavigationRequests()
         {
             var requestTask = Page.WaitForRequestAsync(TestConstants.EmptyPage);

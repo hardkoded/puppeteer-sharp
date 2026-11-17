@@ -38,16 +38,30 @@ namespace PuppeteerSharp.PageAccessibility
             _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
             _ignored = payload.Ignored;
             _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
-            _description = payload.Description != null ? payload.Description.Value.ToObject<string>() : null;
+            _description =
+                payload.Description != null ? payload.Description.Value.ToObject<string>() : null;
 
-            _richlyEditable = payload.Properties?.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
+            _richlyEditable =
+                payload
+                    .Properties?.FirstOrDefault(p => p.Name == "editable")
+                    ?.Value.Value.ToObject<string>() == "richtext";
             _editable |= _richlyEditable;
-            _hidden = payload.Properties?.FirstOrDefault(p => p.Name == "hidden")?.Value.Value.ToObject<bool>() == true;
-            Focusable = payload.Properties?.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
+            _hidden =
+                payload
+                    .Properties?.FirstOrDefault(p => p.Name == "hidden")
+                    ?.Value.Value.ToObject<bool>() == true;
+            Focusable =
+                payload
+                    .Properties?.FirstOrDefault(p => p.Name == "focusable")
+                    ?.Value.Value.ToObject<bool>() == true;
             _busy = GetBooleanProperty(payload, "busy");
-            _live = payload.Properties?.FirstOrDefault(p => p.Name == "live")?.Value.Value.ToObject<string>();
+            _live = payload
+                .Properties?.FirstOrDefault(p => p.Name == "live")
+                ?.Value.Value.ToObject<string>();
             _modal = GetBooleanProperty(payload, "modal");
-            _roledescription = payload.Properties?.FirstOrDefault(p => p.Name == "roledescription")?.Value.Value.ToObject<string>();
+            _roledescription = payload
+                .Properties?.FirstOrDefault(p => p.Name == "roledescription")
+                ?.Value.Value.ToObject<string>();
             _hasErrormessage = payload.Properties?.Any(p => p.Name == "errormessage") == true;
             _hasDetails = payload.Properties?.Any(p => p.Name == "details") == true;
         }
@@ -60,7 +74,10 @@ namespace PuppeteerSharp.PageAccessibility
 
         internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
 
-        internal static AXNode CreateTree(Realm realm, IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
+        internal static AXNode CreateTree(
+            Realm realm,
+            IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads
+        )
         {
             var nodeById = new Dictionary<string, AXNode>();
             foreach (var payload in payloads)
@@ -206,14 +223,16 @@ namespace PuppeteerSharp.PageAccessibility
                 return true;
             }
 
-            if (Focusable ||
-                _richlyEditable ||
-                _busy ||
-                (_live != null && _live != "off") ||
-                _modal ||
-                _hasErrormessage ||
-                _hasDetails ||
-                _roledescription != null)
+            if (
+                Focusable
+                || _richlyEditable
+                || _busy
+                || (_live != null && _live != "off")
+                || _modal
+                || _hasErrormessage
+                || _hasDetails
+                || _roledescription != null
+            )
             {
                 return true;
             }
@@ -230,7 +249,8 @@ namespace PuppeteerSharp.PageAccessibility
                 return false;
             }
 
-            return IsLeafNode() && (!string.IsNullOrEmpty(_name) || !string.IsNullOrEmpty(_description));
+            return IsLeafNode()
+                && (!string.IsNullOrEmpty(_name) || !string.IsNullOrEmpty(_description));
         }
 
         internal SerializedAXNode Serialize()
@@ -241,7 +261,9 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 foreach (var property in Payload.Properties)
                 {
-                    properties[property.Name.ToLower(CultureInfo.CurrentCulture)] = property.Value.Value;
+                    properties[property.Name.ToLower(CultureInfo.CurrentCulture)] = property
+                        .Value
+                        .Value;
                 }
             }
 
@@ -266,29 +288,36 @@ namespace PuppeteerSharp.PageAccessibility
 
             var node = new SerializedAXNode
             {
-                ElementHandleFactory = backendDOMNodeId.ValueKind == JsonValueKind.Number && realm != null
-                    ? async () =>
-                    {
-                        // After a navigation, the backend node ID can belong to a different node in the new document.
-                        if ((realm.Environment as Frame)?.LoaderId != loaderId)
+                ElementHandleFactory =
+                    backendDOMNodeId.ValueKind == JsonValueKind.Number && realm != null
+                        ? async () =>
                         {
-                            return null;
-                        }
+                            // After a navigation, the backend node ID can belong to a different node in the new document.
+                            if ((realm.Environment as Frame)?.LoaderId != loaderId)
+                            {
+                                return null;
+                            }
 
-                        var handle = await realm.AdoptBackendNodeAsync(backendDOMNodeId.GetInt32()).ConfigureAwait(false);
+                            var handle = await realm
+                                .AdoptBackendNodeAsync(backendDOMNodeId.GetInt32())
+                                .ConfigureAwait(false);
 
-                        // Since Text nodes are not elements, we want to
-                        // return a handle to the parent element for them.
-                        // A text node placed directly in a shadow root has no parent
-                        // element, so fall back to the shadow host.
-                        return await ((ElementHandle)handle).EvaluateFunctionHandleAsync(@"node => {
+                            // Since Text nodes are not elements, we want to
+                            // return a handle to the parent element for them.
+                            // A text node placed directly in a shadow root has no parent
+                            // element, so fall back to the shadow host.
+                            return await ((ElementHandle)handle)
+                                    .EvaluateFunctionHandleAsync(
+                                        @"node => {
                             if (node.nodeType !== Node.TEXT_NODE) {
                                 return node;
                             }
                             return node.parentElement ?? node.parentNode?.host ?? null;
-                        }").ConfigureAwait(false) as IElementHandle;
-                    }
-                : null,
+                        }"
+                                    )
+                                    .ConfigureAwait(false) as IElementHandle;
+                        }
+                        : null,
                 Role = _role,
 
                 // LoaderId is an experimental mechanism to establish unique IDs across
@@ -306,7 +335,9 @@ namespace PuppeteerSharp.PageAccessibility
 
                 // RootWebArea's treat focus differently than other nodes. They report whether their frame has focus,
                 // not whether focus is specifically on the root node.
-                Focused = properties.GetValue("focused")?.ToObject<bool>() == true && _role != "RootWebArea",
+                Focused =
+                    properties.GetValue("focused")?.ToObject<bool>() == true
+                    && _role != "RootWebArea",
                 Modal = properties.GetValue("modal")?.ToObject<bool>() ?? false,
                 Multiline = properties.GetValue("multiline")?.ToObject<bool>() ?? false,
                 Multiselectable = properties.GetValue("multiselectable")?.ToObject<bool>() ?? false,
@@ -320,20 +351,27 @@ namespace PuppeteerSharp.PageAccessibility
                 Level = properties.GetValue("level")?.ToObject<int>() ?? 0,
                 ValueMax = properties.GetValue("valuemax")?.ToObject<int>() ?? 0,
                 ValueMin = properties.GetValue("valuemin")?.ToObject<int>() ?? 0,
-                AutoComplete = GetIfNotFalse(properties.GetValue("autocomplete")?.ToObject<string>()),
+                AutoComplete = GetIfNotFalse(
+                    properties.GetValue("autocomplete")?.ToObject<string>()
+                ),
                 HasPopup = GetIfNotFalse(properties.GetValue("haspopup")?.ToObject<string>()),
                 Invalid = GetIfNotFalse(properties.GetValue("invalid")?.ToObject<string>()),
                 Orientation = GetIfNotFalse(properties.GetValue("orientation")?.ToObject<string>()),
                 Live = GetIfNotFalse(properties.GetValue("live")?.ToObject<string>()),
                 Relevant = GetIfNotFalse(properties.GetValue("relevant")?.ToObject<string>()),
-                Errormessage = GetIfNotFalse(properties.GetValue("errormessage")?.ToObject<string>()),
+                Errormessage = GetIfNotFalse(
+                    properties.GetValue("errormessage")?.ToObject<string>()
+                ),
                 Details = GetIfNotFalse(properties.GetValue("details")?.ToObject<string>()),
             };
 
             return node;
         }
 
-        private static bool GetBooleanProperty(AccessibilityGetFullAXTreeResponse.AXTreeNode payload, string propertyName)
+        private static bool GetBooleanProperty(
+            AccessibilityGetFullAXTreeResponse.AXTreeNode payload,
+            string propertyName
+        )
         {
             var prop = payload.Properties?.FirstOrDefault(p => p.Name == propertyName);
             if (prop == null)
@@ -350,7 +388,10 @@ namespace PuppeteerSharp.PageAccessibility
             };
         }
 
-        private static bool GetBooleanPropertyValue(Dictionary<string, JsonElement?> properties, string key)
+        private static bool GetBooleanPropertyValue(
+            Dictionary<string, JsonElement?> properties,
+            string key
+        )
         {
             var element = properties.GetValue(key);
             if (element == null)
@@ -366,23 +407,27 @@ namespace PuppeteerSharp.PageAccessibility
             };
         }
 
-        private static string GetIfNotEmpty(string value) => !string.IsNullOrEmpty(value) ? value : null;
+        private static string GetIfNotEmpty(string value) =>
+            !string.IsNullOrEmpty(value) ? value : null;
 
         private bool HasFocusableChild()
         {
-            return _cachedHasFocusableChild ??= Children.Any(c => c.Focusable || c.HasFocusableChild());
+            return _cachedHasFocusableChild ??= Children.Any(c =>
+                c.Focusable || c.HasFocusableChild()
+            );
         }
 
-        private bool IsPlainTextField()
-            => !_richlyEditable && (_editable || _role == "textbox" || _role == "searchbox");
+        private bool IsPlainTextField() =>
+            !_richlyEditable && (_editable || _role == "textbox" || _role == "searchbox");
 
-        private bool IsTextOnlyObject()
-            => _role == "LineBreak" ||
-                _role == "text" ||
-                _role == "InlineTextBox" ||
-                _role == "StaticText";
+        private bool IsTextOnlyObject() =>
+            _role == "LineBreak"
+            || _role == "text"
+            || _role == "InlineTextBox"
+            || _role == "StaticText";
 
-        private string GetIfNotFalse(string value) => value != null && value != "false" ? value : null;
+        private string GetIfNotFalse(string value) =>
+            value != null && value != "false" ? value : null;
 
         private CheckedState GetCheckedState(string value)
         {

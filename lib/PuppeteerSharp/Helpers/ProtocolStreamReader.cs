@@ -11,7 +11,11 @@ namespace PuppeteerSharp.Helpers
 {
     internal static class ProtocolStreamReader
     {
-        internal static async Task<string> ReadProtocolStreamStringAsync(CDPSession client, string handle, Stream outputStream)
+        internal static async Task<string> ReadProtocolStreamStringAsync(
+            CDPSession client,
+            string handle,
+            Stream outputStream
+        )
         {
             var result = new StringBuilder();
 
@@ -19,10 +23,9 @@ namespace PuppeteerSharp.Helpers
 
             while (!eof)
             {
-                var response = await client.SendAsync<IOReadResponse>("IO.read", new IOReadRequest
-                {
-                    Handle = handle,
-                }).ConfigureAwait(false);
+                var response = await client
+                    .SendAsync<IOReadResponse>("IO.read", new IOReadRequest { Handle = handle })
+                    .ConfigureAwait(false);
 
                 eof = response.Eof;
 
@@ -31,7 +34,8 @@ namespace PuppeteerSharp.Helpers
                 if (outputStream != null)
                 {
 #if NET10_0_OR_GREATER
-                    await WriteStringToStreamAsync(outputStream, response.Data).ConfigureAwait(false);
+                    await WriteStringToStreamAsync(outputStream, response.Data)
+                        .ConfigureAwait(false);
 #else
                     var data = Encoding.UTF8.GetBytes(response.Data);
                     await outputStream.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
@@ -39,38 +43,39 @@ namespace PuppeteerSharp.Helpers
                 }
             }
 
-            await client.SendAsync("IO.close", new IOCloseRequest
-            {
-                Handle = handle,
-            }).ConfigureAwait(false);
+            await client
+                .SendAsync("IO.close", new IOCloseRequest { Handle = handle })
+                .ConfigureAwait(false);
 
             return result.ToString();
         }
 
-        internal static async Task ReadProtocolBase64StreamByteAsync(CDPSession client, string handle, Stream outputStream)
+        internal static async Task ReadProtocolBase64StreamByteAsync(
+            CDPSession client,
+            string handle,
+            Stream outputStream
+        )
         {
-            await ReadProtocolStreamBytesAsync(
-                client,
-                handle,
-                buffer =>
+            await ReadProtocolStreamBytesAsync(client, handle, buffer =>
                 {
                     outputStream.Write(buffer, 0, buffer.Length);
-                }).ConfigureAwait(false);
+                })
+                .ConfigureAwait(false);
         }
 
         internal static async Task ReadProtocolStreamBytesAsync(
             CDPSession client,
             string handle,
-            Action<byte[]> onChunk)
+            Action<byte[]> onChunk
+        )
         {
             var eof = false;
 
             while (!eof)
             {
-                var response = await client.SendAsync<IOReadResponse>("IO.read", new IOReadRequest
-                {
-                    Handle = handle,
-                }).ConfigureAwait(false);
+                var response = await client
+                    .SendAsync<IOReadResponse>("IO.read", new IOReadRequest { Handle = handle })
+                    .ConfigureAwait(false);
 
                 eof = response.Eof;
 
@@ -83,13 +88,15 @@ namespace PuppeteerSharp.Helpers
                 }
             }
 
-            await client.SendAsync("IO.close", new IOCloseRequest
-            {
-                Handle = handle,
-            }).ConfigureAwait(false);
+            await client
+                .SendAsync("IO.close", new IOCloseRequest { Handle = handle })
+                .ConfigureAwait(false);
         }
 
-        internal static async Task DecodeStringInChunksAsync(string base64String, Stream outputStream)
+        internal static async Task DecodeStringInChunksAsync(
+            string base64String,
+            Stream outputStream
+        )
         {
             // Chunk size must be a multiple of 4.
             const int charChunkSize = 32 * 1024;
@@ -97,7 +104,6 @@ namespace PuppeteerSharp.Helpers
             // Since Base64 is ASCII, 1 char = 1 byte.
             var utf8Buffer = ArrayPool<byte>.Shared.Rent(charChunkSize);
             var decodeBuffer = ArrayPool<byte>.Shared.Rent(charChunkSize); // Over-allocated for safety
-
 #if NET10_0_OR_GREATER
             var decodeBufferMemory = decodeBuffer.AsMemory();
 #endif
@@ -112,24 +118,38 @@ namespace PuppeteerSharp.Helpers
                     var remaining = readOnlySpan.Length - i;
                     var currentChunkSize = Math.Min(charChunkSize, remaining);
 
-                    var utf8ByteCount = Encoding.UTF8.GetBytes(base64String, i, currentChunkSize, utf8Buffer, 0);
+                    var utf8ByteCount = Encoding.UTF8.GetBytes(
+                        base64String,
+                        i,
+                        currentChunkSize,
+                        utf8Buffer,
+                        0
+                    );
                     ReadOnlySpan<byte> utf8Slice = utf8Buffer.AsSpan().Slice(0, utf8ByteCount);
 
                     var status = Base64.DecodeFromUtf8(
                         utf8Slice,
                         decodeBuffer,
                         out _,
-                        out var written);
+                        out var written
+                    );
 
                     if (status is OperationStatus.Done or OperationStatus.DestinationTooSmall)
                     {
 #if NET10_0_OR_GREATER
-                        await outputStream.WriteAsync(decodeBufferMemory.Slice(0, written)).ConfigureAwait(false);
+                        await outputStream
+                            .WriteAsync(decodeBufferMemory.Slice(0, written))
+                            .ConfigureAwait(false);
 #else
-                        await outputStream.WriteAsync(decodeBuffer, 0, written).ConfigureAwait(false);
+                        await outputStream
+                            .WriteAsync(decodeBuffer, 0, written)
+                            .ConfigureAwait(false);
 #endif
                     }
-                    else if (status == OperationStatus.NeedMoreData && i + currentChunkSize >= length)
+                    else if (
+                        status == OperationStatus.NeedMoreData
+                        && i + currentChunkSize >= length
+                    )
                     {
                         // Handle potential partial final block if string isn't perfectly padded
                         break;
@@ -163,9 +183,12 @@ namespace PuppeteerSharp.Helpers
                         source.Slice(totalCharsRead),
                         buffer,
                         out var charsRead,
-                        out var bytesWritten);
+                        out var bytesWritten
+                    );
 
-                    await destination.WriteAsync(buffer.AsMemory(0, bytesWritten)).ConfigureAwait(false);
+                    await destination
+                        .WriteAsync(buffer.AsMemory(0, bytesWritten))
+                        .ConfigureAwait(false);
 
                     totalCharsRead += charsRead;
 

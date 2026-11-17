@@ -17,6 +17,15 @@ StyleCop enforces a strict member ordering inside a class, applied in this prior
 
 Always verify which git branch you are on before making commits or creating PRs. Never commit to main/master. If the task requires a new branch, create it immediately and confirm with `git branch --show-current` before proceeding.
 
+## Formatting
+
+CSharpier owns formatting. Run `dotnet csharpier format .` from the repo root before every commit/push. The Husky.Net pre-push hook runs `dotnet csharpier check .` and blocks unformatted pushes. Do not run `dotnet format whitespace` or a plain `dotnet format`, because their whitespace pass fights CSharpier. Use `dotnet format style` / `dotnet format analyzers` only.
+
+- CSharpier and Husky.Net are local tools pinned in `.config/dotnet-tools.json`. Run `dotnet tool restore` once to get them.
+- The hook is installed automatically by the `Husky` MSBuild target in `lib/PuppeteerSharp/PuppeteerSharp.csproj` on restore/build. It is skipped when `CI=true`, when `HUSKY=0`, or when there is no `.git`.
+- CI runs `dotnet csharpier check .` in the `csharpier` job of `.github/workflows/dotnet.yml`.
+- Files CSharpier must not touch are listed in `.csharpierignore`.
+
 ## Upstream Porting Conventions
 
 When porting upstream TypeScript/Puppeteer changes to PuppeteerSharp (.NET), translate API naming conventions: camelCase → PascalCase, Promise<T> → Task<T>, interfaces prefixed with I, events use C# event patterns. Use `ReloadOptions`-style single parameter objects rather than creating redundant overloads.
@@ -124,3 +133,24 @@ When investigating flaky tests, always look for root causes (race conditions, no
 ## Continuous improvement
 
 Every time you find a code style error during builds, for instance rules failures like "SA1648". Update this document to include the new rule and a brief description of how the codebase adheres to it. This will help maintain a high standard of code quality and consistency throughout the project.
+
+### StyleCop rules turned off because of CSharpier
+
+CSharpier owns layout, so these StyleCop layout rules are set to `none` in `lib/.editorconfig`. Do not turn them back on, and do not hand-format code to satisfy them; run `dotnet csharpier format .` instead.
+
+- SA1003: Symbols should be spaced correctly. CSharpier breaks a cast before a wrapped operand.
+- SA1009: Closing parenthesis should be spaced correctly. CSharpier puts the closing parenthesis of a wrapped argument or parameter list on its own line.
+- SA1111: Closing parenthesis should be on the line of the last parameter. Same cause as SA1009.
+- SA1118: Parameter should not span multiple lines. CSharpier wraps long arguments, such as lambdas and multi-line strings.
+- SA1500: Braces for multi-line statements should not share a line. CSharpier writes `} while (...);`.
+- SA1501: Statement should not be on a single line. CSharpier writes empty blocks such as `catch { }` on one line.
+- SA1502: Element should not be on a single line. CSharpier writes empty bodies as `{ }`.
+- SA1504: All accessors should be single-line or multi-line. CSharpier collapses short accessors.
+- SA1513: Closing brace should be followed by a blank line. CSharpier controls the blank lines around wrapped expressions and patterns.
+- SA1515: Single-line comment should be preceded by a blank line. CSharpier removes blank lines inside attribute lists.
+- SA1516: Elements should be separated by a blank line. CSharpier removes blank lines between accessors.
+
+Rules that stay on and that CSharpier output still meets:
+
+- SA1507: Code should not contain multiple blank lines in a row. CSharpier collapses them, so a double blank line means the file was not formatted.
+- SA1116: Parameters should begin on the line after the declaration when they span multiple lines. Do not put a `#pragma` inside a parameter list, because CSharpier then keeps the list as written. Put the `#pragma warning disable` before the member instead.

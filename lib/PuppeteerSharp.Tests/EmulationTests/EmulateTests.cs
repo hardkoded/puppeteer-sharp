@@ -13,11 +13,24 @@ namespace PuppeteerSharp.Tests.EmulationTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
             await Page.EmulateAsync(TestConstants.IPhone);
 
-            Assert.That(await Page.EvaluateExpressionAsync<int>("window.innerWidth"), Is.EqualTo(375));
-            Assert.That(await Page.EvaluateExpressionAsync<string>("navigator.userAgent"), Does.Contain("iPhone"));
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int>("window.innerWidth"),
+                Is.EqualTo(375)
+            );
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("navigator.userAgent"),
+                Does.Contain("iPhone")
+            );
         }
 
-        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should work twice on about:blank")]
+        [
+            Test,
+            PuppeteerTest(
+                "emulation.spec",
+                "Emulation Page.emulate",
+                "should work twice on about:blank"
+            )
+        ]
         public async Task ShouldWorkTwiceOnAboutBlank()
         {
             await Page.GoToAsync("about:blank");
@@ -33,7 +46,10 @@ namespace PuppeteerSharp.Tests.EmulationTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.style.marginTop = '200px'", button);
             await button.ClickAsync();
-            Assert.That(await Page.EvaluateExpressionAsync<string>("result"), Is.EqualTo("Clicked"));
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("result"),
+                Is.EqualTo("Clicked")
+            );
         }
     }
 }

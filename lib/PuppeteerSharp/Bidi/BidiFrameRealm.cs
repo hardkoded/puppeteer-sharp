@@ -31,10 +31,8 @@ using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(
-    realm,
-    frame.TimeoutSettings,
-    frame.Client.LoggerFactory.CreateLogger<BidiRealm>())
+internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame)
+    : BidiRealm(realm, frame.TimeoutSettings, frame.Client.LoggerFactory.CreateLogger<BidiRealm>())
 {
     private readonly WindowRealm _realm = realm;
     private readonly TaskQueue _puppeteerUtilQueue = new();
@@ -65,23 +63,29 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(
 
         var scriptInjector = frame.BrowsingContext.Session.ScriptInjector;
 
-        await _puppeteerUtilQueue.Enqueue(async () =>
-        {
-            if (_puppeteerUtil == null)
+        await _puppeteerUtilQueue
+            .Enqueue(async () =>
             {
-                await scriptInjector.InjectAsync(
-                    async (script) =>
-                    {
-                        if (_puppeteerUtil != null)
-                        {
-                            await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
-                        }
+                if (_puppeteerUtil == null)
+                {
+                    await scriptInjector
+                        .InjectAsync(
+                            async (script) =>
+                            {
+                                if (_puppeteerUtil != null)
+                                {
+                                    await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
+                                }
 
-                        _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
-                    },
-                    _puppeteerUtil == null).ConfigureAwait(false);
-            }
-        }).ConfigureAwait(false);
+                                _puppeteerUtil = await EvaluateExpressionHandleAsync(script)
+                                    .ConfigureAwait(false);
+                            },
+                            _puppeteerUtil == null
+                        )
+                        .ConfigureAwait(false);
+                }
+            })
+            .ConfigureAwait(false);
         return _puppeteerUtil;
     }
 
@@ -89,7 +93,9 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(
     {
         if (Frame.Detached)
         {
-            throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)");
+            throw new PuppeteerException(
+                $"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)"
+            );
         }
     }
 
@@ -107,20 +113,27 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(
 
     private async Task InstallAriaBindingsAsync()
     {
-        var ariaHandler = (AriaQueryHandler)CustomQuerySelectorRegistry.Default.InternalQueryHandlers["aria"];
+        var ariaHandler = (AriaQueryHandler)
+            CustomQuerySelectorRegistry.Default.InternalQueryHandlers["aria"];
         var isolate = !string.IsNullOrEmpty(_realm.Target?.Sandbox);
 
-        var queryOneBinding = await ExposableFunction.FromAsync(
-            frame,
-            "__ariaQuerySelector",
-            (Func<IElementHandle, string, Task<IElementHandle>>)ariaHandler.QueryOneAsync,
-            isolate).ConfigureAwait(false);
+        var queryOneBinding = await ExposableFunction
+            .FromAsync(
+                frame,
+                "__ariaQuerySelector",
+                (Func<IElementHandle, string, Task<IElementHandle>>)ariaHandler.QueryOneAsync,
+                isolate
+            )
+            .ConfigureAwait(false);
 
-        var queryAllBinding = await ExposableFunction.FromAsync(
-            frame,
-            "__ariaQuerySelectorAll",
-            (Func<IElementHandle, string, Task<IJSHandle>>)ariaHandler.QueryAllAsJSArrayAsync,
-            isolate).ConfigureAwait(false);
+        var queryAllBinding = await ExposableFunction
+            .FromAsync(
+                frame,
+                "__ariaQuerySelectorAll",
+                (Func<IElementHandle, string, Task<IJSHandle>>)ariaHandler.QueryAllAsJSArrayAsync,
+                isolate
+            )
+            .ConfigureAwait(false);
 
         _ariaBindings.Add(queryOneBinding);
         _ariaBindings.Add(queryAllBinding);

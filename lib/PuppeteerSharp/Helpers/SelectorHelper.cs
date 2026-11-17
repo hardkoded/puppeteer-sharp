@@ -6,7 +6,10 @@ namespace PuppeteerSharp.Helpers
     {
         // Matches a single colon followed by a letter (pseudo-class like :focus, :hover)
         // but not a double colon (pseudo-element like ::before, ::after).
-        private static readonly Regex _pseudoClassRegex = new("(?<!:):[a-zA-Z]", RegexOptions.Compiled);
+        private static readonly Regex _pseudoClassRegex = new(
+            "(?<!:):[a-zA-Z]",
+            RegexOptions.Compiled
+        );
 
         /// <summary>
         /// Detects whether a CSS selector contains pseudo-classes.

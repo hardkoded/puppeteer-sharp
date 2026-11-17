@@ -4,11 +4,13 @@ namespace PuppeteerSharp.QueryHandlers
     {
         internal PierceQueryHandler()
         {
-            QuerySelector = @"(element, selector, {pierceQuerySelector}) => {
+            QuerySelector =
+                @"(element, selector, {pierceQuerySelector}) => {
                 return pierceQuerySelector(element, selector);
             }";
 
-            QuerySelectorAll = @"(element, selector, {pierceQuerySelectorAll}) => {
+            QuerySelectorAll =
+                @"(element, selector, {pierceQuerySelectorAll}) => {
                 return pierceQuerySelectorAll(element, selector);
             }";
         }

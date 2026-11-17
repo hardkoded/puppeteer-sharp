@@ -34,10 +34,7 @@ internal class BidiTouchscreen(BidiPage page) : Touchscreen, IDisposable
 {
     private readonly PointerSourceActions _touchSource = new()
     {
-        Parameters = new PointerParameters
-        {
-            PointerType = WebDriverBiDi.Input.PointerType.Touch,
-        },
+        Parameters = new PointerParameters { PointerType = WebDriverBiDi.Input.PointerType.Touch },
     };
 
     private readonly TaskQueue _actionsQueue = new();
@@ -46,14 +43,14 @@ internal class BidiTouchscreen(BidiPage page) : Touchscreen, IDisposable
     {
         return _actionsQueue.Enqueue(async () =>
         {
-            _touchSource.Actions.Add(new PointerMoveAction
-            {
-                X = (long)Math.Round(x),
-                Y = (long)Math.Round(y),
-            });
+            _touchSource.Actions.Add(
+                new PointerMoveAction { X = (long)Math.Round(x), Y = (long)Math.Round(y) }
+            );
             _touchSource.Actions.Add(new PointerDownAction(0));
 
-            await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource]).ConfigureAwait(false);
+            await page
+                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource])
+                .ConfigureAwait(false);
             _touchSource.Actions.Clear();
 
             var handle = new BidiTouchHandle(this, page, _touchSource, _actionsQueue);

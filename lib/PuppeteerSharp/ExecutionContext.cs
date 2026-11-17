@@ -13,11 +13,17 @@ using PuppeteerSharp.QueryHandlers;
 namespace PuppeteerSharp
 {
     /// <inheritdoc cref="IExecutionContext"/>
-    public sealed partial class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable, IPuppeteerUtilWrapper
+    public sealed partial class ExecutionContext
+        : IExecutionContext,
+            IDisposable,
+            IAsyncDisposable,
+            IPuppeteerUtilWrapper
     {
 #if NETSTANDARD2_0
-        private static readonly Regex _sourceUrlRegex =
-            new(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline);
+        private static readonly Regex _sourceUrlRegex = new(
+            @"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$",
+            RegexOptions.Multiline
+        );
 #endif
 
         private static string _evaluationScriptUrl = "__puppeteer_evaluation_script__";
@@ -28,7 +34,8 @@ namespace PuppeteerSharp
         internal ExecutionContext(
             CDPSession client,
             ContextPayload contextPayload,
-            IsolatedWorld world)
+            IsolatedWorld world
+        )
         {
             Client = client;
             ContextId = contextPayload.Id;
@@ -60,28 +67,35 @@ namespace PuppeteerSharp
         private Frame Frame => World?.Frame;
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateExpressionAsync(string script)
-            => EvaluateExpressionAsync<JsonElement?>(script);
+        public Task<JsonElement?> EvaluateExpressionAsync(string script) =>
+            EvaluateExpressionAsync<JsonElement?>(script);
 
         /// <inheritdoc/>
-        public Task<T> EvaluateExpressionAsync<T>(string script)
-            => RemoteObjectTaskToObject<T>(EvaluateExpressionInternalAsync(true, script));
+        public Task<T> EvaluateExpressionAsync<T>(string script) =>
+            RemoteObjectTaskToObject<T>(EvaluateExpressionInternalAsync(true, script));
 
         /// <inheritdoc/>
-        public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
-            => CreateJSHandle(await EvaluateExpressionInternalAsync(false, script).ConfigureAwait(false));
+        public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script) =>
+            CreateJSHandle(
+                await EvaluateExpressionInternalAsync(false, script).ConfigureAwait(false)
+            );
 
         /// <inheritdoc/>
-        public async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
-            => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
+        public async Task<IJSHandle> EvaluateFunctionHandleAsync(
+            string script,
+            params object[] args
+        ) =>
+            CreateJSHandle(
+                await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false)
+            );
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
-            => EvaluateFunctionAsync<JsonElement?>(script, args);
+        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args) =>
+            EvaluateFunctionAsync<JsonElement?>(script, args);
 
         /// <inheritdoc/>
-        public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-            => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
+        public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args) =>
+            RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
 
         /// <inheritdoc />
         public async ValueTask DisposeAsync()
@@ -109,46 +123,63 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public async Task<IJSHandle> GetPuppeteerUtilAsync()
         {
-            await _puppeteerUtilQueue.Enqueue(async () =>
-            {
-                if (_puppeteerUtil == null)
+            await _puppeteerUtilQueue
+                .Enqueue(async () =>
                 {
-                    await Client.Connection.ScriptInjector.InjectAsync(
-                        async (script) =>
-                        {
-                            if (_puppeteerUtil != null)
-                            {
-                                await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
-                            }
+                    if (_puppeteerUtil == null)
+                    {
+                        await Client
+                            .Connection.ScriptInjector.InjectAsync(
+                                async (script) =>
+                                {
+                                    if (_puppeteerUtil != null)
+                                    {
+                                        await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
+                                    }
 
-                            var ariaHandler = (QueryHandlers.AriaQueryHandler)CustomQuerySelectorRegistry.Default.InternalQueryHandlers["aria"];
+                                    var ariaHandler = (QueryHandlers.AriaQueryHandler)
+                                        CustomQuerySelectorRegistry.Default.InternalQueryHandlers[
+                                            "aria"
+                                        ];
 
-                            await InstallGlobalBindingAsync(new Binding(
-                                "__ariaQuerySelector",
-                                (Func<IElementHandle, string, Task<IElementHandle>>)ariaHandler.QueryOneAsync,
-                                string.Empty,
-                                ownsArguments: true,
-                                ownsResult: true))
-                                .ConfigureAwait(false);
+                                    await InstallGlobalBindingAsync(
+                                            new Binding(
+                                                "__ariaQuerySelector",
+                                                (Func<IElementHandle, string, Task<IElementHandle>>)
+                                                    ariaHandler.QueryOneAsync,
+                                                string.Empty,
+                                                ownsArguments: true,
+                                                ownsResult: true
+                                            )
+                                        )
+                                        .ConfigureAwait(false);
 
-                            await InstallGlobalBindingAsync(new Binding(
-                                "__ariaQuerySelectorAll",
-                                (Func<IElementHandle, string, Task<IJSHandle>>)ariaHandler.QueryAllAsJSArrayAsync,
-                                string.Empty,
-                                ownsArguments: true,
-                                ownsResult: true))
-                                .ConfigureAwait(false);
+                                    await InstallGlobalBindingAsync(
+                                            new Binding(
+                                                "__ariaQuerySelectorAll",
+                                                (Func<IElementHandle, string, Task<IJSHandle>>)
+                                                    ariaHandler.QueryAllAsJSArrayAsync,
+                                                string.Empty,
+                                                ownsArguments: true,
+                                                ownsResult: true
+                                            )
+                                        )
+                                        .ConfigureAwait(false);
 
-                            _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
-                        },
-                        _puppeteerUtil == null).ConfigureAwait(false);
-                }
-            }).ConfigureAwait(false);
+                                    _puppeteerUtil = await EvaluateExpressionHandleAsync(script)
+                                        .ConfigureAwait(false);
+                                },
+                                _puppeteerUtil == null
+                            )
+                            .ConfigureAwait(false);
+                    }
+                })
+                .ConfigureAwait(false);
             return _puppeteerUtil;
         }
 
-        internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
-            => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
+        internal IJSHandle CreateJSHandle(RemoteObject remoteObject) =>
+            remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
                 ? new CdpElementHandle(World, remoteObject)
                 : new CdpJSHandle(World, remoteObject);
 
@@ -171,8 +202,11 @@ namespace PuppeteerSharp
             {
                 foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
                 {
-                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
-                    var functionName = string.IsNullOrEmpty(callframe.FunctionName) ? "<anonymous>" : callframe.FunctionName;
+                    var location =
+                        $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
+                    var functionName = string.IsNullOrEmpty(callframe.FunctionName)
+                        ? "<anonymous>"
+                        : callframe.FunctionName;
                     message += $"\n at ${functionName} (${location})";
                 }
             }
@@ -204,57 +238,85 @@ namespace PuppeteerSharp
         private async Task<T> RemoteObjectTaskToObject<T>(Task<RemoteObject> remote)
         {
             var response = await remote.ConfigureAwait(false);
-            return response == null ? default : (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response);
+            return response == null
+                ? default
+                : (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response);
         }
 
-        private Task<RemoteObject> EvaluateExpressionInternalAsync(bool returnByValue, string script)
-            => ExecuteEvaluationAsync("Runtime.evaluate", new Dictionary<string, object>
-            {
-                ["expression"] = GetSourceUrlRegex().IsMatch(script) ? script : $"{script}\n//# sourceURL={EvaluationScriptUrl}",
-                ["contextId"] = ContextId,
-                ["returnByValue"] = returnByValue,
-                ["awaitPromise"] = true,
-                ["userGesture"] = true,
-            });
+        private Task<RemoteObject> EvaluateExpressionInternalAsync(
+            bool returnByValue,
+            string script
+        ) =>
+            ExecuteEvaluationAsync(
+                "Runtime.evaluate",
+                new Dictionary<string, object>
+                {
+                    ["expression"] = GetSourceUrlRegex().IsMatch(script)
+                        ? script
+                        : $"{script}\n//# sourceURL={EvaluationScriptUrl}",
+                    ["contextId"] = ContextId,
+                    ["returnByValue"] = returnByValue,
+                    ["awaitPromise"] = true,
+                    ["userGesture"] = true,
+                }
+            );
 
-        private async Task<RemoteObject> EvaluateFunctionInternalAsync(bool returnByValue, string script, params object[] args)
-            => await ExecuteEvaluationAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
-            {
-                FunctionDeclaration = $"{script}\n//# sourceURL={EvaluationScriptUrl}\n",
-                ExecutionContextId = ContextId,
-                Arguments = await Task.WhenAll(args.Select(FormatArgumentAsync).ToArray()).ConfigureAwait(false),
-                ReturnByValue = returnByValue,
-                AwaitPromise = true,
-                UserGesture = true,
-            }).ConfigureAwait(false);
+        private async Task<RemoteObject> EvaluateFunctionInternalAsync(
+            bool returnByValue,
+            string script,
+            params object[] args
+        ) =>
+            await ExecuteEvaluationAsync(
+                    "Runtime.callFunctionOn",
+                    new RuntimeCallFunctionOnRequest
+                    {
+                        FunctionDeclaration = $"{script}\n//# sourceURL={EvaluationScriptUrl}\n",
+                        ExecutionContextId = ContextId,
+                        Arguments = await Task.WhenAll(args.Select(FormatArgumentAsync).ToArray())
+                            .ConfigureAwait(false),
+                        ReturnByValue = returnByValue,
+                        AwaitPromise = true,
+                        UserGesture = true,
+                    }
+                )
+                .ConfigureAwait(false);
 
         private async Task<RemoteObject> ExecuteEvaluationAsync(string method, object args)
         {
             try
             {
-                var response = await Client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
+                var response = await Client
+                    .SendAsync<EvaluateHandleResponse>(method, args)
+                    .ConfigureAwait(false);
 
                 if (response.ExceptionDetails != null)
                 {
-                    throw new EvaluationFailedException("Evaluation failed: " +
-                        GetExceptionMessage(response.ExceptionDetails));
+                    throw new EvaluationFailedException(
+                        "Evaluation failed: " + GetExceptionMessage(response.ExceptionDetails)
+                    );
                 }
 
                 return response.Result;
             }
             catch (MessageException ex)
             {
-                if (ex.Message.Contains("Object reference chain is too long") ||
-                    ex.Message.Contains("Object couldn't be returned by value"))
+                if (
+                    ex.Message.Contains("Object reference chain is too long")
+                    || ex.Message.Contains("Object couldn't be returned by value")
+                )
                 {
                     return default;
                 }
 
-                if (ex.Message.Contains("Cannot find context with specified id") ||
-                    ex.Message.Contains("Inspected target navigated or closed"))
+                if (
+                    ex.Message.Contains("Cannot find context with specified id")
+                    || ex.Message.Contains("Inspected target navigated or closed")
+                )
                 {
                     throw new EvaluationFailedException(
-                        "Execution context was destroyed, most likely because of a navigation.", ex);
+                        "Execution context was destroyed, most likely because of a navigation.",
+                        ex
+                    );
                 }
 
                 throw new EvaluationFailedException(ex.Message, ex);
@@ -315,10 +377,7 @@ namespace PuppeteerSharp
                     return objectHandle.FormatArgument(this);
             }
 
-            return new RuntimeCallFunctionOnRequestArgument
-            {
-                Value = arg,
-            };
+            return new RuntimeCallFunctionOnRequestArgument { Value = arg };
         }
     }
 }

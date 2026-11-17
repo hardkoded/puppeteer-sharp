@@ -17,13 +17,15 @@ namespace PuppeteerSharp.Tests.ScreencastTests
 
             try
             {
-                var recorder = await Page.ScreencastAsync(new ScreencastOptions
-                {
-                    Path = filePath,
-                    Scale = 0.5m,
-                    Crop = new BoundingBox(0, 0, 100, 100),
-                    Speed = 0.5m,
-                });
+                var recorder = await Page.ScreencastAsync(
+                    new ScreencastOptions
+                    {
+                        Path = filePath,
+                        Scale = 0.5m,
+                        Crop = new BoundingBox(0, 0, 100, 100),
+                        Speed = 0.5m,
+                    }
+                );
 
                 await Page.GoToAsync("data:text/html,<input>");
                 var input = await Page.WaitForSelectorAsync("input");
@@ -42,7 +44,14 @@ namespace PuppeteerSharp.Tests.ScreencastTests
             }
         }
 
-        [Test, PuppeteerTest("screencast.spec", "Screencasts Page.screencast", "should work concurrently")]
+        [
+            Test,
+            PuppeteerTest(
+                "screencast.spec",
+                "Screencasts Page.screencast",
+                "should work concurrently"
+            )
+        ]
         [Obsolete]
         public async Task ShouldWorkConcurrently()
         {
@@ -51,8 +60,12 @@ namespace PuppeteerSharp.Tests.ScreencastTests
 
             try
             {
-                var recorder = await Page.ScreencastAsync(new ScreencastOptions { Path = filePath1 });
-                var recorder2 = await Page.ScreencastAsync(new ScreencastOptions { Path = filePath2 });
+                var recorder = await Page.ScreencastAsync(
+                    new ScreencastOptions { Path = filePath1 }
+                );
+                var recorder2 = await Page.ScreencastAsync(
+                    new ScreencastOptions { Path = filePath2 }
+                );
 
                 await Page.GoToAsync("data:text/html,<input>");
                 var input = await Page.WaitForSelectorAsync("input");
@@ -86,7 +99,14 @@ namespace PuppeteerSharp.Tests.ScreencastTests
             }
         }
 
-        [Test, PuppeteerTest("screencast.spec", "Screencasts Page.screencast", "should work with a fractional device scale factor")]
+        [
+            Test,
+            PuppeteerTest(
+                "screencast.spec",
+                "Screencasts Page.screencast",
+                "should work with a fractional device scale factor"
+            )
+        ]
         [Obsolete]
         public async Task ShouldWorkWithAFractionalDeviceScaleFactor()
         {
@@ -103,7 +123,9 @@ namespace PuppeteerSharp.Tests.ScreencastTests
                 await using (var browser = await Puppeteer.LaunchAsync(options))
                 {
                     var page = await browser.NewPageAsync();
-                    var recorder = await page.ScreencastAsync(new ScreencastOptions { Path = filePath });
+                    var recorder = await page.ScreencastAsync(
+                        new ScreencastOptions { Path = filePath }
+                    );
 
                     await page.GoToAsync("data:text/html,<input>");
                     var input = await page.WaitForSelectorAsync("input");
@@ -123,67 +145,116 @@ namespace PuppeteerSharp.Tests.ScreencastTests
             }
         }
 
-        [Test, PuppeteerTest("screencast.spec", "Screencasts Page.screencast", "should validate options")]
+        [
+            Test,
+            PuppeteerTest(
+                "screencast.spec",
+                "Screencasts Page.screencast",
+                "should validate options"
+            )
+        ]
         [Obsolete]
         public async Task ShouldValidateOptions()
         {
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Scale = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Scale = -1 }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Scale = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Scale = -1 })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Speed = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Speed = -1 }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Speed = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Speed = -1 })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions
-            {
-                Crop = new BoundingBox(0, 0, 0, 1),
-            }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions
-            {
-                Crop = new BoundingBox(0, 0, 1, 0),
-            }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions
-            {
-                Crop = new BoundingBox(-1, 0, 1, 1),
-            }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions
-            {
-                Crop = new BoundingBox(0, -1, 1, 1),
-            }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions
-            {
-                Crop = new BoundingBox(0, 0, 10000, 1),
-            }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions
-            {
-                Crop = new BoundingBox(0, 0, 1, 10000),
-            }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Crop = new BoundingBox(0, 0, 0, 1) })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Crop = new BoundingBox(0, 0, 1, 0) })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Crop = new BoundingBox(-1, 0, 1, 1) })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Crop = new BoundingBox(0, -1, 1, 1) })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(
+                    new ScreencastOptions { Crop = new BoundingBox(0, 0, 10000, 1) }
+                )
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(
+                    new ScreencastOptions { Crop = new BoundingBox(0, 0, 1, 10000) }
+                )
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Format = "gif" }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Format = "webm" }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Format = "mp4" }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Format = "gif" })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Format = "webm" })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Format = "mp4" })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Fps = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Fps = -1 }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Fps = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Fps = -1 })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Loop = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Loop = -1 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Loop = double.PositiveInfinity }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Loop = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Loop = -1 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Loop = double.PositiveInfinity })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Delay = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Delay = -1 }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Delay = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Delay = -1 })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Quality = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Quality = -1 }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Quality = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Quality = -1 })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Colors = 0 }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Colors = -1 }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Colors = 0 })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Colors = -1 })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Path = "test.webm" }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Path = "test.webm" })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Overwrite = true }));
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Overwrite = false }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Overwrite = true })
+            );
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Overwrite = false })
+            );
 
-            Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { FfmpegPath = "non-existent-path" }));
+            Assert.ThrowsAsync<PuppeteerException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { FfmpegPath = "non-existent-path" })
+            );
         }
     }
 }

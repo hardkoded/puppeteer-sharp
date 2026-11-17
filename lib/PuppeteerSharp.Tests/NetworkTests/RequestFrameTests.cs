@@ -7,11 +7,17 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestFrameTests : PuppeteerPageBaseTest
     {
-        public RequestFrameTests() : base()
-        {
-        }
+        public RequestFrameTests()
+            : base() { }
 
-        [Test, PuppeteerTest("network.spec", "network Request.Frame", "should work for main frame navigation request")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.Frame",
+                "should work for main frame navigation request"
+            )
+        ]
         public async Task ShouldWorkForMainFrameNavigationRequests()
         {
             var requests = new List<IRequest>();
@@ -28,7 +34,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(requests[0].Frame, Is.EqualTo(Page.MainFrame));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.Frame", "should work for subframe navigation request")]
+        [
+            Test,
+            PuppeteerTest(
+                "network.spec",
+                "network Request.Frame",
+                "should work for subframe navigation request"
+            )
+        ]
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
             var requests = new List<IRequest>();
@@ -47,7 +60,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(requests[1].Frame, Is.EqualTo(await Page.FirstChildFrameAsync()));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Request.Frame", "should work for fetch requests")]
+        [
+            Test,
+            PuppeteerTest("network.spec", "network Request.Frame", "should work for fetch requests")
+        ]
         public async Task ShouldWorkForFetchRequests()
         {
             var requests = new List<IRequest>();

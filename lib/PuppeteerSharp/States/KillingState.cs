@@ -5,7 +5,11 @@ namespace PuppeteerSharp.States
 {
     internal class KillingState(StateManager stateManager) : State(stateManager)
     {
-        public override async Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout)
+        public override async Task EnterFromAsync(
+            LauncherBase launcher,
+            State fromState,
+            TimeSpan timeout
+        )
         {
             if (!StateManager.TryEnter(launcher, fromState, this))
             {

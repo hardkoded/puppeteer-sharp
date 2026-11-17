@@ -19,7 +19,10 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
         [SetUp]
         public void CreateTempFiles()
         {
-            _tmpDir = Path.Combine(Path.GetTempPath(), "pptr-symlink-" + Guid.NewGuid().ToString("N"));
+            _tmpDir = Path.Combine(
+                Path.GetTempPath(),
+                "pptr-symlink-" + Guid.NewGuid().ToString("N")
+            );
             Directory.CreateDirectory(_tmpDir);
 
             _scriptFile = Path.Combine(_tmpDir, "script.js");
@@ -61,7 +64,14 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
             }
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should reject addScriptTag with a symlinked path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is false",
+                "should reject addScriptTag with a symlinked path"
+            )
+        ]
         public async Task ShouldRejectAddScriptTagWithASymlinkedPath()
         {
             IgnoreIfWindowsOrSymlinksUnsupported();
@@ -69,22 +79,40 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            var exception = Assert.ThrowsAsync<IOException>(
-                () => Page.AddScriptTagAsync(new AddTagOptions { Path = _scriptSymlink }));
+            var exception = Assert.ThrowsAsync<IOException>(() =>
+                Page.AddScriptTagAsync(new AddTagOptions { Path = _scriptSymlink })
+            );
             Assert.That(exception, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should allow addScriptTag with a regular file path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is false",
+                "should allow addScriptTag with a regular file path"
+            )
+        ]
         public async Task ShouldAllowAddScriptTagWithARegularFilePath()
         {
             Puppeteer.SetFollowSymlinks(false);
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.AddScriptTagAsync(new AddTagOptions { Path = _scriptFile });
-            Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(123));
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int>("window.__injected"),
+                Is.EqualTo(123)
+            );
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should reject addStyleTag with a symlinked path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is false",
+                "should reject addStyleTag with a symlinked path"
+            )
+        ]
         public async Task ShouldRejectAddStyleTagWithASymlinkedPath()
         {
             IgnoreIfWindowsOrSymlinksUnsupported();
@@ -92,12 +120,20 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            var exception = Assert.ThrowsAsync<IOException>(
-                () => Page.AddStyleTagAsync(new AddTagOptions { Path = _styleSymlink }));
+            var exception = Assert.ThrowsAsync<IOException>(() =>
+                Page.AddStyleTagAsync(new AddTagOptions { Path = _styleSymlink })
+            );
             Assert.That(exception, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should allow addStyleTag with a regular file path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is false",
+                "should allow addStyleTag with a regular file path"
+            )
+        ]
         public async Task ShouldAllowAddStyleTagWithARegularFilePath()
         {
             Puppeteer.SetFollowSymlinks(false);
@@ -106,11 +142,20 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
             await Page.AddStyleTagAsync(new AddTagOptions { Path = _styleFile });
             Assert.That(
                 await Page.EvaluateExpressionAsync<string>(
-                    "window.getComputedStyle(document.body).getPropertyValue('background-color')"),
-                Is.EqualTo("rgb(0, 255, 0)"));
+                    "window.getComputedStyle(document.body).getPropertyValue('background-color')"
+                ),
+                Is.EqualTo("rgb(0, 255, 0)")
+            );
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should reject screenshot to an existing symlink path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is false",
+                "should reject screenshot to an existing symlink path"
+            )
+        ]
         public async Task ShouldRejectScreenshotToAnExistingSymlinkPath()
         {
             IgnoreIfWindowsOrSymlinksUnsupported();
@@ -127,7 +172,14 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
             Assert.That(exception, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should reject pdf to an existing symlink path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is false",
+                "should reject pdf to an existing symlink path"
+            )
+        ]
         public async Task ShouldRejectPdfToAnExistingSymlinkPath()
         {
             IgnoreIfWindowsOrSymlinksUnsupported();
@@ -144,25 +196,34 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
             Assert.That(exception, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should reject screencast when overwrite is false and file exists")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is false",
+                "should reject screencast when overwrite is false and file exists"
+            )
+        ]
         [Obsolete]
         public async Task ShouldRejectScreencastWhenOverwriteIsFalseAndFileExists()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            var tmpDir = Path.Combine(Path.GetTempPath(), "pptr-screencast-" + Guid.NewGuid().ToString("N"));
+            var tmpDir = Path.Combine(
+                Path.GetTempPath(),
+                "pptr-screencast-" + Guid.NewGuid().ToString("N")
+            );
             Directory.CreateDirectory(tmpDir);
             var targetFile = Path.Combine(tmpDir, "output.webm");
             File.WriteAllText(targetFile, "placeholder");
 
             try
             {
-                var exception = Assert.ThrowsAsync<IOException>(
-                    () => Page.ScreencastAsync(new ScreencastOptions
-                    {
-                        Path = targetFile,
-                        Overwrite = false,
-                    }));
+                var exception = Assert.ThrowsAsync<IOException>(() =>
+                    Page.ScreencastAsync(
+                        new ScreencastOptions { Path = targetFile, Overwrite = false }
+                    )
+                );
                 Assert.That(exception, Is.Not.Null);
             }
             finally
@@ -181,7 +242,14 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
             }
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should reject screencast to an existing symlink path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is false",
+                "should reject screencast to an existing symlink path"
+            )
+        ]
         [Obsolete]
         public async Task ShouldRejectScreencastToAnExistingSymlinkPath()
         {
@@ -195,22 +263,40 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
             File.WriteAllText(targetFile, "placeholder");
             File.CreateSymbolicLink(linkFile, targetFile);
 
-            var exception = Assert.ThrowsAsync<IOException>(
-                () => Page.ScreencastAsync(new ScreencastOptions { Path = linkFile }));
+            var exception = Assert.ThrowsAsync<IOException>(() =>
+                Page.ScreencastAsync(new ScreencastOptions { Path = linkFile })
+            );
             Assert.That(exception, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is true (default)", "should allow addScriptTag with a symlinked path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is true (default)",
+                "should allow addScriptTag with a symlinked path"
+            )
+        ]
         public async Task ShouldAllowAddScriptTagWithASymlinkedPath()
         {
             IgnoreIfSymlinksUnsupported();
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.AddScriptTagAsync(new AddTagOptions { Path = _scriptSymlink });
-            Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(123));
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int>("window.__injected"),
+                Is.EqualTo(123)
+            );
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is true (default)", "should allow addStyleTag with a symlinked path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is true (default)",
+                "should allow addStyleTag with a symlinked path"
+            )
+        ]
         public async Task ShouldAllowAddStyleTagWithASymlinkedPath()
         {
             IgnoreIfSymlinksUnsupported();
@@ -219,11 +305,20 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
             await Page.AddStyleTagAsync(new AddTagOptions { Path = _styleSymlink });
             Assert.That(
                 await Page.EvaluateExpressionAsync<string>(
-                    "window.getComputedStyle(document.body).getPropertyValue('background-color')"),
-                Is.EqualTo("rgb(0, 255, 0)"));
+                    "window.getComputedStyle(document.body).getPropertyValue('background-color')"
+                ),
+                Is.EqualTo("rgb(0, 255, 0)")
+            );
         }
 
-        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is true (default)", "should allow screenshot to a symlink path")]
+        [
+            Test,
+            PuppeteerTest(
+                "followSymlinks.test",
+                "followSymlinks when followSymlinks is true (default)",
+                "should allow screenshot to a symlink path"
+            )
+        ]
         public async Task ShouldAllowScreenshotToASymlinkPath()
         {
             IgnoreIfSymlinksUnsupported();

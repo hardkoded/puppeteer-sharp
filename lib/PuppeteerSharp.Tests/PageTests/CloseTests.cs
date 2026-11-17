@@ -6,41 +6,54 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class CloseTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("page.spec", "Page Page.close", "should reject all promises when page is closed")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.close",
+                "should reject all promises when page is closed"
+            )
+        ]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
             TargetClosedException exception = null;
 
-            var exceptionTask = Assert.ThatAsync(async () =>
-            {
-                try
+            var exceptionTask = Assert.ThatAsync(
+                async () =>
                 {
-                    await Page.EvaluateFunctionAsync("() => new Promise(r => {})");
-                }
-                catch (TargetClosedException e)
-                {
-                    exception = e;
-                    throw;
-                }
-            }, Throws.InstanceOf<TargetClosedException>());
-
-            await Task.WhenAll(
-                exceptionTask,
-                Page.CloseAsync()
+                    try
+                    {
+                        await Page.EvaluateFunctionAsync("() => new Promise(r => {})");
+                    }
+                    catch (TargetClosedException e)
+                    {
+                        exception = e;
+                        throw;
+                    }
+                },
+                Throws.InstanceOf<TargetClosedException>()
             );
+
+            await Task.WhenAll(exceptionTask, Page.CloseAsync());
 
             Assert.That(exception.Message, Does.Contain("Protocol error"));
             Assert.That(
                 exception.CloseReason,
                 PuppeteerTestAttribute.IsCdp
                     ? Is.EqualTo("Target.detachedFromTarget")
-                    : Is.EqualTo("Browsing context closed"));
+                    : Is.EqualTo("Browsing context closed")
+            );
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.close", "should not be visible in browser.pages")]
+        [
+            Test,
+            PuppeteerTest("page.spec", "Page Page.close", "should not be visible in browser.pages")
+        ]
         public async Task ShouldNotBeVisibleInBrowserPages()
         {
-            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            await using var browser = await Puppeteer.LaunchAsync(
+                TestConstants.DefaultBrowserOptions()
+            );
             var page = await browser.NewPageAsync();
             Assert.That(await browser.PagesAsync(), Does.Contain(page));
             await page.CloseAsync();
@@ -50,14 +63,19 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, Ignore("previously not marked as a test")]
         public async Task ShouldNotBeVisibleInBrowserPagesWithDisposeAsync()
         {
-            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            await using var browser = await Puppeteer.LaunchAsync(
+                TestConstants.DefaultBrowserOptions()
+            );
             var page = await browser.NewPageAsync();
             Assert.That(await browser.PagesAsync(), Does.Contain(page));
             await page.DisposeAsync();
             Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.close", "should run beforeunload if asked for")]
+        [
+            Test,
+            PuppeteerTest("page.spec", "Page Page.close", "should run beforeunload if asked for")
+        ]
         public async Task ShouldRunBeforeunloadIfAskedFor()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -89,15 +107,19 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.ClickAsync("body");
             var pageClosingTask = Page.CloseAsync(new PageCloseOptions { RunBeforeUnload = true });
 
-            await Task.WhenAll(
-                dialogTask.Task,
-                closeTask.Task
-            );
+            await Task.WhenAll(dialogTask.Task, closeTask.Task);
 
             await pageClosingTask;
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.close", "should *not* run beforeunload by default")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.close",
+                "should *not* run beforeunload by default"
+            )
+        ]
         public async Task ShouldNotRunBeforeunloadByDefault()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -142,7 +164,14 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Context.PagesAsync(), Does.Not.Contain(newPage));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.close PuppeteerSharp", "should close when connection breaks prematurely")]
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.close PuppeteerSharp",
+                "should close when connection breaks prematurely"
+            )
+        ]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
             Browser.Disconnect();

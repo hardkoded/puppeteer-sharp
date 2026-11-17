@@ -6,7 +6,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class UserAgentTests : PuppeteerBrowserBaseTest
     {
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.userAgent", "should include WebKit")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.userAgent",
+                "should include WebKit"
+            )
+        ]
         public async Task ShouldIncludeWebKit()
         {
             var userAgent = await Browser.GetUserAgentAsync();
@@ -22,7 +29,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.userAgent", "should include Browser engine")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.userAgent",
+                "should include Browser engine"
+            )
+        ]
         public async Task ShouldIncludeBrowserEngine()
         {
             var userAgent = await Browser.GetUserAgentAsync();
@@ -38,7 +52,14 @@ namespace PuppeteerSharp.Tests.BrowserTests
             }
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.userAgent", "should include Browser name")]
+        [
+            Test,
+            PuppeteerTest(
+                "browser.spec",
+                "Browser specs Browser.userAgent",
+                "should include Browser name"
+            )
+        ]
         public async Task ShouldIncludeBrowserName()
         {
             var userAgent = await Browser.GetUserAgentAsync();

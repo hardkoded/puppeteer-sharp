@@ -28,7 +28,8 @@ namespace PuppeteerSharp
                 return false;
             }
 
-            return SourceOrigin == other.SourceOrigin && HasCrossSiteAncestor == other.HasCrossSiteAncestor;
+            return SourceOrigin == other.SourceOrigin
+                && HasCrossSiteAncestor == other.HasCrossSiteAncestor;
         }
 
         /// <inheritdoc/>

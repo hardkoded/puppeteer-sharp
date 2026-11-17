@@ -15,10 +15,7 @@ namespace PuppeteerSharp
     /// </summary>
     public class FirefoxLauncher : LauncherBase
     {
-        private static readonly string[] _defaultArgs =
-        [
-            "--no-remote"
-        ];
+        private static readonly string[] _defaultArgs = ["--no-remote"];
 
         private static readonly string[] _profileCommandLineArguments = ["-profile", "--profile"];
         private readonly string _userDataDir;
@@ -37,7 +34,8 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";
+        public override string ToString() =>
+            $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";
 
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
@@ -115,7 +113,11 @@ namespace PuppeteerSharp
             base.OnExit();
         }
 
-        private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory, string UserDataDir) PrepareFirefoxArgs(LaunchOptions options)
+        private static (
+            List<string> FirefoxArgs,
+            TempDirectory TempUserDataDirectory,
+            string UserDataDir
+        ) PrepareFirefoxArgs(LaunchOptions options)
         {
             var firefoxArguments = new List<string>();
 
@@ -125,21 +127,29 @@ namespace PuppeteerSharp
             }
             else if (options.IgnoredDefaultArgs?.Length > 0)
             {
-                firefoxArguments.AddRange(GetDefaultArgs(options).Except(options.IgnoredDefaultArgs));
+                firefoxArguments.AddRange(
+                    GetDefaultArgs(options).Except(options.IgnoredDefaultArgs)
+                );
             }
             else
             {
                 firefoxArguments.AddRange(options.Args);
             }
 
-            if (!firefoxArguments.Any(a => a.StartsWith("-remote-debugging", StringComparison.OrdinalIgnoreCase)))
+            if (
+                !firefoxArguments.Any(a =>
+                    a.StartsWith("-remote-debugging", StringComparison.OrdinalIgnoreCase)
+                )
+            )
             {
                 firefoxArguments.Add("--remote-debugging-port=0");
             }
 
             // Check for the profile argument, which will always be set even
             // with a custom directory specified via the userDataDir option.
-            var profileArgIndex = firefoxArguments.FindIndex(arg => _profileCommandLineArguments.Contains(arg));
+            var profileArgIndex = firefoxArguments.FindIndex(arg =>
+                _profileCommandLineArguments.Contains(arg)
+            );
             string userDataDir;
             TempDirectory tempUserDataDirectory = null;
 
@@ -160,12 +170,18 @@ namespace PuppeteerSharp
                 firefoxArguments.Add($"{userDataDir.Quote()}");
             }
 
-            Firefox.CreateProfile(userDataDir, GetPreferences(options.Protocol, options.ExtraPrefsFirefox));
+            Firefox.CreateProfile(
+                userDataDir,
+                GetPreferences(options.Protocol, options.ExtraPrefsFirefox)
+            );
 
             return (firefoxArguments, tempUserDataDirectory, userDataDir);
         }
 
-        private static Dictionary<string, object> GetPreferences(ProtocolType protocol, Dictionary<string, object> optionsExtraPreferencesFirefox)
+        private static Dictionary<string, object> GetPreferences(
+            ProtocolType protocol,
+            Dictionary<string, object> optionsExtraPreferencesFirefox
+        )
         {
             var result = optionsExtraPreferencesFirefox ?? [];
 

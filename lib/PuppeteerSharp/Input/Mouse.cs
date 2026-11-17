@@ -26,7 +26,12 @@ namespace PuppeteerSharp.Input
         public abstract Task WheelAsync(decimal deltaX, decimal deltaY);
 
         /// <inheritdoc/>
-        public abstract Task<DragData> DragAsync(decimal startX, decimal startY, decimal endX, decimal endY);
+        public abstract Task<DragData> DragAsync(
+            decimal startX,
+            decimal startY,
+            decimal endX,
+            decimal endY
+        );
 
         /// <inheritdoc/>
         public abstract Task DragEnterAsync(decimal x, decimal y, DragData data);
@@ -38,7 +43,13 @@ namespace PuppeteerSharp.Input
         public abstract Task DropAsync(decimal x, decimal y, DragData data);
 
         /// <inheritdoc/>
-        public abstract Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0);
+        public abstract Task DragAndDropAsync(
+            decimal startX,
+            decimal startY,
+            decimal endX,
+            decimal endY,
+            int delay = 0
+        );
 
         /// <inheritdoc/>
         public abstract Task ResetAsync();

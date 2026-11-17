@@ -37,7 +37,11 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
     private readonly BidiHttpRequest _request;
     private WebDriverBiDi.Network.ResponseData _data;
 
-    private BidiHttpResponse(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
+    private BidiHttpResponse(
+        WebDriverBiDi.Network.ResponseData data,
+        BidiHttpRequest request,
+        bool cdpSupported
+    )
     {
         _data = data;
         _request = request;
@@ -122,10 +126,16 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
     }
 
     /// <inheritdoc />
-    public override Task<Stream> StreamAsync()
-        => Task.FromException<Stream>(new NotSupportedException("Response.StreamAsync is not supported in WebDriver BiDi."));
+    public override Task<Stream> StreamAsync() =>
+        Task.FromException<Stream>(
+            new NotSupportedException("Response.StreamAsync is not supported in WebDriver BiDi.")
+        );
 
-    internal static BidiHttpResponse From(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
+    internal static BidiHttpResponse From(
+        WebDriverBiDi.Network.ResponseData data,
+        BidiHttpRequest request,
+        bool cdpSupported
+    )
     {
         var existingResponse = request.Response;
         if (existingResponse != null)
@@ -157,7 +167,9 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
     // Combines duplicate header values with a newline before normalizing, so repeated
     // headers (e.g. multiple Set-Cookie entries) are preserved instead of the last one
     // silently overwriting the earlier ones.
-    private static Dictionary<string, string> BuildHeaders(IEnumerable<WebDriverBiDi.Network.ReadOnlyHeader> headers)
+    private static Dictionary<string, string> BuildHeaders(
+        IEnumerable<WebDriverBiDi.Network.ReadOnlyHeader> headers
+    )
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var header in headers)
@@ -183,9 +195,14 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
             // request IDs for the same URL during navigation; on a cold load the phantom duplicate
             // can report fromCache=true even though the real request was served from the network.
             // Reporting that phantom would wrongly mark the resource as served from cache.
-            if (_request.RequestEventEmitted && _request.BidiPage.TryMarkCacheEventFired(_request.Url))
+            if (
+                _request.RequestEventEmitted
+                && _request.BidiPage.TryMarkCacheEventFired(_request.Url)
+            )
             {
-                ((Page)_request.Frame.Page).OnRequestServedFromCache(new RequestEventArgs(_request));
+                ((Page)_request.Frame.Page).OnRequestServedFromCache(
+                    new RequestEventArgs(_request)
+                );
             }
         }
 

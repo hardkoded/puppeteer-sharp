@@ -20,7 +20,8 @@ namespace PuppeteerSharp.Helpers.Json
             {
                 context = JsonTypeInfoResolver.Combine(
                     SystemTextJsonSerializationContext.Default,
-                    Puppeteer.ExtraJsonSerializerContext);
+                    Puppeteer.ExtraJsonSerializerContext
+                );
             }
             else
             {
@@ -35,10 +36,7 @@ namespace PuppeteerSharp.Helpers.Json
 #if NET8_0_OR_GREATER
                 TypeInfoResolver = context,
 #endif
-                Converters =
-                {
-                    new HttpMethodConverter(), new JSHandleConverter(),
-                },
+                Converters = { new HttpMethodConverter(), new JSHandleConverter() },
             };
         });
 
@@ -49,8 +47,10 @@ namespace PuppeteerSharp.Helpers.Json
         /// <param name="element">Element to convert.</param>
         /// <param name="options">Serialization options.</param>
         /// <returns>Converted value.</returns>
-        public static T ToObject<T>(this JsonElement element, JsonSerializerOptions options = null)
-            => element.Deserialize<T>(options ?? DefaultJsonSerializerSettings.Value);
+        public static T ToObject<T>(
+            this JsonElement element,
+            JsonSerializerOptions options = null
+        ) => element.Deserialize<T>(options ?? DefaultJsonSerializerSettings.Value);
 
         /// <summary>
         /// Convert a <see cref="JsonElement"/> to an object.
@@ -59,8 +59,11 @@ namespace PuppeteerSharp.Helpers.Json
         /// <param name="type">Type to convert the <see cref="JsonElement"/> to.</param>
         /// <param name="options">Serialization options.</param>
         /// <returns>Converted value.</returns>
-        public static object ToObject(this JsonElement element, Type type, JsonSerializerOptions options = null)
-            => element.Deserialize(type, options ?? DefaultJsonSerializerSettings.Value);
+        public static object ToObject(
+            this JsonElement element,
+            Type type,
+            JsonSerializerOptions options = null
+        ) => element.Deserialize(type, options ?? DefaultJsonSerializerSettings.Value);
 
         /// <summary>
         /// Serialize an object.
@@ -69,8 +72,8 @@ namespace PuppeteerSharp.Helpers.Json
         /// <param name="value">Object to serialize.</param>
         /// <param name="options">Serialization options.</param>
         /// <returns>Serialized object.</returns>
-        public static string ToJson<T>(this T value, JsonSerializerOptions options = null)
-            => JsonSerializer.Serialize(value, options ?? DefaultJsonSerializerSettings.Value);
+        public static string ToJson<T>(this T value, JsonSerializerOptions options = null) =>
+            JsonSerializer.Serialize(value, options ?? DefaultJsonSerializerSettings.Value);
 
         /// <summary>
         /// Convert a <see cref="JsonDocument"/> to an object.
@@ -79,7 +82,10 @@ namespace PuppeteerSharp.Helpers.Json
         /// <param name="document">Document to convert.</param>
         /// <param name="options">Serialization options.</param>
         /// <returns>Converted value.</returns>
-        public static T ToObject<T>(this JsonDocument document, JsonSerializerOptions options = null)
+        public static T ToObject<T>(
+            this JsonDocument document,
+            JsonSerializerOptions options = null
+        )
         {
             if (document == null)
             {

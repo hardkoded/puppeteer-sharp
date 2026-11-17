@@ -29,7 +29,9 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     private Payload _continueRequestOverrides = new();
     private ResponseData _responseForRequest;
     private RequestAbortErrorCode _abortErrorReason;
-    private InterceptResolutionState _interceptResolutionState = new(InterceptResolutionAction.None);
+    private InterceptResolutionState _interceptResolutionState = new(
+        InterceptResolutionAction.None
+    );
     private Func<Task> _replayResolution;
     private Payload _resolvedContinueOverrides;
 
@@ -42,7 +44,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         RequestWillBeSentResponse data,
         List<IRequest> redirectChain,
         ILoggerFactory loggerFactory,
-        CDPSession fetchClient = null)
+        CDPSession fetchClient = null
+    )
     {
         _client = client;
         _fetchClient = fetchClient ?? client;
@@ -55,9 +58,13 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         ResourceType = data.Type ?? ResourceType.Other;
         Method = data.Request.Method;
         _postDataBytes = MergePostDataEntries(data.Request);
-        PostData = _postDataBytes != null ? Encoding.UTF8.GetString(_postDataBytes) : data.Request.PostData;
-        _hasCompletePostData = data.Request.PostDataEntries is { Length: > 0 } &&
-            data.Request.PostDataEntries.All(entry => !string.IsNullOrEmpty(entry.Bytes));
+        PostData =
+            _postDataBytes != null
+                ? Encoding.UTF8.GetString(_postDataBytes)
+                : data.Request.PostData;
+        _hasCompletePostData =
+            data.Request.PostDataEntries is { Length: > 0 }
+            && data.Request.PostDataEntries.All(entry => !string.IsNullOrEmpty(entry.Bytes));
         HasPostData = data.Request.HasPostData ?? false;
 
         Frame = frame;
@@ -134,16 +141,24 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         _continueRequestOverrides = overrides;
 
-        if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+        if (
+            _interceptResolutionState.Priority is null
+            || priority > _interceptResolutionState.Priority
+        )
         {
-            _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Continue, priority);
+            _interceptResolutionState = new InterceptResolutionState(
+                InterceptResolutionAction.Continue,
+                priority
+            );
             return;
         }
 
         if (priority == _interceptResolutionState.Priority)
         {
-            if (_interceptResolutionState.Action == InterceptResolutionAction.Abort ||
-                _interceptResolutionState.Action == InterceptResolutionAction.Respond)
+            if (
+                _interceptResolutionState.Action == InterceptResolutionAction.Abort
+                || _interceptResolutionState.Action == InterceptResolutionAction.Respond
+            )
             {
                 return;
             }
@@ -170,9 +185,15 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         _responseForRequest = response;
 
-        if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+        if (
+            _interceptResolutionState.Priority is null
+            || priority > _interceptResolutionState.Priority
+        )
         {
-            _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Respond, priority);
+            _interceptResolutionState = new InterceptResolutionState(
+                InterceptResolutionAction.Respond,
+                priority
+            );
             return;
         }
 
@@ -188,7 +209,10 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     }
 
     /// <inheritdoc/>
-    public override async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
+    public override async Task AbortAsync(
+        RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed,
+        int? priority = null
+    )
     {
         VerifyInterception();
 
@@ -205,9 +229,15 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         _abortErrorReason = errorCode;
 
-        if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+        if (
+            _interceptResolutionState.Priority is null
+            || priority > _interceptResolutionState.Priority
+        )
         {
-            _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Abort, priority);
+            _interceptResolutionState = new InterceptResolutionState(
+                InterceptResolutionAction.Abort,
+                priority
+            );
         }
     }
 
@@ -221,16 +251,24 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc />
     public override async Task<byte[]> ContentAsync()
     {
-        if (InterceptionId != null && _allowInterception && !IsInterceptResolutionHandled && _hasCompletePostData)
+        if (
+            InterceptionId != null
+            && _allowInterception
+            && !IsInterceptResolutionHandled
+            && _hasCompletePostData
+        )
         {
             return _postDataBytes;
         }
 
         try
         {
-            var result = await _client.SendAsync<GetRequestPostDataResponse>(
-                "Network.getRequestPostData",
-                new GetRequestPostDataRequest(Id)).ConfigureAwait(false);
+            var result = await _client
+                .SendAsync<GetRequestPostDataResponse>(
+                    "Network.getRequestPostData",
+                    new GetRequestPostDataRequest(Id)
+                )
+                .ConfigureAwait(false);
             return result.Base64Encoded
                 ? Convert.FromBase64String(result.PostData)
                 : Encoding.UTF8.GetBytes(result.PostData);
@@ -269,8 +307,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
-        => _interceptHandlers.Add(pendingHandler);
+    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler) =>
+        _interceptHandlers.Add(pendingHandler);
 
     internal Task ReplayInterceptionAsync() => _replayResolution?.Invoke() ?? Task.CompletedTask;
 
@@ -297,8 +335,10 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     }
 
     /// <inheritdoc/>
-    protected override bool CanBeIntercepted()
-        => !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase) && !FromMemoryCache && !string.IsNullOrEmpty(InterceptionId);
+    protected override bool CanBeIntercepted() =>
+        !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase)
+        && !FromMemoryCache
+        && !string.IsNullOrEmpty(InterceptionId);
 
     private static byte[] MergePostDataEntries(Messaging.Request request)
     {
@@ -307,8 +347,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
             return null;
         }
 
-        var buffers = request.PostDataEntries
-            .Where(entry => entry.Bytes != null)
+        var buffers = request
+            .PostDataEntries.Where(entry => entry.Bytes != null)
             .Select(entry => Convert.FromBase64String(entry.Bytes))
             .ToArray();
 
@@ -323,8 +363,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         return merged;
     }
 
-    private Header[] HeadersArray(Dictionary<string, string> headers)
-        => headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
+    private Header[] HeadersArray(Dictionary<string, string> headers) =>
+        headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
 
     private async Task ContinueInternalAsync(Payload overrides = null)
     {
@@ -334,10 +374,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         try
         {
-            var requestData = new FetchContinueRequestRequest
-            {
-                RequestId = InterceptionId,
-            };
+            var requestData = new FetchContinueRequestRequest { RequestId = InterceptionId };
             if (overrides?.Url != null)
             {
                 requestData.Url = overrides.Url;
@@ -350,7 +387,9 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
             if (overrides?.PostData != null)
             {
-                requestData.PostData = Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides.PostData));
+                requestData.PostData = Convert.ToBase64String(
+                    Encoding.UTF8.GetBytes(overrides.PostData)
+                );
             }
 
             if (overrides?.Headers?.Count > 0)
@@ -358,7 +397,9 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
                 requestData.Headers = HeadersArray(overrides.Headers);
             }
 
-            await _fetchClient.SendAsync("Fetch.continueRequest", requestData).ConfigureAwait(false);
+            await _fetchClient
+                .SendAsync("Fetch.continueRequest", requestData)
+                .ConfigureAwait(false);
         }
         catch (PuppeteerException ex)
         {
@@ -376,11 +417,12 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         try
         {
-            await _fetchClient.SendAsync("Fetch.failRequest", new FetchFailRequest
-            {
-                RequestId = InterceptionId,
-                ErrorReason = errorReason,
-            }).ConfigureAwait(false);
+            await _fetchClient
+                .SendAsync(
+                    "Fetch.failRequest",
+                    new FetchFailRequest { RequestId = InterceptionId, ErrorReason = errorReason }
+                )
+                .ConfigureAwait(false);
         }
         catch (PuppeteerException ex)
         {
@@ -410,19 +452,36 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
                 {
                     foreach (var val in values)
                     {
-                        responseHeaders.Add(new Header { Name = keyValuePair.Key, Value = val.ToString() });
+                        responseHeaders.Add(
+                            new Header { Name = keyValuePair.Key, Value = val.ToString() }
+                        );
                     }
                 }
                 else
                 {
-                    responseHeaders.Add(new Header { Name = keyValuePair.Key, Value = keyValuePair.Value.ToString() });
+                    responseHeaders.Add(
+                        new Header
+                        {
+                            Name = keyValuePair.Key,
+                            Value = keyValuePair.Value.ToString(),
+                        }
+                    );
                 }
             }
         }
 
-        if (response.BodyData is { Length: > 0 } && (response.Headers == null || !response.Headers.ContainsKey("content-length")))
+        if (
+            response.BodyData is { Length: > 0 }
+            && (response.Headers == null || !response.Headers.ContainsKey("content-length"))
+        )
         {
-            responseHeaders.Add(new Header { Name = "content-length", Value = response.BodyData.Length.ToString(CultureInfo.InvariantCulture) });
+            responseHeaders.Add(
+                new Header
+                {
+                    Name = "content-length",
+                    Value = response.BodyData.Length.ToString(CultureInfo.InvariantCulture),
+                }
+            );
         }
 
         if (response.ContentType != null)
@@ -432,18 +491,28 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         if (string.IsNullOrEmpty(InterceptionId))
         {
-            throw new PuppeteerException("HTTPRequest is missing _interceptionId needed for Fetch.fulfillRequest");
+            throw new PuppeteerException(
+                "HTTPRequest is missing _interceptionId needed for Fetch.fulfillRequest"
+            );
         }
 
         try
         {
-            await _fetchClient.SendAsync("Fetch.fulfillRequest", new FetchFulfillRequest
-            {
-                RequestId = InterceptionId,
-                ResponseCode = response.Status != null ? (int)response.Status : 200,
-                ResponseHeaders = [.. responseHeaders],
-                Body = response.BodyData != null ? Convert.ToBase64String(response.BodyData) : null,
-            }).ConfigureAwait(false);
+            await _fetchClient
+                .SendAsync(
+                    "Fetch.fulfillRequest",
+                    new FetchFulfillRequest
+                    {
+                        RequestId = InterceptionId,
+                        ResponseCode = response.Status != null ? (int)response.Status : 200,
+                        ResponseHeaders = [.. responseHeaders],
+                        Body =
+                            response.BodyData != null
+                                ? Convert.ToBase64String(response.BodyData)
+                                : null,
+                    }
+                )
+                .ConfigureAwait(false);
         }
         catch (PuppeteerException ex)
         {
@@ -454,10 +523,12 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
     private void HandleError(PuppeteerException ex)
     {
-        if (ex.Message.Contains("Invalid header") ||
-            ex.Message.Contains("Unsafe header") ||
-            ex.Message.Contains("Expected \"header\"") ||
-            ex.Message.Contains("invalid argument"))
+        if (
+            ex.Message.Contains("Invalid header")
+            || ex.Message.Contains("Unsafe header")
+            || ex.Message.Contains("Expected \"header\"")
+            || ex.Message.Contains("invalid argument")
+        )
         {
             throw ex;
         }

@@ -46,10 +46,9 @@ namespace PuppeteerSharp.Cdp
                     Logger.FailedToStopScreenRecording(ex);
                 }
 
-                await ProtocolStreamReader.ReadProtocolStreamBytesAsync(
-                    client,
-                    _streamHandle,
-                    EnqueueChunk).ConfigureAwait(false);
+                await ProtocolStreamReader
+                    .ReadProtocolStreamBytesAsync(client, _streamHandle, EnqueueChunk)
+                    .ConfigureAwait(false);
             }
             finally
             {
@@ -60,15 +59,18 @@ namespace PuppeteerSharp.Cdp
         internal override async Task StartAsync()
         {
             var frameRate = Options.FrameRate ?? Options.Fps;
-            var response = await _page.Client.SendAsync<PageStartScreenRecordingResponse>(
-                "Page.startScreenRecording",
-                new PageStartScreenRecordingRequest
-                {
-                    Audio = Options.Audio,
-                    MaxWidth = Options.MaxWidth,
-                    MaxHeight = Options.MaxHeight,
-                    FrameRate = frameRate,
-                }).ConfigureAwait(false);
+            var response = await _page
+                .Client.SendAsync<PageStartScreenRecordingResponse>(
+                    "Page.startScreenRecording",
+                    new PageStartScreenRecordingRequest
+                    {
+                        Audio = Options.Audio,
+                        MaxWidth = Options.MaxWidth,
+                        MaxHeight = Options.MaxHeight,
+                        FrameRate = frameRate,
+                    }
+                )
+                .ConfigureAwait(false);
 
             _streamHandle = response.Stream;
         }

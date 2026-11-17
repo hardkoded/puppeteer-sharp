@@ -24,7 +24,11 @@ namespace PuppeteerSharp.Tests.ProxyTests
 
         private static int GetAvailablePort()
         {
-            using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+            using var socket = new Socket(
+                AddressFamily.InterNetwork,
+                SocketType.Stream,
+                System.Net.Sockets.ProtocolType.Tcp
+            );
             socket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
             return ((IPEndPoint)socket.LocalEndPoint).Port;
         }
@@ -35,8 +39,10 @@ namespace PuppeteerSharp.Tests.ProxyTests
 
             foreach (var address in Dns.GetHostAddresses(hostname))
             {
-                if (address.AddressFamily == AddressFamily.InterNetwork &&
-                    !IPAddress.IsLoopback(address))
+                if (
+                    address.AddressFamily == AddressFamily.InterNetwork
+                    && !IPAddress.IsLoopback(address)
+                )
                 {
                     return address.ToString();
                 }
@@ -103,7 +109,13 @@ namespace PuppeteerSharp.Tests.ProxyTests
             using (client)
             {
                 var stream = client.GetStream();
-                using var reader = new StreamReader(stream, Encoding.ASCII, false, 4096, leaveOpen: true);
+                using var reader = new StreamReader(
+                    stream,
+                    Encoding.ASCII,
+                    false,
+                    4096,
+                    leaveOpen: true
+                );
 
                 // Read the request line: "GET http://host:port/path HTTP/1.1"
                 var requestLine = await reader.ReadLineAsync();
@@ -135,17 +147,23 @@ namespace PuppeteerSharp.Tests.ProxyTests
                 // since we only need to test HTTP proxy functionality.
                 if (string.Equals(method, "CONNECT", StringComparison.OrdinalIgnoreCase))
                 {
-                    var connectResponse = Encoding.ASCII.GetBytes("HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\n");
+                    var connectResponse = Encoding.ASCII.GetBytes(
+                        "HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\n"
+                    );
                     await stream.WriteAsync(connectResponse, 0, connectResponse.Length);
                     return;
                 }
 
                 // Ignore component update requests triggered on startup.
                 // See https://crbug.com/576202737.
-                if (Uri.TryCreate(requestUrl, UriKind.Absolute, out var requestUri) &&
-                    requestUri.Host == "update.googleapis.com")
+                if (
+                    Uri.TryCreate(requestUrl, UriKind.Absolute, out var requestUri)
+                    && requestUri.Host == "update.googleapis.com"
+                )
                 {
-                    var notFoundResponse = Encoding.ASCII.GetBytes("HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n");
+                    var notFoundResponse = Encoding.ASCII.GetBytes(
+                        "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n"
+                    );
                     await stream.WriteAsync(notFoundResponse, 0, notFoundResponse.Length);
                     return;
                 }
@@ -160,28 +178,43 @@ namespace PuppeteerSharp.Tests.ProxyTests
                 try
                 {
                     using var httpClient = new HttpClient();
-                    using var proxyRequest = new HttpRequestMessage(new HttpMethod(method), forwardUrl);
+                    using var proxyRequest = new HttpRequestMessage(
+                        new HttpMethod(method),
+                        forwardUrl
+                    );
                     using var response = await httpClient.SendAsync(proxyRequest);
 
                     var body = await response.Content.ReadAsByteArrayAsync();
 
                     var responseBuilder = new StringBuilder();
-                    responseBuilder.Append($"HTTP/1.1 {(int)response.StatusCode} {response.ReasonPhrase}\r\n");
+                    responseBuilder.Append(
+                        $"HTTP/1.1 {(int)response.StatusCode} {response.ReasonPhrase}\r\n"
+                    );
                     responseBuilder.Append($"Content-Length: {body.Length}\r\n");
 
                     foreach (var header in response.Content.Headers)
                     {
-                        if (string.Equals(header.Key, "Content-Length", StringComparison.OrdinalIgnoreCase))
+                        if (
+                            string.Equals(
+                                header.Key,
+                                "Content-Length",
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                        )
                         {
                             continue;
                         }
 
-                        responseBuilder.Append($"{header.Key}: {string.Join(", ", header.Value)}\r\n");
+                        responseBuilder.Append(
+                            $"{header.Key}: {string.Join(", ", header.Value)}\r\n"
+                        );
                     }
 
                     foreach (var header in response.Headers)
                     {
-                        responseBuilder.Append($"{header.Key}: {string.Join(", ", header.Value)}\r\n");
+                        responseBuilder.Append(
+                            $"{header.Key}: {string.Join(", ", header.Value)}\r\n"
+                        );
                     }
 
                     responseBuilder.Append("\r\n");
@@ -192,7 +225,9 @@ namespace PuppeteerSharp.Tests.ProxyTests
                 }
                 catch
                 {
-                    var errorResponse = Encoding.ASCII.GetBytes("HTTP/1.1 502 Bad Gateway\r\nContent-Length: 0\r\n\r\n");
+                    var errorResponse = Encoding.ASCII.GetBytes(
+                        "HTTP/1.1 502 Bad Gateway\r\nContent-Length: 0\r\n\r\n"
+                    );
                     await stream.WriteAsync(errorResponse, 0, errorResponse.Length);
                 }
             }
@@ -213,16 +248,23 @@ namespace PuppeteerSharp.Tests.ProxyTests
             _proxyListener?.Stop();
         }
 
-        [Test, PuppeteerTest("proxy.spec", "request proxy", "should proxy requests when configured")]
+        [
+            Test,
+            PuppeteerTest("proxy.spec", "request proxy", "should proxy requests when configured")
+        ]
         public async Task ShouldProxyRequestsWhenConfigured()
         {
             var emptyPageUrl = GetEmptyPageUrl();
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
+            options.Args = options
+                .Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
                 .Append($"--proxy-server={_proxyServerUrl}")
                 .ToArray();
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
             var page = await browser.NewPageAsync();
             var response = await page.GoToAsync(emptyPageUrl);
 
@@ -236,12 +278,16 @@ namespace PuppeteerSharp.Tests.ProxyTests
             var emptyPageUrl = GetEmptyPageUrl();
             var host = new Uri(emptyPageUrl).Host;
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
+            options.Args = options
+                .Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
                 .Append($"--proxy-server={_proxyServerUrl}")
                 .Append($"--proxy-bypass-list={host}")
                 .ToArray();
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
             var page = await browser.NewPageAsync();
 
             // When the proxy is bypassed, the browser connects directly.
@@ -260,16 +306,27 @@ namespace PuppeteerSharp.Tests.ProxyTests
             Assert.That(_proxiedRequestUrls, Does.Not.Contain(emptyPageUrl));
         }
 
-        [Test, PuppeteerTest("proxy.spec", "request proxy in incognito browser context", "should proxy requests when configured at browser level")]
+        [
+            Test,
+            PuppeteerTest(
+                "proxy.spec",
+                "request proxy in incognito browser context",
+                "should proxy requests when configured at browser level"
+            )
+        ]
         public async Task ShouldProxyRequestsWhenConfiguredAtBrowserLevel()
         {
             var emptyPageUrl = GetEmptyPageUrl();
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
+            options.Args = options
+                .Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
                 .Append($"--proxy-server={_proxyServerUrl}")
                 .ToArray();
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
             await using var context = await browser.CreateBrowserContextAsync();
             var page = await context.NewPageAsync();
             var response = await page.GoToAsync(emptyPageUrl);
@@ -278,18 +335,29 @@ namespace PuppeteerSharp.Tests.ProxyTests
             Assert.That(_proxiedRequestUrls, Does.Contain(emptyPageUrl));
         }
 
-        [Test, PuppeteerTest("proxy.spec", "request proxy in incognito browser context", "should respect proxy bypass list when configured at browser level")]
+        [
+            Test,
+            PuppeteerTest(
+                "proxy.spec",
+                "request proxy in incognito browser context",
+                "should respect proxy bypass list when configured at browser level"
+            )
+        ]
         public async Task ShouldRespectProxyBypassListWhenConfiguredAtBrowserLevel()
         {
             var emptyPageUrl = GetEmptyPageUrl();
             var host = new Uri(emptyPageUrl).Host;
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
+            options.Args = options
+                .Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
                 .Append($"--proxy-server={_proxyServerUrl}")
                 .Append($"--proxy-bypass-list={host}")
                 .ToArray();
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
             await using var context = await browser.CreateBrowserContextAsync();
             var page = await context.NewPageAsync();
 
@@ -309,19 +377,29 @@ namespace PuppeteerSharp.Tests.ProxyTests
             Assert.That(_proxiedRequestUrls, Does.Not.Contain(emptyPageUrl));
         }
 
-        [Test, PuppeteerTest("proxy.spec", "request proxy in incognito browser context", "should proxy requests when configured at context level")]
+        [
+            Test,
+            PuppeteerTest(
+                "proxy.spec",
+                "request proxy in incognito browser context",
+                "should proxy requests when configured at context level"
+            )
+        ]
         public async Task ShouldProxyRequestsWhenConfiguredAtContextLevel()
         {
             var emptyPageUrl = GetEmptyPageUrl();
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
+            options.Args = options
+                .Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
                 .ToArray();
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
-            await using var context = await browser.CreateBrowserContextAsync(new BrowserContextOptions
-            {
-                ProxyServer = _proxyServerUrl,
-            });
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
+            await using var context = await browser.CreateBrowserContextAsync(
+                new BrowserContextOptions { ProxyServer = _proxyServerUrl }
+            );
             var page = await context.NewPageAsync();
             var response = await page.GoToAsync(emptyPageUrl);
 
@@ -329,21 +407,34 @@ namespace PuppeteerSharp.Tests.ProxyTests
             Assert.That(_proxiedRequestUrls, Does.Contain(emptyPageUrl));
         }
 
-        [Test, PuppeteerTest("proxy.spec", "request proxy in incognito browser context", "should respect proxy bypass list when configured at context level")]
+        [
+            Test,
+            PuppeteerTest(
+                "proxy.spec",
+                "request proxy in incognito browser context",
+                "should respect proxy bypass list when configured at context level"
+            )
+        ]
         public async Task ShouldRespectProxyBypassListWhenConfiguredAtContextLevel()
         {
             var emptyPageUrl = GetEmptyPageUrl();
             var host = new Uri(emptyPageUrl).Host;
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
+            options.Args = options
+                .Args.Append("--disable-features=NetworkTimeServiceQuerying,AimEnabled")
                 .ToArray();
 
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
-            await using var context = await browser.CreateBrowserContextAsync(new BrowserContextOptions
-            {
-                ProxyServer = _proxyServerUrl,
-                ProxyBypassList = new[] { host },
-            });
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
+            await using var context = await browser.CreateBrowserContextAsync(
+                new BrowserContextOptions
+                {
+                    ProxyServer = _proxyServerUrl,
+                    ProxyBypassList = new[] { host },
+                }
+            );
             var page = await context.NewPageAsync();
 
             // When the proxy is bypassed, the browser connects directly.

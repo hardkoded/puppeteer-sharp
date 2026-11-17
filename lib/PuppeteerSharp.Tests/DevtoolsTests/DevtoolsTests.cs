@@ -7,7 +7,14 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
 {
     public class DevtoolsTests : PuppeteerBaseTest
     {
-        [Test, PuppeteerTest("devtools.spec", "DevTools", "should open devtools when \"devtools: true\" option is given")]
+        [
+            Test,
+            PuppeteerTest(
+                "devtools.spec",
+                "DevTools",
+                "should open devtools when \"devtools: true\" option is given"
+            )
+        ]
         public async Task ShouldOpenDevtoolsWhenDevtoolsTrueOptionIsGiven()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -16,7 +23,8 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             var context = await browser.CreateBrowserContextAsync();
             await Task.WhenAll(
                 context.NewPageAsync(),
-                browser.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
+                browser.WaitForTargetAsync(target => target.Url.Contains("devtools://"))
+            );
         }
 
         [Test, PuppeteerTest("devtools.spec", "DevTools", "should expose DevTools as a page")]
@@ -26,19 +34,25 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             headfulOptions.Devtools = true;
             await using var browser = await Puppeteer.LaunchAsync(headfulOptions);
             var context = await browser.CreateBrowserContextAsync();
-            var targetTask = browser.WaitForTargetAsync(target => target.Url.Contains("devtools://"));
-            await Task.WhenAll(
-                context.NewPageAsync(),
-                targetTask);
+            var targetTask = browser.WaitForTargetAsync(target =>
+                target.Url.Contains("devtools://")
+            );
+            await Task.WhenAll(context.NewPageAsync(), targetTask);
 
             var target = await targetTask;
             var page = await target.PageAsync();
             Assert.That(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"), Is.True);
         }
 
-        [Test, Retry(2),
-         PuppeteerTest("devtools.spec", "DevTools",
-             "target.page() should return a DevTools page if custom isPageTarget is provided")]
+        [
+            Test,
+            Retry(2),
+            PuppeteerTest(
+                "devtools.spec",
+                "DevTools",
+                "target.page() should return a DevTools page if custom isPageTarget is provided"
+            )
+        ]
         public async Task TargetPageShouldReturnADevToolsPageIfCustomIsPageTargetIsProvided()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -46,13 +60,18 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
 
             await using var originalBrowser = await Puppeteer.LaunchAsync(
                 headfulOptions,
-                TestConstants.LoggerFactory);
+                TestConstants.LoggerFactory
+            );
             var browserWSEndpoint = originalBrowser.WebSocketEndpoint;
-            await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
-            {
-                BrowserWSEndpoint = browserWSEndpoint,
-                IsPageTarget = target => target.Type == TargetType.Other && target.Url.StartsWith("devtools://")
-            }, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.ConnectAsync(
+                new ConnectOptions
+                {
+                    BrowserWSEndpoint = browserWSEndpoint,
+                    IsPageTarget = target =>
+                        target.Type == TargetType.Other && target.Url.StartsWith("devtools://"),
+                },
+                TestConstants.LoggerFactory
+            );
             var devtoolsTargetTask = browser.WaitForTargetAsync(t => t.Type == TargetType.Other);
             var devtoolsTarget = await devtoolsTargetTask;
             await using var page = await devtoolsTarget.PageAsync();
@@ -61,9 +80,15 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             Assert.That(pages, Does.Contain(page));
         }
 
-        [Test, Retry(2),
-         PuppeteerTest("devtools.spec", "DevTools",
-             "browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()")]
+        [
+            Test,
+            Retry(2),
+            PuppeteerTest(
+                "devtools.spec",
+                "DevTools",
+                "browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()"
+            )
+        ]
         public async Task BrowserPagesShouldReturnADevToolsPageIfHandleDevToolsAsPageIsProvidedInConnect()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -71,23 +96,35 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
 
             await using var originalBrowser = await Puppeteer.LaunchAsync(
                 headfulOptions,
-                TestConstants.LoggerFactory);
+                TestConstants.LoggerFactory
+            );
             var browserWSEndpoint = originalBrowser.WebSocketEndpoint;
-            await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
-            {
-                BrowserWSEndpoint = browserWSEndpoint,
-                HandleDevToolsAsPage = true,
-            }, TestConstants.LoggerFactory);
-            var devtoolsPageTarget = await browser.WaitForTargetAsync(t => t.Type == TargetType.Other);
+            await using var browser = await Puppeteer.ConnectAsync(
+                new ConnectOptions
+                {
+                    BrowserWSEndpoint = browserWSEndpoint,
+                    HandleDevToolsAsPage = true,
+                },
+                TestConstants.LoggerFactory
+            );
+            var devtoolsPageTarget = await browser.WaitForTargetAsync(t =>
+                t.Type == TargetType.Other
+            );
             await using var page = await devtoolsPageTarget.PageAsync();
             Assert.That(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"), Is.True);
             var pages = await browser.PagesAsync();
             Assert.That(pages, Does.Contain(page));
         }
 
-        [Test, Retry(2),
-         PuppeteerTest("devtools.spec", "DevTools",
-             "browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()")]
+        [
+            Test,
+            Retry(2),
+            PuppeteerTest(
+                "devtools.spec",
+                "DevTools",
+                "browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()"
+            )
+        ]
         public async Task BrowserPagesShouldReturnADevToolsPageIfHandleDevToolsAsPageIsProvidedInLaunch()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -96,24 +133,38 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
 
             await using var browser = await Puppeteer.LaunchAsync(
                 headfulOptions,
-                TestConstants.LoggerFactory);
-            var devtoolsPageTarget = await browser.WaitForTargetAsync(t => t.Type == TargetType.Other);
+                TestConstants.LoggerFactory
+            );
+            var devtoolsPageTarget = await browser.WaitForTargetAsync(t =>
+                t.Type == TargetType.Other
+            );
             await using var page = await devtoolsPageTarget.PageAsync();
             Assert.That(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"), Is.True);
             var pages = await browser.PagesAsync();
             Assert.That(pages, Does.Contain(page));
         }
 
-        [Test, PuppeteerTest("devtools.spec", "DevTools", "target.page() should return Page when calling asPage on DevTools target")]
+        [
+            Test,
+            PuppeteerTest(
+                "devtools.spec",
+                "DevTools",
+                "target.page() should return Page when calling asPage on DevTools target"
+            )
+        ]
         public async Task TargetPageShouldReturnADevToolsPageIfAsPageIsUsed()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
             headfulOptions.Devtools = true;
             await using var originalBrowser = await Puppeteer.LaunchAsync(
                 headfulOptions,
-                TestConstants.LoggerFactory);
+                TestConstants.LoggerFactory
+            );
             var browserWSEndpoint = originalBrowser.WebSocketEndpoint;
-            await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint }, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.ConnectAsync(
+                new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint },
+                TestConstants.LoggerFactory
+            );
             var devtoolsTargetTask = browser.WaitForTargetAsync(t => t.Type == TargetType.Other);
             await browser.NewPageAsync();
             var devtoolsTarget = await devtoolsTargetTask;
@@ -122,7 +173,10 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             Assert.That((await browser.PagesAsync()), Does.Not.Contain(page));
         }
 
-        [Test, PuppeteerTest("devtools.spec", "DevTools", "should support opening DevTools on a page")]
+        [
+            Test,
+            PuppeteerTest("devtools.spec", "DevTools", "should support opening DevTools on a page")
+        ]
         public async Task ShouldSupportOpeningDevToolsOnAPage()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -135,7 +189,14 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             await browser.CloseAsync();
         }
 
-        [Test, PuppeteerTest("devtools.spec", "DevTools", "should retrun same object when calling openDevTools twice")]
+        [
+            Test,
+            PuppeteerTest(
+                "devtools.spec",
+                "DevTools",
+                "should retrun same object when calling openDevTools twice"
+            )
+        ]
         public async Task ShouldReturnSameObjectWhenCallingOpenDevToolsTwice()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -149,7 +210,14 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             await browser.CloseAsync();
         }
 
-        [Test, PuppeteerTest("devtools.spec", "DevTools > hasDevTools", "should report correctly after DevTools is opened")]
+        [
+            Test,
+            PuppeteerTest(
+                "devtools.spec",
+                "DevTools > hasDevTools",
+                "should report correctly after DevTools is opened"
+            )
+        ]
         public async Task HasDevToolsShouldReportCorrectlyAfterDevToolsIsOpened()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -163,7 +231,14 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             await browser.CloseAsync();
         }
 
-        [Test, PuppeteerTest("devtools.spec", "DevTools > hasDevTools", "should report when DevTools is attached by default")]
+        [
+            Test,
+            PuppeteerTest(
+                "devtools.spec",
+                "DevTools > hasDevTools",
+                "should report when DevTools is attached by default"
+            )
+        ]
         public async Task HasDevToolsShouldReportWhenDevToolsIsAttachedByDefault()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -175,7 +250,14 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             await browser.CloseAsync();
         }
 
-        [Test, PuppeteerTest("devtools.spec", "DevTools > hasDevTools", "should report when DevTools has been attached to a page with devtools:false")]
+        [
+            Test,
+            PuppeteerTest(
+                "devtools.spec",
+                "DevTools > hasDevTools",
+                "should report when DevTools has been attached to a page with devtools:false"
+            )
+        ]
         public async Task HasDevToolsShouldReportWhenDevToolsHasBeenAttachedToAPageWithDevtoolsFalse()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -187,6 +269,5 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             Assert.That(await page.HasDevToolsAsync(), Is.True);
             await browser.CloseAsync();
         }
-
     }
 }

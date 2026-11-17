@@ -13,16 +13,22 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            var waitedFrameTask = Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/title.html"));
+            var waitedFrameTask = Page.WaitForFrameAsync(frame =>
+                frame.Url.EndsWith("/title.html")
+            );
             await Task.WhenAll(
                 waitedFrameTask,
-                FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.ServerUrl + "/title.html"));
+                FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.ServerUrl + "/title.html")
+            );
 
             var waitedFrame = await waitedFrameTask;
             Assert.That(waitedFrame.ParentFrame, Is.EqualTo(Page.MainFrame));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.waitForFrame", "should work with a URL predicate")]
+        [
+            Test,
+            PuppeteerTest("page.spec", "Page Page.waitForFrame", "should work with a URL predicate")
+        ]
         public async Task ShouldWorkWithAUrlPredicate()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -30,7 +36,8 @@ namespace PuppeteerSharp.Tests.PageTests
             var waitedFrameTask = Page.WaitForFrameAsync(TestConstants.ServerUrl + "/title.html");
             await Task.WhenAll(
                 waitedFrameTask,
-                FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.ServerUrl + "/title.html"));
+                FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.ServerUrl + "/title.html")
+            );
 
             var waitedFrame = await waitedFrameTask;
             Assert.That(waitedFrame.ParentFrame, Is.EqualTo(Page.MainFrame));
@@ -44,7 +51,8 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var task = Page.WaitForFrameAsync(
                 frame => frame.Url.EndsWith("/title.html"),
-                new WaitForOptions { CancellationToken = cts.Token });
+                new WaitForOptions { CancellationToken = cts.Token }
+            );
 
             cts.Cancel();
             Assert.CatchAsync<OperationCanceledException>(() => task);

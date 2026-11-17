@@ -14,10 +14,14 @@ namespace PuppeteerSharp.BrowserData
 
         public Cache(string rootDir) => _rootDir = rootDir;
 
-        public string GetBrowserRoot(SupportedBrowser browser) => Path.Combine(_rootDir, browser.ToString());
+        public string GetBrowserRoot(SupportedBrowser browser) =>
+            Path.Combine(_rootDir, browser.ToString());
 
-        public string GetInstallationDir(SupportedBrowser browser, Platform platform, string buildId)
-            => Path.Combine(GetBrowserRoot(browser), $"{platform}-{buildId}");
+        public string GetInstallationDir(
+            SupportedBrowser browser,
+            Platform platform,
+            string buildId
+        ) => Path.Combine(GetBrowserRoot(browser), $"{platform}-{buildId}");
 
         public IEnumerable<InstalledBrowser> GetInstalledBrowsers()
         {
@@ -28,28 +32,43 @@ namespace PuppeteerSharp.BrowserData
                 return Array.Empty<InstalledBrowser>();
             }
 
-            var browserNames = EnumHelper.GetNames<SupportedBrowser>().Select(browser => browser.ToUpperInvariant());
-            var browsers = rootInfo.GetDirectories().Where(browser => browserNames.Contains(browser.Name.ToUpperInvariant()));
+            var browserNames = EnumHelper
+                .GetNames<SupportedBrowser>()
+                .Select(browser => browser.ToUpperInvariant());
+            var browsers = rootInfo
+                .GetDirectories()
+                .Where(browser => browserNames.Contains(browser.Name.ToUpperInvariant()));
 
             return browsers.SelectMany(browser =>
             {
-                var browserEnum = EnumHelper.Parse<SupportedBrowser>(browser.Name, ignoreCase: true);
+                var browserEnum = EnumHelper.Parse<SupportedBrowser>(
+                    browser.Name,
+                    ignoreCase: true
+                );
                 var dirInfo = new DirectoryInfo(GetBrowserRoot(browserEnum));
                 var dirs = dirInfo.GetDirectories();
 
                 return dirs.Select(dir =>
-                {
-                    var result = ParseFolderPath(dir);
-
-                    if (result == null)
                     {
-                        return null;
-                    }
+                        var result = ParseFolderPath(dir);
 
-                    var platformEnum = EnumHelper.Parse<Platform>(result.Value.Platform, ignoreCase: true);
-                    return new InstalledBrowser(this, browserEnum, result.Value.BuildId, platformEnum);
-                })
-                .Where(item => item != null);
+                        if (result == null)
+                        {
+                            return null;
+                        }
+
+                        var platformEnum = EnumHelper.Parse<Platform>(
+                            result.Value.Platform,
+                            ignoreCase: true
+                        );
+                        return new InstalledBrowser(
+                            this,
+                            browserEnum,
+                            result.Value.BuildId,
+                            platformEnum
+                        );
+                    })
+                    .Where(item => item != null);
             });
         }
 

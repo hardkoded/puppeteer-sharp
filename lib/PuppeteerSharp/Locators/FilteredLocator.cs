@@ -20,9 +20,14 @@ namespace PuppeteerSharp.Locators
             _args = args;
         }
 
-        internal override async Task<IJSHandle> WaitHandleCoreAsync(LocatorActionOptions options, CancellationToken cancellationToken)
+        internal override async Task<IJSHandle> WaitHandleCoreAsync(
+            LocatorActionOptions options,
+            CancellationToken cancellationToken
+        )
         {
-            var handle = await Delegate.WaitHandleCoreAsync(options, cancellationToken).ConfigureAwait(false);
+            var handle = await Delegate
+                .WaitHandleCoreAsync(options, cancellationToken)
+                .ConfigureAwait(false);
 
             var elementHandle = handle as IElementHandle;
             if (elementHandle == null)
@@ -32,10 +37,13 @@ namespace PuppeteerSharp.Locators
             }
 
             var frame = elementHandle.Frame;
-            await frame.WaitForFunctionAsync(
-                _predicate,
-                new WaitForFunctionOptions { Timeout = Timeout },
-                [handle, .. _args]).ConfigureAwait(false);
+            await frame
+                .WaitForFunctionAsync(
+                    _predicate,
+                    new WaitForFunctionOptions { Timeout = Timeout },
+                    [handle, .. _args]
+                )
+                .ConfigureAwait(false);
 
             return handle;
         }
