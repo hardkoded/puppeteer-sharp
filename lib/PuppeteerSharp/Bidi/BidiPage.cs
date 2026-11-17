@@ -511,10 +511,10 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task SetUserAgentAsync(
         string userAgent,
-        UserAgentMetadata userAgentData = null
+        UserAgentMetadata userAgentMetadata = null
     )
     {
-        if (!BidiBrowser.CdpSupported && userAgentData != null)
+        if (!BidiBrowser.CdpSupported && userAgentMetadata != null)
         {
             throw new PuppeteerException("Current Browser does not support `userAgentMetadata`");
         }

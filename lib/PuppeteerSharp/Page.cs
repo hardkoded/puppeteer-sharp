@@ -952,7 +952,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task SetUserAgentAsync(
             string userAgent,
-            UserAgentMetadata userAgentData = null
+            UserAgentMetadata userAgentMetadata = null
         );
 
         /// <inheritdoc/>

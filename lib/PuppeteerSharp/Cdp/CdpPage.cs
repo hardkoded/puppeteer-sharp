@@ -575,8 +575,8 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override Task SetUserAgentAsync(
         string userAgent,
-        UserAgentMetadata userAgentData = null
-    ) => FrameManager.NetworkManager.SetUserAgentAsync(userAgent, userAgentData);
+        UserAgentMetadata userAgentMetadata = null
+    ) => FrameManager.NetworkManager.SetUserAgentAsync(userAgent, userAgentMetadata);
 
     /// <inheritdoc/>
     public override async Task SetUserAgentAsync(SetUserAgentOptions options)
