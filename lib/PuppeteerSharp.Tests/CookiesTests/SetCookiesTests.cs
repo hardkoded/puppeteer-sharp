@@ -107,6 +107,32 @@ namespace PuppeteerSharp.Tests.CookiesTests
             PuppeteerTest(
                 "cookies.spec",
                 "Cookie specs Page.setCookie",
+                "should set a cookie with a fractional |expires|"
+            )
+        ]
+        public async Task ShouldSetACookieWithAFractionalExpires()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var expires = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 24 * 60 * 60;
+            await Page.SetCookieAsync(
+                new CookieParam
+                {
+                    Name = "expiring",
+                    Value = "123456",
+                    Expires = expires + 0.5,
+                }
+            );
+
+            var cookies = await Page.GetCookiesAsync();
+            Assert.That(cookies, Has.Exactly(1).Items);
+            Assert.That(Math.Floor(cookies[0].Expires.Value), Is.EqualTo(expires));
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "cookies.spec",
+                "Cookie specs Page.setCookie",
                 "should set cookie with reasonable defaults"
             )
         ]
