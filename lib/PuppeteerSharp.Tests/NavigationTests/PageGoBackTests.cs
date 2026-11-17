@@ -35,7 +35,9 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
             using var cts = new CancellationTokenSource();
             var requestTask = Server.WaitForRequest("/empty.html");
-            var navigation = Page.GoBackAsync(new NavigationOptions { CancellationToken = cts.Token });
+            var navigation = Page.GoBackAsync(
+                new NavigationOptions { CancellationToken = cts.Token }
+            );
             await requestTask;
 
             cts.Cancel();
