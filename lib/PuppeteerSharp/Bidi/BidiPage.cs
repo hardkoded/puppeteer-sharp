@@ -1412,7 +1412,11 @@ public class BidiPage : Page
 
         try
         {
-            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+            // Use WhenAllFailFast to fail immediately if any task fails (like Promise.all in JS)
+            // so a caller cancellation is not masked by the later traverseHistory timeout.
+            await new[] { waitForNavigationTask, navigationTask }
+                .WhenAllFailFast()
+                .ConfigureAwait(false);
         }
         catch (OperationCanceledException)
             when (options?.CancellationToken?.IsCancellationRequested == true)
