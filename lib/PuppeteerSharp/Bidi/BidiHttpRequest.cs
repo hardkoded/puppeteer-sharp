@@ -664,6 +664,16 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         _request.Authenticate += HandleAuthentication;
 
+        // Register the internal header handler before any Request event subscriber can enqueue
+        // its own, so it runs first and does not overwrite their priority-0 overrides.
+        if (HasInternalHeaderOverwrite && CanBeIntercepted())
+        {
+            ((IInterceptableRequest)this).EnqueueInterceptionAction(async _ =>
+            {
+                await ContinueAsync(new Payload { Headers = Headers }, 0).ConfigureAwait(false);
+            });
+        }
+
         // Firefox BiDi sends duplicate BeforeRequestSent events with different request IDs for
         // speculative/parallel sub-resource loading during navigation.
         // Deduplicate by URL during navigation. The tracker is cleared after navigation completes
@@ -675,14 +685,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             var requestArgs = new RequestEventArgs(this);
             ((BidiBrowserContext)BidiPage.BrowserContext).OnRequest(requestArgs);
             BidiPage.BidiBrowser.OnRequest(requestArgs);
-        }
-
-        if (HasInternalHeaderOverwrite && CanBeIntercepted())
-        {
-            ((IInterceptableRequest)this).EnqueueInterceptionAction(async _ =>
-            {
-                await ContinueAsync(new Payload { Headers = Headers }, 0).ConfigureAwait(false);
-            });
         }
     }
 
