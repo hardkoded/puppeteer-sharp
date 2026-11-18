@@ -480,6 +480,21 @@
     "comment": "Verifies URL allowlist enforcement when connecting to a browser via WebSocket, which is not applicable for pipe mode"
   },
   {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions * should fail fetch requests from a shared worker to *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "chrome"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Chrome drops Network.emulateNetworkConditionsByRule for shared workers attached before they start, so their requests bypass the blocklist and allowlist. Fixed in Chromium by https://chromium-review.googlesource.com/c/chromium/src/+/8770778. Remove once the pinned Chrome version includes the fix."
+  },
+  {
     "testIdPattern": "[network_restrictions.spec] Network Restrictions should fail fetch requests to URLs not in the allowlist",
     "platforms": [
       "darwin",

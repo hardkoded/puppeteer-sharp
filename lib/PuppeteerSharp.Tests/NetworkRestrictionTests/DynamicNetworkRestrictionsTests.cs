@@ -270,6 +270,41 @@ public class DynamicNetworkRestrictionsTests : PuppeteerPageBaseTest
         PuppeteerTest(
             "network_restrictions.spec",
             "Network Restrictions dynamic restrictions",
+            "applies and clears restrictions on an already-running shared worker"
+        )
+    ]
+    public async Task ShouldApplyAndClearRestrictionsOnAnAlreadyRunningSharedWorker()
+    {
+        var blockedUrl = TestConstants.CrossProcessUrl + "/empty.html";
+
+        await Page.GoToAsync(TestConstants.ServerUrl + "/title.html");
+        var fetchFromSharedWorker = await NetworkRestrictionsTests.StartSharedWorkerAsync(Page);
+
+        Assert.That(await fetchFromSharedWorker(blockedUrl), Is.Null);
+
+        await Browser.RestrictNetworkAsync(
+            new NetworkRestrictions { BlockList = ["*://*:*/empty.html"] }
+        );
+        Assert.That(await fetchFromSharedWorker(blockedUrl), Does.Contain("Failed to fetch"));
+
+        await Browser.RestrictNetworkAsync(
+            new NetworkRestrictions { Allowlist = ["*://*:*/empty.html"] }
+        );
+        Assert.That(await fetchFromSharedWorker(blockedUrl), Is.Null);
+        Assert.That(
+            await fetchFromSharedWorker(TestConstants.CrossProcessUrl + "/title.html"),
+            Does.Contain("Failed to fetch")
+        );
+
+        await Browser.RestrictNetworkAsync(null);
+        Assert.That(await fetchFromSharedWorker(blockedUrl), Is.Null);
+    }
+
+    [
+        Test,
+        PuppeteerTest(
+            "network_restrictions.spec",
+            "Network Restrictions dynamic restrictions",
             "applies and clears restrictions on an already-running service worker"
         )
     ]
