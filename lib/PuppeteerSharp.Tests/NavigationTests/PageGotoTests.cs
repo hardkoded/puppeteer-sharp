@@ -516,6 +516,25 @@ namespace PuppeteerSharp.Tests.NavigationTests
             PuppeteerTest(
                 "navigation.spec",
                 "navigation Page.goto",
+                "should prioritize default navigation timeout over default timeout with networkidle0"
+            )
+        ]
+        public async Task ShouldPrioritizeDefaultNavigationTimeoutOverDefaultTimeoutWithNetworkidle0()
+        {
+            Page.DefaultTimeout = 1;
+            Page.DefaultNavigationTimeout = 0;
+            var response = await Page.GoToAsync(
+                TestConstants.EmptyPage,
+                new NavigationOptions { WaitUntil = [WaitUntilNavigation.Networkidle0] }
+            );
+            Assert.That(response.Ok, Is.True);
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "navigation.spec",
+                "navigation Page.goto",
                 "should disable timeout when its set to 0"
             )
         ]

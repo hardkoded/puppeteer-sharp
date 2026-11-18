@@ -1027,7 +1027,7 @@ public class BidiFrame : Frame
             new WaitForNetworkIdleOptions
             {
                 IdleTime = 500,
-                Timeout = options?.Timeout ?? TimeoutSettings.Timeout,
+                Timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout,
                 Concurrency = concurrency.Value,
                 CancellationToken = cancellationToken,
             }
