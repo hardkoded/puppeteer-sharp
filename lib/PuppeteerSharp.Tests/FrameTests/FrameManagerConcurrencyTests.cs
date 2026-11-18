@@ -28,6 +28,10 @@ namespace PuppeteerSharp.Tests.FrameTests
                 "_frameNavigatedReceived",
                 BindingFlags.NonPublic | BindingFlags.Instance
             );
+            var client = typeof(FrameManager).GetProperty(
+                "Client",
+                BindingFlags.NonPublic | BindingFlags.Instance
+            );
             var errors = new List<Exception>();
             var violations = 0;
 
@@ -35,8 +39,17 @@ namespace PuppeteerSharp.Tests.FrameTests
             {
                 var manager = RuntimeHelpers.GetUninitializedObject(typeof(FrameManager));
                 var ids = Enumerable.Range(0, actors).Select(i => "frame-" + i).ToArray();
-                var entries = Enumerable.Repeat("padding", padding).Concat(ids).ToList();
-                received.SetValue(manager, entries);
+                var session = (CDPSession)
+                    RuntimeHelpers.GetUninitializedObject(typeof(CdpCDPSession));
+                var entries = Enumerable
+                    .Range(0, padding)
+                    .Select(i => "padding-" + i)
+                    .Concat(ids)
+                    .ToHashSet();
+                var table = new ConditionalWeakTable<CDPSession, HashSet<string>>();
+                table.Add(session, entries);
+                received.SetValue(manager, table);
+                client.SetValue(manager, session);
 
                 using var start = new Barrier(actors);
                 var workers = ids.Select(id =>
@@ -50,7 +63,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                             start.SignalAndWait();
                             try
                             {
-                                ((Task)handleFrameTree.Invoke(manager, [null, tree]))
+                                ((Task)handleFrameTree.Invoke(manager, [session, tree]))
                                     .GetAwaiter()
                                     .GetResult();
                             }
@@ -76,7 +89,10 @@ namespace PuppeteerSharp.Tests.FrameTests
 
                 await Task.WhenAll(workers);
 
-                if (entries.Count != padding || entries.Any(id => id != "padding"))
+                if (
+                    entries.Count != padding
+                    || entries.Any(id => !id.StartsWith("padding-", StringComparison.Ordinal))
+                )
                 {
                     violations++;
                 }
