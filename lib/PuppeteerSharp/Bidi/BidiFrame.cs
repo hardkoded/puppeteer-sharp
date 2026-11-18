@@ -1043,6 +1043,9 @@ public class BidiFrame : Frame
 
         await Task.WhenAny(networkIdleTask, cancellationTcs.Task).ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
+
+        // Observe the idle wait so a timeout propagates, like upstream's observable does.
+        await networkIdleTask.ConfigureAwait(false);
     }
 
     private async Task WaitForRequestFinishedAsync(
