@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -21,7 +23,8 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext = new();
         private readonly ILogger _logger;
         private readonly List<string> _isolatedWorlds = [];
-        private readonly List<string> _frameNavigatedReceived = [];
+        private readonly ConditionalWeakTable<CDPSession, HashSet<string>> _frameNavigatedReceived =
+            new();
         private readonly TaskQueue _eventsQueue = new();
         private readonly ConcurrentDictionary<
             CDPSession,
@@ -35,6 +38,7 @@ namespace PuppeteerSharp.Cdp
         private TaskCompletionSource<bool> _frameTreeHandled = new(
             TaskCreationOptions.RunContinuationsAsynchronously
         );
+        private long _messageSequence;
 
         internal FrameManager(
             CDPSession client,
@@ -77,6 +81,11 @@ namespace PuppeteerSharp.Cdp
 
         internal CDPSession Client { get; private set; }
 
+        /// <summary>
+        /// Gets the number of frame messages that have arrived so far. Messages are handled later
+        /// from a queue, so this tells whether a message arrived before something else happened.
+        /// </summary>
+        internal long MessageSequence => Interlocked.Read(ref _messageSequence);
         internal NetworkManager NetworkManager { get; }
 
         internal Page Page { get; }
@@ -208,6 +217,34 @@ namespace PuppeteerSharp.Cdp
             _ = InitializeAsync(target.Session, frame);
         }
 
+        internal void OnDetachedFromTarget(CdpTarget target)
+        {
+            if (target.TargetInfo.Type != TargetType.IFrame)
+            {
+                return;
+            }
+
+            var frame = GetFrame(target.TargetInfo.TargetId);
+            if (frame != null)
+            {
+                // The frame is in the same process as its parent frame again or it is
+                // about to be removed.
+                //
+                // If an OOP iframe becomes a normal iframe again, Chrome removes the
+                // target when the navigation is ready to commit. The session of the
+                // parent frame reports Page.frameAttached, Page.frameNavigated and
+                // Runtime.executionContextCreated for the frame after the commit.
+                // Thus, the frame must belong to the session of the parent frame
+                // before these events arrive. The events that the session of the
+                // parent frame reports for the frame while the target is attached are
+                // not handled.
+                //
+                // If an OOP iframe is removed, Page.frameDetached arrives before the
+                // target is gone, and the frame is not known here.
+                UpdateClients(frame);
+            }
+        }
+
         internal ExecutionContext GetExecutionContextById(int contextId, CDPSession session)
         {
             _contextIdToContext.TryGetValue($"{session.Id}:{contextId}", out var context);
@@ -331,7 +368,7 @@ namespace PuppeteerSharp.Cdp
             {
                 lock (_frameNavigatedReceived)
                 {
-                    _frameNavigatedReceived.Add(Client.Target.TargetId);
+                    NavigatedFrames(client).Add(Client.Target.TargetId);
                 }
 
                 FrameTree.RemoveFrame(frame);
@@ -388,8 +425,130 @@ namespace PuppeteerSharp.Cdp
 
         private CdpFrame GetFrame(string frameId) => FrameTree.GetById(frameId);
 
+        /// <summary>
+        /// For each session, the IDs of the frames that have received a frameNavigated event on
+        /// that session. The frame tree response of the session is ignored for these frames because
+        /// the frameNavigated event usually contains the latest information.
+        /// Callers must hold the <c>_frameNavigatedReceived</c> lock.
+        /// </summary>
+        /// <param name="session">The session.</param>
+        /// <returns>The set of frame IDs.</returns>
+        private HashSet<string> NavigatedFrames(CDPSession session) =>
+            _frameNavigatedReceived.GetValue(session, _ => []);
+
+        /// <summary>
+        /// Returns the session of the iframe target that has the frame as its root frame, if the
+        /// target manager reported such a target.
+        /// </summary>
+        /// <param name="frameId">Frame id.</param>
+        /// <returns>The session, or null.</returns>
+        private CDPSession TargetSession(string frameId) =>
+            Client.Target?.TargetManager.GetFrameTarget(frameId)?.Session;
+
+        /// <summary>
+        /// Returns the session that the frame belongs to: the session of the nearest iframe target
+        /// in the ancestor chain, or the session of the page. Only the target manager defines the
+        /// targets, the events of a session do not change the result.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        /// <returns>The session.</returns>
+        private CDPSession SessionOf(CdpFrame frame)
+        {
+            var current = frame;
+            while (current != null)
+            {
+                if (string.IsNullOrEmpty(current.ParentId))
+                {
+                    return Client;
+                }
+
+                var session = TargetSession(current.Id);
+                if (session != null)
+                {
+                    return session;
+                }
+
+                current = GetFrame(current.ParentId);
+            }
+
+            // A part of the ancestor chain is not known yet.
+            return (CDPSession)frame.Client;
+        }
+
+        private bool BelongsTo(CdpFrame frame, CDPSession session) => SessionOf(frame) == session;
+
+        /// <summary>
+        /// Returns the frame if its events are expected on the given session.
+        /// </summary>
+        /// <param name="session">The session.</param>
+        /// <param name="frameId">Frame id.</param>
+        /// <returns>The frame, or null.</returns>
+        private CdpFrame FrameOf(CDPSession session, string frameId)
+        {
+            var frame = GetFrame(frameId);
+            return frame == null || !BelongsTo(frame, session) ? null : frame;
+        }
+
+        /// <summary>
+        /// Sets the client of the frame and of the descendants that do not have a target of
+        /// their own.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        private void UpdateClients(CdpFrame frame)
+        {
+            frame.UpdateClient(SessionOf(frame));
+            foreach (var child in frame.ChildFrames.OfType<CdpFrame>().ToArray())
+            {
+                if (TargetSession(child.Id) == null)
+                {
+                    UpdateClients(child);
+                }
+            }
+        }
+
+        /// <summary>
+        /// For the root frame of an iframe target, the target info provides the parent frame.
+        /// </summary>
+        /// <param name="session">The session.</param>
+        /// <param name="frameId">Frame id.</param>
+        /// <param name="parentFrameId">Parent frame id reported by the frame tree.</param>
+        /// <returns>The parent frame id.</returns>
+        private string GetParentFrameId(CDPSession session, string frameId, string parentFrameId)
+        {
+            var target = Client.Target?.TargetManager.GetFrameTarget(frameId);
+            return target?.Session == session
+                ? target.TargetInfo.ParentFrameId ?? parentFrameId
+                : parentFrameId;
+        }
+
         private void Client_MessageReceived(object sender, MessageEventArgs e)
         {
+            var sequence = Interlocked.Increment(ref _messageSequence);
+            if (e.MessageID == "Page.frameNavigated" && sender is CDPSession navigatedSession)
+            {
+                // Upstream records this in the event handler itself, before waiting for the
+                // frame tree. It has to happen when the event arrives, not when it is dequeued,
+                // otherwise the frame tree of the session emits a second navigation for the frame.
+                // A malformed payload must not escape to the connection, which would close it.
+                // The queued handler below reports the same failure.
+                try
+                {
+                    var frameId = e.MessageData.ToObject<PageFrameNavigatedResponse>()?.Frame?.Id;
+                    if (frameId != null)
+                    {
+                        lock (_frameNavigatedReceived)
+                        {
+                            NavigatedFrames(navigatedSession).Add(frameId);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                    when (ex is System.Text.Json.JsonException or InvalidOperationException)
+                {
+                    // Ignored on purpose, see above.
+                }
+            }
+
             _ = _eventsQueue.Enqueue(async () =>
             {
                 try
@@ -397,37 +556,49 @@ namespace PuppeteerSharp.Cdp
                     await _frameTreeHandled
                         .Task.WithTimeout(Puppeteer.DefaultTimeout)
                         .ConfigureAwait(false);
+                    var session = sender as CDPSession;
                     switch (e.MessageID)
                     {
                         case "Page.frameAttached":
                             OnFrameAttached(
-                                sender as CDPSession,
+                                session,
                                 e.MessageData.ToObject<PageFrameAttachedResponse>()
                             );
                             break;
 
                         case "Page.frameNavigated":
                             var response = e.MessageData.ToObject<PageFrameNavigatedResponse>();
-                            await OnFrameNavigatedAsync(response.Frame, response.Type)
+                            await OnFrameNavigatedAsync(session, response.Frame, response.Type)
                                 .ConfigureAwait(false);
                             break;
 
                         case "Page.navigatedWithinDocument":
                             OnFrameNavigatedWithinDocument(
+                                session,
                                 e.MessageData.ToObject<NavigatedWithinDocumentResponse>()
                             );
                             break;
 
                         case "Page.frameDetached":
-                            OnFrameDetached(e.MessageData.ToObject<PageFrameDetachedResponse>());
+                            OnFrameDetached(
+                                session,
+                                e.MessageData.ToObject<PageFrameDetachedResponse>(),
+                                sequence
+                            );
                             break;
 
                         case "Page.frameStartedLoading":
-                            OnFrameStartedLoading(e.MessageData.ToObject<BasicFrameResponse>());
+                            OnFrameStartedLoading(
+                                session,
+                                e.MessageData.ToObject<BasicFrameResponse>()
+                            );
                             break;
 
                         case "Page.frameStoppedLoading":
-                            OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>());
+                            OnFrameStoppedLoading(
+                                session,
+                                e.MessageData.ToObject<BasicFrameResponse>()
+                            );
                             break;
 
                         case "Runtime.executionContextCreated":
@@ -448,7 +619,10 @@ namespace PuppeteerSharp.Cdp
                             OnExecutionContextsCleared(sender as CDPSession);
                             break;
                         case "Page.lifecycleEvent":
-                            OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>());
+                            OnLifeCycleEvent(
+                                session,
+                                e.MessageData.ToObject<LifecycleEventResponse>()
+                            );
                             break;
                         case "Audits.issueAdded":
                             OnIssueAdded(e.MessageData.ToObject<AuditsIssueAddedResponse>());
@@ -465,15 +639,15 @@ namespace PuppeteerSharp.Cdp
             });
         }
 
-        private void OnFrameStartedLoading(BasicFrameResponse e)
+        private void OnFrameStartedLoading(CDPSession session, BasicFrameResponse e)
         {
-            var frame = GetFrame(e.FrameId);
+            var frame = FrameOf(session, e.FrameId);
             frame?.OnLoadingStarted();
         }
 
-        private void OnFrameStoppedLoading(BasicFrameResponse e)
+        private void OnFrameStoppedLoading(CDPSession session, BasicFrameResponse e)
         {
-            var frame = GetFrame(e.FrameId);
+            var frame = FrameOf(session, e.FrameId);
             if (frame != null)
             {
                 frame.OnLoadingStopped();
@@ -481,9 +655,9 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private void OnLifeCycleEvent(LifecycleEventResponse e)
+        private void OnLifeCycleEvent(CDPSession session, LifecycleEventResponse e)
         {
-            var frame = GetFrame(e.FrameId);
+            var frame = FrameOf(session, e.FrameId);
             if (frame != null)
             {
                 frame.OnLifecycleEvent(e.LoaderId, e.Name);
@@ -543,7 +717,7 @@ namespace PuppeteerSharp.Cdp
 
             if (frame != null)
             {
-                if (frame.Client != session)
+                if (frame.Client != session || !BelongsTo(frame, (CDPSession)session))
                 {
                     return;
                 }
@@ -596,10 +770,23 @@ namespace PuppeteerSharp.Cdp
             _contextIdToContext[key] = context;
         }
 
-        private void OnFrameDetached(PageFrameDetachedResponse e)
+        private void OnFrameDetached(CDPSession session, PageFrameDetachedResponse e, long sequence)
         {
             var frame = GetFrame(e.FrameId);
             if (frame == null)
+            {
+                return;
+            }
+
+            // The detachment is reported on the session of the frame or on the
+            // session of one of its ancestors.
+            var ancestor = frame;
+            while (ancestor != null && !BelongsTo(ancestor, session))
+            {
+                ancestor = ancestor.ParentFrame as CdpFrame;
+            }
+
+            if (ancestor == null)
             {
                 return;
             }
@@ -610,24 +797,40 @@ namespace PuppeteerSharp.Cdp
             }
             else if (e.Reason == FrameDetachedReason.Swap)
             {
+                frame.SwapSequence = sequence;
                 FrameSwapped?.Invoke(frame, new FrameEventArgs(frame));
                 frame.OnSwapped();
             }
         }
 
-        private async Task OnFrameNavigatedAsync(FramePayload framePayload, NavigationType type)
+        private async Task OnFrameNavigatedAsync(
+            CDPSession session,
+            FramePayload framePayload,
+            NavigationType type
+        )
         {
-            // This is in the event handler upstream.
-            // It's more consistent having this here.
-            lock (_frameNavigatedReceived)
+            var isMainFrame = string.IsNullOrEmpty(framePayload.ParentId);
+            var knownFrame = GetFrame(framePayload.Id);
+
+            // A frame navigation is reported on the session of the frame. A new main
+            // frame is reported on the session of the page.
+            if (
+                knownFrame != null
+                    ? !BelongsTo(knownFrame, session)
+                    : isMainFrame && session != Client
+            )
             {
-                _frameNavigatedReceived.Add(framePayload.Id);
+                return;
             }
 
-            var isMainFrame = string.IsNullOrEmpty(framePayload.ParentId);
             var frame = isMainFrame
                 ? MainFrame
                 : await FrameTree.GetFrameAsync(framePayload.Id).ConfigureAwait(false);
+
+            if (!isMainFrame && !BelongsTo((CdpFrame)frame, session))
+            {
+                return;
+            }
 
             Contract.Assert(
                 isMainFrame || frame != null,
@@ -667,9 +870,12 @@ namespace PuppeteerSharp.Cdp
             FrameNavigatedNewDocument?.Invoke(this, new FrameEventArgs(frame));
         }
 
-        private void OnFrameNavigatedWithinDocument(NavigatedWithinDocumentResponse e)
+        private void OnFrameNavigatedWithinDocument(
+            CDPSession session,
+            NavigatedWithinDocumentResponse e
+        )
         {
-            var frame = GetFrame(e.FrameId);
+            var frame = FrameOf(session, e.FrameId);
             if (frame != null)
             {
                 frame.NavigatedWithinDocument(e.Url);
@@ -716,38 +922,44 @@ namespace PuppeteerSharp.Cdp
             var frame = GetFrame(frameId);
             if (frame != null)
             {
-                var parentFrame = GetFrame(parentFrameId);
-                if (session != null && parentFrame != null && frame.Client != parentFrame.Client)
-                {
-                    // If an OOP iframe becomes a normal iframe again it is first
-                    // attached to the parent frame before the target is removed.
-                    frame.UpdateClient(session);
-                }
-
+                // The session of a known frame only changes when the target manager
+                // reports that the target of the frame is attached or gone. If an OOP
+                // iframe becomes a normal iframe again, its target is gone before this
+                // event arrives (see OnDetachedFromTarget).
                 return;
             }
 
-            frame = new CdpFrame(this, frameId, parentFrameId, session);
+            var parentFrame = GetFrame(parentFrameId);
+            var targetSession = TargetSession(frameId);
+            if (targetSession != session && parentFrame != null && !BelongsTo(parentFrame, session))
+            {
+                // A frame is reported on the session of its target or on the session
+                // of its parent frame.
+                return;
+            }
+
+            frame = new CdpFrame(this, frameId, parentFrameId, targetSession ?? session);
             FrameTree.AddFrame(frame);
             FrameAttached?.Invoke(this, new FrameEventArgs(frame));
         }
 
         private async Task HandleFrameTreeAsync(CDPSession session, PageGetFrameTree frameTree)
         {
-            if (!string.IsNullOrEmpty(frameTree.Frame.ParentId))
+            var parentId = GetParentFrameId(session, frameTree.Frame.Id, frameTree.Frame.ParentId);
+            if (!string.IsNullOrEmpty(parentId))
             {
-                OnFrameAttached(session, frameTree.Frame.Id, frameTree.Frame.ParentId);
+                OnFrameAttached(session, frameTree.Frame.Id, parentId);
             }
 
             bool navigatedReceived;
             lock (_frameNavigatedReceived)
             {
-                navigatedReceived = _frameNavigatedReceived.Remove(frameTree.Frame.Id);
+                navigatedReceived = NavigatedFrames(session).Remove(frameTree.Frame.Id);
             }
 
             if (!navigatedReceived)
             {
-                await OnFrameNavigatedAsync(frameTree.Frame, NavigationType.Navigation)
+                await OnFrameNavigatedAsync(session, frameTree.Frame, NavigationType.Navigation)
                     .ConfigureAwait(false);
             }
 
@@ -767,12 +979,14 @@ namespace PuppeteerSharp.Cdp
                         .Select(async frame =>
                         {
                             var cdpFrame = (CdpFrame)frame;
+
+                            // The client can change while the action is in progress.
+                            var isOopFrame = cdpFrame.IsOopFrame();
                             try
                             {
                                 await action(cdpFrame).ConfigureAwait(false);
                             }
-                            catch (Exception ex)
-                                when (cdpFrame.IsOopFrame() && IsSessionGoneError(ex))
+                            catch (Exception ex) when (isOopFrame && IsSessionGoneError(ex))
                             {
                                 // Only an out-of-process frame has a session of its own to lose.
                                 // Losing it mid-call must not fail the whole fan-out.

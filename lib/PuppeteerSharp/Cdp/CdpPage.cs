@@ -1243,6 +1243,7 @@ public class CdpPage : Page
 
     private void OnDetachedFromTarget(object sender, TargetChangedArgs e)
     {
+        FrameManager.OnDetachedFromTarget((CdpTarget)e.Target);
         var sessionId = ((CdpTarget)e.Target).Session?.Id;
         if (sessionId != null && _workers.TryRemove(sessionId, out var worker))
         {

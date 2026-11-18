@@ -90,6 +90,20 @@ namespace PuppeteerSharp.Cdp
         public AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets() =>
             _attachedTargetsByTargetId;
 
+        public CdpTarget GetFrameTarget(string frameId)
+        {
+            if (
+                !_attachedTargetsByTargetId.TryGetValue(frameId, out var target)
+                || target.TargetInfo.Type != TargetType.IFrame
+                || target.Session == null
+            )
+            {
+                return null;
+            }
+
+            return target;
+        }
+
         public async Task InitializeAsync()
         {
             await _connection

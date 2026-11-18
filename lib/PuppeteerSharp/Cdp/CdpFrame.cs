@@ -77,6 +77,11 @@ public class CdpFrame : Frame
 
     internal FrameManager FrameManager { get; }
 
+    /// <summary>
+    /// Gets or sets the sequence number of the message that reported the last swap of the frame.
+    /// </summary>
+    internal long SwapSequence { get; set; }
+
     internal Accessibility Accessibility { get; }
 
     internal CdpPage CdpPage => Page as CdpPage;
