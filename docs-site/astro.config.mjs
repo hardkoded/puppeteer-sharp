@@ -57,6 +57,7 @@ export default defineConfig({
                     label: "Releases",
                     items: [
                         { label: "Overview", slug: "releases" },
+                        { label: "v25.18.1", slug: "releases/v25-18-1" },
                         { label: "v25.17", slug: "releases/v25-17" },
                     ],
                 },
