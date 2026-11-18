@@ -521,10 +521,23 @@ namespace PuppeteerSharp.Cdp
                 // Upstream records this in the event handler itself, before waiting for the
                 // frame tree. It has to happen when the event arrives, not when it is dequeued,
                 // otherwise the frame tree of the session emits a second navigation for the frame.
-                var navigated = e.MessageData.ToObject<PageFrameNavigatedResponse>();
-                lock (_frameNavigatedReceived)
+                // A malformed payload must not escape to the connection, which would close it.
+                // The queued handler below reports the same failure.
+                try
                 {
-                    NavigatedFrames(navigatedSession).Add(navigated.Frame.Id);
+                    var frameId = e.MessageData.ToObject<PageFrameNavigatedResponse>()?.Frame?.Id;
+                    if (frameId != null)
+                    {
+                        lock (_frameNavigatedReceived)
+                        {
+                            NavigatedFrames(navigatedSession).Add(frameId);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                    when (ex is System.Text.Json.JsonException or InvalidOperationException)
+                {
+                    // Ignored on purpose, see above.
                 }
             }
 
