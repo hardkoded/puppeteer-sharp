@@ -153,7 +153,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             return;
         }
 
-        _continueRequestOverrides = payloadOverrides;
+        if (ClaimInterceptionPayload(InterceptResolutionAction.Continue, priority.Value))
+        {
+            _continueRequestOverrides = payloadOverrides;
+        }
 
         if (
             _interceptResolutionState.Priority is null
@@ -202,7 +205,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             return;
         }
 
-        _responseForRequest = response;
+        if (ClaimInterceptionPayload(InterceptResolutionAction.Respond, priority.Value))
+        {
+            _responseForRequest = response;
+        }
 
         if (
             _interceptResolutionState.Priority is null
@@ -246,7 +252,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             return;
         }
 
-        _abortErrorReason = errorCode;
+        if (ClaimInterceptionPayload(InterceptResolutionAction.Abort, priority.Value))
+        {
+            _abortErrorReason = errorCode;
+        }
 
         if (
             _interceptResolutionState.Priority is null
