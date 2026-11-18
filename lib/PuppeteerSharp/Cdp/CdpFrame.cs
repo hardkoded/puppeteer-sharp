@@ -444,9 +444,9 @@ public class CdpFrame : Frame
             MainWorld?.ClearContext();
             PuppeteerWorld?.ClearContext();
 
-            MainRealm = new IsolatedWorld(this, null, CdpPage.TimeoutSettings, true);
+            MainRealm = new IsolatedWorld(this, null, FrameManager.TimeoutSettings, true);
 
-            IsolatedRealm = new IsolatedWorld(this, null, CdpPage.TimeoutSettings, false);
+            IsolatedRealm = new IsolatedWorld(this, null, FrameManager.TimeoutSettings, false);
         }
         else
         {
