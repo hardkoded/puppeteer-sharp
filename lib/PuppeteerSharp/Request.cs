@@ -9,6 +9,8 @@ namespace PuppeteerSharp
     public abstract class Request<TResponse> : IRequest, IInterceptableRequest
         where TResponse : IResponse
     {
+        private readonly Dictionary<InterceptResolutionAction, int> _payloadPriorities = [];
+
         /// <inheritdoc/>
         public string Id { get; internal init; }
 
@@ -117,5 +119,24 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns><c>true</c> if the request can be intercepted; otherwise, <c>false</c>.</returns>
         protected abstract bool CanBeIntercepted();
+
+        /// <summary>
+        /// In Cooperative Intercept Mode, an action takes its payload (the overrides of Continue,
+        /// the response of Respond or the error reason of Abort) from the call with the highest priority,
+        /// or from the latest of the calls that share that priority.
+        /// </summary>
+        /// <param name="action">The action whose payload is being provided.</param>
+        /// <param name="priority">The priority of the call.</param>
+        /// <returns><c>false</c> if a call with a higher priority has already provided the payload of the action.</returns>
+        protected bool ClaimInterceptionPayload(InterceptResolutionAction action, int priority)
+        {
+            if (_payloadPriorities.TryGetValue(action, out var current) && priority < current)
+            {
+                return false;
+            }
+
+            _payloadPriorities[action] = priority;
+            return true;
+        }
     }
 }
