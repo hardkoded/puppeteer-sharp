@@ -29,8 +29,8 @@ jobs:
       - name: Push PR
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: Update sponsors and contributors
-          title: "Update sponsors and contributors"
+          commit-message: Update website contributors and sponsors
+          title: "Update website contributors and sponsors"
           body: Refreshes the README sponsors and the data behind the website sponsors page.
           branch: sponsors
           base: ${{ inputs.target_branch }}
