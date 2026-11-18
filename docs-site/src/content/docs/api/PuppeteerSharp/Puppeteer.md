@@ -211,7 +211,7 @@ The method launches a browser instance with given arguments. The browser will be
 
 See &lt;a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/"&gt;this article&lt;/a&gt;
 for a description of the differences between Chromium and Chrome.
-&lt;a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md"&gt;This article&lt;/a&gt; describes some differences for Linux users.
+&lt;a href="https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md"&gt;This article&lt;/a&gt; describes some differences for Linux users.
 
 Environment Variables
 Puppeteer looks for certain &lt;a href="https://en.wikipedia.org/wiki/Environment_variable"&gt;environment variables&lt;/a&gt;() to aid its operations.
