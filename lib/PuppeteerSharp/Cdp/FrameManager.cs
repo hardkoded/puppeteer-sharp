@@ -516,6 +516,18 @@ namespace PuppeteerSharp.Cdp
 
         private void Client_MessageReceived(object sender, MessageEventArgs e)
         {
+            if (e.MessageID == "Page.frameNavigated" && sender is CDPSession navigatedSession)
+            {
+                // Upstream records this in the event handler itself, before waiting for the
+                // frame tree. It has to happen when the event arrives, not when it is dequeued,
+                // otherwise the frame tree of the session emits a second navigation for the frame.
+                var navigated = e.MessageData.ToObject<PageFrameNavigatedResponse>();
+                lock (_frameNavigatedReceived)
+                {
+                    NavigatedFrames(navigatedSession).Add(navigated.Frame.Id);
+                }
+            }
+
             _ = _eventsQueue.Enqueue(async () =>
             {
                 try
@@ -774,13 +786,6 @@ namespace PuppeteerSharp.Cdp
             NavigationType type
         )
         {
-            // This is in the event handler upstream.
-            // It's more consistent having this here.
-            lock (_frameNavigatedReceived)
-            {
-                NavigatedFrames(session).Add(framePayload.Id);
-            }
-
             var isMainFrame = string.IsNullOrEmpty(framePayload.ParentId);
             var knownFrame = GetFrame(framePayload.Id);
 
