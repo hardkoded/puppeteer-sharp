@@ -73,6 +73,16 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
                 Path.Combine("chrome-win", "chrome.exe"),
                 Is.EqualTo(BrowserData.Chromium.RelativeExecutablePath(Platform.Win64, "12372323"))
             );
+
+            Assert.That(
+                BrowserData.Chromium.RelativeExecutablePath(Platform.Win32, "591400"),
+                Is.EqualTo(Path.Combine("chrome-win32", "chrome.exe"))
+            );
+
+            Assert.That(
+                BrowserData.Chromium.RelativeExecutablePath(Platform.Win64, "591400"),
+                Is.EqualTo(Path.Combine("chrome-win32", "chrome.exe"))
+            );
         }
 
         [Test]

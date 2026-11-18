@@ -18,7 +18,7 @@ namespace PuppeteerSharp.BrowserData
         ) =>
             $"{baseUrl ?? "https://storage.googleapis.com/chromium-browser-snapshots"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
 
-        internal static string RelativeExecutablePath(Platform platform, string builId) =>
+        internal static string RelativeExecutablePath(Platform platform, string buildId) =>
             platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
@@ -29,7 +29,10 @@ namespace PuppeteerSharp.BrowserData
                     "Chromium"
                 ),
                 Platform.Linux or Platform.LinuxArm64 => Path.Combine("chrome-linux", "chrome"),
-                Platform.Win32 or Platform.Win64 => Path.Combine("chrome-win", "chrome.exe"),
+                Platform.Win32 or Platform.Win64 => Path.Combine(
+                    GetArchive(platform, buildId),
+                    "chrome.exe"
+                ),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
 
