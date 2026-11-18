@@ -1,0 +1,162 @@
+---
+title: v25.18.1
+description: Release notes for Puppeteer Sharp 25.18.1, released November 18, 2026.
+sidebar:
+  label: v25.18.1
+  order: 1
+---
+
+Puppeteer Sharp 25.18.1 was released on November 18, 2026. It follows [25.17.1](/releases/v25-17/). There is no `v25.18.0` tag. Target frameworks are unchanged: `netstandard2.0`, `net8.0`, and `net10.0`.
+
+**Install 25.18.1** after nuget.org lists it. On November 18, 2026, the version page returned 404, and the gallery still showed [25.17.1](https://www.nuget.org/packages/PuppeteerSharp/25.17.1). The publish workflow had already uploaded `PuppeteerSharp.25.18.1.nupkg`, and NuGet had accepted the upload. Until the gallery lists 25.18.1, this command fails. Run it again after the version appears.
+
+```bash
+dotnet add package PuppeteerSharp --version 25.18.1
+```
+
+The browsers downloaded by default are unchanged: Chrome 157.0.8103.78 and Firefox 160.0 (`stable_160.0`).
+
+The public API tracks [Puppeteer 25.18.0](https://github.com/puppeteer/puppeteer/releases/tag/puppeteer-core-v25.18.0) and [Puppeteer 25.18.1](https://github.com/puppeteer/puppeteer/releases/tag/puppeteer-core-v25.18.1). [puppeteer#15746](https://github.com/puppeteer/puppeteer/pull/15746), the WebDriver BiDi `page.reload()` fix, is not in this release. `ReloadAsync` sets `IgnoreSameDocumentNavigation`, and `WaitForNavigationAsync` still subscribes to `historyUpdated`. When that event arrives first, the wait ends and returns null if the navigation event has not arrived. A `beforeunload` handler that calls `history.replaceState` can still make BiDi `ReloadAsync` return before the new document loads.
+
+## Network events on WebWorker
+
+[`WebWorker`](/api/PuppeteerSharp/WebWorker/) raises network events for requests the worker issues ([#3778](https://github.com/hardkoded/puppeteer-sharp/pull/3778)). The events are experimental, and they are CDP only. WebDriver BiDi does not raise them.
+
+- `Request`, `RequestServedFromCache`, `RequestFailed`, and `RequestFinished` use `RequestEventArgs`
+- `Response` uses `ResponseCreatedEventArgs`
+
+`Request.Worker` is the worker. `Request.Frame` and `Request.Page` are null. The events carry that worker's own requests.
+
+Service workers and shared workers report traffic only after [`ITarget.WorkerAsync`](/api/PuppeteerSharp/ITarget/) has created the `WebWorker`. Requests made before that, including requests from service-worker startup, are not reported. The listeners belong to that instance. When the worker is terminated and started again, such as an idle extension service worker, attach the listeners to the new instance.
+
+`ContinueAsync`, `AbortAsync`, and `RespondAsync` throw for service-worker and shared-worker requests. The exception is `PuppeteerException` and the message contains `Request Interception is not enabled!`. A dedicated worker uses the page network session, so page interception still applies to its requests.
+
+```csharp
+var workerCreated = new TaskCompletionSource<WebWorker>();
+page.WorkerCreated += (_, e) => workerCreated.TrySetResult(e.Worker);
+
+await page.GoToAsync(workerPageUrl);
+WebWorker worker = await workerCreated.Task;
+
+var requestSource = new TaskCompletionSource<IRequest>();
+var responseSource = new TaskCompletionSource<IResponse>();
+worker.Request += (_, e) => requestSource.TrySetResult(e.Request);
+worker.Response += (_, e) => responseSource.TrySetResult(e.Response);
+
+await worker.EvaluateFunctionAsync(
+    "async url => { await (await fetch(url)).text(); }",
+    url);
+
+IRequest request = await requestSource.Task;
+IResponse response = await responseSource.Task;
+```
+
+For a shared worker, wait for the target and then call `WorkerAsync` before attaching the listeners:
+
+```csharp
+var targetTask = page.BrowserContext.WaitForTargetAsync(target =>
+    target.Type == TargetType.SharedWorker && target.Url == workerUrl);
+
+await page.EvaluateFunctionAsync(
+    "url => { globalThis.sharedWorker = new SharedWorker(url); }",
+    workerUrl);
+
+ITarget target = await targetTask;
+WebWorker worker = await target.WorkerAsync();
+```
+
+A service worker is the same shape: `WaitForTargetAsync` with `TargetType.ServiceWorker`, then `WorkerAsync`.
+
+## Text selectors find slotted shadow text
+
+`::-p-text` searches the light DOM of a shadow host and the shadow root ([#3768](https://github.com/hardkoded/puppeteer-sharp/pull/3768)). On a host whose light-DOM text is projected through a slot, the match is the host.
+
+```html
+<my-button>Checkout</my-button>
+```
+
+```csharp
+await page.SetContentAsync("<my-button>Checkout</my-button>");
+await page.EvaluateFunctionAsync(
+    @"() => {
+        const host = document.querySelector('my-button');
+        host.attachShadow({ mode: 'open' }).innerHTML = '<button><slot></slot></button>';
+    }");
+
+IElementHandle button = await page.QuerySelectorAsync("::-p-text(Checkout)");
+```
+
+`button` is the `my-button` host. Text that lives on a slotted child still matches that child: `::-p-text(Two)` on `<my-list><li>Two</li></my-list>` returns the `li`.
+
+## Cooperative Intercept Mode keeps the winning payload
+
+In Cooperative Intercept Mode, the headers, response, or abort reason come from the highest-priority call for that action ([#3808](https://github.com/hardkoded/puppeteer-sharp/pull/3808)). A later call with a lower priority leaves the stored payload in place. Register the handlers with [`AddRequestInterceptor`](/api/PuppeteerSharp/IPage/). [`ContinueAsync`](/api/PuppeteerSharp/IRequest/), `RespondAsync`, and `AbortAsync` take the priority as the second argument.
+
+```csharp
+await page.SetRequestInterceptionAsync(true);
+
+page.AddRequestInterceptor(request =>
+    request.ContinueAsync(
+        new Payload
+        {
+            Headers = new Dictionary<string, string> { ["X-Source"] = "high" },
+        },
+        1));
+
+page.AddRequestInterceptor(request =>
+    request.ContinueAsync(
+        new Payload
+        {
+            Headers = new Dictionary<string, string> { ["X-Source"] = "low" },
+        },
+        0));
+```
+
+The request continues with `X-Source` set to `high`.
+
+Calls that share a priority keep the latest payload for that action. An abort at the same priority as a continue or a respond becomes the resolution. `RespondAsync(null)` throws `ArgumentNullException`.
+
+## Other fixes
+
+[`WaitForFileChooserAsync`](/api/PuppeteerSharp/IPage/) on CDP turns interception off when the wait finishes ([#3794](https://github.com/hardkoded/puppeteer-sharp/pull/3794)). The method sends `Page.setInterceptFileChooserDialog` with `Enabled` false once no waiter remains, including after a timeout. A later file chooser in a headful browser is shown. If another wait is still running, interception stays on. A failure while disabling interception, including a session that is already closed, is logged.
+
+CDP frame events are handled on the session that owns the frame ([#3798](https://github.com/hardkoded/puppeteer-sharp/pull/3798)). That session is the nearest out-of-process iframe target in the ancestor chain, or the page session. When the iframe target is gone, the frame uses its parent's session.
+
+WebDriver BiDi [`WaitForNavigationAsync`](/api/PuppeteerSharp/IFrame/) drops its navigation handlers when the wait is cancelled or times out ([#3773](https://github.com/hardkoded/puppeteer-sharp/pull/3773)). Caller cancellation throws `OperationCanceledException`.
+
+CDP `LifecycleWatcher.Dispose` unsubscribes from `FrameSwappedByActivation` ([#3775](https://github.com/hardkoded/puppeteer-sharp/pull/3775)).
+
+[`WaitForSelectorAsync`](/api/PuppeteerSharp/IFrame/) polls a P selector that contains a CSS pseudo-class with `requestAnimationFrame` ([#3766](https://github.com/hardkoded/puppeteer-sharp/pull/3766)). `input:focus ::-p-text(a)` and `div:focus >>> span` use RAF polling. `div >>> ::-p-text(a)` stays on mutation polling. A pseudo-element does not count as a pseudo-class, so `::before` does not switch the poller. The second colon of `::` is ignored when the selector is classified.
+
+## Behavior changes
+
+`SetUserAgentAsync(string, UserAgentMetadata)` renamed the second parameter from `userAgentData` to `userAgentMetadata` ([#3795](https://github.com/hardkoded/puppeteer-sharp/pull/3795)). A positional call is unchanged. A named argument `userAgentData:` no longer compiles.
+
+Cooperative Intercept Mode stores the payload of the highest-priority call for each action ([#3808](https://github.com/hardkoded/puppeteer-sharp/pull/3808)). A lower-priority call no longer replaces headers, the response body, or the abort reason chosen by a higher-priority call. Equal priorities keep the latest payload, and an abort at that priority replaces a continue or a respond.
+
+`::-p-text` matches light-DOM text of a shadow host ([#3768](https://github.com/hardkoded/puppeteer-sharp/pull/3768)). A host that only exposed that text through a slot was previously skipped.
+
+P selectors that contain a CSS pseudo-class wait with RAF polling ([#3766](https://github.com/hardkoded/puppeteer-sharp/pull/3766)). `::before` stays on mutation polling.
+
+## Website, formatting, and tests
+
+This site gained its Releases section, including the [25.17 notes](/releases/v25-17/) ([#3776](https://github.com/hardkoded/puppeteer-sharp/pull/3776)). The sponsor list keeps active GitHub sponsors ([#3780](https://github.com/hardkoded/puppeteer-sharp/pull/3780)).
+
+The Chromium versus Chrome link on `LaunchAsync` now points at [`+/lkgr/docs/chromium_browser_vs_google_chrome.md`](https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md) ([#3799](https://github.com/hardkoded/puppeteer-sharp/pull/3799)). That change is the first contribution from [@farisbasha](https://github.com/farisbasha).
+
+C# formatting is owned by CSharpier ([#3781](https://github.com/hardkoded/puppeteer-sharp/pull/3781)). The pre-push hook and the CI job run `dotnet csharpier check .`. The format pass does not change runtime behavior.
+
+Tests ported from upstream:
+
+- Abort waiting for a target ([#3789](https://github.com/hardkoded/puppeteer-sharp/pull/3789), [puppeteer#15808](https://github.com/puppeteer/puppeteer/pull/15808))
+- BiDi response remote address on every call ([#3790](https://github.com/hardkoded/puppeteer-sharp/pull/3790))
+- Fractional cookie `expires` ([#3791](https://github.com/hardkoded/puppeteer-sharp/pull/3791))
+- `GoBackAsync` honors a cancelled token ([#3793](https://github.com/hardkoded/puppeteer-sharp/pull/3793), [puppeteer#15801](https://github.com/puppeteer/puppeteer/pull/15801))
+- `AddStyleTagAsync` leaves the caller's options unchanged when a path is used ([#3797](https://github.com/hardkoded/puppeteer-sharp/pull/3797), [puppeteer#15757](https://github.com/puppeteer/puppeteer/pull/15757))
+- `ConnectAsync` leaves the caller's `ConnectOptions` unchanged ([#3796](https://github.com/hardkoded/puppeteer-sharp/pull/3796), [puppeteer#15762](https://github.com/puppeteer/puppeteer/pull/15762))
+
+## Links
+
+- [GitHub release v25.18.1](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v25.18.1)
+- [Compare v25.17.1 with v25.18.1](https://github.com/hardkoded/puppeteer-sharp/compare/v25.17.1...v25.18.1)
+- [PuppeteerSharp on NuGet](https://www.nuget.org/packages/PuppeteerSharp/)
