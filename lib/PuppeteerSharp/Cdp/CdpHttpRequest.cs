@@ -139,7 +139,10 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
             return;
         }
 
-        _continueRequestOverrides = overrides;
+        if (ClaimInterceptionPayload(InterceptResolutionAction.Continue, priority.Value))
+        {
+            _continueRequestOverrides = overrides;
+        }
 
         if (
             _interceptResolutionState.Priority is null
@@ -170,6 +173,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc/>
     public override async Task RespondAsync(ResponseData response, int? priority = null)
     {
+        if (response == null)
+        {
+            throw new ArgumentNullException(nameof(response));
+        }
+
         VerifyInterception();
 
         if (!CanBeIntercepted())
@@ -181,9 +189,13 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         {
             Debug.Assert(response != null, nameof(response) + " != null");
             await RespondInternalAsync(response).ConfigureAwait(false);
+            return;
         }
 
-        _responseForRequest = response;
+        if (ClaimInterceptionPayload(InterceptResolutionAction.Respond, priority.Value))
+        {
+            _responseForRequest = response;
+        }
 
         if (
             _interceptResolutionState.Priority is null
@@ -227,7 +239,10 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
             return;
         }
 
-        _abortErrorReason = errorCode;
+        if (ClaimInterceptionPayload(InterceptResolutionAction.Abort, priority.Value))
+        {
+            _abortErrorReason = errorCode;
+        }
 
         if (
             _interceptResolutionState.Priority is null
