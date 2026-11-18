@@ -231,7 +231,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         if (
             _interceptResolutionState.Priority is null
-            || priority > _interceptResolutionState.Priority
+            || priority >= _interceptResolutionState.Priority
         )
         {
             _interceptResolutionState = new InterceptResolutionState(
