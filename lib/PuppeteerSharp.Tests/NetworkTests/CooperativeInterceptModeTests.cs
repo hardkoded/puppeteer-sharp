@@ -34,11 +34,10 @@ public class CooperativeInterceptModeTests
             0
         );
 
-        Assert.That(
-            request.InterceptResolutionState.Action,
-            Is.EqualTo(InterceptResolutionAction.Continue)
-        );
-        Assert.That(request.ContinueRequestOverrides.Headers["foo"], Is.EqualTo("high"));
+        await request.FinalizeInterceptionsAsync();
+
+        Assert.That(request.Resolution.Action, Is.EqualTo(InterceptResolutionAction.Continue));
+        Assert.That(request.Resolution.Overrides.Headers["foo"], Is.EqualTo("high"));
     }
 
     [
@@ -56,11 +55,10 @@ public class CooperativeInterceptModeTests
         await request.RespondAsync(new ResponseData { Body = "high" }, 1);
         await request.RespondAsync(new ResponseData { Body = "low" }, 0);
 
-        Assert.That(
-            request.InterceptResolutionState.Action,
-            Is.EqualTo(InterceptResolutionAction.Respond)
-        );
-        Assert.That(request.ResponseForRequest.Body, Is.EqualTo("high"));
+        await request.FinalizeInterceptionsAsync();
+
+        Assert.That(request.Resolution.Action, Is.EqualTo(InterceptResolutionAction.Respond));
+        Assert.That(request.Resolution.Response.Body, Is.EqualTo("high"));
     }
 
     [
@@ -78,11 +76,13 @@ public class CooperativeInterceptModeTests
         await request.AbortAsync(RequestAbortErrorCode.BlockedByClient, 1);
         await request.AbortAsync(RequestAbortErrorCode.TimedOut, 0);
 
+        await request.FinalizeInterceptionsAsync();
+
+        Assert.That(request.Resolution.Action, Is.EqualTo(InterceptResolutionAction.Abort));
         Assert.That(
-            request.InterceptResolutionState.Action,
-            Is.EqualTo(InterceptResolutionAction.Abort)
+            request.Resolution.ErrorCode,
+            Is.EqualTo(RequestAbortErrorCode.BlockedByClient)
         );
-        Assert.That(request.AbortErrorReason, Is.EqualTo(RequestAbortErrorCode.BlockedByClient));
     }
 
     [
@@ -100,11 +100,10 @@ public class CooperativeInterceptModeTests
         await request.RespondAsync(new ResponseData { Body = "first" }, 0);
         await request.RespondAsync(new ResponseData { Body = "second" }, 0);
 
-        Assert.That(
-            request.InterceptResolutionState.Action,
-            Is.EqualTo(InterceptResolutionAction.Respond)
-        );
-        Assert.That(request.ResponseForRequest.Body, Is.EqualTo("second"));
+        await request.FinalizeInterceptionsAsync();
+
+        Assert.That(request.Resolution.Action, Is.EqualTo(InterceptResolutionAction.Respond));
+        Assert.That(request.Resolution.Response.Body, Is.EqualTo("second"));
     }
 
     [
@@ -125,18 +124,16 @@ public class CooperativeInterceptModeTests
 
         await request.RespondAsync(request.ResponseForRequest, 2);
 
-        Assert.That(
-            request.InterceptResolutionState.Action,
-            Is.EqualTo(InterceptResolutionAction.Respond)
-        );
-        Assert.That(request.ResponseForRequest.Body, Is.EqualTo("low"));
+        await request.FinalizeInterceptionsAsync();
+
+        Assert.That(request.Resolution.Action, Is.EqualTo(InterceptResolutionAction.Respond));
+        Assert.That(request.Resolution.Response.Body, Is.EqualTo("low"));
     }
 
-    private static CdpHttpRequest CreateRequest(ILoggerFactory loggerFactory) =>
+    private static TestRequest CreateRequest(ILoggerFactory loggerFactory) =>
         new(
             Substitute.For<CDPSession>(),
             Substitute.For<IFrame>(),
-            null,
             "interceptionId",
             true,
             new RequestWillBeSentResponse
@@ -153,4 +150,52 @@ public class CooperativeInterceptModeTests
             [],
             loggerFactory
         );
+
+    private sealed class TestRequest : CdpHttpRequest
+    {
+        public TestRequest(
+            CDPSession client,
+            IFrame frame,
+            string interceptionId,
+            bool allowInterception,
+            RequestWillBeSentResponse data,
+            List<IRequest> redirectChain,
+            ILoggerFactory loggerFactory
+        )
+            : base(
+                client,
+                frame,
+                null,
+                interceptionId,
+                allowInterception,
+                data,
+                redirectChain,
+                loggerFactory
+            ) { }
+
+        public (
+            InterceptResolutionAction Action,
+            Payload Overrides,
+            ResponseData Response,
+            RequestAbortErrorCode ErrorCode
+        ) Resolution { get; private set; }
+
+        internal override Task ContinueInternalAsync(Payload overrides = null)
+        {
+            Resolution = (InterceptResolutionAction.Continue, overrides, null, default);
+            return Task.CompletedTask;
+        }
+
+        internal override Task RespondInternalAsync(ResponseData response)
+        {
+            Resolution = (InterceptResolutionAction.Respond, null, response, default);
+            return Task.CompletedTask;
+        }
+
+        internal override Task AbortInternalAsync(RequestAbortErrorCode errorCode)
+        {
+            Resolution = (InterceptResolutionAction.Abort, null, null, errorCode);
+            return Task.CompletedTask;
+        }
+    }
 }
