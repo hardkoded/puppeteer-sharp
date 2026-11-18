@@ -233,11 +233,22 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await Page.EvaluateFunctionAsync(
                 @"() =>
             {
-                window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
+                globalThis.beforeReload = true;
+                window.addEventListener('beforeunload', () => {
+                    history.replaceState({scroll: 0}, '', window.location.href);
+                });
             }"
             );
-            await Page.ReloadAsync();
-            Assert.That(await Page.EvaluateFunctionAsync<int>("() => 1"), Is.EqualTo(1));
+            var response = await Page.ReloadAsync();
+            Assert.That(response.Ok, Is.True);
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => globalThis.beforeReload"),
+                Is.Null
+            );
+            Assert.That(
+                await Page.EvaluateFunctionAsync<int>("() => history.state.scroll"),
+                Is.EqualTo(0)
+            );
         }
 
         [

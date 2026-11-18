@@ -415,7 +415,10 @@ public class BidiFrame : Frame
                 var cleanups = new List<Action>();
 
                 BrowsingContext.Navigation += OnNavigation;
-                BrowsingContext.HistoryUpdated += OnHistoryUpdated;
+                if (options?.IgnoreSameDocumentNavigation != true)
+                {
+                    BrowsingContext.HistoryUpdated += OnHistoryUpdated;
+                }
 
                 // Create a task that completes when cancellation is requested (timeout)
                 var cancellationTcs = new TaskCompletionSource<bool>(
