@@ -799,6 +799,8 @@ public void AddRequestInterceptor(Func<IRequest, Task> interceptionTask)
 `Int32%7d)`, `Int32%7d)`, and `Int32%7d)` can accept an optional `priority` to activate Cooperative Intercept Mode.
 In Cooperative Mode, all interception tasks are guaranteed to run and all async handlers are awaited.
 The interception is resolved to the highest-priority resolution.
+In the event of a tie, `abort` &gt; `respond` &gt; `continue`.
+The overrides of continue, the response of respond and the error code of abort are each taken from the call of that kind with the highest priority, or from the latest one if several calls of that kind share that priority.
 
 **Parameters**
 

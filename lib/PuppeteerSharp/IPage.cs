@@ -1671,6 +1671,8 @@ namespace PuppeteerSharp
         /// <see cref="IRequest.RespondAsync"/>, <see cref="IRequest.AbortAsync"/>, and <see cref="IRequest.ContinueAsync"/> can accept an optional `priority` to activate Cooperative Intercept Mode.
         /// In Cooperative Mode, all interception tasks are guaranteed to run and all async handlers are awaited.
         /// The interception is resolved to the highest-priority resolution.
+        /// In the event of a tie, <c>abort</c> &gt; <c>respond</c> &gt; <c>continue</c>.
+        /// The overrides of continue, the response of respond and the error code of abort are each taken from the call of that kind with the highest priority, or from the latest one if several calls of that kind share that priority.
         /// </summary>
         /// <param name="interceptionTask">Interception task.</param>
         void AddRequestInterceptor(Func<IRequest, Task> interceptionTask);
