@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -37,6 +38,7 @@ namespace PuppeteerSharp.Cdp
         private TaskCompletionSource<bool> _frameTreeHandled = new(
             TaskCreationOptions.RunContinuationsAsynchronously
         );
+        private long _messageSequence;
 
         internal FrameManager(
             CDPSession client,
@@ -79,6 +81,11 @@ namespace PuppeteerSharp.Cdp
 
         internal CDPSession Client { get; private set; }
 
+        /// <summary>
+        /// Gets the number of frame messages that have arrived so far. Messages are handled later
+        /// from a queue, so this tells whether a message arrived before something else happened.
+        /// </summary>
+        internal long MessageSequence => Interlocked.Read(ref _messageSequence);
         internal NetworkManager NetworkManager { get; }
 
         internal Page Page { get; }
@@ -516,6 +523,7 @@ namespace PuppeteerSharp.Cdp
 
         private void Client_MessageReceived(object sender, MessageEventArgs e)
         {
+            var sequence = Interlocked.Increment(ref _messageSequence);
             if (e.MessageID == "Page.frameNavigated" && sender is CDPSession navigatedSession)
             {
                 // Upstream records this in the event handler itself, before waiting for the
@@ -574,7 +582,8 @@ namespace PuppeteerSharp.Cdp
                         case "Page.frameDetached":
                             OnFrameDetached(
                                 session,
-                                e.MessageData.ToObject<PageFrameDetachedResponse>()
+                                e.MessageData.ToObject<PageFrameDetachedResponse>(),
+                                sequence
                             );
                             break;
 
@@ -761,7 +770,7 @@ namespace PuppeteerSharp.Cdp
             _contextIdToContext[key] = context;
         }
 
-        private void OnFrameDetached(CDPSession session, PageFrameDetachedResponse e)
+        private void OnFrameDetached(CDPSession session, PageFrameDetachedResponse e, long sequence)
         {
             var frame = GetFrame(e.FrameId);
             if (frame == null)
@@ -788,6 +797,7 @@ namespace PuppeteerSharp.Cdp
             }
             else if (e.Reason == FrameDetachedReason.Swap)
             {
+                frame.SwapSequence = sequence;
                 FrameSwapped?.Invoke(frame, new FrameEventArgs(frame));
                 frame.OnSwapped();
             }

@@ -35,6 +35,7 @@ namespace PuppeteerSharp.Cdp
         private readonly CancellationTokenSource _terminationCancellationToken = new();
         private readonly CancellationTokenRegistration _cancellationRegistration;
         private readonly string _initialLoaderId;
+        private readonly long _createdAtSequence;
         private IRequest _navigationRequest;
         private bool _hasSameDocumentNavigation;
         private bool _swapped;
@@ -59,6 +60,7 @@ namespace PuppeteerSharp.Cdp
             _frame = frame;
             _timeout = timeout;
             _initialLoaderId = frame.LoaderId;
+            _createdAtSequence = frame.FrameManager.MessageSequence;
             _hasSameDocumentNavigation = false;
 
             if (cancellationToken.CanBeCanceled)
@@ -78,7 +80,7 @@ namespace PuppeteerSharp.Cdp
             frame.FrameManager.LifecycleEvent += FrameManager_LifecycleEvent;
             frame.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frame.FrameNavigated += Navigated;
-            frame.FrameSwapped += FrameSwapped;
+            frame.FrameSwapped += OnFrameSwapped;
             frame.FrameSwappedByActivation += FrameSwapped;
             frame.FrameDetached += OnFrameDetached;
             _networkManager.Request += OnRequest;
@@ -119,7 +121,7 @@ namespace PuppeteerSharp.Cdp
             _frame.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
             _frame.FrameNavigated -= Navigated;
             _frame.FrameDetached -= OnFrameDetached;
-            _frame.FrameSwapped -= FrameSwapped;
+            _frame.FrameSwapped -= OnFrameSwapped;
             _frame.FrameSwappedByActivation -= FrameSwapped;
             _networkManager.Request -= OnRequest;
             _networkManager.Response -= OnResponse;
@@ -152,6 +154,22 @@ namespace PuppeteerSharp.Cdp
 
         private void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) =>
             CheckLifecycleComplete();
+
+        private void OnFrameSwapped(object sender, EventArgs e)
+        {
+            // The events are queued, so this can run after the watcher was created for a swap
+            // that was reported before. Upstream handles events as they arrive, so it never sees
+            // those. Only the swaps reported after the watcher was created count.
+            if (
+                sender is CdpFrame { SwapSequence: > 0 } swapped
+                && swapped.SwapSequence <= _createdAtSequence
+            )
+            {
+                return;
+            }
+
+            FrameSwapped(sender, e);
+        }
 
         private void FrameSwapped(object sender, EventArgs e)
         {
