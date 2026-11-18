@@ -18,6 +18,33 @@ namespace PuppeteerSharp.Tests.LauncherTests
             PuppeteerTest(
                 "launcher.spec",
                 "Launcher specs Puppeteer Puppeteer.connect",
+                "should not modify the connect options"
+            )
+        ]
+        public async Task ShouldNotModifyTheConnectOptions()
+        {
+            var options = new ConnectOptions()
+            {
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                Protocol = ((Browser)Browser).Protocol,
+            };
+            var expectedEndpoint = options.BrowserWSEndpoint;
+            var expectedProtocol = options.Protocol;
+
+            await using var browser = await Puppeteer.ConnectAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
+
+            Assert.That(options.BrowserWSEndpoint, Is.EqualTo(expectedEndpoint));
+            Assert.That(options.Protocol, Is.EqualTo(expectedProtocol));
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "launcher.spec",
+                "Launcher specs Puppeteer Puppeteer.connect",
                 "should be able to connect multiple times to the same browser"
             )
         ]
