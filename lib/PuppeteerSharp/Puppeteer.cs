@@ -92,7 +92,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
         /// for a description of the differences between Chromium and Chrome.
-        /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
+        /// <a href="https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         ///
         /// Environment Variables
         /// Puppeteer looks for certain <see href="https://en.wikipedia.org/wiki/Environment_variable">environment variables</see>() to aid its operations.
