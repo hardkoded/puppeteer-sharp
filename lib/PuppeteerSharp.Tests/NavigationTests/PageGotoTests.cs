@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -233,11 +234,20 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await Page.EvaluateFunctionAsync(
                 @"() =>
             {
-                window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
+                globalThis.beforeReload = true;
+                window.addEventListener('beforeunload', () => {
+                    history.replaceState({ scroll: 0 }, '', window.location.href);
+                });
             }"
             );
-            await Page.ReloadAsync();
-            Assert.That(await Page.EvaluateFunctionAsync<int>("() => 1"), Is.EqualTo(1));
+            var response = await Page.ReloadAsync();
+            Assert.That(response.Ok, Is.True);
+            Assert.That(
+                await Page.EvaluateFunctionAsync<JsonElement?>("() => globalThis.beforeReload"),
+                Is.Null
+            );
+            var state = await Page.EvaluateFunctionAsync<JsonElement>("() => history.state");
+            Assert.That(state.GetProperty("scroll").GetInt32(), Is.EqualTo(0));
         }
 
         [
