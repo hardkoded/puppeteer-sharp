@@ -173,6 +173,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc/>
     public override async Task RespondAsync(ResponseData response, int? priority = null)
     {
+        if (response == null)
+        {
+            throw new ArgumentNullException(nameof(response));
+        }
+
         VerifyInterception();
 
         if (!CanBeIntercepted())
@@ -241,7 +246,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         if (
             _interceptResolutionState.Priority is null
-            || priority > _interceptResolutionState.Priority
+            || priority >= _interceptResolutionState.Priority
         )
         {
             _interceptResolutionState = new InterceptResolutionState(
