@@ -10,6 +10,7 @@ namespace PuppeteerSharp
         where TResponse : IResponse
     {
         private readonly Dictionary<InterceptResolutionAction, int> _payloadPriorities = [];
+        private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
 
         /// <inheritdoc/>
         public string Id { get; internal init; }
@@ -98,15 +99,60 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         void IInterceptableRequest.EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler) =>
-            EnqueueInterceptionActionCore(pendingHandler);
-
-        internal abstract Task FinalizeInterceptionsAsync();
+            _interceptHandlers.Add(pendingHandler);
 
         /// <summary>
-        /// Enqueues an interception action to be executed when the request is finalized.
+        /// Awaits pending interception handlers and then decides how to fulfill the request interception.
         /// </summary>
-        /// <param name="pendingHandler">The handler to execute.</param>
-        internal abstract void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler);
+        /// <returns>A task that completes when the interception has been fulfilled.</returns>
+        internal virtual async Task FinalizeInterceptionsAsync()
+        {
+            foreach (var handler in _interceptHandlers)
+            {
+                await handler(this).ConfigureAwait(false);
+            }
+
+            _interceptHandlers.Clear();
+
+            switch (InterceptResolutionState.Action)
+            {
+                case InterceptResolutionAction.Abort:
+                    await AbortInternalAsync(AbortErrorReason).ConfigureAwait(false);
+                    return;
+                case InterceptResolutionAction.Respond:
+                    if (ResponseForRequest is null)
+                    {
+                        throw new PuppeteerException("Response is missing for the interception");
+                    }
+
+                    await RespondInternalAsync(ResponseForRequest).ConfigureAwait(false);
+                    return;
+                case InterceptResolutionAction.Continue:
+                    await ContinueInternalAsync(ContinueRequestOverrides).ConfigureAwait(false);
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Aborts the request in the browser. Equivalent to upstream's <c>_abort</c>.
+        /// </summary>
+        /// <param name="errorCode">The abort error code.</param>
+        /// <returns>A task that completes when the request has been aborted.</returns>
+        internal abstract Task AbortInternalAsync(RequestAbortErrorCode errorCode);
+
+        /// <summary>
+        /// Responds to the request in the browser. Equivalent to upstream's <c>_respond</c>.
+        /// </summary>
+        /// <param name="response">The response.</param>
+        /// <returns>A task that completes when the request has been fulfilled.</returns>
+        internal abstract Task RespondInternalAsync(ResponseData response);
+
+        /// <summary>
+        /// Continues the request in the browser. Equivalent to upstream's <c>_continue</c>.
+        /// </summary>
+        /// <param name="overrides">The overrides.</param>
+        /// <returns>A task that completes when the request has been continued.</returns>
+        internal abstract Task ContinueInternalAsync(Payload overrides = null);
 
         /// <summary>
         /// Verifies that request interception is enabled and the request has not been handled yet.

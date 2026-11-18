@@ -40,8 +40,6 @@ namespace PuppeteerSharp.Bidi;
 public class BidiHttpRequest : Request<BidiHttpResponse>
 {
     private readonly Request _request;
-    private readonly BidiRequestInterception _interception = new();
-    private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
     private Payload _continueRequestOverrides = new();
     private ResponseData _responseForRequest;
     private RequestAbortErrorCode _abortErrorReason;
@@ -248,7 +246,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         if (priority is null)
         {
-            await AbortInternalAsync().ConfigureAwait(false);
+            await AbortInternalAsync(errorCode).ConfigureAwait(false);
             return;
         }
 
@@ -314,54 +312,173 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal override async Task FinalizeInterceptionsAsync()
     {
-        // First, run any handlers registered via the handler list
-        foreach (var handler in _interception.Handlers)
+        await base.FinalizeInterceptionsAsync().ConfigureAwait(false);
+
+        // Firefox phantom requests never raise the Request event, so no handler will ever
+        // resolve them. Continue them to let the browser proceed. Requests the user has seen
+        // are left to the user, as upstream does.
+        if (
+            InterceptResolutionState.Action == InterceptResolutionAction.None
+            && !RequestEventEmitted
+            && CanBeIntercepted()
+        )
         {
-            await handler().ConfigureAwait(false);
-        }
-
-        _interception.Handlers.Clear();
-
-        // Then run any handlers registered via EnqueueInterceptionAction
-        foreach (var handler in _interceptHandlers)
-        {
-            await handler(this).ConfigureAwait(false);
-        }
-
-        _interceptHandlers.Clear();
-
-        // Finally, handle the intercept resolution state
-        switch (InterceptResolutionState.Action)
-        {
-            case InterceptResolutionAction.Abort:
-                await AbortInternalAsync().ConfigureAwait(false);
-                return;
-            case InterceptResolutionAction.Respond:
-                if (_responseForRequest is null)
-                {
-                    throw new PuppeteerException("Response is missing for the interception");
-                }
-
-                await RespondInternalAsync(_responseForRequest).ConfigureAwait(false);
-                return;
-            case InterceptResolutionAction.Continue:
-                await ContinueInternalAsync(_continueRequestOverrides).ConfigureAwait(false);
-                break;
-            case InterceptResolutionAction.None:
-                // Firefox phantom requests never raise the Request event, so no handler will ever
-                // resolve them. Continue them to let the browser proceed. Requests the user has seen
-                // are left to the user, as upstream does.
-                if (!RequestEventEmitted && CanBeIntercepted())
-                {
-                    await ContinueInternalAsync().ConfigureAwait(false);
-                }
-
-                break;
+            await ContinueInternalAsync().ConfigureAwait(false);
         }
     }
 
-    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler) =>
-        _interceptHandlers.Add(pendingHandler);
+    internal override async Task ContinueInternalAsync(Payload overrides = null)
+    {
+        IsInterceptResolutionHandled = true;
+
+        try
+        {
+            // Merge the original request headers with extra headers and user agent headers
+            var mergedHeaders =
+                HasInternalHeaderOverwrite || overrides?.Headers != null
+                    ? GetMergedHeaders(overrides?.Headers)
+                    : null;
+
+            var bidiHeaders = ConvertToBidiHeaders(mergedHeaders);
+
+            BytesValue body = null;
+            if (overrides?.PostData != null)
+            {
+                body = BytesValue.FromBase64String(
+                    Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides.PostData))
+                );
+            }
+
+            await _request
+                .ContinueRequestAsync(
+                    url: overrides?.Url,
+                    method: overrides?.Method?.ToString(),
+                    headers: bidiHeaders?.Count > 0 ? bidiHeaders : null,
+                    body: body
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            IsInterceptResolutionHandled = false;
+            HandleError(ex);
+        }
+    }
+
+    internal override async Task AbortInternalAsync(RequestAbortErrorCode errorCode)
+    {
+        IsInterceptResolutionHandled = true;
+
+        try
+        {
+            await _request.FailRequestAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            IsInterceptResolutionHandled = false;
+            HandleError(ex);
+        }
+    }
+
+    internal override async Task RespondInternalAsync(ResponseData response)
+    {
+        var responseHeaders = new List<Header>();
+
+        if (response.Headers != null)
+        {
+            foreach (var keyValuePair in response.Headers)
+            {
+                if (keyValuePair.Value == null)
+                {
+                    continue;
+                }
+
+                if (keyValuePair.Value is ICollection values)
+                {
+                    foreach (var val in values)
+                    {
+                        responseHeaders.Add(
+                            new Header(keyValuePair.Key.ToLowerInvariant(), val.ToString())
+                        );
+                    }
+                }
+                else
+                {
+                    responseHeaders.Add(
+                        new Header(
+                            keyValuePair.Key.ToLowerInvariant(),
+                            keyValuePair.Value.ToString()
+                        )
+                    );
+                }
+            }
+        }
+
+        // Check if the content-length header exists
+        var hasContentLength = false;
+        foreach (var header in responseHeaders)
+        {
+            if (header.Name.Equals("content-length", StringComparison.OrdinalIgnoreCase))
+            {
+                hasContentLength = true;
+                break;
+            }
+        }
+
+        // Add content-length if not present and we have body data
+        if (!hasContentLength && response.BodyData is { Length: > 0 })
+        {
+            responseHeaders.Add(
+                new Header(
+                    "content-length",
+                    response.BodyData.Length.ToString(CultureInfo.InvariantCulture)
+                )
+            );
+        }
+
+        if (response.ContentType != null)
+        {
+            // Like the CDP implementation, ContentType replaces a content-type
+            // passed in Headers instead of sending both.
+            responseHeaders.RemoveAll(header => header.Name == "content-type");
+            responseHeaders.Add(new Header("content-type", response.ContentType));
+        }
+
+        var statusCode = response.Status != null ? (int)response.Status : 200;
+        var reasonPhrase = GetReasonPhrase(statusCode);
+
+        BytesValue body = null;
+        if (response.BodyData != null)
+        {
+            body = BytesValue.FromByteArray(response.BodyData);
+        }
+
+        IsInterceptResolutionHandled = true;
+
+        try
+        {
+            await _request
+                .ProvideResponseAsync(
+                    statusCode: (uint)statusCode,
+                    reasonPhrase: reasonPhrase,
+                    headers: responseHeaders.Count > 0 ? responseHeaders : null,
+                    body: body
+                )
+                .ConfigureAwait(false);
+        }
+        catch (WebDriverBiDi.WebDriverBiDiConnectionException)
+        {
+            // Port-only: upstream lets this rejection surface as an unhandled promise rejection,
+            // which is benign in Node. In .NET it would crash the process from an async void
+            // event handler, so we tolerate responding to a request after the connection closed.
+            IsInterceptResolutionHandled = false;
+        }
+        catch (Exception ex)
+        {
+            IsInterceptResolutionHandled = false;
+            HandleError(ex);
+        }
+    }
 
     /// <inheritdoc/>
     protected override void VerifyInterception()
@@ -472,159 +589,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         return headers;
     }
 
-    private async Task ContinueInternalAsync(Payload overrides = null)
-    {
-        IsInterceptResolutionHandled = true;
-
-        try
-        {
-            // Merge the original request headers with extra headers and user agent headers
-            var mergedHeaders =
-                HasInternalHeaderOverwrite || overrides?.Headers != null
-                    ? GetMergedHeaders(overrides?.Headers)
-                    : null;
-
-            var bidiHeaders = ConvertToBidiHeaders(mergedHeaders);
-
-            BytesValue body = null;
-            if (overrides?.PostData != null)
-            {
-                body = BytesValue.FromBase64String(
-                    Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides.PostData))
-                );
-            }
-
-            await _request
-                .ContinueRequestAsync(
-                    url: overrides?.Url,
-                    method: overrides?.Method?.ToString(),
-                    headers: bidiHeaders?.Count > 0 ? bidiHeaders : null,
-                    body: body
-                )
-                .ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            IsInterceptResolutionHandled = false;
-            HandleError(ex);
-        }
-    }
-
-    private async Task AbortInternalAsync()
-    {
-        IsInterceptResolutionHandled = true;
-
-        try
-        {
-            await _request.FailRequestAsync().ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            IsInterceptResolutionHandled = false;
-            HandleError(ex);
-        }
-    }
-
-    private async Task RespondInternalAsync(ResponseData response)
-    {
-        var responseHeaders = new List<Header>();
-
-        if (response.Headers != null)
-        {
-            foreach (var keyValuePair in response.Headers)
-            {
-                if (keyValuePair.Value == null)
-                {
-                    continue;
-                }
-
-                if (keyValuePair.Value is ICollection values)
-                {
-                    foreach (var val in values)
-                    {
-                        responseHeaders.Add(
-                            new Header(keyValuePair.Key.ToLowerInvariant(), val.ToString())
-                        );
-                    }
-                }
-                else
-                {
-                    responseHeaders.Add(
-                        new Header(
-                            keyValuePair.Key.ToLowerInvariant(),
-                            keyValuePair.Value.ToString()
-                        )
-                    );
-                }
-            }
-        }
-
-        // Check if the content-length header exists
-        var hasContentLength = false;
-        foreach (var header in responseHeaders)
-        {
-            if (header.Name.Equals("content-length", StringComparison.OrdinalIgnoreCase))
-            {
-                hasContentLength = true;
-                break;
-            }
-        }
-
-        // Add content-length if not present and we have body data
-        if (!hasContentLength && response.BodyData is { Length: > 0 })
-        {
-            responseHeaders.Add(
-                new Header(
-                    "content-length",
-                    response.BodyData.Length.ToString(CultureInfo.InvariantCulture)
-                )
-            );
-        }
-
-        if (response.ContentType != null)
-        {
-            // Like the CDP implementation, ContentType replaces a content-type
-            // passed in Headers instead of sending both.
-            responseHeaders.RemoveAll(header => header.Name == "content-type");
-            responseHeaders.Add(new Header("content-type", response.ContentType));
-        }
-
-        var statusCode = response.Status != null ? (int)response.Status : 200;
-        var reasonPhrase = GetReasonPhrase(statusCode);
-
-        BytesValue body = null;
-        if (response.BodyData != null)
-        {
-            body = BytesValue.FromByteArray(response.BodyData);
-        }
-
-        IsInterceptResolutionHandled = true;
-
-        try
-        {
-            await _request
-                .ProvideResponseAsync(
-                    statusCode: (uint)statusCode,
-                    reasonPhrase: reasonPhrase,
-                    headers: responseHeaders.Count > 0 ? responseHeaders : null,
-                    body: body
-                )
-                .ConfigureAwait(false);
-        }
-        catch (WebDriverBiDi.WebDriverBiDiConnectionException)
-        {
-            // Port-only: upstream lets this rejection surface as an unhandled promise rejection,
-            // which is benign in Node. In .NET it would crash the process from an async void
-            // event handler, so we tolerate responding to a request after the connection closed.
-            IsInterceptResolutionHandled = false;
-        }
-        catch (Exception ex)
-        {
-            IsInterceptResolutionHandled = false;
-            HandleError(ex);
-        }
-    }
-
     private void Initialize()
     {
         _request.Redirect += (sender, e) =>
@@ -700,6 +664,16 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         _request.Authenticate += HandleAuthentication;
 
+        // Register the internal header handler before any Request event subscriber can enqueue
+        // its own, so it runs first and does not overwrite their priority-0 overrides.
+        if (HasInternalHeaderOverwrite && CanBeIntercepted())
+        {
+            ((IInterceptableRequest)this).EnqueueInterceptionAction(async _ =>
+            {
+                await ContinueAsync(new Payload { Headers = Headers }, 0).ConfigureAwait(false);
+            });
+        }
+
         // Firefox BiDi sends duplicate BeforeRequestSent events with different request IDs for
         // speculative/parallel sub-resource loading during navigation.
         // Deduplicate by URL during navigation. The tracker is cleared after navigation completes
@@ -711,14 +685,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             var requestArgs = new RequestEventArgs(this);
             ((BidiBrowserContext)BidiPage.BrowserContext).OnRequest(requestArgs);
             BidiPage.BidiBrowser.OnRequest(requestArgs);
-        }
-
-        if (HasInternalHeaderOverwrite && CanBeIntercepted())
-        {
-            _interception.Handlers.Add(async () =>
-            {
-                await ContinueAsync(new Payload { Headers = Headers }, 0).ConfigureAwait(false);
-            });
         }
     }
 

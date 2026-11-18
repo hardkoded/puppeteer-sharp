@@ -23,7 +23,6 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     // Owned by the request (not looked up via Frame) so error handlers remain safe after frame detach.
     // Upstream equivalent: puppeteer/puppeteer#15338.
     private readonly ILogger _logger;
-    private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
     private CDPSession _client;
     private CDPSession _fetchClient;
     private Payload _continueRequestOverrides = new();
@@ -296,35 +295,6 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         return null;
     }
 
-    internal override async Task FinalizeInterceptionsAsync()
-    {
-        foreach (var handler in _interceptHandlers)
-        {
-            await handler(this).ConfigureAwait(false);
-        }
-
-        switch (InterceptResolutionState.Action)
-        {
-            case InterceptResolutionAction.Abort:
-                await AbortAsync(_abortErrorReason).ConfigureAwait(false);
-                return;
-            case InterceptResolutionAction.Respond:
-                if (_responseForRequest is null)
-                {
-                    throw new PuppeteerException("Response is missing for the interception");
-                }
-
-                await RespondAsync(_responseForRequest).ConfigureAwait(false);
-                return;
-            case InterceptResolutionAction.Continue:
-                await ContinueInternalAsync(_continueRequestOverrides).ConfigureAwait(false);
-                break;
-        }
-    }
-
-    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler) =>
-        _interceptHandlers.Add(pendingHandler);
-
     internal Task ReplayInterceptionAsync() => _replayResolution?.Invoke() ?? Task.CompletedTask;
 
     internal void UpdateHeaders(Dictionary<string, string> headers)
@@ -335,53 +305,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    /// <inheritdoc/>
-    protected override void VerifyInterception()
-    {
-        if (!_allowInterception)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
-
-        if (IsInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
-        }
-    }
-
-    /// <inheritdoc/>
-    protected override bool CanBeIntercepted() =>
-        !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase)
-        && !FromMemoryCache
-        && !string.IsNullOrEmpty(InterceptionId);
-
-    private static byte[] MergePostDataEntries(Messaging.Request request)
-    {
-        if (request.PostDataEntries is not { Length: > 0 })
-        {
-            return null;
-        }
-
-        var buffers = request
-            .PostDataEntries.Where(entry => entry.Bytes != null)
-            .Select(entry => Convert.FromBase64String(entry.Bytes))
-            .ToArray();
-
-        var merged = new byte[buffers.Sum(b => b.Length)];
-        var offset = 0;
-        foreach (var buffer in buffers)
-        {
-            Buffer.BlockCopy(buffer, 0, merged, offset, buffer.Length);
-            offset += buffer.Length;
-        }
-
-        return merged;
-    }
-
-    private Header[] HeadersArray(Dictionary<string, string> headers) =>
-        headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
-
-    private async Task ContinueInternalAsync(Payload overrides = null)
+    internal override async Task ContinueInternalAsync(Payload overrides = null)
     {
         IsInterceptResolutionHandled = true;
         _resolvedContinueOverrides = overrides;
@@ -423,7 +347,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    private async Task AbortInternalAsync(RequestAbortErrorCode errorCode)
+    internal override async Task AbortInternalAsync(RequestAbortErrorCode errorCode)
     {
         var errorReason = errorCode.ToString();
         IsInterceptResolutionHandled = true;
@@ -446,7 +370,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    private async Task RespondInternalAsync(ResponseData response)
+    internal override async Task RespondInternalAsync(ResponseData response)
     {
         IsInterceptResolutionHandled = true;
         _resolvedContinueOverrides = null;
@@ -535,6 +459,52 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
             HandleError(ex);
         }
     }
+
+    /// <inheritdoc/>
+    protected override void VerifyInterception()
+    {
+        if (!_allowInterception)
+        {
+            throw new PuppeteerException("Request Interception is not enabled!");
+        }
+
+        if (IsInterceptResolutionHandled)
+        {
+            throw new PuppeteerException("Request is already handled!");
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override bool CanBeIntercepted() =>
+        !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase)
+        && !FromMemoryCache
+        && !string.IsNullOrEmpty(InterceptionId);
+
+    private static byte[] MergePostDataEntries(Messaging.Request request)
+    {
+        if (request.PostDataEntries is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        var buffers = request
+            .PostDataEntries.Where(entry => entry.Bytes != null)
+            .Select(entry => Convert.FromBase64String(entry.Bytes))
+            .ToArray();
+
+        var merged = new byte[buffers.Sum(b => b.Length)];
+        var offset = 0;
+        foreach (var buffer in buffers)
+        {
+            Buffer.BlockCopy(buffer, 0, merged, offset, buffer.Length);
+            offset += buffer.Length;
+        }
+
+        return merged;
+    }
+
+    private Header[] HeadersArray(Dictionary<string, string> headers) =>
+        headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
 
     private void HandleError(PuppeteerException ex)
     {
