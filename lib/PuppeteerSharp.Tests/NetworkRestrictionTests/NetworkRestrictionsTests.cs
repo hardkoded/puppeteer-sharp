@@ -8,6 +8,43 @@ namespace PuppeteerSharp.Tests.NetworkRestrictionTests;
 
 public class NetworkRestrictionsTests : PuppeteerBaseTest
 {
+    /// <summary>
+    /// Starts a shared worker from a blob URL and returns a function that makes the worker fetch
+    /// the given URL. The fetch uses <c>no-cors</c> mode so that cross-origin requests succeed unless
+    /// they are blocked. The function returns <c>null</c> when the fetch succeeded and the error message otherwise.
+    /// </summary>
+    internal static async Task<Func<string, Task<string>>> StartSharedWorkerAsync(IPage page)
+    {
+        await page.EvaluateFunctionAsync(
+            @"() => {
+                const source = `onconnect = event => {
+                    const port = event.ports[0];
+                    port.onmessage = async message => {
+                        try {
+                            await fetch(message.data, {mode: 'no-cors'});
+                            port.postMessage(null);
+                        } catch (error) {
+                            port.postMessage(error.message);
+                        }
+                    };
+                };`;
+                const worker = new SharedWorker(
+                    URL.createObjectURL(new Blob([source], {type: 'text/javascript'})),
+                );
+                window.sharedWorkerFetch = (url) => {
+                    return new Promise(resolve => {
+                        worker.port.onmessage = event => {
+                            resolve(event.data);
+                        };
+                        worker.port.postMessage(url);
+                    });
+                };
+            }"
+        );
+        return url =>
+            page.EvaluateFunctionAsync<string>("(url) => window.sharedWorkerFetch(url)", url);
+    }
+
     [
         Test,
         PuppeteerTest(
@@ -110,6 +147,35 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
 
         Assert.That(fetchError, Is.Not.Null.And.Not.Empty);
         Assert.That(fetchError, Does.Contain("Failed to fetch"));
+    }
+
+    [
+        Test,
+        PuppeteerTest(
+            "network_restrictions.spec",
+            "Network Restrictions blocklist validation",
+            "should fail fetch requests from a shared worker to URLs in the blocklist"
+        )
+    ]
+    public async Task ShouldFailFetchRequestsFromASharedWorkerToUrlsInBlocklist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["*://*:*/empty.html"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        await page.GoToAsync(TestConstants.ServerUrl + "/title.html");
+        var fetchFromSharedWorker = await StartSharedWorkerAsync(page);
+
+        Assert.That(
+            await fetchFromSharedWorker(TestConstants.CrossProcessUrl + "/empty.html"),
+            Does.Contain("Failed to fetch")
+        );
+        Assert.That(
+            await fetchFromSharedWorker(TestConstants.CrossProcessUrl + "/title.html"),
+            Is.Null
+        );
     }
 
     [
@@ -389,6 +455,35 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
         var content = await page.GetContentAsync();
         Assert.That(finalUrl, Is.Not.EqualTo(blockedUrl));
         Assert.That(content, Does.Not.Contain("Woof-Woof"));
+    }
+
+    [
+        Test,
+        PuppeteerTest(
+            "network_restrictions.spec",
+            "Network Restrictions allowlist validation",
+            "should fail fetch requests from a shared worker to URLs not in the allowlist"
+        )
+    ]
+    public async Task ShouldFailFetchRequestsFromASharedWorkerToUrlsNotInAllowlist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.Allowlist = ["*://*:*/empty.html"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        await page.GoToAsync(TestConstants.ServerUrl + "/empty.html");
+        var fetchFromSharedWorker = await StartSharedWorkerAsync(page);
+
+        Assert.That(
+            await fetchFromSharedWorker(TestConstants.CrossProcessUrl + "/title.html"),
+            Does.Contain("Failed to fetch")
+        );
+        Assert.That(
+            await fetchFromSharedWorker(TestConstants.CrossProcessUrl + "/empty.html"),
+            Is.Null
+        );
     }
 
     [
