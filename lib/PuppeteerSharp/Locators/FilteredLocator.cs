@@ -20,6 +20,11 @@ namespace PuppeteerSharp.Locators
             _args = args;
         }
 
+        internal override Locator CloneCore()
+        {
+            return new FilteredLocator(Delegate.Clone(), _predicate, _args).CopyOptions(this);
+        }
+
         internal override async Task<IJSHandle> WaitHandleCoreAsync(
             LocatorActionOptions options,
             CancellationToken cancellationToken
