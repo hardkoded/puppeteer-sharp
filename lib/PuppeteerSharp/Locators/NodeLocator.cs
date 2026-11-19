@@ -35,6 +35,15 @@ namespace PuppeteerSharp.Locators
             return new NodeLocator(frame, selector);
         }
 
+        internal override Locator CloneCore()
+        {
+            return (
+                _page != null
+                    ? new NodeLocator(_page, _selector)
+                    : new NodeLocator(_frame, _selector)
+            ).CopyOptions(this);
+        }
+
         internal override async Task<IJSHandle> WaitHandleCoreAsync(
             LocatorActionOptions options,
             CancellationToken cancellationToken
