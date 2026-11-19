@@ -40,12 +40,6 @@ namespace PuppeteerSharp.Bidi;
 public class BidiHttpRequest : Request<BidiHttpResponse>
 {
     private readonly Request _request;
-    private Payload _continueRequestOverrides = new();
-    private ResponseData _responseForRequest;
-    private RequestAbortErrorCode _abortErrorReason;
-    private InterceptResolutionState _interceptResolutionState = new(
-        InterceptResolutionAction.None
-    );
     private bool _authenticationHandled;
 
     private BidiHttpRequest(Request request, BidiFrame frame, BidiHttpRequest redirect)
@@ -91,7 +85,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
             return IsInterceptResolutionHandled
                 ? new InterceptResolutionState(InterceptResolutionAction.AlreadyHandled)
-                : _interceptResolutionState;
+                : PendingResolutionState;
         }
     }
 
@@ -107,12 +101,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     // We need to move this to a place where we can control its lifecycle.
     internal static AsyncDictionaryHelper<Request, BidiHttpRequest> Requests { get; } =
         new("Request {0} not found");
-
-    internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
-
-    internal override ResponseData ResponseForRequest => _responseForRequest;
-
-    internal override RequestAbortErrorCode AbortErrorReason => _abortErrorReason;
 
     internal BidiPage BidiPage => (BidiPage)Frame.Page;
 
@@ -132,140 +120,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// This is used to verify that the user has called SetRequestInterceptionAsync(true).
     /// </summary>
     private bool PageLevelInterceptionEnabled => BidiPage.IsNetworkInterceptionEnabled;
-
-    /// <inheritdoc />
-    public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
-    {
-        VerifyInterception();
-
-        if (!CanBeIntercepted())
-        {
-            return;
-        }
-
-        HttpUtils.ValidateHeaders(payloadOverrides?.Headers);
-
-        if (priority is null)
-        {
-            await ContinueInternalAsync(payloadOverrides).ConfigureAwait(false);
-            return;
-        }
-
-        if (ClaimInterceptionPayload(InterceptResolutionAction.Continue, priority.Value))
-        {
-            _continueRequestOverrides = payloadOverrides;
-        }
-
-        if (
-            _interceptResolutionState.Priority is null
-            || priority > _interceptResolutionState.Priority
-        )
-        {
-            _interceptResolutionState = new InterceptResolutionState(
-                InterceptResolutionAction.Continue,
-                priority
-            );
-            return;
-        }
-
-        if (priority == _interceptResolutionState.Priority)
-        {
-            if (
-                _interceptResolutionState.Action == InterceptResolutionAction.Abort
-                || _interceptResolutionState.Action == InterceptResolutionAction.Respond
-            )
-            {
-                return;
-            }
-
-            _interceptResolutionState.Action = InterceptResolutionAction.Continue;
-        }
-    }
-
-    /// <inheritdoc />
-    public override async Task RespondAsync(ResponseData response, int? priority = null)
-    {
-        if (response == null)
-        {
-            throw new ArgumentNullException(nameof(response));
-        }
-
-        VerifyInterception();
-
-        if (!CanBeIntercepted())
-        {
-            return;
-        }
-
-        if (priority is null)
-        {
-            await RespondInternalAsync(response).ConfigureAwait(false);
-            return;
-        }
-
-        if (ClaimInterceptionPayload(InterceptResolutionAction.Respond, priority.Value))
-        {
-            _responseForRequest = response;
-        }
-
-        if (
-            _interceptResolutionState.Priority is null
-            || priority > _interceptResolutionState.Priority
-        )
-        {
-            _interceptResolutionState = new InterceptResolutionState(
-                InterceptResolutionAction.Respond,
-                priority
-            );
-            return;
-        }
-
-        if (priority == _interceptResolutionState.Priority)
-        {
-            if (_interceptResolutionState.Action == InterceptResolutionAction.Abort)
-            {
-                return;
-            }
-
-            _interceptResolutionState.Action = InterceptResolutionAction.Respond;
-        }
-    }
-
-    /// <inheritdoc />
-    public override async Task AbortAsync(
-        RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed,
-        int? priority = null
-    )
-    {
-        VerifyInterception();
-
-        if (!CanBeIntercepted())
-        {
-            return;
-        }
-
-        if (priority is null)
-        {
-            await AbortInternalAsync(errorCode).ConfigureAwait(false);
-            return;
-        }
-
-        if (ClaimInterceptionPayload(InterceptResolutionAction.Abort, priority.Value))
-        {
-            _abortErrorReason = errorCode;
-        }
-
-        if (
-            _interceptResolutionState.Priority is null
-            || priority >= _interceptResolutionState.Priority
-        )
-        {
-            _interceptResolutionState = new InterceptResolutionState(
-                InterceptResolutionAction.Abort,
-                priority
-            );
-        }
-    }
 
     /// <inheritdoc />
     public override Task<string> FetchPostDataAsync() => _request.FetchPostDataAsync();

@@ -1,11 +1,6 @@
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using NSubstitute;
 using NUnit.Framework;
-using PuppeteerSharp.Cdp;
-using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests;
@@ -23,8 +18,7 @@ public class CooperativeInterceptModeTests
     ]
     public async Task ShouldContinueWithTheOverridesOfTheHighestPriority()
     {
-        using var loggerFactory = new LoggerFactory();
-        var request = CreateRequest(loggerFactory);
+        var request = CreateRequest();
         await request.ContinueAsync(
             new Payload { Headers = new Dictionary<string, string> { ["foo"] = "high" } },
             1
@@ -50,8 +44,7 @@ public class CooperativeInterceptModeTests
     ]
     public async Task ShouldRespondWithTheResponseOfTheHighestPriority()
     {
-        using var loggerFactory = new LoggerFactory();
-        var request = CreateRequest(loggerFactory);
+        var request = CreateRequest();
         await request.RespondAsync(new ResponseData { Body = "high" }, 1);
         await request.RespondAsync(new ResponseData { Body = "low" }, 0);
 
@@ -71,8 +64,7 @@ public class CooperativeInterceptModeTests
     ]
     public async Task ShouldAbortWithTheErrorReasonOfTheHighestPriority()
     {
-        using var loggerFactory = new LoggerFactory();
-        var request = CreateRequest(loggerFactory);
+        var request = CreateRequest();
         await request.AbortAsync(RequestAbortErrorCode.BlockedByClient, 1);
         await request.AbortAsync(RequestAbortErrorCode.TimedOut, 0);
 
@@ -95,8 +87,7 @@ public class CooperativeInterceptModeTests
     ]
     public async Task ShouldUseTheLatestOfTheResolutionsWithTheSamePriority()
     {
-        using var loggerFactory = new LoggerFactory();
-        var request = CreateRequest(loggerFactory);
+        var request = CreateRequest();
         await request.RespondAsync(new ResponseData { Body = "first" }, 0);
         await request.RespondAsync(new ResponseData { Body = "second" }, 0);
 
@@ -116,8 +107,7 @@ public class CooperativeInterceptModeTests
     ]
     public async Task ShouldKeepTheResponseOfALowerPriorityForALaterRespond()
     {
-        using var loggerFactory = new LoggerFactory();
-        var request = CreateRequest(loggerFactory);
+        var request = CreateRequest();
         await request.ContinueAsync(new Payload(), 1);
         await request.RespondAsync(new ResponseData { Body = "low" }, 0);
         Assert.That(request.ResponseForRequest.Body, Is.EqualTo("low"));
@@ -130,48 +120,16 @@ public class CooperativeInterceptModeTests
         Assert.That(request.Resolution.Response.Body, Is.EqualTo("low"));
     }
 
-    private static TestRequest CreateRequest(ILoggerFactory loggerFactory) =>
-        new(
-            Substitute.For<CDPSession>(),
-            Substitute.For<IFrame>(),
-            "interceptionId",
-            true,
-            new RequestWillBeSentResponse
-            {
-                RequestId = "requestId",
-                Request = new Request
-                {
-                    Url = "http://example.com",
-                    Method = HttpMethod.Get,
-                    Headers = new Dictionary<string, string>(),
-                },
-                Initiator = new Initiator { Type = InitiatorType.Other },
-            },
-            [],
-            loggerFactory
-        );
+    private static TestRequest CreateRequest() => new();
 
-    private sealed class TestRequest : CdpHttpRequest
+    private sealed class TestRequest : Request<IResponse>
     {
-        public TestRequest(
-            CDPSession client,
-            IFrame frame,
-            string interceptionId,
-            bool allowInterception,
-            RequestWillBeSentResponse data,
-            List<IRequest> redirectChain,
-            ILoggerFactory loggerFactory
-        )
-            : base(
-                client,
-                frame,
-                null,
-                interceptionId,
-                allowInterception,
-                data,
-                redirectChain,
-                loggerFactory
-            ) { }
+        public override bool IsInterceptResolutionHandled { get; protected set; }
+
+        public override InterceptResolutionState InterceptResolutionState =>
+            IsInterceptResolutionHandled
+                ? new InterceptResolutionState(InterceptResolutionAction.AlreadyHandled)
+                : PendingResolutionState;
 
         public (
             InterceptResolutionAction Action,
@@ -179,6 +137,10 @@ public class CooperativeInterceptModeTests
             ResponseData Response,
             RequestAbortErrorCode ErrorCode
         ) Resolution { get; private set; }
+
+        public override Task<string> FetchPostDataAsync() => Task.FromResult<string>(null);
+
+        public override Task<byte[]> ContentAsync() => Task.FromResult<byte[]>(null);
 
         internal override Task ContinueInternalAsync(Payload overrides = null)
         {
@@ -197,5 +159,9 @@ public class CooperativeInterceptModeTests
             Resolution = (InterceptResolutionAction.Abort, null, null, errorCode);
             return Task.CompletedTask;
         }
+
+        protected override void VerifyInterception() { }
+
+        protected override bool CanBeIntercepted() => true;
     }
 }
