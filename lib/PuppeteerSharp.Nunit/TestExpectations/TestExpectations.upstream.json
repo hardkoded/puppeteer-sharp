@@ -4423,17 +4423,9 @@
   },
   {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ],
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
     "comment": "BiDi does not support getting a Handle for log args"
   },
   {
