@@ -4423,9 +4423,17 @@
   },
   {
     "testIdPattern": "[worker.spec] Workers console should return remote objects",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"],
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
     "comment": "BiDi does not support getting a Handle for log args"
   },
   {
@@ -5202,5 +5210,50 @@
       "SKIP"
     ],
     "comment": "BiDi does not support worker network requests yet"
+  },
+  {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions WebRTC and WebTransport blocklist *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "chrome"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Chrome applies only the global rule (empty urlPattern) of Network.emulateNetworkConditionsByRule to p2p connections. The blocklist has no global rule, so the browser sends WebTransport packets and WebRTC STUN and TURN requests to hosts in the blocklist. WebTransport is already fixed in Chromium. Narrow this expectation to the WebRTC tests once the pinned Chrome version includes the fix."
+  },
+  {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions WebRTC and WebTransport allowlist should not send WebRTC TURN requests over TCP to hosts not in the allowlist",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "chrome"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Chrome does not apply the global offline rule of Network.emulateNetworkConditionsByRule to TURN over TCP, so the browser opens TCP connections to TURN servers that are not in the allowlist."
+  },
+  {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions WebRTC and WebTransport allowlist should not send WebTransport packets to hosts not in the allowlist",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "chrome"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Chrome does not apply the global offline rule of Network.emulateNetworkConditionsByRule to WebTransport, so the browser sends QUIC packets to hosts that are not in the allowlist. WebTransport is already fixed in Chromium. Remove once the pinned Chrome version includes the fix."
   }
 ]

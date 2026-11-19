@@ -147,6 +147,13 @@ namespace PuppeteerSharp
         /// Currently only supported for CDP connections.
         /// </para>
         /// <para>
+        /// The blocklist does not apply to WebTransport and WebRTC at this time.
+        /// The browser opens WebTransport connections to URLs that match a blocked
+        /// pattern. The browser also connects WebRTC peers and sends requests to
+        /// STUN and TURN servers (over UDP and TCP) on blocked hosts. Patterns such
+        /// as <c>stun:*</c> and <c>turn:*</c> do not block these requests.
+        /// </para>
+        /// <para>
         /// Cannot be used along with <see cref="Allowlist"/>.
         /// </para>
         /// </remarks>
@@ -179,6 +186,17 @@ namespace PuppeteerSharp
         /// </para>
         /// <para>
         /// Currently only supported for CDP connections.
+        /// </para>
+        /// <para>
+        /// The allowlist does not apply to WebTransport and to TURN over TCP at
+        /// this time. The browser opens WebTransport connections to URLs that do
+        /// not match a pattern in the allowlist. The browser also opens TCP
+        /// connections to TURN servers that are not in the allowlist.
+        /// </para>
+        /// <para>
+        /// The allowlist blocks all WebRTC traffic over UDP. WebRTC peers do not
+        /// connect and the browser does not send UDP requests to STUN and TURN
+        /// servers. A pattern in the allowlist cannot allow this traffic.
         /// </para>
         /// <para>
         /// Cannot be used along with <see cref="BlockList"/>.

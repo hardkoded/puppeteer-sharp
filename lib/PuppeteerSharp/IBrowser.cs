@@ -435,6 +435,10 @@ namespace PuppeteerSharp
         /// Targets that are already on a blocked URL when this method is called stay attached and stay on
         /// the blocked page. This differs from launching the browser with network restrictions, where such
         /// targets are detached on the initial attach.
+        /// <para>
+        /// The restrictions have the same WebTransport and WebRTC limitations as
+        /// <see cref="ConnectOptions.BlockList"/> and <see cref="ConnectOptions.Allowlist"/>.
+        /// </para>
         /// </remarks>
         Task RestrictNetworkAsync(NetworkRestrictions restrictions = null);
 
