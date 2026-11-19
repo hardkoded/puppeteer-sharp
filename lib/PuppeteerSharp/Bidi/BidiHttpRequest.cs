@@ -40,8 +40,6 @@ namespace PuppeteerSharp.Bidi;
 public class BidiHttpRequest : Request<BidiHttpResponse>
 {
     private readonly Request _request;
-    private readonly BidiRequestInterception _interception = new();
-    private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
     private bool _authenticationHandled;
 
     private BidiHttpRequest(Request request, BidiFrame frame, BidiHttpRequest redirect)
@@ -168,74 +166,22 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal override async Task FinalizeInterceptionsAsync()
     {
-        // First, run any handlers registered via the handler list
-        foreach (var handler in _interception.Handlers)
+        await base.FinalizeInterceptionsAsync().ConfigureAwait(false);
+
+        // Firefox phantom requests never raise the Request event, so no handler will ever
+        // resolve them. Continue them to let the browser proceed. Requests the user has seen
+        // are left to the user, as upstream does.
+        if (
+            InterceptResolutionState.Action == InterceptResolutionAction.None
+            && !RequestEventEmitted
+            && CanBeIntercepted()
+        )
         {
-            await handler().ConfigureAwait(false);
-        }
-
-        _interception.Handlers.Clear();
-
-        // Then run any handlers registered via EnqueueInterceptionAction
-        foreach (var handler in _interceptHandlers)
-        {
-            await handler(this).ConfigureAwait(false);
-        }
-
-        _interceptHandlers.Clear();
-
-        // Finally, handle the intercept resolution state
-        switch (InterceptResolutionState.Action)
-        {
-            case InterceptResolutionAction.Abort:
-                await AbortInternalAsync(AbortErrorReason).ConfigureAwait(false);
-                return;
-            case InterceptResolutionAction.Respond:
-                if (ResponseForRequest is null)
-                {
-                    throw new PuppeteerException("Response is missing for the interception");
-                }
-
-                await RespondInternalAsync(ResponseForRequest).ConfigureAwait(false);
-                return;
-            case InterceptResolutionAction.Continue:
-                await ContinueInternalAsync(ContinueRequestOverrides).ConfigureAwait(false);
-                break;
-            case InterceptResolutionAction.None:
-                // Firefox phantom requests never raise the Request event, so no handler will ever
-                // resolve them. Continue them to let the browser proceed. Requests the user has seen
-                // are left to the user, as upstream does.
-                if (!RequestEventEmitted && CanBeIntercepted())
-                {
-                    await ContinueInternalAsync(null).ConfigureAwait(false);
-                }
-
-                break;
+            await ContinueInternalAsync().ConfigureAwait(false);
         }
     }
 
-    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler) =>
-        _interceptHandlers.Add(pendingHandler);
-
-    /// <inheritdoc/>
-    protected override void VerifyInterception()
-    {
-        if (!PageLevelInterceptionEnabled)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
-
-        if (IsInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
-        }
-    }
-
-    /// <inheritdoc/>
-    protected override bool CanBeIntercepted() => _request.IsBlocked;
-
-    /// <inheritdoc/>
-    protected override async Task ContinueInternalAsync(Payload overrides)
+    internal override async Task ContinueInternalAsync(Payload overrides = null)
     {
         IsInterceptResolutionHandled = true;
 
@@ -273,8 +219,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    /// <inheritdoc/>
-    protected override async Task AbortInternalAsync(RequestAbortErrorCode errorCode)
+    internal override async Task AbortInternalAsync(RequestAbortErrorCode errorCode)
     {
         IsInterceptResolutionHandled = true;
 
@@ -289,14 +234,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    /// <inheritdoc/>
-    protected override async Task RespondInternalAsync(ResponseData response)
+    internal override async Task RespondInternalAsync(ResponseData response)
     {
-        if (response == null)
-        {
-            throw new ArgumentNullException(nameof(response));
-        }
-
         var responseHeaders = new List<Header>();
 
         if (response.Headers != null)
@@ -394,6 +333,23 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             HandleError(ex);
         }
     }
+
+    /// <inheritdoc/>
+    protected override void VerifyInterception()
+    {
+        if (!PageLevelInterceptionEnabled)
+        {
+            throw new PuppeteerException("Request Interception is not enabled!");
+        }
+
+        if (IsInterceptResolutionHandled)
+        {
+            throw new PuppeteerException("Request is already handled!");
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override bool CanBeIntercepted() => _request.IsBlocked;
 
     private static List<Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
     {
@@ -562,6 +518,16 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         _request.Authenticate += HandleAuthentication;
 
+        // Register the internal header handler before any Request event subscriber can enqueue
+        // its own, so it runs first and does not overwrite their priority-0 overrides.
+        if (HasInternalHeaderOverwrite && CanBeIntercepted())
+        {
+            ((IInterceptableRequest)this).EnqueueInterceptionAction(async _ =>
+            {
+                await ContinueAsync(new Payload { Headers = Headers }, 0).ConfigureAwait(false);
+            });
+        }
+
         // Firefox BiDi sends duplicate BeforeRequestSent events with different request IDs for
         // speculative/parallel sub-resource loading during navigation.
         // Deduplicate by URL during navigation. The tracker is cleared after navigation completes
@@ -573,14 +539,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             var requestArgs = new RequestEventArgs(this);
             ((BidiBrowserContext)BidiPage.BrowserContext).OnRequest(requestArgs);
             BidiPage.BidiBrowser.OnRequest(requestArgs);
-        }
-
-        if (HasInternalHeaderOverwrite && CanBeIntercepted())
-        {
-            _interception.Handlers.Add(async () =>
-            {
-                await ContinueAsync(new Payload { Headers = Headers }, 0).ConfigureAwait(false);
-            });
         }
     }
 
