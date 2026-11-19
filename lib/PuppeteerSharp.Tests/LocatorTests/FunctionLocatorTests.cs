@@ -33,5 +33,30 @@ namespace PuppeteerSharp.Tests.LocatorTests
             var clicked = await Page.EvaluateExpressionAsync<bool>("window.clicked");
             Assert.That(clicked, Is.True);
         }
+
+        // Partial port of "should preserve timeout across clone, map, and filter":
+        // the port has no public Clone(), so only map and filter are checked.
+        [Test]
+        public async Task ShouldPreserveTimeoutAcrossMapAndFilter()
+        {
+            var locator = Page.LocatorFunction("() => false").SetTimeout(100);
+
+            Assert.That(locator.Map("(value) => value").Timeout, Is.EqualTo(100));
+            Assert.That(locator.Filter("(value) => Boolean(value)").Timeout, Is.EqualTo(100));
+            await Task.CompletedTask;
+        }
+
+        // Partial port of "should preserve options across chained setters":
+        // the port has no LocatorEvent.Action, so the action event is not asserted.
+        [Test]
+        public async Task ShouldPreserveOptionsAcrossChainedSetters()
+        {
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
+            await Page.SetContentAsync("<button disabled>test</button>");
+            await Page.LocatorFunction("() => document.querySelector('button')")
+                .SetWaitForEnabled(false)
+                .SetTimeout(2000)
+                .ClickAsync();
+        }
     }
 }
