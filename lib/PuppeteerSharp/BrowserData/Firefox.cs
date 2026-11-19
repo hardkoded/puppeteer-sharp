@@ -17,7 +17,7 @@ namespace PuppeteerSharp.BrowserData
         /// <summary>
         /// Default firefox build.
         /// </summary>
-        public const string DefaultBuildId = "stable_160.0";
+        public const string DefaultBuildId = "stable_160.0.1";
 
         private static readonly Dictionary<string, string> _cachedBuildIds = [];
 
