@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Locators;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.LocatorTests
@@ -32,6 +33,27 @@ namespace PuppeteerSharp.Tests.LocatorTests
 
             var clicked = await Page.EvaluateExpressionAsync<bool>("window.clicked");
             Assert.That(clicked, Is.True);
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator FunctionLocator",
+                "should preserve options across chained setters"
+            )
+        ]
+        public async Task ShouldPreserveOptionsAcrossChainedSetters()
+        {
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
+            await Page.SetContentAsync("<button disabled>test</button>");
+            var willClick = false;
+            await Page.LocatorFunction("() => document.querySelector('button')")
+                .SetWaitForEnabled(false)
+                .SetTimeout(2000)
+                .On(LocatorEvent.Action, (_, _) => willClick = true)
+                .ClickAsync();
+            Assert.That(willClick, Is.True);
         }
     }
 }

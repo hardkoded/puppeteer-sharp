@@ -25,6 +25,7 @@ namespace PuppeteerSharp.Locators
 
         private const int TypingThreshold = 100;
 
+        private EventHandler _action;
         private bool _ensureElementIsInTheViewport = true;
         private bool _waitForEnabled = true;
         private bool _waitForStableBoundingBox = true;
@@ -74,6 +75,38 @@ namespace PuppeteerSharp.Locators
         public static Locator Race(params Locator[] locators)
         {
             return new RaceLocator(locators);
+        }
+
+        /// <summary>
+        /// Subscribes a handler to a locator event.
+        /// </summary>
+        /// <param name="locatorEvent">The event to subscribe to.</param>
+        /// <param name="handler">The handler to invoke when the event is emitted.</param>
+        /// <returns>The locator instance for chaining.</returns>
+        public Locator On(LocatorEvent locatorEvent, EventHandler handler)
+        {
+            if (locatorEvent == LocatorEvent.Action)
+            {
+                _action += handler;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Unsubscribes a handler from a locator event.
+        /// </summary>
+        /// <param name="locatorEvent">The event to unsubscribe from.</param>
+        /// <param name="handler">The handler to remove.</param>
+        /// <returns>The locator instance for chaining.</returns>
+        public Locator Off(LocatorEvent locatorEvent, EventHandler handler)
+        {
+            if (locatorEvent == LocatorEvent.Action)
+            {
+                _action -= handler;
+            }
+
+            return this;
         }
 
         /// <summary>
@@ -513,6 +546,7 @@ namespace PuppeteerSharp.Locators
                                 await WaitForEnabledAsync(elementHandle).ConfigureAwait(false);
                             }
 
+                            _action?.Invoke(this, EventArgs.Empty);
                             await action(elementHandle, ct).ConfigureAwait(false);
                             return handle;
                         }
