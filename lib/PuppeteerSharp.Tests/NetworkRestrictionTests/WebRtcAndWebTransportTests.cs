@@ -198,6 +198,7 @@ public class WebRtcAndWebTransportTests : PuppeteerBaseTest
         Assert.That(await ConnectWebRtcPeersAsync(page, 30_000), Is.True);
     }
 
+#pragma warning disable CA2000 // The listener is stopped in the finally block.
     private static async Task<bool> SendsTrafficAsync(
         IPage page,
         Traffic traffic,
@@ -228,6 +229,8 @@ public class WebRtcAndWebTransportTests : PuppeteerBaseTest
             tcpListener?.Stop();
         }
     }
+
+#pragma warning restore CA2000
 
     private static async Task<bool> WaitForTcpAsync(TcpListener listener)
     {
