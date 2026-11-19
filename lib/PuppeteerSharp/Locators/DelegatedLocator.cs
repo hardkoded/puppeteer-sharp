@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Locators
     /// </summary>
     internal abstract class DelegatedLocator : Locator
     {
-        private readonly Locator _delegate;
+        private Locator _delegate;
 
         protected DelegatedLocator(Locator @delegate)
         {
@@ -20,5 +20,45 @@ namespace PuppeteerSharp.Locators
         /// Gets the delegate locator.
         /// </summary>
         protected Locator Delegate => _delegate;
+
+        /// <inheritdoc />
+        public override Locator SetTimeout(int timeout)
+        {
+            var locator = (DelegatedLocator)base.SetTimeout(timeout);
+            locator._delegate = _delegate.SetTimeout(timeout);
+            return locator;
+        }
+
+        /// <inheritdoc />
+        public override Locator SetVisibility(VisibilityOption? visibility)
+        {
+            var locator = (DelegatedLocator)base.SetVisibility(visibility);
+            locator._delegate = locator._delegate.SetVisibility(visibility);
+            return locator;
+        }
+
+        /// <inheritdoc />
+        public override Locator SetWaitForEnabled(bool value)
+        {
+            var locator = (DelegatedLocator)base.SetWaitForEnabled(value);
+            locator._delegate = _delegate.SetWaitForEnabled(value);
+            return locator;
+        }
+
+        /// <inheritdoc />
+        public override Locator SetEnsureElementIsInTheViewport(bool value)
+        {
+            var locator = (DelegatedLocator)base.SetEnsureElementIsInTheViewport(value);
+            locator._delegate = _delegate.SetEnsureElementIsInTheViewport(value);
+            return locator;
+        }
+
+        /// <inheritdoc />
+        public override Locator SetWaitForStableBoundingBox(bool value)
+        {
+            var locator = (DelegatedLocator)base.SetWaitForStableBoundingBox(value);
+            locator._delegate = _delegate.SetWaitForStableBoundingBox(value);
+            return locator;
+        }
     }
 }

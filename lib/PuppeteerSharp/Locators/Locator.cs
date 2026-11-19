@@ -35,14 +35,14 @@ namespace PuppeteerSharp.Locators
         public event EventHandler Action;
 
         /// <summary>
+        /// Gets the timeout in milliseconds that determines when the locator times out for actions.
+        /// </summary>
+        public int Timeout { get; protected internal set; } = 30_000;
+
+        /// <summary>
         /// Gets or sets the visibility option.
         /// </summary>
         protected internal VisibilityOption? Visibility { get; set; }
-
-        /// <summary>
-        /// Gets or sets the timeout in milliseconds.
-        /// </summary>
-        protected internal int Timeout { get; set; } = 30_000;
 
         /// <summary>
         /// Gets or sets a value indicating whether to ensure the element is in the viewport.
@@ -85,55 +85,69 @@ namespace PuppeteerSharp.Locators
         /// Sets the timeout for the locator.
         /// </summary>
         /// <param name="timeout">Timeout in milliseconds.</param>
-        /// <returns>The locator instance for chaining.</returns>
-        public Locator SetTimeout(int timeout)
+        /// <returns>A new locator instance with the timeout changed.</returns>
+        public virtual Locator SetTimeout(int timeout)
         {
-            Timeout = timeout;
-            return this;
+            var locator = CloneCore();
+            locator.Timeout = timeout;
+            return locator;
         }
 
         /// <summary>
         /// Sets the visibility option for the locator.
         /// </summary>
         /// <param name="visibility">The visibility option.</param>
-        /// <returns>The locator instance for chaining.</returns>
-        public Locator SetVisibility(VisibilityOption? visibility)
+        /// <returns>A new locator instance with the visibility changed.</returns>
+        public virtual Locator SetVisibility(VisibilityOption? visibility)
         {
-            Visibility = visibility;
-            return this;
+            var locator = CloneCore();
+            locator.Visibility = visibility;
+            return locator;
         }
 
         /// <summary>
         /// Sets whether to wait for the element to be enabled before acting.
         /// </summary>
         /// <param name="value">Whether to wait for enabled.</param>
-        /// <returns>The locator instance for chaining.</returns>
-        public Locator SetWaitForEnabled(bool value)
+        /// <returns>A new locator instance with the setting changed.</returns>
+        public virtual Locator SetWaitForEnabled(bool value)
         {
-            _waitForEnabled = value;
-            return this;
+            var locator = CloneCore();
+            locator._waitForEnabled = value;
+            return locator;
         }
 
         /// <summary>
         /// Sets whether to ensure the element is scrolled into the viewport.
         /// </summary>
         /// <param name="value">Whether to ensure the element is in the viewport.</param>
-        /// <returns>The locator instance for chaining.</returns>
-        public Locator SetEnsureElementIsInTheViewport(bool value)
+        /// <returns>A new locator instance with the setting changed.</returns>
+        public virtual Locator SetEnsureElementIsInTheViewport(bool value)
         {
-            _ensureElementIsInTheViewport = value;
-            return this;
+            var locator = CloneCore();
+            locator._ensureElementIsInTheViewport = value;
+            return locator;
         }
 
         /// <summary>
         /// Sets whether to wait for a stable bounding box before acting.
         /// </summary>
         /// <param name="value">Whether to wait for a stable bounding box.</param>
-        /// <returns>The locator instance for chaining.</returns>
-        public Locator SetWaitForStableBoundingBox(bool value)
+        /// <returns>A new locator instance with the setting changed.</returns>
+        public virtual Locator SetWaitForStableBoundingBox(bool value)
         {
-            _waitForStableBoundingBox = value;
-            return this;
+            var locator = CloneCore();
+            locator._waitForStableBoundingBox = value;
+            return locator;
+        }
+
+        /// <summary>
+        /// Clones the locator.
+        /// </summary>
+        /// <returns>A new locator with the same options.</returns>
+        public Locator Clone()
+        {
+            return CloneCore();
         }
 
         /// <summary>
@@ -399,14 +413,21 @@ namespace PuppeteerSharp.Locators
         /// Copies options from another locator.
         /// </summary>
         /// <param name="other">The locator to copy options from.</param>
-        internal void CopyOptions(Locator other)
+        internal Locator CopyOptions(Locator other)
         {
             Timeout = other.Timeout;
             Visibility = other.Visibility;
             _waitForEnabled = other._waitForEnabled;
             _ensureElementIsInTheViewport = other._ensureElementIsInTheViewport;
             _waitForStableBoundingBox = other._waitForStableBoundingBox;
+            return this;
         }
+
+        /// <summary>
+        /// Creates a copy of this locator (upstream <c>_clone</c>).
+        /// </summary>
+        /// <returns>A new locator with the same options.</returns>
+        internal abstract Locator CloneCore();
 
         /// <summary>
         /// Waits for the element and returns a handle.
