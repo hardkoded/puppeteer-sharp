@@ -33,5 +33,19 @@ namespace PuppeteerSharp.Tests.LocatorTests
             var clicked = await Page.EvaluateExpressionAsync<bool>("window.clicked");
             Assert.That(clicked, Is.True);
         }
+
+        [Test, PuppeteerTest("locator.spec", "Locator FunctionLocator", "should preserve options across chained setters")]
+        public async Task ShouldPreserveOptionsAcrossChainedSetters()
+        {
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
+            await Page.SetContentAsync("<button disabled>test</button>");
+            var willClick = false;
+            var locator = Page.LocatorFunction("() => document.querySelector('button')")
+                .SetWaitForEnabled(false)
+                .SetTimeout(2000);
+            locator.Action += (_, _) => willClick = true;
+            await locator.ClickAsync();
+            Assert.That(willClick, Is.True);
+        }
     }
 }

@@ -30,6 +30,11 @@ namespace PuppeteerSharp.Locators
         private bool _waitForStableBoundingBox = true;
 
         /// <summary>
+        /// Emitted every time before the locator performs an action on the located element(s).
+        /// </summary>
+        public event EventHandler Action;
+
+        /// <summary>
         /// Gets or sets the visibility option.
         /// </summary>
         protected internal VisibilityOption? Visibility { get; set; }
@@ -512,6 +517,8 @@ namespace PuppeteerSharp.Locators
                             {
                                 await WaitForEnabledAsync(elementHandle).ConfigureAwait(false);
                             }
+
+                            Action?.Invoke(this, EventArgs.Empty);
 
                             await action(elementHandle, ct).ConfigureAwait(false);
                             return handle;
