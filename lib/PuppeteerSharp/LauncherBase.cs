@@ -33,7 +33,9 @@ namespace PuppeteerSharp
 
             Process = new Process { EnableRaisingEvents = true };
             Process.StartInfo.UseShellExecute = false;
-            Process.StartInfo.CreateNoWindow = true;
+            // Upstream passes windowsHide: headless !== false. Hiding the window also hides the
+            // first window of a headful browser on Windows.
+            Process.StartInfo.CreateNoWindow = options.HeadlessMode != HeadlessMode.False;
             Process.StartInfo.FileName = executable;
             Process.StartInfo.RedirectStandardError = true;
             ExecutablePath = executable;
