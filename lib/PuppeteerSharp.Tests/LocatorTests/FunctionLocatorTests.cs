@@ -34,7 +34,14 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(clicked, Is.True);
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator FunctionLocator", "should preserve timeout across clone, map, and filter")]
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator FunctionLocator",
+                "should preserve timeout across clone, map, and filter"
+            )
+        ]
         public void ShouldPreserveTimeoutAcrossCloneMapAndFilter()
         {
             var locator = Page.LocatorFunction("() => false").SetTimeout(100);

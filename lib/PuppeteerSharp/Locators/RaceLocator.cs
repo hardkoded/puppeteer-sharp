@@ -17,7 +17,9 @@ namespace PuppeteerSharp.Locators
 
         internal override Locator CloneCore()
         {
-            return new RaceLocator(_locators.Select(locator => locator.Clone()).ToArray()).CopyOptions(this);
+            return new RaceLocator(
+                _locators.Select(locator => locator.Clone()).ToArray()
+            ).CopyOptions(this);
         }
 
         internal override async Task<IJSHandle> WaitHandleCoreAsync(

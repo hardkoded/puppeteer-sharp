@@ -37,7 +37,11 @@ namespace PuppeteerSharp.Locators
 
         internal override Locator CloneCore()
         {
-            return (_page != null ? new FunctionLocator(_page, _func) : new FunctionLocator(_frame, _func)).CopyOptions(this);
+            return (
+                _page != null
+                    ? new FunctionLocator(_page, _func)
+                    : new FunctionLocator(_frame, _func)
+            ).CopyOptions(this);
         }
 
         internal override async Task<IJSHandle> WaitHandleCoreAsync(
