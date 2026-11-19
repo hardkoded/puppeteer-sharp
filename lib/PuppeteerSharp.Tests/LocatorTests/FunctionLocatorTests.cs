@@ -34,7 +34,14 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(clicked, Is.True);
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator FunctionLocator", "should preserve options across chained setters")]
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator FunctionLocator",
+                "should preserve options across chained setters"
+            )
+        ]
         public async Task ShouldPreserveOptionsAcrossChainedSetters()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
