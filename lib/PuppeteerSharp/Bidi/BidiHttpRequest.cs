@@ -42,12 +42,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     private readonly Request _request;
     private readonly BidiRequestInterception _interception = new();
     private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
-    private Payload _continueRequestOverrides = new();
-    private ResponseData _responseForRequest;
-    private RequestAbortErrorCode _abortErrorReason;
-    private InterceptResolutionState _interceptResolutionState = new(
-        InterceptResolutionAction.None
-    );
     private bool _authenticationHandled;
 
     private BidiHttpRequest(Request request, BidiFrame frame, BidiHttpRequest redirect)
@@ -93,7 +87,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
             return IsInterceptResolutionHandled
                 ? new InterceptResolutionState(InterceptResolutionAction.AlreadyHandled)
-                : _interceptResolutionState;
+                : PendingResolutionState;
         }
     }
 
@@ -109,12 +103,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     // We need to move this to a place where we can control its lifecycle.
     internal static AsyncDictionaryHelper<Request, BidiHttpRequest> Requests { get; } =
         new("Request {0} not found");
-
-    internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
-
-    internal override ResponseData ResponseForRequest => _responseForRequest;
-
-    internal override RequestAbortErrorCode AbortErrorReason => _abortErrorReason;
 
     internal BidiPage BidiPage => (BidiPage)Frame.Page;
 
@@ -134,140 +122,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// This is used to verify that the user has called SetRequestInterceptionAsync(true).
     /// </summary>
     private bool PageLevelInterceptionEnabled => BidiPage.IsNetworkInterceptionEnabled;
-
-    /// <inheritdoc />
-    public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
-    {
-        VerifyInterception();
-
-        if (!CanBeIntercepted())
-        {
-            return;
-        }
-
-        HttpUtils.ValidateHeaders(payloadOverrides?.Headers);
-
-        if (priority is null)
-        {
-            await ContinueInternalAsync(payloadOverrides).ConfigureAwait(false);
-            return;
-        }
-
-        if (ClaimInterceptionPayload(InterceptResolutionAction.Continue, priority.Value))
-        {
-            _continueRequestOverrides = payloadOverrides;
-        }
-
-        if (
-            _interceptResolutionState.Priority is null
-            || priority > _interceptResolutionState.Priority
-        )
-        {
-            _interceptResolutionState = new InterceptResolutionState(
-                InterceptResolutionAction.Continue,
-                priority
-            );
-            return;
-        }
-
-        if (priority == _interceptResolutionState.Priority)
-        {
-            if (
-                _interceptResolutionState.Action == InterceptResolutionAction.Abort
-                || _interceptResolutionState.Action == InterceptResolutionAction.Respond
-            )
-            {
-                return;
-            }
-
-            _interceptResolutionState.Action = InterceptResolutionAction.Continue;
-        }
-    }
-
-    /// <inheritdoc />
-    public override async Task RespondAsync(ResponseData response, int? priority = null)
-    {
-        if (response == null)
-        {
-            throw new ArgumentNullException(nameof(response));
-        }
-
-        VerifyInterception();
-
-        if (!CanBeIntercepted())
-        {
-            return;
-        }
-
-        if (priority is null)
-        {
-            await RespondInternalAsync(response).ConfigureAwait(false);
-            return;
-        }
-
-        if (ClaimInterceptionPayload(InterceptResolutionAction.Respond, priority.Value))
-        {
-            _responseForRequest = response;
-        }
-
-        if (
-            _interceptResolutionState.Priority is null
-            || priority > _interceptResolutionState.Priority
-        )
-        {
-            _interceptResolutionState = new InterceptResolutionState(
-                InterceptResolutionAction.Respond,
-                priority
-            );
-            return;
-        }
-
-        if (priority == _interceptResolutionState.Priority)
-        {
-            if (_interceptResolutionState.Action == InterceptResolutionAction.Abort)
-            {
-                return;
-            }
-
-            _interceptResolutionState.Action = InterceptResolutionAction.Respond;
-        }
-    }
-
-    /// <inheritdoc />
-    public override async Task AbortAsync(
-        RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed,
-        int? priority = null
-    )
-    {
-        VerifyInterception();
-
-        if (!CanBeIntercepted())
-        {
-            return;
-        }
-
-        if (priority is null)
-        {
-            await AbortInternalAsync().ConfigureAwait(false);
-            return;
-        }
-
-        if (ClaimInterceptionPayload(InterceptResolutionAction.Abort, priority.Value))
-        {
-            _abortErrorReason = errorCode;
-        }
-
-        if (
-            _interceptResolutionState.Priority is null
-            || priority >= _interceptResolutionState.Priority
-        )
-        {
-            _interceptResolutionState = new InterceptResolutionState(
-                InterceptResolutionAction.Abort,
-                priority
-            );
-        }
-    }
 
     /// <inheritdoc />
     public override Task<string> FetchPostDataAsync() => _request.FetchPostDataAsync();
@@ -334,18 +188,18 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         switch (InterceptResolutionState.Action)
         {
             case InterceptResolutionAction.Abort:
-                await AbortInternalAsync().ConfigureAwait(false);
+                await AbortInternalAsync(AbortErrorReason).ConfigureAwait(false);
                 return;
             case InterceptResolutionAction.Respond:
-                if (_responseForRequest is null)
+                if (ResponseForRequest is null)
                 {
                     throw new PuppeteerException("Response is missing for the interception");
                 }
 
-                await RespondInternalAsync(_responseForRequest).ConfigureAwait(false);
+                await RespondInternalAsync(ResponseForRequest).ConfigureAwait(false);
                 return;
             case InterceptResolutionAction.Continue:
-                await ContinueInternalAsync(_continueRequestOverrides).ConfigureAwait(false);
+                await ContinueInternalAsync(ContinueRequestOverrides).ConfigureAwait(false);
                 break;
             case InterceptResolutionAction.None:
                 // Firefox phantom requests never raise the Request event, so no handler will ever
@@ -353,7 +207,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 // are left to the user, as upstream does.
                 if (!RequestEventEmitted && CanBeIntercepted())
                 {
-                    await ContinueInternalAsync().ConfigureAwait(false);
+                    await ContinueInternalAsync(null).ConfigureAwait(false);
                 }
 
                 break;
@@ -380,99 +234,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc/>
     protected override bool CanBeIntercepted() => _request.IsBlocked;
 
-    private static List<Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
-    {
-        if (headers == null || headers.Count == 0)
-        {
-            return null;
-        }
-
-        var bidiHeaders = new List<Header>();
-        foreach (var kvp in headers)
-        {
-            bidiHeaders.Add(new Header(kvp.Key.ToLowerInvariant(), kvp.Value));
-        }
-
-        return bidiHeaders;
-    }
-
-    private static string GetReasonPhrase(int statusCode) =>
-        HttpStatusTextHelper.GetStatusText(statusCode);
-
-    private static ResourceType MapDestinationToResourceType(
-        string destination,
-        bool isNavigationRequest
-    )
-    {
-        // Navigation requests are always Document type
-        if (isNavigationRequest)
-        {
-            return ResourceType.Document;
-        }
-
-        // Map BiDi destination to ResourceType based on the Fetch spec
-        // https://fetch.spec.whatwg.org/#concept-request-destination
-        return destination switch
-        {
-            "document" or "frame" or "iframe" => ResourceType.Document,
-            "style" => ResourceType.StyleSheet,
-            "script" => ResourceType.Script,
-            "image" => ResourceType.Image,
-            "font" => ResourceType.Font,
-            "audio" or "video" => ResourceType.Media,
-            "track" => ResourceType.TextTrack,
-            "manifest" => ResourceType.Manifest,
-            "worker" or "sharedworker" or "serviceworker" => ResourceType.Other,
-            "xslt" => ResourceType.Other,
-            "json" => ResourceType.Fetch,
-            "report" => ResourceType.Ping,
-            "" => ResourceType.Other, // Empty string is for generic requests
-            _ => ResourceType.Other,
-        };
-    }
-
-    private static void HandleError(Exception ex)
-    {
-        // Match upstream's handleError: only header validation errors are surfaced.
-        // In certain cases, the protocol returns an error if the request was already
-        // canceled or the page was closed. We should tolerate these errors.
-        if (
-            ex.Message.Contains("Invalid header")
-            || ex.Message.Contains("Unsafe header")
-            || ex.Message.Contains("Expected \"header\"")
-            || ex.Message.Contains("invalid argument")
-        )
-        {
-            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
-        }
-    }
-
-    private Dictionary<string, string> GetMergedHeaders(Dictionary<string, string> overrideHeaders)
-    {
-        // Start with the merged headers (original + extra + user agent)
-        var headers = new Dictionary<string, string>(Headers, StringComparer.OrdinalIgnoreCase);
-
-        // Apply any override headers from the payload
-        if (overrideHeaders != null)
-        {
-            foreach (var kvp in overrideHeaders)
-            {
-                // Handle null values by removing the header
-                if (kvp.Value == null)
-                {
-                    headers.Remove(kvp.Key.ToLowerInvariant());
-                }
-                else
-                {
-                    headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
-                }
-            }
-        }
-
-        return headers;
-    }
-
-    private async Task ContinueInternalAsync(Payload overrides = null)
+    /// <inheritdoc/>
+    protected override async Task ContinueInternalAsync(Payload overrides)
     {
         IsInterceptResolutionHandled = true;
 
@@ -510,7 +273,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    private async Task AbortInternalAsync()
+    /// <inheritdoc/>
+    protected override async Task AbortInternalAsync(RequestAbortErrorCode errorCode)
     {
         IsInterceptResolutionHandled = true;
 
@@ -525,8 +289,14 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    private async Task RespondInternalAsync(ResponseData response)
+    /// <inheritdoc/>
+    protected override async Task RespondInternalAsync(ResponseData response)
     {
+        if (response == null)
+        {
+            throw new ArgumentNullException(nameof(response));
+        }
+
         var responseHeaders = new List<Header>();
 
         if (response.Headers != null)
@@ -623,6 +393,98 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             IsInterceptResolutionHandled = false;
             HandleError(ex);
         }
+    }
+
+    private static List<Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
+    {
+        if (headers == null || headers.Count == 0)
+        {
+            return null;
+        }
+
+        var bidiHeaders = new List<Header>();
+        foreach (var kvp in headers)
+        {
+            bidiHeaders.Add(new Header(kvp.Key.ToLowerInvariant(), kvp.Value));
+        }
+
+        return bidiHeaders;
+    }
+
+    private static string GetReasonPhrase(int statusCode) =>
+        HttpStatusTextHelper.GetStatusText(statusCode);
+
+    private static ResourceType MapDestinationToResourceType(
+        string destination,
+        bool isNavigationRequest
+    )
+    {
+        // Navigation requests are always Document type
+        if (isNavigationRequest)
+        {
+            return ResourceType.Document;
+        }
+
+        // Map BiDi destination to ResourceType based on the Fetch spec
+        // https://fetch.spec.whatwg.org/#concept-request-destination
+        return destination switch
+        {
+            "document" or "frame" or "iframe" => ResourceType.Document,
+            "style" => ResourceType.StyleSheet,
+            "script" => ResourceType.Script,
+            "image" => ResourceType.Image,
+            "font" => ResourceType.Font,
+            "audio" or "video" => ResourceType.Media,
+            "track" => ResourceType.TextTrack,
+            "manifest" => ResourceType.Manifest,
+            "worker" or "sharedworker" or "serviceworker" => ResourceType.Other,
+            "xslt" => ResourceType.Other,
+            "json" => ResourceType.Fetch,
+            "report" => ResourceType.Ping,
+            "" => ResourceType.Other, // Empty string is for generic requests
+            _ => ResourceType.Other,
+        };
+    }
+
+    private static void HandleError(Exception ex)
+    {
+        // Match upstream's handleError: only header validation errors are surfaced.
+        // In certain cases, the protocol returns an error if the request was already
+        // canceled or the page was closed. We should tolerate these errors.
+        if (
+            ex.Message.Contains("Invalid header")
+            || ex.Message.Contains("Unsafe header")
+            || ex.Message.Contains("Expected \"header\"")
+            || ex.Message.Contains("invalid argument")
+        )
+        {
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
+        }
+    }
+
+    private Dictionary<string, string> GetMergedHeaders(Dictionary<string, string> overrideHeaders)
+    {
+        // Start with the merged headers (original + extra + user agent)
+        var headers = new Dictionary<string, string>(Headers, StringComparer.OrdinalIgnoreCase);
+
+        // Apply any override headers from the payload
+        if (overrideHeaders != null)
+        {
+            foreach (var kvp in overrideHeaders)
+            {
+                // Handle null values by removing the header
+                if (kvp.Value == null)
+                {
+                    headers.Remove(kvp.Key.ToLowerInvariant());
+                }
+                else
+                {
+                    headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+                }
+            }
+        }
+
+        return headers;
     }
 
     private void Initialize()

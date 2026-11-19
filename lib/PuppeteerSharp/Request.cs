@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -10,6 +11,9 @@ namespace PuppeteerSharp
         where TResponse : IResponse
     {
         private readonly Dictionary<InterceptResolutionAction, int> _payloadPriorities = [];
+        private Payload _continueRequestOverrides = new();
+        private ResponseData _responseForRequest;
+        private RequestAbortErrorCode _abortErrorReason;
 
         /// <inheritdoc/>
         public string Id { get; internal init; }
@@ -70,25 +74,153 @@ namespace PuppeteerSharp
 
         internal List<IRequest> RedirectChainList { get; init; }
 
-        internal abstract Payload ContinueRequestOverrides { get; }
+        internal Payload ContinueRequestOverrides => _continueRequestOverrides;
 
-        internal abstract ResponseData ResponseForRequest { get; }
+        internal ResponseData ResponseForRequest => _responseForRequest;
 
-        internal abstract RequestAbortErrorCode AbortErrorReason { get; }
+        internal RequestAbortErrorCode AbortErrorReason => _abortErrorReason;
 
         internal bool FromMemoryCache { get; set; }
 
-        /// <inheritdoc/>
-        public abstract Task ContinueAsync(Payload payloadOverrides = null, int? priority = null);
+        /// <summary>
+        /// Gets the resolution state built from the calls made with a priority.
+        /// </summary>
+        protected InterceptResolutionState PendingResolutionState { get; private set; } =
+            new(InterceptResolutionAction.None);
 
         /// <inheritdoc/>
-        public abstract Task RespondAsync(ResponseData response, int? priority = null);
+        public async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
+        {
+            VerifyInterception();
+
+            if (!CanBeIntercepted())
+            {
+                return;
+            }
+
+            HttpUtils.ValidateHeaders(payloadOverrides?.Headers);
+
+            if (priority is null)
+            {
+                await ContinueInternalAsync(payloadOverrides).ConfigureAwait(false);
+                return;
+            }
+
+            if (ClaimInterceptionPayload(InterceptResolutionAction.Continue, priority.Value))
+            {
+                _continueRequestOverrides = payloadOverrides;
+            }
+
+            if (
+                PendingResolutionState.Priority is null
+                || priority > PendingResolutionState.Priority
+            )
+            {
+                PendingResolutionState = new InterceptResolutionState(
+                    InterceptResolutionAction.Continue,
+                    priority
+                );
+                return;
+            }
+
+            if (priority == PendingResolutionState.Priority)
+            {
+                if (
+                    PendingResolutionState.Action == InterceptResolutionAction.Abort
+                    || PendingResolutionState.Action == InterceptResolutionAction.Respond
+                )
+                {
+                    return;
+                }
+
+                PendingResolutionState.Action = InterceptResolutionAction.Continue;
+            }
+        }
 
         /// <inheritdoc/>
-        public abstract Task AbortAsync(
+        public async Task RespondAsync(ResponseData response, int? priority = null)
+        {
+            if (response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            VerifyInterception();
+
+            if (!CanBeIntercepted())
+            {
+                return;
+            }
+
+            if (priority is null)
+            {
+                await RespondInternalAsync(response).ConfigureAwait(false);
+                return;
+            }
+
+            if (ClaimInterceptionPayload(InterceptResolutionAction.Respond, priority.Value))
+            {
+                _responseForRequest = response;
+            }
+
+            if (
+                PendingResolutionState.Priority is null
+                || priority > PendingResolutionState.Priority
+            )
+            {
+                PendingResolutionState = new InterceptResolutionState(
+                    InterceptResolutionAction.Respond,
+                    priority
+                );
+                return;
+            }
+
+            if (priority == PendingResolutionState.Priority)
+            {
+                if (PendingResolutionState.Action == InterceptResolutionAction.Abort)
+                {
+                    return;
+                }
+
+                PendingResolutionState.Action = InterceptResolutionAction.Respond;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task AbortAsync(
             RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed,
             int? priority = null
-        );
+        )
+        {
+            VerifyInterception();
+
+            if (!CanBeIntercepted())
+            {
+                return;
+            }
+
+            if (priority is null)
+            {
+                await AbortInternalAsync(errorCode).ConfigureAwait(false);
+                return;
+            }
+
+            if (ClaimInterceptionPayload(InterceptResolutionAction.Abort, priority.Value))
+            {
+                _abortErrorReason = errorCode;
+            }
+
+            if (
+                PendingResolutionState.Priority is null
+                || priority >= PendingResolutionState.Priority
+            )
+            {
+                PendingResolutionState = new InterceptResolutionState(
+                    InterceptResolutionAction.Abort,
+                    priority
+                );
+            }
+        }
 
         /// <inheritdoc />
         public abstract Task<string> FetchPostDataAsync();
@@ -119,6 +251,27 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns><c>true</c> if the request can be intercepted; otherwise, <c>false</c>.</returns>
         protected abstract bool CanBeIntercepted();
+
+        /// <summary>
+        /// Continues the request immediately (upstream <c>_continue</c>).
+        /// </summary>
+        /// <param name="overrides">The overrides to apply to the request.</param>
+        /// <returns>A task that completes when the request is continued.</returns>
+        protected abstract Task ContinueInternalAsync(Payload overrides);
+
+        /// <summary>
+        /// Responds to the request immediately (upstream <c>_respond</c>).
+        /// </summary>
+        /// <param name="response">The response to fulfill the request with.</param>
+        /// <returns>A task that completes when the request is fulfilled.</returns>
+        protected abstract Task RespondInternalAsync(ResponseData response);
+
+        /// <summary>
+        /// Aborts the request immediately (upstream <c>_abort</c>).
+        /// </summary>
+        /// <param name="errorCode">The error code to abort the request with.</param>
+        /// <returns>A task that completes when the request is aborted.</returns>
+        protected abstract Task AbortInternalAsync(RequestAbortErrorCode errorCode);
 
         /// <summary>
         /// In Cooperative Intercept Mode, an action takes its payload (the overrides of Continue,

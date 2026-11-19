@@ -26,12 +26,6 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
     private CDPSession _client;
     private CDPSession _fetchClient;
-    private Payload _continueRequestOverrides = new();
-    private ResponseData _responseForRequest;
-    private RequestAbortErrorCode _abortErrorReason;
-    private InterceptResolutionState _interceptResolutionState = new(
-        InterceptResolutionAction.None
-    );
     private Func<Task> _replayResolution;
     private Payload _resolvedContinueOverrides;
 
@@ -94,7 +88,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
             return IsInterceptResolutionHandled
                 ? new InterceptResolutionState(InterceptResolutionAction.AlreadyHandled)
-                : _interceptResolutionState;
+                : PendingResolutionState;
         }
     }
 
@@ -114,147 +108,6 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     }
 
     internal Payload ResolvedContinueOverrides => _resolvedContinueOverrides ?? new Payload();
-
-    internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
-
-    internal override ResponseData ResponseForRequest => _responseForRequest;
-
-    internal override RequestAbortErrorCode AbortErrorReason => _abortErrorReason;
-
-    /// <inheritdoc/>
-    public override async Task ContinueAsync(Payload overrides = null, int? priority = null)
-    {
-        VerifyInterception();
-
-        if (!CanBeIntercepted())
-        {
-            return;
-        }
-
-        HttpUtils.ValidateHeaders(overrides?.Headers);
-
-        if (priority is null)
-        {
-            await ContinueInternalAsync(overrides).ConfigureAwait(false);
-            return;
-        }
-
-        if (ClaimInterceptionPayload(InterceptResolutionAction.Continue, priority.Value))
-        {
-            _continueRequestOverrides = overrides;
-        }
-
-        if (
-            _interceptResolutionState.Priority is null
-            || priority > _interceptResolutionState.Priority
-        )
-        {
-            _interceptResolutionState = new InterceptResolutionState(
-                InterceptResolutionAction.Continue,
-                priority
-            );
-            return;
-        }
-
-        if (priority == _interceptResolutionState.Priority)
-        {
-            if (
-                _interceptResolutionState.Action == InterceptResolutionAction.Abort
-                || _interceptResolutionState.Action == InterceptResolutionAction.Respond
-            )
-            {
-                return;
-            }
-
-            _interceptResolutionState.Action = InterceptResolutionAction.Continue;
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task RespondAsync(ResponseData response, int? priority = null)
-    {
-        if (response == null)
-        {
-            throw new ArgumentNullException(nameof(response));
-        }
-
-        VerifyInterception();
-
-        if (!CanBeIntercepted())
-        {
-            return;
-        }
-
-        if (priority is null)
-        {
-            Debug.Assert(response != null, nameof(response) + " != null");
-            await RespondInternalAsync(response).ConfigureAwait(false);
-            return;
-        }
-
-        if (ClaimInterceptionPayload(InterceptResolutionAction.Respond, priority.Value))
-        {
-            _responseForRequest = response;
-        }
-
-        if (
-            _interceptResolutionState.Priority is null
-            || priority > _interceptResolutionState.Priority
-        )
-        {
-            _interceptResolutionState = new InterceptResolutionState(
-                InterceptResolutionAction.Respond,
-                priority
-            );
-            return;
-        }
-
-        if (priority == _interceptResolutionState.Priority)
-        {
-            if (_interceptResolutionState.Action == InterceptResolutionAction.Abort)
-            {
-                return;
-            }
-
-            _interceptResolutionState.Action = InterceptResolutionAction.Respond;
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task AbortAsync(
-        RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed,
-        int? priority = null
-    )
-    {
-        VerifyInterception();
-
-        if (!CanBeIntercepted())
-        {
-            return;
-        }
-
-        if (priority is null)
-        {
-            await AbortInternalAsync(errorCode).ConfigureAwait(false);
-            return;
-        }
-
-        if (ClaimInterceptionPayload(InterceptResolutionAction.Abort, priority.Value))
-        {
-            _abortErrorReason = errorCode;
-        }
-
-        if (
-            _interceptResolutionState.Priority is null
-            || priority >= _interceptResolutionState.Priority
-        )
-        {
-            _interceptResolutionState = new InterceptResolutionState(
-                InterceptResolutionAction.Abort,
-                priority
-            );
-        }
-    }
 
     /// <inheritdoc />
     public override async Task<string> FetchPostDataAsync()
@@ -306,18 +159,18 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         switch (InterceptResolutionState.Action)
         {
             case InterceptResolutionAction.Abort:
-                await AbortAsync(_abortErrorReason).ConfigureAwait(false);
+                await AbortAsync(AbortErrorReason).ConfigureAwait(false);
                 return;
             case InterceptResolutionAction.Respond:
-                if (_responseForRequest is null)
+                if (ResponseForRequest is null)
                 {
                     throw new PuppeteerException("Response is missing for the interception");
                 }
 
-                await RespondAsync(_responseForRequest).ConfigureAwait(false);
+                await RespondAsync(ResponseForRequest).ConfigureAwait(false);
                 return;
             case InterceptResolutionAction.Continue:
-                await ContinueInternalAsync(_continueRequestOverrides).ConfigureAwait(false);
+                await ContinueInternalAsync(ContinueRequestOverrides).ConfigureAwait(false);
                 break;
         }
     }
@@ -355,33 +208,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         && !FromMemoryCache
         && !string.IsNullOrEmpty(InterceptionId);
 
-    private static byte[] MergePostDataEntries(Messaging.Request request)
-    {
-        if (request.PostDataEntries is not { Length: > 0 })
-        {
-            return null;
-        }
-
-        var buffers = request
-            .PostDataEntries.Where(entry => entry.Bytes != null)
-            .Select(entry => Convert.FromBase64String(entry.Bytes))
-            .ToArray();
-
-        var merged = new byte[buffers.Sum(b => b.Length)];
-        var offset = 0;
-        foreach (var buffer in buffers)
-        {
-            Buffer.BlockCopy(buffer, 0, merged, offset, buffer.Length);
-            offset += buffer.Length;
-        }
-
-        return merged;
-    }
-
-    private Header[] HeadersArray(Dictionary<string, string> headers) =>
-        headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
-
-    private async Task ContinueInternalAsync(Payload overrides = null)
+    /// <inheritdoc/>
+    protected override async Task ContinueInternalAsync(Payload overrides)
     {
         IsInterceptResolutionHandled = true;
         _resolvedContinueOverrides = overrides;
@@ -423,7 +251,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    private async Task AbortInternalAsync(RequestAbortErrorCode errorCode)
+    /// <inheritdoc/>
+    protected override async Task AbortInternalAsync(RequestAbortErrorCode errorCode)
     {
         var errorReason = errorCode.ToString();
         IsInterceptResolutionHandled = true;
@@ -446,8 +275,14 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    private async Task RespondInternalAsync(ResponseData response)
+    /// <inheritdoc/>
+    protected override async Task RespondInternalAsync(ResponseData response)
     {
+        if (response == null)
+        {
+            throw new ArgumentNullException(nameof(response));
+        }
+
         IsInterceptResolutionHandled = true;
         _resolvedContinueOverrides = null;
         _replayResolution = () => RespondInternalAsync(response);
@@ -535,6 +370,32 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
             HandleError(ex);
         }
     }
+
+    private static byte[] MergePostDataEntries(Messaging.Request request)
+    {
+        if (request.PostDataEntries is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        var buffers = request
+            .PostDataEntries.Where(entry => entry.Bytes != null)
+            .Select(entry => Convert.FromBase64String(entry.Bytes))
+            .ToArray();
+
+        var merged = new byte[buffers.Sum(b => b.Length)];
+        var offset = 0;
+        foreach (var buffer in buffers)
+        {
+            Buffer.BlockCopy(buffer, 0, merged, offset, buffer.Length);
+            offset += buffer.Length;
+        }
+
+        return merged;
+    }
+
+    private Header[] HeadersArray(Dictionary<string, string> headers) =>
+        headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
 
     private void HandleError(PuppeteerException ex)
     {
