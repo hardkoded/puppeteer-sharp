@@ -38,6 +38,30 @@ namespace PuppeteerSharp.Tests.EmulationTests
             await Page.EmulateAsync(Puppeteer.Devices[DeviceDescriptorName.IPadProLandscape]);
         }
 
+        [
+            Test,
+            PuppeteerTest(
+                "emulation.spec",
+                "Emulation Page.emulate",
+                "should not change the device descriptor"
+            )
+        ]
+        public async Task ShouldNotChangeTheDeviceDescriptor()
+        {
+            var iPhone = TestConstants.IPhone;
+            var original = iPhone.ViewPort with { };
+            try
+            {
+                await Page.EmulateAsync(iPhone);
+                Page.Viewport.IsLandscape = true;
+                Assert.That(iPhone.ViewPort, Is.EqualTo(original));
+            }
+            finally
+            {
+                iPhone.ViewPort = original;
+            }
+        }
+
         [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should support clicking")]
         public async Task ShouldSupportClicking()
         {
