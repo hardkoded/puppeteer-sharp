@@ -3,7 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.WebSockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -51,7 +53,46 @@ namespace PuppeteerSharp.TestServer
                             .AddEnvironmentVariables()
                 )
                 .Configure(app =>
-                    app.Use(
+                    app.UseWebSockets()
+                        .Use(
+                            async (context, next) =>
+                            {
+                                if (!context.WebSockets.IsWebSocketRequest)
+                                {
+                                    await next();
+                                    return;
+                                }
+
+                                // Like upstream's test server: every WebSocket client gets an "opened" message.
+                                using var socket = await context.WebSockets.AcceptWebSocketAsync();
+                                await socket.SendAsync(
+                                    new ArraySegment<byte>(Encoding.UTF8.GetBytes("opened")),
+                                    WebSocketMessageType.Text,
+                                    true,
+                                    CancellationToken.None
+                                );
+                                var buffer = new byte[256];
+                                try
+                                {
+                                    while (socket.State == WebSocketState.Open)
+                                    {
+                                        var result = await socket.ReceiveAsync(
+                                            new ArraySegment<byte>(buffer),
+                                            CancellationToken.None
+                                        );
+                                        if (result.MessageType == WebSocketMessageType.Close)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                                catch (WebSocketException)
+                                {
+                                    // The client went away without a closing handshake.
+                                }
+                            }
+                        )
+                        .Use(
                             (context, next) =>
                             {
                                 if (

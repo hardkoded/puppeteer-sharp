@@ -289,8 +289,24 @@ public class WebRtcAndWebTransportTests : PuppeteerBaseTest
             urls
         );
 
-    private static Task<bool> ConnectWebRtcPeersAsync(IPage page, int timeout) =>
-        page.EvaluateFunctionAsync<bool>(
+    /// <summary>
+    /// Connects two peers over a data channel that uses only host candidates. Returns true when the
+    /// channel opens and false if it does not open before the timeout.
+    /// The method grants the microphone permission to the page origin. Without a media permission,
+    /// Chrome replaces the host IP addresses in the candidates with mDNS names. Some machines cannot
+    /// resolve these names, and then the peers do not connect even without network restrictions.
+    /// </summary>
+    private static async Task<bool> ConnectWebRtcPeersAsync(IPage page, int timeout)
+    {
+        await page.BrowserContext.SetPermissionAsync(
+            new Uri(page.Url).GetLeftPart(UriPartial.Authority),
+            new PermissionEntry
+            {
+                Permission = new PermissionDescriptor { Name = "microphone" },
+                State = PermissionState.Granted,
+            }
+        );
+        return await page.EvaluateFunctionAsync<bool>(
             @"async (timeout) => {
                 const local = new RTCPeerConnection();
                 const remote = new RTCPeerConnection();
@@ -326,6 +342,7 @@ public class WebRtcAndWebTransportTests : PuppeteerBaseTest
             }",
             timeout
         );
+    }
 
     private static async Task ShouldNotSendToBlockedHostAsync(Traffic traffic)
     {
