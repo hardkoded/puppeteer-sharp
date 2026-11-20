@@ -62,6 +62,45 @@ namespace PuppeteerSharp.Tests.Browsers.HttpUtil
             Assert.That(File.ReadAllBytes(destPath), Is.EqualTo(_testContent));
         }
 
+        [Test]
+        public async Task Partial_RetriesDownloadWhenARequestTimesOut()
+        {
+            using var server = new TestHttpServer(attempt => attempt == 1 ? -1 : 200);
+            var destPath = Path.Combine(_tmpDir, "timeout-download.bin");
+
+            await Helpers.HttpUtil.DownloadFileAsync(
+                server.Url,
+                destPath,
+                null,
+                1,
+                0,
+                TimeSpan.FromMilliseconds(500)
+            );
+
+            Assert.That(server.Requests, Is.EqualTo(2));
+            Assert.That(File.ReadAllBytes(destPath), Is.EqualTo(_testContent));
+        }
+
+        [Test]
+        public void Partial_DoesNotRetryATimeoutWhenRetryIsZero()
+        {
+            using var server = new TestHttpServer(_ => -1);
+            var destPath = Path.Combine(_tmpDir, "timeout-single.bin");
+
+            Assert.CatchAsync<OperationCanceledException>(() =>
+                Helpers.HttpUtil.DownloadFileAsync(
+                    server.Url,
+                    destPath,
+                    null,
+                    0,
+                    0,
+                    TimeSpan.FromMilliseconds(500)
+                )
+            );
+
+            Assert.That(server.Requests, Is.EqualTo(1));
+        }
+
         [
             Test,
             PuppeteerTest("httpUtil.test", "downloadFile", "rejects when all retries are exhausted")

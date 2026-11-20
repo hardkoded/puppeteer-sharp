@@ -22,13 +22,15 @@ internal static class HttpUtil
     /// <param name="proxy">Optional proxy.</param>
     /// <param name="retry">Number of retries. Defaults to 0.</param>
     /// <param name="retryDelay">Initial delay in milliseconds. Defaults to 1000.</param>
+    /// <param name="requestTimeout">Optional request timeout. Defaults to the <see cref="HttpClient"/> default.</param>
     /// <returns>A task that resolves when the download finishes.</returns>
     internal static async Task DownloadFileAsync(
         string address,
         string destinationPath,
         IWebProxy proxy = null,
         int retry = 0,
-        int retryDelay = 1000
+        int retryDelay = 1000,
+        TimeSpan? requestTimeout = null
     )
     {
         var attempt = 0;
@@ -36,7 +38,7 @@ internal static class HttpUtil
         {
             try
             {
-                await DownloadFileAttemptAsync(address, destinationPath, proxy)
+                await DownloadFileAttemptAsync(address, destinationPath, proxy, requestTimeout)
                     .ConfigureAwait(false);
                 return;
             }
@@ -68,7 +70,8 @@ internal static class HttpUtil
     private static async Task DownloadFileAttemptAsync(
         string address,
         string destinationPath,
-        IWebProxy proxy
+        IWebProxy proxy,
+        TimeSpan? requestTimeout
     )
     {
         using var handler = new HttpClientHandler();
@@ -79,6 +82,11 @@ internal static class HttpUtil
         }
 
         using var client = new HttpClient(handler);
+        if (requestTimeout.HasValue)
+        {
+            client.Timeout = requestTimeout.Value;
+        }
+
         using var response = await client
             .GetAsync(address, HttpCompletionOption.ResponseHeadersRead)
             .ConfigureAwait(false);
