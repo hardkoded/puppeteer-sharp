@@ -142,25 +142,32 @@ internal static class HttpUtil
     )
     {
         var buffer = new byte[CopyBufferSize];
-        using var cts = new CancellationTokenSource();
         while (true)
         {
             // The timeout restarts on every read, so only a stalled body fails, not a slow one.
-            cts.CancelAfter(stallTimeout);
-            int read;
-            try
+            // The read is raced against a delay instead of relying on the cancellation token,
+            // which some streams (such as the ones .NET Framework returns) ignore while a read is pending.
+            // Each read has its own timer, so a slow write cannot cancel the next read.
+            var readTask = source.ReadAsync(buffer, 0, buffer.Length);
+            using var delayCts = new CancellationTokenSource();
+            var delayTask = Task.Delay(stallTimeout, delayCts.Token);
+            if (await Task.WhenAny(readTask, delayTask).ConfigureAwait(false) != readTask)
             {
-                read = await source
-                    .ReadAsync(buffer, 0, buffer.Length, cts.Token)
-                    .ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) when (cts.IsCancellationRequested)
-            {
+                // The caller disposes the stream, which ends the pending read. Observe its failure.
+                _ = readTask.ContinueWith(
+                    t => _ = t.Exception,
+                    CancellationToken.None,
+                    TaskContinuationOptions.OnlyOnFaulted,
+                    TaskScheduler.Default
+                );
                 throw new OperationCanceledException(
                     $"Download stalled: no data received for {stallTimeout.TotalMilliseconds}ms. URL: {address}",
                     new TimeoutException()
                 );
             }
+
+            delayCts.Cancel();
+            var read = await readTask.ConfigureAwait(false);
 
             if (read == 0)
             {
