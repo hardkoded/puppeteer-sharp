@@ -61,6 +61,7 @@ internal static class HttpUtil
         {
             DownloadError downloadError => downloadError.IsTransient,
             HttpRequestException or IOException => true,
+            OperationCanceledException { InnerException: TimeoutException } => true,
             _ => false,
         };
 
@@ -82,7 +83,7 @@ internal static class HttpUtil
             .GetAsync(address, HttpCompletionOption.ResponseHeadersRead)
             .ConfigureAwait(false);
 
-        if (response.StatusCode != HttpStatusCode.OK)
+        if (!response.IsSuccessStatusCode)
         {
             var code = (int)response.StatusCode;
             throw new DownloadError(
