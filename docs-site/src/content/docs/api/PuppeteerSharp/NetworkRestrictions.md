@@ -44,7 +44,11 @@ Passing an empty array or `null` means no restriction.
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NetworkRestrictions.cs#L20)
+The allowlist does not apply to WebTransport and to TURN over TCP at
+this time. It blocks all WebRTC traffic over UDP.
+See [Allowlist](/api/PuppeteerSharp/ConnectOptions/#PuppeteerSharp_ConnectOptions_Allowlist).
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NetworkRestrictions.cs#L29)
 
 <a id="PuppeteerSharp_NetworkRestrictions_BlockList_"></a>
 <a id="PuppeteerSharp_NetworkRestrictions_BlockList"></a>
@@ -63,4 +67,7 @@ Passing an empty array or `null` means no restriction.
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NetworkRestrictions.cs#L13)
+The blocklist does not apply to WebTransport and WebRTC at this time.
+See [BlockList](/api/PuppeteerSharp/ConnectOptions/#PuppeteerSharp_ConnectOptions_BlockList).
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NetworkRestrictions.cs#L17)

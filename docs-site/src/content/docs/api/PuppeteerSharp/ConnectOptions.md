@@ -82,6 +82,17 @@ if the URL does not match any pattern in the allowlist.
 Currently only supported for CDP connections.
 &lt;/p&gt;
 &lt;p&gt;
+The allowlist does not apply to WebTransport and to TURN over TCP at
+this time. The browser opens WebTransport connections to URLs that do
+not match a pattern in the allowlist. The browser also opens TCP
+connections to TURN servers that are not in the allowlist.
+&lt;/p&gt;
+&lt;p&gt;
+The allowlist blocks all WebRTC traffic over UDP. WebRTC peers do not
+connect and the browser does not send UDP requests to STUN and TURN
+servers. A pattern in the allowlist cannot allow this traffic.
+&lt;/p&gt;
+&lt;p&gt;
 Cannot be used along with [BlockList](#PuppeteerSharp_ConnectOptions_BlockList).
 &lt;/p&gt;
 
@@ -90,7 +101,7 @@ Cannot be used along with [BlockList](#PuppeteerSharp_ConnectOptions_BlockList).
 Pattern to allow a specific domain: `*://example.com/*`
 Pattern to allow all subdomains: `*://*.example.com/*`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L183)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L209)
 
 <a id="PuppeteerSharp_ConnectOptions_BlockList_"></a>
 <a id="PuppeteerSharp_ConnectOptions_BlockList"></a>
@@ -124,6 +135,13 @@ if the URL matches a blocked pattern.
 Currently only supported for CDP connections.
 &lt;/p&gt;
 &lt;p&gt;
+The blocklist does not apply to WebTransport and WebRTC at this time.
+The browser opens WebTransport connections to URLs that match a blocked
+pattern. The browser also connects WebRTC peers and sends requests to
+STUN and TURN servers (over UDP and TCP) on blocked hosts. Patterns such
+as `stun:*` and `turn:*` do not block these requests.
+&lt;/p&gt;
+&lt;p&gt;
 Cannot be used along with [Allowlist](#PuppeteerSharp_ConnectOptions_Allowlist).
 &lt;/p&gt;
 
@@ -132,7 +150,7 @@ Cannot be used along with [Allowlist](#PuppeteerSharp_ConnectOptions_Allowlist).
 Pattern to block a specific domain: `*://example.com/*`
 Pattern to block all subdomains: `*://*.evil.com/*`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L149)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L164)
 
 <a id="PuppeteerSharp_ConnectOptions_BrowserURL_"></a>
 <a id="PuppeteerSharp_ConnectOptions_BrowserURL"></a>
@@ -184,7 +202,24 @@ Gets or sets the default Viewport.
 
 **Value:** [ViewPortOptions](/api/PuppeteerSharp/ViewPortOptions/) — The default Viewport.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L68)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L70)
+
+<a id="PuppeteerSharp_ConnectOptions_DownloadBehavior_"></a>
+<a id="PuppeteerSharp_ConnectOptions_DownloadBehavior"></a>
+
+### DownloadBehavior
+
+
+```csharp
+public DownloadBehavior DownloadBehavior { get; set; }
+```
+
+
+Gets or sets the download behavior applied to the default browser context.
+
+**Value:** [DownloadBehavior](/api/PuppeteerSharp/DownloadBehavior/) — The download behavior.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L76)
 
 <a id="PuppeteerSharp_ConnectOptions_EnqueueAsyncMessages_"></a>
 <a id="PuppeteerSharp_ConnectOptions_EnqueueAsyncMessages"></a>
@@ -207,7 +242,7 @@ This should normally be set to `true` to support applications that aren't `async
 has legacy code that is not async which makes calls into PuppeteerSharp. If you experience issues, or your application is not mixed sync/async use, you
 can set this to `false` (default).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L94)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L102)
 
 <a id="PuppeteerSharp_ConnectOptions_EnqueueTransportMessages_"></a>
 <a id="PuppeteerSharp_ConnectOptions_EnqueueTransportMessages"></a>
@@ -227,7 +262,7 @@ If not [PuppeteerSharp.Transport](/api/PuppeteerSharp.Transport/) is set this wi
 It's set to `true` by default because it's the safest way to send commands to Chromium.
 Setting this to `false` proved to work in .NET Core but it tends to fail on .NET Framework.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L82)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L90)
 
 <a id="PuppeteerSharp_ConnectOptions_HandleDevToolsAsPage_"></a>
 <a id="PuppeteerSharp_ConnectOptions_HandleDevToolsAsPage"></a>
@@ -244,7 +279,7 @@ Whether to handle the DevTools windows as pages in Puppeteer. Supported only in 
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L112)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L120)
 
 <a id="PuppeteerSharp_ConnectOptions_Headers_"></a>
 <a id="PuppeteerSharp_ConnectOptions_Headers"></a>
@@ -283,7 +318,7 @@ Optional callback to initialize properties as soon as the [IBrowser](/api/Puppet
 
 **Value:** [Action&lt;IBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.action-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L107)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L115)
 
 <a id="PuppeteerSharp_ConnectOptions_IssuesEnabled_"></a>
 <a id="PuppeteerSharp_ConnectOptions_IssuesEnabled"></a>
@@ -300,7 +335,7 @@ Experimental setting to disable monitoring issue events by default.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L62)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L64)
 
 <a id="PuppeteerSharp_ConnectOptions_NetworkEnabled_"></a>
 <a id="PuppeteerSharp_ConnectOptions_NetworkEnabled"></a>
@@ -319,7 +354,7 @@ work such as [IRequest](/api/PuppeteerSharp/IRequest/) and [IResponse](/api/Pupp
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L57)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L59)
 
 <a id="PuppeteerSharp_ConnectOptions_Protocol_"></a>
 <a id="PuppeteerSharp_ConnectOptions_Protocol"></a>
@@ -338,7 +373,7 @@ Firefox always uses WebDriver BiDi regardless of this setting.
 
 **Value:** [ProtocolType](/api/PuppeteerSharp/ProtocolType/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L119)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L127)
 
 <a id="PuppeteerSharp_ConnectOptions_ProtocolTimeout_"></a>
 <a id="PuppeteerSharp_ConnectOptions_ProtocolTimeout"></a>
@@ -356,7 +391,7 @@ Defaults to 180_000.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L102)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L110)
 
 <a id="PuppeteerSharp_ConnectOptions_SlowMo_"></a>
 <a id="PuppeteerSharp_ConnectOptions_SlowMo"></a>
@@ -390,7 +425,7 @@ Callback to decide if Puppeteer should connect to a given target or not.
 
 **Value:** [Func&lt;Target, bool&gt;](https://learn.microsoft.com/dotnet/api/system.func-2)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L99)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L107)
 
 <a id="PuppeteerSharp_ConnectOptions_TransportFactory_"></a>
 <a id="PuppeteerSharp_ConnectOptions_TransportFactory"></a>
@@ -407,7 +442,7 @@ Optional factory for [IConnectionTransport](/api/PuppeteerSharp.Transport/IConne
 
 **Value:** [TransportFactory](/api/PuppeteerSharp.Transport/TransportFactory/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L73)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L81)
 
 <a id="PuppeteerSharp_ConnectOptions_WebSocketFactory_"></a>
 <a id="PuppeteerSharp_ConnectOptions_WebSocketFactory"></a>
