@@ -1657,14 +1657,21 @@ public class CdpPage : Page
         var entry = history.Entries[history.CurrentIndex + delta];
         var waitTask = WaitForNavigationAsync(options);
 
-        await Task.WhenAll(
-                waitTask,
-                PrimaryTargetClient.SendAsync(
-                    "Page.navigateToHistoryEntry",
-                    new PageNavigateToHistoryEntryRequest { EntryId = entry.Id }
-                )
-            )
-            .ConfigureAwait(false);
+        var navigateTask = PrimaryTargetClient.SendAsync(
+            "Page.navigateToHistoryEntry",
+            new PageNavigateToHistoryEntryRequest { EntryId = entry.Id }
+        );
+
+        // Like upstream's Promise.all, fail as soon as one of the tasks fails (e.g. the wait
+        // is cancelled) instead of waiting for the other one, which may never complete while
+        // the history navigation request is hanging.
+        var pending = new List<Task> { waitTask, navigateTask };
+        while (pending.Count > 0)
+        {
+            var completed = await Task.WhenAny(pending).ConfigureAwait(false);
+            pending.Remove(completed);
+            await completed.ConfigureAwait(false);
+        }
 
         return waitTask.Result;
     }
