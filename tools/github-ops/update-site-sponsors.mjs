@@ -29,7 +29,7 @@ async function contributors() {
     }
     return all
         .filter((c) => c.type === "User" && !excludedLogins.has(c.login))
-        .map((c) => ({ contributions: c.contributions, id: c.id, login: c.login, url: c.html_url }));
+        .map((c) => ({ id: c.id, login: c.login, url: c.html_url }));
 }
 
 async function githubSponsors(token) {

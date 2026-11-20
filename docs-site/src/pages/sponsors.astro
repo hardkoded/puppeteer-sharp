@@ -93,7 +93,7 @@ const avatar = (login: string, size = 128) => `https://avatars.githubusercontent
             <ul class="avatar-grid">
                 {contributors.map((c) => (
                     <li>
-                        <a href={c.url} title={`${c.login}: ${c.contributions} contributions`}>
+                        <a href={c.url} title={c.login}>
                             <img src={avatar(c.login, 96)} alt="" width="48" height="48" loading="lazy" />
                             <span>{c.login}</span>
                         </a>
