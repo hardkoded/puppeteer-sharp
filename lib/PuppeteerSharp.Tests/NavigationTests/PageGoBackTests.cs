@@ -8,7 +8,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class PageGoBackTests : PuppeteerPageBaseTest
     {
-        //TODO: This is working in puppeteer. I don't know why is hanging here.
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goBack", "should work")]
         public async Task ShouldWork()
         {

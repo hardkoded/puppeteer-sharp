@@ -81,7 +81,7 @@ namespace PuppeteerSharp.Cdp
             frame.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frame.FrameNavigated += Navigated;
             frame.FrameSwapped += OnFrameSwapped;
-            frame.FrameSwappedByActivation += FrameSwapped;
+            frame.FrameSwappedByActivation += FrameSwappedByActivation;
             frame.FrameDetached += OnFrameDetached;
             _networkManager.Request += OnRequest;
             _networkManager.Response += OnResponse;
@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Cdp
             _frame.FrameNavigated -= Navigated;
             _frame.FrameDetached -= OnFrameDetached;
             _frame.FrameSwapped -= OnFrameSwapped;
-            _frame.FrameSwappedByActivation -= FrameSwapped;
+            _frame.FrameSwappedByActivation -= FrameSwappedByActivation;
             _networkManager.Request -= OnRequest;
             _networkManager.Response -= OnResponse;
             _networkManager.RequestFailed -= OnRequestFailed;
@@ -145,7 +145,7 @@ namespace PuppeteerSharp.Cdp
         {
             if (e.Type == NavigationType.BackForwardCacheRestore)
             {
-                FrameSwapped(sender, EventArgs.Empty);
+                FrameSwappedByActivation(sender, EventArgs.Empty);
                 return;
             }
 
@@ -171,15 +171,22 @@ namespace PuppeteerSharp.Cdp
             FrameSwapped(sender, e);
         }
 
-        private void FrameSwapped(object sender, EventArgs e)
+        private void FrameSwappedByActivation(object sender, EventArgs e)
         {
-            _swapped = true;
-
-            // A swap (e.g. prerender activation) replays a navigation request on the
-            // new session but no real HTTP transaction takes place, so the response
-            // deferred would never resolve. Treat the swap as the navigation completing.
+            // An activation (e.g. prerender or back/forward cache restore) replays a navigation
+            // request on the new session but no real HTTP transaction takes place, so the response
+            // deferred would never resolve. Treat the activation as the navigation completing.
             _navigationResponseReceived?.TrySetResult(true);
 
+            FrameSwapped(sender, e);
+        }
+
+        private void FrameSwapped(object sender, EventArgs e)
+        {
+            // Like upstream, a plain target swap must not resolve the response: the response of
+            // the navigation can still be on its way, and resolving here made GoBack/GoForward
+            // return a null response.
+            _swapped = true;
             CheckLifecycleComplete();
         }
 
