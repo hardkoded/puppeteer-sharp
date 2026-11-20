@@ -500,6 +500,9 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task SetViewportAsync(ViewPortOptions viewport)
     {
+        // Keep a copy: the caller's object can be changed or shared later, for
+        // example the default viewport or a device descriptor.
+        viewport = viewport is null ? null : viewport with { };
         var needsReload = await _emulationManager
             .EmulateViewportAsync(viewport)
             .ConfigureAwait(false);

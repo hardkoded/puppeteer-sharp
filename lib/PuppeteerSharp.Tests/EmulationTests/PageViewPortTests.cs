@@ -30,6 +30,48 @@ namespace PuppeteerSharp.Tests.EmulationTests
             PuppeteerTest(
                 "emulation.spec",
                 "Emulation Page.viewport",
+                "should keep a copy of the viewport that was set"
+            )
+        ]
+        public async Task ShouldKeepACopyOfTheViewportThatWasSet()
+        {
+            var viewport = new ViewPortOptions { Width = 123, Height = 456 };
+            await Page.SetViewportAsync(viewport);
+            viewport.Width = 789;
+
+            Assert.That(Page.Viewport.Width, Is.EqualTo(123));
+            Assert.That(Page.Viewport.Height, Is.EqualTo(456));
+            Assert.That(
+                await Page.EvaluateFunctionAsync<int>("() => window.innerWidth"),
+                Is.EqualTo(123)
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "emulation.spec",
+                "Emulation Page.viewport",
+                "should return a copy of the viewport"
+            )
+        ]
+        public async Task ShouldReturnACopyOfTheViewport()
+        {
+            Page.Viewport.Width = 123;
+            Assert.That(Page.Viewport.Width, Is.EqualTo(800));
+            Assert.That(Page.Viewport.Height, Is.EqualTo(600));
+
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 300 });
+            Page.Viewport.Width = 123;
+            Assert.That(Page.Viewport.Width, Is.EqualTo(400));
+            Assert.That(Page.Viewport.Height, Is.EqualTo(300));
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "emulation.spec",
+                "Emulation Page.viewport",
                 "should support mobile emulation"
             )
         ]

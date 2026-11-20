@@ -205,7 +205,11 @@ namespace PuppeteerSharp
         IMouse IPage.Mouse => Mouse;
 
         /// <inheritdoc/>
-        public ViewPortOptions Viewport { get; protected set; }
+        public ViewPortOptions Viewport
+        {
+            get => field is null ? null : field with { };
+            protected set;
+        }
 
         /// <inheritdoc/>
         IBrowser IPage.Browser => Browser;
