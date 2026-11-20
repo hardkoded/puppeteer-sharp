@@ -28,6 +28,13 @@ namespace PuppeteerSharp.Browsers
     {
         [Value(0, Required = true, MetaName = "browser", HelpText = "browser[@tag|buildId]")]
         public string Browser { get; set; }
+
+        [Option(
+            "retry",
+            Default = 0,
+            HelpText = "Number of times to retry downloading the browser archive on transient failures (HTTP 408, 429, 5xx, or network errors, with 1s-10s exponential backoff)."
+        )]
+        public int Retry { get; set; }
     }
 
     [Verb("list", HelpText = "List the installed browsers.")]

@@ -25,6 +25,7 @@ namespace PuppeteerSharp
         private readonly CustomFileDownloadAction _customFileDownload;
         private readonly ILogger<BrowserFetcher> _logger;
         private readonly bool _skipChromeHeadlessShellDownload;
+        private readonly int _retry;
 
         /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher()
@@ -53,6 +54,15 @@ namespace PuppeteerSharp
             _customFileDownload = options.CustomFileDownload
                 ?? DownloadFileUsingHttpClientTaskAsync;
             _skipChromeHeadlessShellDownload = options.SkipChromeHeadlessShellDownload;
+            if (options.Retry < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(options),
+                    "Invalid retry value: must be a non-negative integer"
+                );
+            }
+
+            _retry = options.Retry;
             _logger = loggerFactory?.CreateLogger<BrowserFetcher>();
         }
 
@@ -661,23 +671,7 @@ namespace PuppeteerSharp
             return null;
         }
 
-        private async Task DownloadFileUsingHttpClientTaskAsync(string address, string filename)
-        {
-            using var handler = new HttpClientHandler();
-            if (WebProxy != null)
-            {
-                handler.Proxy = WebProxy;
-                handler.UseProxy = true;
-            }
-
-            using var client = new HttpClient(handler);
-
-            // Send the GET request and retrieve the response as a stream
-            using var downloadStream = await client.GetStreamAsync(address).ConfigureAwait(false);
-
-            // Write the stream to a file
-            using var fileStream = File.Create(filename);
-            await downloadStream.CopyToAsync(fileStream).ConfigureAwait(false);
-        }
+        private Task DownloadFileUsingHttpClientTaskAsync(string address, string filename) =>
+            HttpUtil.DownloadFileAsync(address, filename, WebProxy, _retry);
     }
 }

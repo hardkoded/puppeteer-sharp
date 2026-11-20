@@ -39,7 +39,8 @@ namespace PuppeteerSharp.Browsers
 
         private static BrowserFetcher CreateFetcher(
             SupportedBrowser browser,
-            CommonOptions options
+            CommonOptions options,
+            int retry = 0
         ) =>
             new(
                 new BrowserFetcherOptions
@@ -48,6 +49,7 @@ namespace PuppeteerSharp.Browsers
                     Path = options.Path,
                     Platform = options.Platform,
                     SkipChromeHeadlessShellDownload = true,
+                    Retry = retry,
                 }
             )
             {
@@ -57,7 +59,7 @@ namespace PuppeteerSharp.Browsers
         private static async Task<int> InstallAsync(InstallOptions options)
         {
             var spec = BrowserSpec.Parse(options.Browser);
-            var fetcher = CreateFetcher(spec.Browser, options);
+            var fetcher = CreateFetcher(spec.Browser, options, options.Retry);
             var installed =
                 spec.Version == null ? await fetcher.DownloadAsync().ConfigureAwait(false)
                 : spec.TryGetTag(out var tag)

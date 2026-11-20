@@ -42,6 +42,14 @@ namespace PuppeteerSharp
         public bool SkipChromeHeadlessShellDownload { get; set; }
 
         /// <summary>
+        /// Number of retries to attempt if downloading the browser archive fails due to transient network or server errors
+        /// (HTTP 408, 429, 5xx, or network drops, with 1s–10s exponential backoff). Defaults to 0.
+        /// Only applies to the default download; it is ignored when <see cref="CustomFileDownload"/> is set.
+        /// Mirrors upstream's <c>retry</c> install option.
+        /// </summary>
+        public int Retry { get; set; }
+
+        /// <summary>
         /// Gets the default or a custom download delegate.
         /// </summary>
         /// <remarks>
