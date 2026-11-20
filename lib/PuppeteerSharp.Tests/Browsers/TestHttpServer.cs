@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.Browsers
 {
     /// <summary>
     /// Minimal raw HTTP server. The handler returns a status code: 200 serves the content,
-    /// 0 drops the connection, -1 never answers, anything else is sent as an empty error response.
+    /// 0 drops the connection, -1 never answers, -2 sends headers and then stalls the body, anything else is sent as an empty error response.
     /// </summary>
     internal sealed class TestHttpServer : IDisposable
     {
@@ -63,6 +63,16 @@ namespace PuppeteerSharp.Tests.Browsers
                 if (status == -1)
                 {
                     // Never answer: lets the client time out.
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+                    return;
+                }
+
+                if (status == -2)
+                {
+                    var stallHeader = Encoding.ASCII.GetBytes(
+                        $"HTTP/1.1 200 OK\r\nContent-Length: {TestContent.Length}\r\nConnection: close\r\n\r\n"
+                    );
+                    await stream.WriteAsync(stallHeader, 0, stallHeader.Length);
                     await Task.Delay(TimeSpan.FromSeconds(5));
                     return;
                 }
