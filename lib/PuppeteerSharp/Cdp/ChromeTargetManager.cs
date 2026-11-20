@@ -483,7 +483,8 @@ namespace PuppeteerSharp.Cdp
         }
 
         private bool IsPageTargetBecomingPrimary(CdpTarget target, TargetInfo newTargetInfo) =>
-            !string.IsNullOrEmpty(target.TargetInfo.Subtype)
+            target.Type == TargetType.Page
+            && !string.IsNullOrEmpty(target.TargetInfo.Subtype)
             && string.IsNullOrEmpty(newTargetInfo.Subtype);
 
         private bool HasNetworkRules() =>
