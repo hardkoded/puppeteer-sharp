@@ -111,3 +111,20 @@ Platform. Defaults to current platform.
 **Value:** `Platform?`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcherOptions.cs#L26)
+
+<a id="PuppeteerSharp_BrowserFetcherOptions_Retry_"></a>
+<a id="PuppeteerSharp_BrowserFetcherOptions_Retry"></a>
+
+### Retry
+
+
+```csharp
+public int Retry { get; set; }
+```
+
+
+Number of retries to attempt if downloading the browser archive fails due to transient network or server errors (HTTP 408, 429, 5xx, or network drops, with 1s–10s exponential backoff). Defaults to 0. Only applies to the default download; it is ignored when [CustomFileDownload](/api/PuppeteerSharp/BrowserFetcherOptions/#PuppeteerSharp_BrowserFetcherOptions_CustomFileDownload) is set. Mirrors upstream's `retry` install option.
+
+**Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserFetcherOptions.cs#L50)
