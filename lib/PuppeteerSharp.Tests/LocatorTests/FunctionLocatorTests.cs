@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Locators;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.LocatorTests
@@ -65,11 +64,11 @@ namespace PuppeteerSharp.Tests.LocatorTests
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
             await Page.SetContentAsync("<button disabled>test</button>");
             var willClick = false;
-            await Page.LocatorFunction("() => document.querySelector('button')")
+            var locator = Page.LocatorFunction("() => document.querySelector('button')")
                 .SetWaitForEnabled(false)
-                .SetTimeout(2000)
-                .On(LocatorEvent.Action, (_, _) => willClick = true)
-                .ClickAsync();
+                .SetTimeout(2000);
+            locator.Action += (_, _) => willClick = true;
+            await locator.ClickAsync();
             Assert.That(willClick, Is.True);
         }
     }
