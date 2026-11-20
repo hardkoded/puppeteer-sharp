@@ -34,16 +34,21 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(clicked, Is.True);
         }
 
-        // Partial port of "should preserve timeout across clone, map, and filter":
-        // the port has no public Clone(), so only map and filter are checked.
-        [Test]
-        public async Task ShouldPreserveTimeoutAcrossMapAndFilter()
+        [
+            Test,
+            PuppeteerTest(
+                "locator.spec",
+                "Locator FunctionLocator",
+                "should preserve timeout across clone, map, and filter"
+            )
+        ]
+        public void ShouldPreserveTimeoutAcrossCloneMapAndFilter()
         {
             var locator = Page.LocatorFunction("() => false").SetTimeout(100);
 
-            Assert.That(locator.Map("(value) => value").Timeout, Is.EqualTo(100));
-            Assert.That(locator.Filter("(value) => Boolean(value)").Timeout, Is.EqualTo(100));
-            await Task.CompletedTask;
+            Assert.That(locator.Clone().Timeout, Is.EqualTo(100));
+            Assert.That(locator.Map("value => value").Timeout, Is.EqualTo(100));
+            Assert.That(locator.Filter("value => Boolean(value)").Timeout, Is.EqualTo(100));
         }
 
         // Partial port of "should preserve options across chained setters":
