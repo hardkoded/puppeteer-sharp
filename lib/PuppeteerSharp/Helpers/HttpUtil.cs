@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Helpers;
@@ -12,6 +13,8 @@ namespace PuppeteerSharp.Helpers;
 internal static class HttpUtil
 {
     private const int MaxRetryDelayInMillis = 10000;
+    private const int CopyBufferSize = 81920;
+    private static readonly TimeSpan _defaultBodyStallTimeout = TimeSpan.FromSeconds(30);
 
     /// <summary>
     /// Downloads a file, retrying on transient failures (HTTP 408, 429, 5xx or network errors)
@@ -23,6 +26,7 @@ internal static class HttpUtil
     /// <param name="retry">Number of retries. Defaults to 0.</param>
     /// <param name="retryDelay">Initial delay in milliseconds. Defaults to 1000.</param>
     /// <param name="requestTimeout">Optional request timeout. Defaults to the <see cref="HttpClient"/> default.</param>
+    /// <param name="bodyStallTimeout">Maximum time to wait for the next chunk of the response body before the attempt fails as a transient error. Defaults to 30 seconds.</param>
     /// <returns>A task that resolves when the download finishes.</returns>
     internal static async Task DownloadFileAsync(
         string address,
@@ -30,7 +34,8 @@ internal static class HttpUtil
         IWebProxy proxy = null,
         int retry = 0,
         int retryDelay = 1000,
-        TimeSpan? requestTimeout = null
+        TimeSpan? requestTimeout = null,
+        TimeSpan? bodyStallTimeout = null
     )
     {
         var attempt = 0;
@@ -38,7 +43,13 @@ internal static class HttpUtil
         {
             try
             {
-                await DownloadFileAttemptAsync(address, destinationPath, proxy, requestTimeout)
+                await DownloadFileAttemptAsync(
+                        address,
+                        destinationPath,
+                        proxy,
+                        requestTimeout,
+                        bodyStallTimeout ?? _defaultBodyStallTimeout
+                    )
                     .ConfigureAwait(false);
                 return;
             }
@@ -71,7 +82,8 @@ internal static class HttpUtil
         string address,
         string destinationPath,
         IWebProxy proxy,
-        TimeSpan? requestTimeout
+        TimeSpan? requestTimeout,
+        TimeSpan bodyStallTimeout
     )
     {
         using var handler = new HttpClientHandler();
@@ -106,7 +118,8 @@ internal static class HttpUtil
                 .Content.ReadAsStreamAsync()
                 .ConfigureAwait(false);
             using var fileStream = File.Create(destinationPath);
-            await downloadStream.CopyToAsync(fileStream).ConfigureAwait(false);
+            await CopyWithStallTimeoutAsync(downloadStream, fileStream, bodyStallTimeout, address)
+                .ConfigureAwait(false);
         }
         catch
         {
@@ -118,6 +131,50 @@ internal static class HttpUtil
             catch (UnauthorizedAccessException) { }
 
             throw;
+        }
+    }
+
+    private static async Task CopyWithStallTimeoutAsync(
+        Stream source,
+        Stream destination,
+        TimeSpan stallTimeout,
+        string address
+    )
+    {
+        var buffer = new byte[CopyBufferSize];
+        while (true)
+        {
+            // The timeout restarts on every read, so only a stalled body fails, not a slow one.
+            // The read is raced against a delay instead of relying on the cancellation token,
+            // which some streams (such as the ones .NET Framework returns) ignore while a read is pending.
+            // Each read has its own timer, so a slow write cannot cancel the next read.
+            var readTask = source.ReadAsync(buffer, 0, buffer.Length);
+            using var delayCts = new CancellationTokenSource();
+            var delayTask = Task.Delay(stallTimeout, delayCts.Token);
+            if (await Task.WhenAny(readTask, delayTask).ConfigureAwait(false) != readTask)
+            {
+                // The caller disposes the stream, which ends the pending read. Observe its failure.
+                _ = readTask.ContinueWith(
+                    t => _ = t.Exception,
+                    CancellationToken.None,
+                    TaskContinuationOptions.OnlyOnFaulted,
+                    TaskScheduler.Default
+                );
+                throw new OperationCanceledException(
+                    $"Download stalled: no data received for {stallTimeout.TotalMilliseconds}ms. URL: {address}",
+                    new TimeoutException()
+                );
+            }
+
+            delayCts.Cancel();
+            var read = await readTask.ConfigureAwait(false);
+
+            if (read == 0)
+            {
+                return;
+            }
+
+            await destination.WriteAsync(buffer, 0, read).ConfigureAwait(false);
         }
     }
 
