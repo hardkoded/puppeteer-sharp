@@ -28,6 +28,27 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(foo, Is.EqualTo("bar"));
         }
 
+        [
+            Test,
+            PuppeteerTest(
+                "CDPSession.spec",
+                "Target.createCDPSession",
+                "should keep the page when one of two concurrent sessions detaches"
+            )
+        ]
+        public async Task ShouldKeepThePageWhenOneOfTwoConcurrentSessionsDetaches()
+        {
+            var sessions = await Task.WhenAll(
+                Page.CreateCDPSessionAsync(),
+                Page.CreateCDPSessionAsync()
+            );
+            await sessions[1].DetachAsync();
+            await sessions[0].DetachAsync();
+
+            Assert.That(await Context.PagesAsync(), Does.Contain(Page));
+            Assert.That(await Page.EvaluateFunctionAsync<int>("() => 1"), Is.EqualTo(1));
+        }
+
         [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should send events")]
         public async Task ShouldSendEvents()
         {
