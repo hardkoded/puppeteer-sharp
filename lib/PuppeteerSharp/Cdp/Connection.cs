@@ -279,7 +279,8 @@ namespace PuppeteerSharp.Cdp
             {
                 lock (_manuallyAttached)
                 {
-                    _manuallyAttached[targetId] = _manuallyAttached.GetValueOrDefault(targetId) + 1;
+                    _manuallyAttached.TryGetValue(targetId, out var current);
+                    _manuallyAttached[targetId] = current + 1;
                 }
             }
 
@@ -300,7 +301,9 @@ namespace PuppeteerSharp.Cdp
                 {
                     lock (_manuallyAttached)
                     {
-                        var pending = _manuallyAttached.GetValueOrDefault(targetId, 1) - 1;
+                        var pending =
+                            (_manuallyAttached.TryGetValue(targetId, out var count) ? count : 1)
+                            - 1;
                         if (pending > 0)
                         {
                             _manuallyAttached[targetId] = pending;
