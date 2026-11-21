@@ -28,7 +28,12 @@ namespace PuppeteerSharp.Cdp
         private readonly AsyncDictionaryHelper<string, CdpCDPSession> _sessions = new(
             "Session {0} not found"
         );
-        private readonly List<string> _manuallyAttached = [];
+
+        // Number of in-flight manual attaches per target. A target can have several at once
+        // (e.g. concurrent page.CreateCDPSessionAsync() calls), and it must stay marked until
+        // the last one resolves, or a later Target.attachedToTarget is mistaken for the
+        // target's auto-attached session.
+        private readonly Dictionary<string, int> _manuallyAttached = [];
         private int _lastId;
 
         private Connection(
@@ -256,30 +261,61 @@ namespace PuppeteerSharp.Cdp
                 JsonHelper.DefaultJsonSerializerSettings.Value
             );
 
-        internal bool IsAutoAttached(string targetId) => !_manuallyAttached.Contains(targetId);
+        internal bool IsAutoAttached(string targetId)
+        {
+            lock (_manuallyAttached)
+            {
+                return !_manuallyAttached.ContainsKey(targetId);
+            }
+        }
 
         internal async Task<CDPSession> CreateSessionAsync(
             TargetInfo targetInfo,
             bool isAutoAttachEmulated
         )
         {
+            var targetId = targetInfo.TargetId;
             if (!isAutoAttachEmulated)
             {
-                _manuallyAttached.Add(targetInfo.TargetId);
+                lock (_manuallyAttached)
+                {
+                    _manuallyAttached.TryGetValue(targetId, out var current);
+                    _manuallyAttached[targetId] = current + 1;
+                }
             }
 
-            var sessionId = (
-                await SendAsync<TargetAttachToTargetResponse>(
-                        "Target.attachToTarget",
-                        new TargetAttachToTargetRequest
+            string sessionId;
+            try
+            {
+                sessionId = (
+                    await SendAsync<TargetAttachToTargetResponse>(
+                            "Target.attachToTarget",
+                            new TargetAttachToTargetRequest { TargetId = targetId, Flatten = true }
+                        )
+                        .ConfigureAwait(false)
+                ).SessionId;
+            }
+            finally
+            {
+                if (!isAutoAttachEmulated)
+                {
+                    lock (_manuallyAttached)
+                    {
+                        var pending =
+                            (_manuallyAttached.TryGetValue(targetId, out var count) ? count : 1)
+                            - 1;
+                        if (pending > 0)
                         {
-                            TargetId = targetInfo.TargetId,
-                            Flatten = true,
+                            _manuallyAttached[targetId] = pending;
                         }
-                    )
-                    .ConfigureAwait(false)
-            ).SessionId;
-            _manuallyAttached.Remove(targetInfo.TargetId);
+                        else
+                        {
+                            _manuallyAttached.Remove(targetId);
+                        }
+                    }
+                }
+            }
+
             return await GetSessionAsync(sessionId).ConfigureAwait(false);
         }
 
