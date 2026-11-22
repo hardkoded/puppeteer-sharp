@@ -83,7 +83,7 @@ namespace PuppeteerSharp
                     // JSON turns these into null or 0, or can't represent them. Write them as literals.
                     case double d:
                         return SerializeNumber(d);
-                    case float f:
+                    case float f when float.IsNaN(f) || float.IsInfinity(f) || f == 0:
                         return SerializeNumber(f);
                     case BigInteger bigInteger:
                         return $"{bigInteger.ToString(CultureInfo.InvariantCulture)}n";

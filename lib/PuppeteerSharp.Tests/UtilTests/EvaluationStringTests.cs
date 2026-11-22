@@ -23,6 +23,10 @@ namespace PuppeteerSharp.Tests.UtilTests
                 BindingUtils.EvaluationString(Fn, "a", 1, true, null, new[] { 1, 2 }),
                 Is.EqualTo($"({Fn})(\"a\",1,true,undefined,[1,2])")
             );
+            Assert.That(
+                BindingUtils.EvaluationString(Fn, 0.1f, new[] { 0.1f }),
+                Is.EqualTo($"({Fn})(0.1,[0.1])")
+            );
         }
 
         [
