@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text.Json;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
@@ -73,9 +75,47 @@ namespace PuppeteerSharp
 
             static string SerializeArgument(object arg)
             {
-                return arg == null
-                    ? "undefined"
-                    : JsonSerializer.Serialize(arg, JsonHelper.DefaultJsonSerializerSettings.Value);
+                switch (arg)
+                {
+                    case null:
+                        return "undefined";
+
+                    // JSON turns these into null or 0, or can't represent them. Write them as literals.
+                    case double d:
+                        return SerializeNumber(d);
+                    case float f:
+                        return SerializeNumber(f);
+                    case BigInteger bigInteger:
+                        return $"{bigInteger.ToString(CultureInfo.InvariantCulture)}n";
+                    default:
+                        return JsonSerializer.Serialize(
+                            arg,
+                            JsonHelper.DefaultJsonSerializerSettings.Value
+                        );
+                }
+            }
+
+            static string SerializeNumber(double value)
+            {
+                if (value == 0 && BitConverter.DoubleToInt64Bits(value) < 0)
+                {
+                    return "-0";
+                }
+
+                if (double.IsNaN(value))
+                {
+                    return "NaN";
+                }
+
+                if (double.IsInfinity(value))
+                {
+                    return value > 0 ? "Infinity" : "-Infinity";
+                }
+
+                return JsonSerializer.Serialize(
+                    value,
+                    JsonHelper.DefaultJsonSerializerSettings.Value
+                );
             }
         }
 
