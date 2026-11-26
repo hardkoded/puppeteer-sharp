@@ -58,7 +58,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Start task.</returns>
         /// <param name="options">Tracing options.</param>
-        public Task StartAsync(TracingOptions options = null)
+        public async Task StartAsync(TracingOptions options = null)
         {
             if (_recording)
             {
@@ -84,19 +84,30 @@ namespace PuppeteerSharp
             _path = options?.Path;
             _recording = true;
 
-            return _client.SendAsync(
-                "Tracing.start",
-                new TracingStartRequest
-                {
-                    TransferMode = "ReturnAsStream",
-                    TraceConfig = new TracingTraceConfig
-                    {
-                        ExcludedCategories = excludedCategories.ToArray(),
-                        IncludedCategories = includedCategories.ToArray(),
-                        TraceBufferSizeInKb = options?.BufferSize,
-                    },
-                }
-            );
+            try
+            {
+                await _client
+                    .SendAsync(
+                        "Tracing.start",
+                        new TracingStartRequest
+                        {
+                            TransferMode = "ReturnAsStream",
+                            TraceConfig = new TracingTraceConfig
+                            {
+                                ExcludedCategories = excludedCategories.ToArray(),
+                                IncludedCategories = includedCategories.ToArray(),
+                                TraceBufferSizeInKb = options?.BufferSize,
+                            },
+                        }
+                    )
+                    .ConfigureAwait(false);
+            }
+            catch
+            {
+                _recording = false;
+                _path = null;
+                throw;
+            }
         }
 
         /// <summary>
@@ -109,42 +120,73 @@ namespace PuppeteerSharp
                 TaskCreationOptions.RunContinuationsAsynchronously
             );
 
-            async void EventHandler(object sender, MessageEventArgs e)
+            // The page may swap its session while we are stopping, so stick to the current one.
+            var client = _client;
+
+            async void OnMessageReceived(object sender, MessageEventArgs e)
             {
+                if (e.MessageID != "Tracing.tracingComplete")
+                {
+                    return;
+                }
+
+                client.MessageReceived -= OnMessageReceived;
+
                 try
                 {
-                    if (e.MessageID == "Tracing.tracingComplete")
-                    {
-                        var stream = e.MessageData.ToObject<TracingCompleteResponse>().Stream;
-                        using var outputStream = !string.IsNullOrEmpty(_path)
-                            ? AsyncFileHelper.CreateStream(_path, FileMode.Create)
-                            : null;
-                        var tracingData = await ProtocolStreamReader
-                            .ReadProtocolStreamStringAsync(_client, stream, outputStream)
-                            .ConfigureAwait(false);
+                    var stream = e.MessageData.ToObject<TracingCompleteResponse>().Stream;
+                    string tracingData;
 
-                        _client.MessageReceived -= EventHandler;
-                        taskWrapper.TrySetResult(tracingData);
+                    // The file must be closed before the caller of StopAsync gets the result.
+                    using (
+                        var outputStream = !string.IsNullOrEmpty(_path)
+                            ? AsyncFileHelper.CreateStream(_path, FileMode.Create)
+                            : null
+                    )
+                    {
+                        tracingData = await ProtocolStreamReader
+                            .ReadProtocolStreamStringAsync(client, stream, outputStream)
+                            .ConfigureAwait(false);
                     }
+
+                    taskWrapper.TrySetResult(tracingData);
                 }
                 catch (Exception ex)
                 {
                     var message =
                         $"Tracing failed to process the tracing complete. {ex.Message}. {ex.StackTrace}";
                     _logger.ErrorWithException(ex, message);
-                    _client.MessageReceived -= EventHandler;
                     taskWrapper.TrySetException(ex);
-                    _client.Close(message);
+                    client.Close(message);
                 }
             }
 
-            _client.MessageReceived += EventHandler;
+            void OnDisconnected(object sender, EventArgs e) =>
+                taskWrapper.TrySetException(
+                    new TargetClosedException("Tracing failed: Target closed.", client.CloseReason)
+                );
 
-            await _client.SendAsync("Tracing.end").ConfigureAwait(false);
+            client.MessageReceived += OnMessageReceived;
+            client.Disconnected += OnDisconnected;
 
-            _recording = false;
+            try
+            {
+                try
+                {
+                    await client.SendAsync("Tracing.end").ConfigureAwait(false);
+                }
+                finally
+                {
+                    _recording = false;
+                }
 
-            return await taskWrapper.Task.ConfigureAwait(false);
+                return await taskWrapper.Task.ConfigureAwait(false);
+            }
+            finally
+            {
+                client.MessageReceived -= OnMessageReceived;
+                client.Disconnected -= OnDisconnected;
+            }
         }
 
         internal void UpdateClient(CDPSession newSession) => _client = newSession;
