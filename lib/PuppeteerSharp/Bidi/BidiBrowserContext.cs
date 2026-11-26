@@ -344,6 +344,9 @@ public class BidiBrowserContext : BrowserContext
         return context;
     }
 
+    internal BidiPageTarget GetTargetForPage(BidiPage page) =>
+        _targets.TryGetValue(page, out var info) ? info.BidiPageTarget : null;
+
     private static string GetPermissionName(OverridePermission permission)
     {
         return permission switch
