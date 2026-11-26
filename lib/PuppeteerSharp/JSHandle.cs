@@ -34,6 +34,8 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public virtual async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
         {
+            ThrowIfDisposed();
+
             var propertyNames = await EvaluateFunctionAsync<string[]>(
                     @"object => {
                     return Object.keys(object ?? {});
@@ -94,6 +96,18 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             return Realm.EvaluateFunctionAsync<T>(script, [this, .. args]);
+        }
+
+        /// <summary>
+        /// Throws if the handle has already been disposed.
+        /// </summary>
+        /// <exception cref="PuppeteerException">The handle is disposed.</exception>
+        internal void ThrowIfDisposed()
+        {
+            if (Disposed)
+            {
+                throw new PuppeteerException($"Attempted to use disposed {GetType().Name}.");
+            }
         }
 
         /// <summary>
