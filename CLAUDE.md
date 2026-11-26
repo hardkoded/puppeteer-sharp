@@ -154,3 +154,7 @@ Rules that stay on and that CSharpier output still meets:
 
 - SA1507: Code should not contain multiple blank lines in a row. CSharpier collapses them, so a double blank line means the file was not formatted.
 - SA1116: Parameters should begin on the line after the declaration when they span multiple lines. Do not put a `#pragma` inside a parameter list, because CSharpier then keeps the list as written. Put the `#pragma warning disable` before the member instead.
+
+### Code analysis rules
+
+- CA2000: Dispose objects before losing scope. It fails the build in test code too. When something else ends the object's lifetime (for example a `CdpBrowser` created on a test connection that is disposed on its own), wrap the creation in `#pragma warning disable CA2000` and `restore`, with a comment that says why.

@@ -65,6 +65,14 @@ public class CdpCDPSession : CDPSession
 
     internal bool IsClosed { get; private set; }
 
+    /// <summary>
+    /// The connection or session that this session was attached through, or <c>null</c> if that session is gone.
+    /// </summary>
+    internal ICDPConnection ParentConnection =>
+        string.IsNullOrEmpty(_parentSessionId)
+            ? Connection
+            : (ICDPConnection)Connection.GetSession(_parentSessionId);
+
     private protected override bool BufferEarlyMessages =>
         _targetType is TargetType.ServiceWorker or TargetType.SharedWorker or TargetType.Worker;
 

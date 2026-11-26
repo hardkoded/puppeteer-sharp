@@ -51,6 +51,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task<ICDPSession> CreateCDPSessionAsync();
 
+        /// <inheritdoc/>
+        public abstract Task CloseAsync();
+
         internal void AddChildTarget(CdpTarget target) => _childTargets.Add(target);
 
         internal void RemoveChildTarget(CdpTarget target) => _childTargets.Remove(target);

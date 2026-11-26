@@ -22,6 +22,7 @@
 
 #if !CDP_ONLY
 
+using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Bidi;
@@ -59,6 +60,11 @@ internal class BidiFrameTarget : Target
 
     public override Task<ICDPSession> CreateCDPSessionAsync() =>
         throw new PuppeteerException("Not supported");
+
+    public override Task CloseAsync() =>
+        Task.FromException(
+            new NotSupportedException("Closing a frame target is not supported in WebDriver BiDi.")
+        );
 }
 
 #endif
