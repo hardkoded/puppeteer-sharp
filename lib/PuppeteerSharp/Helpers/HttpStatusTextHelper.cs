@@ -78,6 +78,8 @@ internal static class HttpStatusTextHelper
             return statusText;
         }
 
-        return "Unknown Status Code";
+        // Chrome rejects status codes it has no reason phrase for unless one
+        // is provided.
+        return "Unknown";
     }
 }
