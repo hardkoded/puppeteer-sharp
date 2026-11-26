@@ -21,6 +21,11 @@ public class LifecycleWatcherTests : PuppeteerPageBaseTest
     {
         var errored = new TaskCompletionSource<bool>();
         Page.Error += (_, _) => errored.TrySetResult(true);
+        if (!PuppeteerTestAttribute.IsCdp)
+        {
+            Assert.Ignore("LifecycleWatcher is CDP only.");
+        }
+
         var frame = (CdpFrame)Page.MainFrame;
         using var watcher = new Cdp.LifecycleWatcher(
             frame.FrameManager.NetworkManager,
@@ -47,6 +52,11 @@ public class LifecycleWatcherTests : PuppeteerPageBaseTest
     ]
     public void RemovesThePageErrorListenerWhenDisposedWithoutACrash()
     {
+        if (!PuppeteerTestAttribute.IsCdp)
+        {
+            Assert.Ignore("LifecycleWatcher is CDP only.");
+        }
+
         var frame = (CdpFrame)Page.MainFrame;
         var cdpPage = (CdpPage)Page;
         Assert.That(cdpPage.HasErrorEventListeners, Is.False);
