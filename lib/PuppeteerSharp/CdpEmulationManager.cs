@@ -162,6 +162,14 @@ namespace PuppeteerSharp
                         nameof(features)
                     );
                 }
+
+                if (mediaFeature.Value == null)
+                {
+                    throw new ArgumentException(
+                        $"Missing value for media feature: {mediaFeature.MediaFeature}",
+                        nameof(features)
+                    );
+                }
             }
 
             lock (_mediaLock)

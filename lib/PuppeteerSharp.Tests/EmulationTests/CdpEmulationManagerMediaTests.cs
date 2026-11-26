@@ -51,10 +51,19 @@ namespace PuppeteerSharp.Tests.EmulationTests
             var missing = Assert.Throws<ArgumentException>(() =>
                 manager.EmulateMediaFeaturesAsync([null])
             );
+            var withoutValue = Assert.Throws<ArgumentException>(() =>
+                manager.EmulateMediaFeaturesAsync([
+                    new MediaFeatureValue { MediaFeature = MediaFeature.PrefersColorScheme },
+                ])
+            );
             await manager.EmulateMediaTypeAsync(MediaType.Screen);
 
             Assert.That(unsupported.Message, Does.Contain("Unsupported media feature: -1"));
             Assert.That(missing.Message, Does.Contain("Unsupported media feature: null"));
+            Assert.That(
+                withoutValue.Message,
+                Does.Contain("Missing value for media feature: PrefersColorScheme")
+            );
             var requests = GetRequests(client);
             Assert.That(requests, Has.Length.EqualTo(2));
             Assert.That(requests[1].Features, Is.EqualTo(new[] { _reducedMotion }));
