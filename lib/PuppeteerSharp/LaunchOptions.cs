@@ -219,6 +219,7 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.
+        /// Supported only with CDP.
         /// </summary>
         public Func<Target, bool> TargetFilter { get; set; }
 
