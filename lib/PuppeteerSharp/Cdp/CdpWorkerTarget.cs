@@ -32,20 +32,27 @@ namespace PuppeteerSharp.Cdp
         /// <inheritdoc/>
         public override Task<WebWorker> WorkerAsync()
         {
-            if (_workerTask == null)
+            // Checking that the target is not closing and publishing the worker task is one step under
+            // the lock CloseAsync() uses, so the sessions it snapshots include this worker's session.
+            lock (CloseLock)
             {
-                // CloseAsync() detaches the sessions that are attached when Chrome closes
-                // the target, so a session attached later would keep a closed service
-                // worker alive.
-                if (IsClosing())
+                if (_workerTask == null)
                 {
-                    return Task.FromException<WebWorker>(new TargetClosedException("Target closed"));
+                    // CloseAsync() detaches the sessions that are attached when Chrome closes
+                    // the target, so a session attached later would keep a closed service
+                    // worker alive.
+                    if (IsClosing())
+                    {
+                        return Task.FromException<WebWorker>(
+                            new TargetClosedException("Target closed")
+                        );
+                    }
+
+                    _workerTask = WorkerInternalAsync();
                 }
 
-                _workerTask = WorkerInternalAsync();
+                return _workerTask;
             }
-
-            return _workerTask;
         }
 
         /// <inheritdoc/>

@@ -31,7 +31,6 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc />
 public class CdpTarget : Target
 {
-    private readonly object _closeLock = new();
     private Task _closeTask;
 
     internal CdpTarget(
@@ -80,6 +79,8 @@ public class CdpTarget : Target
 
     internal TaskCompletionSource<InitializationStatus> InitializedTaskWrapper { get; } =
         new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    internal object CloseLock { get; } = new();
 
     internal Task CloseTask => CloseTaskWrapper.Task;
 
@@ -154,8 +155,13 @@ public class CdpTarget : Target
         // Concurrent calls share one close operation, because a second
         // Target.closeTarget fails if the target is already gone.
         Task closeTask;
-        lock (_closeLock)
+        lock (CloseLock)
         {
+            if (CloseTask.IsCompleted)
+            {
+                return;
+            }
+
             closeTask = _closeTask ??= CloseCoreAsync();
         }
 
@@ -196,7 +202,7 @@ public class CdpTarget : Target
     /// <returns>True if the target is closing.</returns>
     internal bool IsClosing()
     {
-        lock (_closeLock)
+        lock (CloseLock)
         {
             return _closeTask != null;
         }
@@ -271,7 +277,7 @@ public class CdpTarget : Target
         }
         finally
         {
-            lock (_closeLock)
+            lock (CloseLock)
             {
                 _closeTask = null;
             }
