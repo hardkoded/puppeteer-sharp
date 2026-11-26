@@ -131,6 +131,9 @@ public class DeviceRequestPrompt
         {
             if (filter(e))
             {
+                // Unsubscribe now: the finally block runs asynchronously, and the rest of
+                // this update must not reach the filter of a wait that already matched.
+                NewDevice -= OnNewDevice;
                 tcs.TrySetResult(e);
             }
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -335,5 +336,60 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         );
 
         await deviceTask;
+    }
+
+    [
+        Test,
+        PuppeteerTest(
+            "puppeteer-sharp.spec.ts",
+            "PuppeteerSharp",
+            "should not call the device filter again after a match"
+        )
+    ]
+    public async Task ShouldNotCallTheDeviceFilterAgainAfterAMatch()
+    {
+        var client = new MockCDPSession();
+        var timeoutSettings = new TimeoutSettings();
+        var prompt = new DeviceRequestPrompt(
+            client,
+            timeoutSettings,
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" }
+        );
+        var filteredDevices = new List<string>();
+        var deviceTask = prompt.WaitForDeviceAsync(device =>
+        {
+            filteredDevices.Add(device.Name);
+            return true;
+        });
+
+        var promptData = new DeviceAccessDeviceRequestPromptedResponse()
+        {
+            Id = "000",
+            Devices =
+            [
+                new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
+                {
+                    Name = "My Device 0",
+                    Id = "0000",
+                },
+                new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
+                {
+                    Name = "My Device 1",
+                    Id = "0001",
+                },
+            ],
+        };
+
+        client.OnMessage(
+            new ConnectionResponse()
+            {
+                Method = "DeviceAccess.deviceRequestPrompted",
+                Params = promptData.ToJsonElement(),
+            }
+        );
+
+        var matchedDevice = await deviceTask;
+        Assert.That(matchedDevice.Name, Is.EqualTo("My Device 0"));
+        Assert.That(filteredDevices, Is.EqualTo(new[] { "My Device 0" }));
     }
 }
