@@ -42,6 +42,8 @@ namespace PuppeteerSharp
             "disabled-by-default-v8.cpu_profiler",
         };
 
+        private static readonly TimeSpan _traceFileCloseTimeout = TimeSpan.FromSeconds(5);
+
         private readonly ILogger _logger;
         private bool _recording;
         private string _path;
@@ -123,6 +125,9 @@ namespace PuppeteerSharp
             // The page may swap its session while we are stopping, so stick to the current one.
             var client = _client;
 
+            // Completes once the trace file is closed. It stays completed if the trace is never read.
+            var traceFileClosed = Task.CompletedTask;
+
             async void OnMessageReceived(object sender, MessageEventArgs e)
             {
                 if (e.MessageID != "Tracing.tracingComplete")
@@ -131,6 +136,11 @@ namespace PuppeteerSharp
                 }
 
                 client.MessageReceived -= OnMessageReceived;
+
+                var completion = new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
+                traceFileClosed = completion.Task;
 
                 try
                 {
@@ -159,6 +169,10 @@ namespace PuppeteerSharp
                     taskWrapper.TrySetException(ex);
                     client.Close(message);
                 }
+                finally
+                {
+                    completion.TrySetResult(true);
+                }
             }
 
             void OnDisconnected(object sender, EventArgs e) =>
@@ -186,6 +200,11 @@ namespace PuppeteerSharp
             {
                 client.MessageReceived -= OnMessageReceived;
                 client.Disconnected -= OnDisconnected;
+
+                // After a disconnect the trace file can still be open. The wait is bounded because
+                // a pending protocol call is not guaranteed to complete once the session is gone.
+                await Task.WhenAny(traceFileClosed, Task.Delay(_traceFileCloseTimeout))
+                    .ConfigureAwait(false);
             }
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -131,6 +132,70 @@ namespace PuppeteerSharp.Tests.TracingTests
             await tracing.StartAsync();
         }
 
+        [
+            Test,
+            PuppeteerTest(
+                "puppeteer-sharp",
+                "Tracing",
+                "should close the trace file before failing on disconnect"
+            )
+        ]
+        public async Task ShouldCloseTheTraceFileBeforeFailingOnDisconnect()
+        {
+            var file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var pendingRead = new TaskCompletionSource<bool>();
+            var client = new MockCdpSession
+            {
+                OnSend = method => method == "IO.read" ? pendingRead.Task : Task.CompletedTask,
+            };
+            var tracing = new Tracing(client);
+
+            await tracing.StartAsync(new TracingOptions { Path = file });
+            var stopTask = tracing.StopAsync();
+            client.Emit("Tracing.tracingComplete", new { stream = "stream" });
+            client.EmitDisconnected();
+
+            // The read is still pending, so the trace file is still open.
+            await Task.WhenAny(stopTask, Task.Delay(200));
+            Assert.That(stopTask.IsCompleted, Is.False);
+
+            pendingRead.SetException(new PuppeteerException("Target closed"));
+
+            Assert.ThrowsAsync<TargetClosedException>(() => stopTask.WithTimeout(1_000));
+            Assert.That(
+                () =>
+                    File.Open(file, FileMode.Open, FileAccess.ReadWrite, FileShare.None).Dispose(),
+                Throws.Nothing
+            );
+            File.Delete(file);
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "puppeteer-sharp",
+                "Tracing",
+                "should not hang on disconnect if the trace read never completes"
+            )
+        ]
+        public async Task ShouldNotHangOnDisconnectIfTheTraceReadNeverCompletes()
+        {
+            var pendingRead = new TaskCompletionSource<bool>();
+            var client = new MockCdpSession
+            {
+                OnSend = method => method == "IO.read" ? pendingRead.Task : Task.CompletedTask,
+            };
+            var tracing = new Tracing(client);
+
+            await tracing.StartAsync();
+            var stopTask = tracing.StopAsync();
+            client.Emit("Tracing.tracingComplete", new { stream = "stream" });
+            client.EmitDisconnected();
+
+            // A TimeoutException here means that StopAsync hung on session disconnect.
+            Assert.ThrowsAsync<TargetClosedException>(() => stopTask.WithTimeout(30_000));
+        }
+
         private sealed class MockCdpSession : CDPSession
         {
             public List<(string Method, object Args)> Commands { get; } = [];
@@ -167,6 +232,15 @@ namespace PuppeteerSharp.Tests.TracingTests
             public override Task DetachAsync() => Task.CompletedTask;
 
             public override void Close(string closeReason) { }
+
+            public void Emit(string messageId, object data) =>
+                OnMessageReceived(
+                    new MessageEventArgs
+                    {
+                        MessageID = messageId,
+                        MessageData = JsonSerializer.SerializeToElement(data),
+                    }
+                );
 
             public void EmitDisconnected() => OnDisconnected();
 
