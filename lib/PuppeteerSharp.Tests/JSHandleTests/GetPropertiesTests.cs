@@ -89,6 +89,11 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         ]
         public async Task ShouldThrowIfGetPropertiesIsCalledOnADisposedHandle()
         {
+            if (!PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Upstream test targets CdpJSHandle only");
+            }
+
             var handle = await Page.EvaluateFunctionHandleAsync("() => ({ a: 1 })");
             await handle.DisposeAsync();
             Assert.That(handle.Disposed, Is.True);
