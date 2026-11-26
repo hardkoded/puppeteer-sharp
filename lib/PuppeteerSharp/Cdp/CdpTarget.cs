@@ -270,7 +270,11 @@ public class CdpTarget : Target
                 await Task.WhenAll(detachTasks).ConfigureAwait(false);
             }
 
-            await CloseTask.ConfigureAwait(false);
+            // Bound the wait like CdpPage.CloseAsync does: Chrome can acknowledge the close
+            // and never send the detach event.
+            await CloseTask
+                .WithTimeout(CdpBrowser.Connection.ProtocolTimeout)
+                .ConfigureAwait(false);
         }
         finally
         {
