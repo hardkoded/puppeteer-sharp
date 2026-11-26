@@ -45,6 +45,14 @@ namespace PuppeteerSharp
         CdpTarget GetFrameTarget(string frameId);
 
         /// <summary>
+        /// Returns the sessions that the target manager keeps attached to the target with the given ID.
+        /// A target that was reported gone and is attached again gets a new <see cref="CdpTarget"/>, so the sessions are matched by ID.
+        /// </summary>
+        /// <param name="targetId">Target id.</param>
+        /// <returns>The attached sessions.</returns>
+        IReadOnlyList<CdpCDPSession> GetAttachedSessions(string targetId);
+
+        /// <summary>
         /// Async tasks to be performed after calling the target manager constructor.
         /// </summary>
         /// <returns>A task that resolves when all the tasks are completed.</returns>

@@ -69,5 +69,18 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task that returns a <see cref="IPage"/>.</returns>
         Task<IPage> AsPageAsync();
+
+        /// <summary>
+        /// Closes the target.
+        /// </summary>
+        /// <remarks>
+        /// It does not create a <see cref="IPage"/> for the target, so it also closes a page target whose page could not be created.
+        /// It does not run <c>beforeunload</c> handlers.
+        /// Throws if the target does not support closing, for example the browser target, the target of a frame or a dedicated worker.
+        /// Chrome destroys a service worker only after all CDP sessions attached to it detach.
+        /// While a different session, for example one from <see cref="CreateCDPSessionAsync"/>, stays attached to a service worker, <see cref="CloseAsync"/> might not complete.
+        /// </remarks>
+        /// <returns>A task that completes when the target is closed.</returns>
+        Task CloseAsync();
     }
 }

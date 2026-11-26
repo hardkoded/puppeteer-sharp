@@ -243,6 +243,49 @@ namespace PuppeteerSharp.Tests.TargetTests
 
         [
             Test,
+            PuppeteerTest(
+                "target.spec",
+                "Target",
+                "should close a service worker when network rules are set"
+            )
+        ]
+        public async Task ShouldCloseAServiceWorkerWhenNetworkRulesAreSet()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.BlockList = ["*://*:*/empty.html"];
+            await using var browser = await Puppeteer.LaunchAsync(
+                options,
+                TestConstants.LoggerFactory
+            );
+
+            // With network rules, Puppeteer stays attached to service workers, also
+            // through the page that registered them.
+            var page = await TargetCloseTests.OpenServiceWorkerPageAsync(browser);
+            var target = await browser.WaitForTargetAsync(
+                t => t.Type == TargetType.ServiceWorker,
+                new WaitForOptions(3_000)
+            );
+            var worker = await target.WorkerAsync();
+            var targetDestroyed = new TaskCompletionSource<ITarget>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+            browser.TargetDestroyed += (_, e) =>
+            {
+                if (ReferenceEquals(e.Target, target))
+                {
+                    targetDestroyed.TrySetResult(e.Target);
+                }
+            };
+            var destroyed = await TargetCloseTests.WatchServiceWorkerAsync(page);
+
+            await worker.CloseAsync();
+
+            Assert.That(await targetDestroyed.Task, Is.SameAs(target));
+            await destroyed;
+        }
+
+        [
+            Test,
             PuppeteerTest("target.spec", "Target", "should create a worker from a shared worker")
         ]
         public async Task ShouldCreateAWorkerFromASharedWorker()

@@ -44,6 +44,8 @@ internal class BidiPageTarget(BidiPage page) : Target
     public override Task<IPage> AsPageAsync() => Task.FromResult<IPage>(page);
 
     public override Task<ICDPSession> CreateCDPSessionAsync() => page.CreateCDPSessionAsync();
+
+    public override Task CloseAsync() => page.CloseAsync();
 }
 
 #endif

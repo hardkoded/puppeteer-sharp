@@ -90,6 +90,21 @@ namespace PuppeteerSharp.Cdp
         public AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets() =>
             _attachedTargetsByTargetId;
 
+        public IReadOnlyList<CdpCDPSession> GetAttachedSessions(string targetId)
+        {
+            var sessions = new List<CdpCDPSession>();
+            foreach (var pair in _attachedTargetsBySessionId)
+            {
+                var session = _connection.GetSession(pair.Key);
+                if (pair.Value.TargetId == targetId && session != null)
+                {
+                    sessions.Add(session);
+                }
+            }
+
+            return sessions;
+        }
+
         public CdpTarget GetFrameTarget(string frameId)
         {
             if (
@@ -787,6 +802,16 @@ namespace PuppeteerSharp.Cdp
             if (sender is CdpCDPSession parentSession)
             {
                 parentSession.Target.RemoveChildTarget(target);
+            }
+
+            // A target can have several sessions, for example a service worker when network rules are set,
+            // so it might already be gone or replaced.
+            if (
+                !_attachedTargetsByTargetId.TryGetValue(target.TargetId, out var attached)
+                || !ReferenceEquals(attached, target)
+            )
+            {
+                return;
             }
 
             if (_attachedTargetsByTargetId.TryRemove(target.TargetId, out _))

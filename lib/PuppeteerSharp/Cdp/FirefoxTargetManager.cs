@@ -64,6 +64,12 @@ namespace PuppeteerSharp.Cdp
             IReadOnlyCollection<string> existingTargetIds = null
         ) => Task.CompletedTask;
 
+        public IReadOnlyList<CdpCDPSession> GetAttachedSessions(string targetId) =>
+            _availableTargetsByTargetId.TryGetValue(targetId, out var target)
+            && target.Session is CdpCDPSession session
+                ? [session]
+                : [];
+
         public CdpTarget GetFrameTarget(string frameId)
         {
             if (

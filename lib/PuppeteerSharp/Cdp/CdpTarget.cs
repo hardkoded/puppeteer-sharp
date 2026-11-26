@@ -21,7 +21,9 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
@@ -29,6 +31,9 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc />
 public class CdpTarget : Target
 {
+    private readonly object _closeLock = new();
+    private Task _closeTask;
+
     internal CdpTarget(
         TargetInfo targetInfo,
         CdpCDPSession session,
@@ -132,6 +137,31 @@ public class CdpTarget : Target
         return session;
     }
 
+    /// <inheritdoc/>
+    public override async Task CloseAsync()
+    {
+        // Chrome closes the whole page when it closes the target of a frame.
+        if (TargetInfo.Type == TargetType.IFrame)
+        {
+            throw new PuppeteerException("The target of a frame does not support closing");
+        }
+
+        if (CloseTask.IsCompleted)
+        {
+            return;
+        }
+
+        // Concurrent calls share one close operation, because a second
+        // Target.closeTarget fails if the target is already gone.
+        Task closeTask;
+        lock (_closeLock)
+        {
+            closeTask = _closeTask ??= CloseCoreAsync();
+        }
+
+        await closeTask.ConfigureAwait(false);
+    }
+
     internal void SetSession(CdpCDPSession session)
     {
         Session = session;
@@ -154,11 +184,97 @@ public class CdpTarget : Target
     }
 
     /// <summary>
+    /// Returns the sessions that Puppeteer keeps attached to the target.
+    /// </summary>
+    /// <returns>The attached sessions.</returns>
+    internal virtual Task<IReadOnlyList<CDPSession>> AttachedSessionsAsync() =>
+        Task.FromResult<IReadOnlyList<CDPSession>>([.. TargetManager.GetAttachedSessions(TargetId)]);
+
+    /// <summary>
+    /// Whether <see cref="CloseAsync"/> is closing the target.
+    /// </summary>
+    /// <returns>True if the target is closing.</returns>
+    internal bool IsClosing()
+    {
+        lock (_closeLock)
+        {
+            return _closeTask != null;
+        }
+    }
+
+    /// <summary>
     /// Check is the target is not initialized.
     /// </summary>
     protected internal virtual void CheckIfInitialized()
     {
         IsInitialized = true;
         InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);
+    }
+
+    private static async Task DetachAsync(CDPSession session)
+    {
+        if (session.Detached)
+        {
+            return;
+        }
+
+        // session.DetachAsync() sends the command on the connection, which fails for
+        // a session attached through a page. ParentSession returns the session
+        // itself if it was attached through the connection.
+        var parentSession = session.ParentSession;
+        try
+        {
+            var request = new TargetDetachFromTargetRequest { SessionId = session.Id };
+            if (ReferenceEquals(parentSession, session))
+            {
+                await session
+                    .Connection.SendAsync("Target.detachFromTarget", request)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                await parentSession
+                    .SendAsync("Target.detachFromTarget", request)
+                    .ConfigureAwait(false);
+            }
+        }
+        catch (Exception) when (session.Detached)
+        {
+            // Chrome might have detached the session already, for example because
+            // its page closed.
+        }
+    }
+
+    private async Task CloseCoreAsync()
+    {
+        // Let concurrent callers share the task before it can complete.
+        await Task.Yield();
+
+        try
+        {
+            await CdpBrowser.CloseTargetAsync(TargetId).ConfigureAwait(false);
+            if (TargetInfo.Type == TargetType.ServiceWorker)
+            {
+                // Chrome reports a closed service worker as destroyed only after the
+                // sessions attached to it detach.
+                var sessions = await AttachedSessionsAsync().ConfigureAwait(false);
+                var detachTasks = new List<Task>();
+                foreach (var session in sessions)
+                {
+                    detachTasks.Add(DetachAsync(session));
+                }
+
+                await Task.WhenAll(detachTasks).ConfigureAwait(false);
+            }
+
+            await CloseTask.ConfigureAwait(false);
+        }
+        finally
+        {
+            lock (_closeLock)
+            {
+                _closeTask = null;
+            }
+        }
     }
 }

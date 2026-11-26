@@ -702,6 +702,22 @@ public class CdpBrowser : Browser
         _contexts.TryRemove(contextId, out var _);
     }
 
+    internal async Task CloseTargetAsync(string targetId)
+    {
+        var response = await Connection
+            .SendAsync<TargetCloseTargetResponse>(
+                "Target.closeTarget",
+                new TargetCloseTargetRequest { TargetId = targetId }
+            )
+            .ConfigureAwait(false);
+
+        // chrome-headless-shell does not throw for a target that it cannot close.
+        if (response?.Success == false)
+        {
+            throw new PuppeteerException("The target does not support closing");
+        }
+    }
+
     private static bool IsTargetExposed(CdpTarget target) =>
         target.Type != TargetType.Tab && string.IsNullOrEmpty(target.TargetInfo.Subtype);
 
