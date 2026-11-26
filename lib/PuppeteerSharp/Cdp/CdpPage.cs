@@ -735,52 +735,7 @@ public class CdpPage : Page
             .WaitForScreenshotOperationsAsync()
             .ConfigureAwait(false);
 
-        if (Client?.Detached ?? true)
-        {
-            _logger.ConnectionClosedPageClosed();
-            return;
-        }
-
-        var runBeforeUnload = options?.RunBeforeUnload ?? false;
-
-        if (runBeforeUnload)
-        {
-            await PrimaryTargetClient.SendAsync("Page.close").ConfigureAwait(false);
-        }
-        else
-        {
-            await PrimaryTargetClient
-                .Connection.SendAsync(
-                    "Target.closeTarget",
-                    new TargetCloseTargetRequest { TargetId = PrimaryTarget.TargetId }
-                )
-                .ConfigureAwait(false);
-
-            // Puppeteer waits for Target.CloseTask. But I found some race condition where IsClose didn't get set to true.
-            // So I'm waiting for the task that set IsClose to true.
-            //
-            // Target.closeTarget can race an in-flight, client-initiated navigation (e.g. window.location = ...
-            // from an evaluate call): Chrome acknowledges the close (success: true) but keeps loading the new
-            // document to completion first, and has been observed (headful Chrome for Testing) to then never
-            // send the follow-up Target.detachedFromTarget/Target.targetDestroyed events at all, which would
-            // leave this await pending forever. Every other protocol round-trip in this codebase is bounded by
-            // ProtocolTimeout (see CdpCDPSession.SendAsync/Connection.SendAsync); mirror that here instead of
-            // hanging indefinitely. The close request was already accepted by Chrome, so on timeout we log and
-            // move on rather than fail the caller - if the events do arrive later, IsClosed will still flip.
-            await _closedFinishedTask
-                .WithTimeout(
-                    () =>
-                    {
-                        _logger.TimedOutWaitingForTargetClose(
-                            PrimaryTarget.TargetId,
-                            PrimaryTargetClient.Connection.ProtocolTimeout
-                        );
-                        return Task.CompletedTask;
-                    },
-                    PrimaryTargetClient.Connection.ProtocolTimeout
-                )
-                .ConfigureAwait(false);
-        }
+        await CloseTargetAsync(options).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -807,7 +762,17 @@ public class CdpPage : Page
         }
         catch
         {
-            await page.DisposeAsync().ConfigureAwait(false);
+            // Close the target without waiting for screenshot operations. NewPageAsync can be holding
+            // the screenshot guard at this point, and a queued screenshot would be waiting for it.
+            try
+            {
+                await page.CloseTargetAsync(null).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Closing might not be bulletproof. The initialization error is the one to report.
+            }
+
             throw;
         }
     }
@@ -1622,6 +1587,56 @@ public class CdpPage : Page
             Width = Math.Min(clip.X + clip.Width, viewport.X + viewport.Width) - x,
             Height = Math.Min(clip.Y + clip.Height, viewport.Y + viewport.Height) - y,
         };
+    }
+
+    private async Task CloseTargetAsync(PageCloseOptions options)
+    {
+        if (Client?.Detached ?? true)
+        {
+            _logger.ConnectionClosedPageClosed();
+            return;
+        }
+
+        var runBeforeUnload = options?.RunBeforeUnload ?? false;
+
+        if (runBeforeUnload)
+        {
+            await PrimaryTargetClient.SendAsync("Page.close").ConfigureAwait(false);
+        }
+        else
+        {
+            await PrimaryTargetClient
+                .Connection.SendAsync(
+                    "Target.closeTarget",
+                    new TargetCloseTargetRequest { TargetId = PrimaryTarget.TargetId }
+                )
+                .ConfigureAwait(false);
+
+            // Puppeteer waits for Target.CloseTask. But I found some race condition where IsClose didn't get set to true.
+            // So I'm waiting for the task that set IsClose to true.
+            //
+            // Target.closeTarget can race an in-flight, client-initiated navigation (e.g. window.location = ...
+            // from an evaluate call): Chrome acknowledges the close (success: true) but keeps loading the new
+            // document to completion first, and has been observed (headful Chrome for Testing) to then never
+            // send the follow-up Target.detachedFromTarget/Target.targetDestroyed events at all, which would
+            // leave this await pending forever. Every other protocol round-trip in this codebase is bounded by
+            // ProtocolTimeout (see CdpCDPSession.SendAsync/Connection.SendAsync); mirror that here instead of
+            // hanging indefinitely. The close request was already accepted by Chrome, so on timeout we log and
+            // move on rather than fail the caller - if the events do arrive later, IsClosed will still flip.
+            await _closedFinishedTask
+                .WithTimeout(
+                    () =>
+                    {
+                        _logger.TimedOutWaitingForTargetClose(
+                            PrimaryTarget.TargetId,
+                            PrimaryTargetClient.Connection.ProtocolTimeout
+                        );
+                        return Task.CompletedTask;
+                    },
+                    PrimaryTargetClient.Connection.ProtocolTimeout
+                )
+                .ConfigureAwait(false);
+        }
     }
 
     private async Task InitializeAsync()

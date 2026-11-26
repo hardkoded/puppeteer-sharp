@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Transport;
 
 #pragma warning disable CA2000 // The mock browser contexts hold no resources, and disposing one would call CloseAsync.
 
@@ -181,6 +184,66 @@ namespace PuppeteerSharp.Tests.BrowserTests
             AssertNoScreenshotOperations(context1);
         }
 
+        [
+            Test,
+            PuppeteerTest(
+                "puppeteer-sharp",
+                "Browser screenshot mutex",
+                "should not deadlock when page creation fails while a screenshot is queued"
+            )
+        ]
+        public async Task ShouldNotDeadlockWhenPageCreationFailsWhileAScreenshotIsQueued()
+        {
+            var timeout = TimeSpan.FromSeconds(10);
+            var options = TestConstants.DefaultBrowserOptions();
+            options.TransportFactory = async (url, connectionOptions, cancellationToken) =>
+                new FailingPageInitializationTransport(
+                    await WebSocketTransport.DefaultTransportFactory(
+                        url,
+                        connectionOptions,
+                        cancellationToken
+                    )
+                );
+
+            await using var browser = (Browser)
+                await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            var pageTargetDestroyed = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+            browser.TargetDestroyed += (_, e) =>
+            {
+                if (e.Target.Type == TargetType.Page)
+                {
+                    pageTargetDestroyed.TrySetResult(true);
+                }
+            };
+
+            // The screenshot guards are taken by hand to get a deterministic order:
+            // a screenshot is running, a new page waits for it and a second screenshot queues up.
+            var screenshot1 = await browser.StartScreenshotAsync();
+            var newPageTask = browser.NewPageAsync();
+            var screenshot2Task = browser.StartScreenshotAsync();
+            screenshot1.Dispose();
+
+            // Don't use Assert.ThrowsAsync here. It blocks the thread, which can be the one reading
+            // the protocol messages.
+            Exception exception = null;
+            try
+            {
+                await newPageTask.WithTimeout(timeout);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+
+            Assert.That(exception, Is.InstanceOf<MessageException>());
+
+            var screenshot2 = await screenshot2Task.WithTimeout(timeout);
+            screenshot2.Dispose();
+            await pageTargetDestroyed.Task.WithTimeout(timeout);
+        }
+
         private static void AssertNoScreenshotOperations(BrowserContext context)
         {
             var task = context.WaitForScreenshotOperationsAsync();
@@ -203,6 +266,42 @@ namespace PuppeteerSharp.Tests.BrowserTests
         {
             var guard = await guardTask;
             guard.Dispose();
+        }
+
+        // Makes Chrome reject one of the commands that initialize a page.
+        private sealed class FailingPageInitializationTransport : IConnectionTransport
+        {
+            private readonly IConnectionTransport _transport;
+
+            public FailingPageInitializationTransport(IConnectionTransport transport) =>
+                _transport = transport;
+
+            public event EventHandler<TransportClosedEventArgs> Closed
+            {
+                add => _transport.Closed += value;
+                remove => _transport.Closed -= value;
+            }
+
+            public event EventHandler<MessageReceivedEventArgs> MessageReceived
+            {
+                add => _transport.MessageReceived += value;
+                remove => _transport.MessageReceived -= value;
+            }
+
+            public bool IsClosed => _transport.IsClosed;
+
+            public void StopReading() => _transport.StopReading();
+
+            public Task SendAsync(byte[] message) =>
+                _transport.SendAsync(
+                    Encoding.UTF8.GetBytes(
+                        Encoding
+                            .UTF8.GetString(message)
+                            .Replace("Performance.enable", "Performance.unknownMethod")
+                    )
+                );
+
+            public void Dispose() => _transport.Dispose();
         }
 
         private sealed class MockBrowserContext : BrowserContext
