@@ -26,6 +26,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Browser;
@@ -39,8 +40,7 @@ namespace PuppeteerSharp.Bidi.Core;
 internal sealed class Browser(Session session) : IDisposable
 {
     private readonly ConcurrentDictionary<string, UserContext> _userContexts = new();
-    private bool _disposed;
-    private string _reason;
+    private int _disposed;
 
     public event EventHandler<ClosedEventArgs> Closed;
 
@@ -48,11 +48,11 @@ internal sealed class Browser(Session session) : IDisposable
 
     public Session Session { get; } = session;
 
-    public bool IsClosed { get; set; }
+    public bool IsClosed { get; private set; }
 
     public bool IsDisconnected => Reason != null;
 
-    public string Reason { get; set; }
+    public string Reason { get; private set; }
 
     internal UserContext DefaultUserContext =>
         _userContexts.TryGetValue(UserContext.DEFAULT, out var context)
@@ -82,25 +82,7 @@ internal sealed class Browser(Session session) : IDisposable
         }
     }
 
-    public void Dispose()
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        _disposed = true;
-        _reason ??= "Browser was disconnected, probably because the session ended.";
-
-        if (IsClosed)
-        {
-            Closed?.Invoke(this, new ClosedEventArgs(_reason));
-        }
-
-        Disconnected?.Invoke(this, new ClosedEventArgs(_reason));
-
-        Session?.Dispose();
-    }
+    public void Dispose() => Dispose(null);
 
     public async Task<UserContext> CreateUserContextAsync(DownloadBehavior downloadBehavior = null)
     {
@@ -188,16 +170,32 @@ internal sealed class Browser(Session session) : IDisposable
             .ConfigureAwait(false);
     }
 
-    private void Dispose(string reason)
+    /// <summary>
+    /// Disposes the browser. It only has effect the first time it is called.
+    /// </summary>
+    /// <param name="reason">Why the browser is being disposed.</param>
+    /// <param name="closed">Whether the browser is closed, and not just disconnected.</param>
+    internal void Dispose(string reason, bool closed = false)
     {
-        _reason = reason;
-        IsClosed = true;
-        Dispose();
-    }
+        if (Interlocked.Exchange(ref _disposed, 1) == 1)
+        {
+            return;
+        }
 
-    private void Dispose(bool disposing)
-    {
-        Dispose();
+        IsClosed = closed;
+        Reason = reason ?? "Browser was disconnected, probably because the session ended.";
+
+        if (closed)
+        {
+            Closed?.Invoke(this, new ClosedEventArgs(Reason));
+        }
+
+        Disconnected?.Invoke(this, new ClosedEventArgs(Reason));
+
+        if (closed)
+        {
+            Session.Dispose(Reason);
+        }
     }
 
     private async Task InitializeAsync()
@@ -291,13 +289,6 @@ internal sealed class Browser(Session session) : IDisposable
     private void OnSessionEnded(object sender, SessionEndArgs e)
     {
         Dispose(e.Reason);
-    }
-
-    private void Dispose(string reason = null, bool closed = false)
-    {
-        Reason = reason;
-        IsClosed = closed;
-        Dispose(true);
     }
 }
 

@@ -21,8 +21,7 @@ using PuppeteerSharp.Bidi;
 #endif
 
 #if !CDP_ONLY
-using WebDriverBiDi;
-using BidiTransport = WebDriverBiDi.Protocol.Transport;
+using WebSocketConnection = WebDriverBiDi.Protocol.WebSocketConnection;
 #endif
 
 namespace PuppeteerSharp
@@ -136,7 +135,7 @@ namespace PuppeteerSharp
                     if (options.Protocol == ProtocolType.WebdriverBiDi)
                     {
 #if !CDP_ONLY
-                        BiDiDriver driver;
+                        BidiConnection driver;
 
                         if (Process is FirefoxLauncher)
                         {
@@ -511,23 +510,21 @@ namespace PuppeteerSharp
         }
 
 #if !CDP_ONLY
-        private static async Task<BiDiDriver> CreateBidiDriverAsync(
+        private static async Task<BidiConnection> CreateBidiDriverAsync(
             BidiOverCdpTransport transport,
             IConnectionOptions options
         )
         {
             PuppeteerConnection puppeteerConnection = null;
-            BidiTransport bidiTransport = null;
-            BiDiDriver driver = null;
+            BidiConnection driver = null;
             try
             {
 #pragma warning disable CA2000 // Ownership is transferred to the driver
                 puppeteerConnection = new PuppeteerConnection(transport);
-                bidiTransport = new BidiTransport(puppeteerConnection);
 #pragma warning restore CA2000
-                driver = new BiDiDriver(
+                driver = BidiConnection.Create(
                     TimeSpan.FromMilliseconds(options.ProtocolTimeout),
-                    bidiTransport
+                    puppeteerConnection
                 );
                 await driver.StartAsync("bidi-over-cdp://local").ConfigureAwait(false);
                 return driver;
@@ -537,10 +534,6 @@ namespace PuppeteerSharp
                 if (driver != null)
                 {
                     await driver.StopAsync().ConfigureAwait(false);
-                }
-                else if (bidiTransport != null)
-                {
-                    await bidiTransport.DisposeAsync().ConfigureAwait(false);
                 }
                 else if (puppeteerConnection != null)
                 {
@@ -555,7 +548,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private static async Task<BiDiDriver> CreateBidiDriverAsync(
+        private static async Task<BidiConnection> CreateBidiDriverAsync(
             string browserWSEndpoint,
             IConnectionOptions options
         )
@@ -566,17 +559,15 @@ namespace PuppeteerSharp
                     .TransportFactory(new Uri(browserWSEndpoint), options, CancellationToken.None)
                     .ConfigureAwait(false);
                 PuppeteerConnection puppeteerConnection = null;
-                BidiTransport bidiTransport = null;
-                BiDiDriver driver = null;
+                BidiConnection driver = null;
                 try
                 {
 #pragma warning disable CA2000 // Ownership is transferred to the driver
                     puppeteerConnection = new PuppeteerConnection(transport);
-                    bidiTransport = new BidiTransport(puppeteerConnection);
 #pragma warning restore CA2000
-                    driver = new BiDiDriver(
+                    driver = BidiConnection.Create(
                         TimeSpan.FromMilliseconds(options.ProtocolTimeout),
-                        bidiTransport
+                        puppeteerConnection
                     );
                     await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
                     return driver;
@@ -586,10 +577,6 @@ namespace PuppeteerSharp
                     if (driver != null)
                     {
                         await driver.StopAsync().ConfigureAwait(false);
-                    }
-                    else if (bidiTransport != null)
-                    {
-                        await bidiTransport.DisposeAsync().ConfigureAwait(false);
                     }
                     else if (puppeteerConnection != null)
                     {
@@ -604,7 +591,12 @@ namespace PuppeteerSharp
                 }
             }
 
-            var defaultDriver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
+#pragma warning disable CA2000 // Ownership is transferred to the driver
+            var defaultDriver = BidiConnection.Create(
+                TimeSpan.FromMilliseconds(options.ProtocolTimeout),
+                new WebSocketConnection()
+            );
+#pragma warning restore CA2000
             await defaultDriver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
             return defaultDriver;
         }
@@ -614,7 +606,7 @@ namespace PuppeteerSharp
             ConnectOptions options
         )
         {
-            BiDiDriver driver = null;
+            BidiConnection driver = null;
             try
             {
                 driver = await CreateBidiDriverAsync(browserWSEndpoint, options)

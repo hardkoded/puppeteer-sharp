@@ -2997,22 +2997,6 @@
     ],
     "parameters": [
       "chrome",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ],
-    "comment": "The browser `disconnect` event is not emitted"
-  },
-  {
-    "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "chrome",
       "pipe"
     ],
     "expectations": [
@@ -3095,22 +3079,6 @@
     ],
     "expectations": [
       "FAIL"
-    ],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "chrome",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
     ],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
