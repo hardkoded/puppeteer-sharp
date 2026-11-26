@@ -44,4 +44,25 @@ public class DeviceRequestPromptTests : PuppeteerPageBaseTest
 
         Assert.CatchAsync<OperationCanceledException>(async () => await task);
     }
+
+    [
+        Test,
+        PuppeteerTest(
+            "device-request-prompt.spec",
+            "device request prompt",
+            "rejects immediately when the signal is already aborted"
+        )
+    ]
+    public void RejectsImmediatelyWhenTheSignalIsAlreadyAborted()
+    {
+        Assert.CatchAsync<OperationCanceledException>(() =>
+            Page.WaitForDevicePromptAsync(
+                new WaitForOptions
+                {
+                    CancellationToken = new CancellationToken(true),
+                    Timeout = 1000,
+                }
+            )
+        );
+    }
 }

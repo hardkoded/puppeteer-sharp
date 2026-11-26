@@ -664,6 +664,9 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (_fileChooserInterceptors.IsEmpty)
         {
             await PrimaryTargetClient
@@ -680,6 +683,10 @@ public class CdpPage : Page
         );
         var guid = Guid.NewGuid();
         _fileChooserInterceptors.TryAdd(guid, tcs);
+
+        using var registration = cancellationToken.Register(() =>
+            tcs.TrySetCanceled(cancellationToken)
+        );
 
         try
         {
