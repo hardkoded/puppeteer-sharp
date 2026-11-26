@@ -23,6 +23,7 @@
 #if !CDP_ONLY
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using WebDriverBiDi;
 using WebDriverBiDi.Protocol;
@@ -68,11 +69,33 @@ internal sealed class BidiConnection : BiDiDriver
 
     private sealed class ClosableTransport(Connection connection) : BidiTransport(connection)
     {
+        private readonly TaskCompletionSource<bool> _drained = new(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+
         private volatile bool _isClosed;
 
         public event EventHandler Closed;
 
         public bool IsClosed => _isClosed;
+
+        public override async Task ConnectAsync(
+            string connectionString,
+            CancellationToken cancellationToken = default
+        )
+        {
+            await base.ConnectAsync(connectionString, cancellationToken).ConfigureAwait(false);
+
+            // A connection whose transport was closed before this point has to be returned
+            // already closed, because nothing else is going to close it.
+            if (
+                Connection is PuppeteerConnection puppeteerConnection
+                && await puppeteerConnection.ReportIfTransportClosedAsync().ConfigureAwait(false)
+            )
+            {
+                await _drained.Task.ConfigureAwait(false);
+            }
+        }
 
         // This loop ends only after the incoming message queue is completed, which happens
         // when the connection is lost or disconnected, and after the queue has been drained.
@@ -85,6 +108,7 @@ internal sealed class BidiConnection : BiDiDriver
             finally
             {
                 _isClosed = true;
+                _drained.TrySetResult(true);
                 Closed?.Invoke(this, EventArgs.Empty);
             }
         }

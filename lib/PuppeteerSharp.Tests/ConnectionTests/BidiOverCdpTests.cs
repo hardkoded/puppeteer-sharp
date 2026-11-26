@@ -33,6 +33,7 @@ public class BidiOverCdpTests
         await connection.StartAsync("bidi-over-cdp://local");
 
         Assert.That(transport.IsClosed, Is.True);
+        Assert.That(connection.IsClosed, Is.True);
         Assert.ThrowsAsync<WebDriverBiDiConnectionException>(() =>
             connection.Session.StatusAsync(new StatusCommandParameters())
         );

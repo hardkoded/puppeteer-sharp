@@ -57,6 +57,22 @@ internal class PuppeteerConnection : Connection
     /// <inheritdoc/>
     protected override bool IsConnectionOpen => _isActive;
 
+    /// <summary>
+    /// Reports to the BiDi driver that the connection is gone, if the transport is closed.
+    /// A transport closed before the driver started could not do it from its Closed event.
+    /// </summary>
+    /// <returns>Whether the transport is closed.</returns>
+    internal async Task<bool> ReportIfTransportClosedAsync()
+    {
+        if (!_transport.IsClosed)
+        {
+            return false;
+        }
+
+        await ReportTransportClosedAsync().ConfigureAwait(false);
+        return true;
+    }
+
     /// <inheritdoc/>
     protected override Task StartConnectionAsync(CancellationToken cancellationToken = default)
     {
@@ -128,17 +144,22 @@ internal class PuppeteerConnection : Connection
 
         try
         {
-            // Let the BiDi driver know that the connection is gone, so it fails the pending
-            // commands and closes once the messages already received are dispatched.
-            await NotifyRemoteDisconnectedObserversAsync().ConfigureAwait(false);
-
-            // The driver won't stop a connection it knows is lost, so release the transport here.
-            _transport.Dispose();
+            await ReportTransportClosedAsync().ConfigureAwait(false);
         }
         catch
         {
             // This is an event listener, we don't want to crash the whole process.
         }
+    }
+
+    private async Task ReportTransportClosedAsync()
+    {
+        // Let the BiDi driver know that the connection is gone, so it fails the pending
+        // commands and closes once the messages already received are dispatched.
+        await NotifyRemoteDisconnectedObserversAsync().ConfigureAwait(false);
+
+        // The driver won't stop a connection it knows is lost, so release the transport here.
+        _transport.Dispose();
     }
 }
 
