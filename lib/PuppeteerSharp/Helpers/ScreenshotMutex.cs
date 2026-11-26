@@ -8,34 +8,50 @@ namespace PuppeteerSharp.Helpers
     internal sealed class ScreenshotMutex
     {
         private readonly Queue<TaskCompletionSource<bool>> _acquirers = new();
+        private readonly object _lock = new();
         private bool _locked;
 
+        // This is FIFO.
         internal async Task<IDisposable> AcquireAsync(Action onRelease = null)
         {
-            if (!_locked)
+            TaskCompletionSource<bool> tcs = null;
+
+            lock (_lock)
             {
-                _locked = true;
-                return new Guard(this, onRelease);
+                if (_locked)
+                {
+                    tcs = new TaskCompletionSource<bool>(
+                        TaskCreationOptions.RunContinuationsAsynchronously
+                    );
+                    _acquirers.Enqueue(tcs);
+                }
+                else
+                {
+                    _locked = true;
+                }
             }
 
-            var tcs = new TaskCompletionSource<bool>(
-                TaskCreationOptions.RunContinuationsAsynchronously
-            );
-            _acquirers.Enqueue(tcs);
-            await tcs.Task.ConfigureAwait(false);
+            if (tcs != null)
+            {
+                await tcs.Task.ConfigureAwait(false);
+            }
+
             return new Guard(this, onRelease);
         }
 
         private void Release()
         {
-            if (_acquirers.Count > 0)
+            lock (_lock)
             {
-                var next = _acquirers.Dequeue();
-                next.TrySetResult(true);
-            }
-            else
-            {
-                _locked = false;
+                if (_acquirers.Count > 0)
+                {
+                    var next = _acquirers.Dequeue();
+                    next.TrySetResult(true);
+                }
+                else
+                {
+                    _locked = false;
+                }
             }
         }
 

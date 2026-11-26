@@ -56,8 +56,7 @@ public class CdpPage : Page
     > _fileChooserInterceptors = new();
     private readonly ConcurrentDictionary<string, string> _exposedFunctions = new();
 
-    private CdpPage(CdpCDPSession client, CdpTarget target, TaskQueue screenshotTaskQueue)
-        : base(screenshotTaskQueue)
+    private CdpPage(CdpCDPSession client, CdpTarget target)
     {
         PrimaryTargetClient = client;
         TabTargetClient = (CdpCDPSession)client.ParentSession;
@@ -732,10 +731,9 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task CloseAsync(PageCloseOptions options = null)
     {
-        var guard = await ((BrowserContext)BrowserContext)
+        using var guard = await ((BrowserContext)BrowserContext)
             .WaitForScreenshotOperationsAsync()
             .ConfigureAwait(false);
-        guard?.Dispose();
 
         if (Client?.Detached ?? true)
         {
@@ -791,11 +789,10 @@ public class CdpPage : Page
     internal static async Task<Page> CreateAsync(
         CdpCDPSession client,
         CdpTarget target,
-        ViewPortOptions defaultViewPort,
-        TaskQueue screenshotTaskQueue
+        ViewPortOptions defaultViewPort
     )
     {
-        var page = new CdpPage(client, target, screenshotTaskQueue);
+        var page = new CdpPage(client, target);
 
         try
         {

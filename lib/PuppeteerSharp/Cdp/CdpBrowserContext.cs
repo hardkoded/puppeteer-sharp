@@ -76,8 +76,7 @@ public class CdpBrowserContext : BrowserContext
     /// <inheritdoc/>
     public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
     {
-        var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
-        guard?.Dispose();
+        using var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
         return await _browser.CreatePageInContextAsync(Id, options).ConfigureAwait(false);
     }
 

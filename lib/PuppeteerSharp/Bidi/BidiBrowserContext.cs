@@ -56,8 +56,6 @@ public class BidiBrowserContext : BrowserContext
 
     internal ViewPortOptions DefaultViewport { get; set; }
 
-    internal TaskQueue ScreenshotTaskQueue => Browser.ScreenshotTaskQueue;
-
     internal UserContext UserContext { get; }
 
     /// <inheritdoc />
@@ -249,8 +247,7 @@ public class BidiBrowserContext : BrowserContext
     /// <inheritdoc />
     public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
     {
-        var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
-        guard?.Dispose();
+        using var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
 
         var type =
             options?.Type == CreatePageType.Window
