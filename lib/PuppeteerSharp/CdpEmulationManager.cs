@@ -13,6 +13,7 @@ namespace PuppeteerSharp
     {
         private readonly ConcurrentSet<CDPSession> _secondaryClients = [];
         private readonly ILogger _logger = client.LoggerFactory.CreateLogger<CdpEmulationManager>();
+        private readonly object _mediaLock = new();
         private ICDPSession _client = client;
         private bool _emulatingMobile;
         private bool _hasTouch;
@@ -130,14 +131,44 @@ namespace PuppeteerSharp
 
         internal Task EmulateMediaTypeAsync(MediaType type)
         {
-            _mediaType = type;
-            return EmulateMediaAsync();
+            if (!Enum.IsDefined(typeof(MediaType), type))
+            {
+                throw new ArgumentException($"Unsupported media type: {type}", nameof(type));
+            }
+
+            // The lock sends requests in the order their payloads were built, so the last one
+            // sent always has the latest type and features.
+            lock (_mediaLock)
+            {
+                _mediaType = type;
+                return EmulateMediaAsync();
+            }
         }
 
         internal Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features)
         {
-            _mediaFeatures = features?.ToArray();
-            return EmulateMediaAsync();
+            var mediaFeatures = features?.ToArray();
+
+            foreach (var mediaFeature in mediaFeatures ?? [])
+            {
+                if (
+                    mediaFeature == null
+                    || !Enum.IsDefined(typeof(MediaFeature), mediaFeature.MediaFeature)
+                )
+                {
+                    var name = mediaFeature?.MediaFeature.ToString() ?? "null";
+                    throw new ArgumentException(
+                        $"Unsupported media feature: {name}",
+                        nameof(features)
+                    );
+                }
+            }
+
+            lock (_mediaLock)
+            {
+                _mediaFeatures = mediaFeatures;
+                return EmulateMediaAsync();
+            }
         }
 
         internal Task SetGeolocationAsync(GeolocationOption options)
