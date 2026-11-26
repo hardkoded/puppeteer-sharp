@@ -196,6 +196,9 @@ namespace PuppeteerSharp.Tests.BrowserTests
         {
             var timeout = TimeSpan.FromSeconds(10);
             var options = TestConstants.DefaultBrowserOptions();
+
+            // TransportFactory is bypassed in pipe mode.
+            options.Pipe = false;
             options.TransportFactory = async (url, connectionOptions, cancellationToken) =>
                 new FailingPageInitializationTransport(
                     await WebSocketTransport.DefaultTransportFactory(
