@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
@@ -28,7 +29,9 @@ public class LifecycleWatcherTests : PuppeteerPageBaseTest
             30_000
         );
 
-        _ = frame.Client.SendAsync("Page.crash").ContinueWith(_ => { });
+        typeof(CdpPage)
+            .GetMethod("OnTargetCrashed", BindingFlags.Instance | BindingFlags.NonPublic)
+            .Invoke(Page, null);
 
         var ex = Assert.ThrowsAsync<PuppeteerException>(() => watcher.TerminationTask);
         Assert.That(ex.Message, Is.EqualTo("Page crashed!"));
