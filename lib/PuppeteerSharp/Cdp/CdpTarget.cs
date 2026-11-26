@@ -147,17 +147,14 @@ public class CdpTarget : Target
             throw new PuppeteerException("The target of a frame does not support closing");
         }
 
-        if (CloseTask.IsCompleted)
-        {
-            return;
-        }
-
         // Concurrent calls share one close operation, because a second
         // Target.closeTarget fails if the target is already gone.
         Task closeTask;
         lock (CloseLock)
         {
-            if (CloseTask.IsCompleted)
+            // Join an active operation first. CloseTask can complete on the first
+            // detach while other sessions are still detaching.
+            if (_closeTask == null && CloseTask.IsCompleted)
             {
                 return;
             }
