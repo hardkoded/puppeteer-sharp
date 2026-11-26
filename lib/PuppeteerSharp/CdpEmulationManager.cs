@@ -17,6 +17,8 @@ namespace PuppeteerSharp
         private bool _emulatingMobile;
         private bool _hasTouch;
         private ViewPortOptions _viewport;
+        private MediaType _mediaType = MediaType.None;
+        private MediaFeatureValue[] _mediaFeatures;
 
         public bool JavascriptEnabled { get; private set; } = true;
 
@@ -126,17 +128,17 @@ namespace PuppeteerSharp
                 new EmulationSetLocaleOverrideRequest { Locale = locale }
             );
 
-        internal Task EmulateMediaTypeAsync(MediaType type) =>
-            _client.SendAsync(
-                "Emulation.setEmulatedMedia",
-                new EmulationSetEmulatedMediaTypeRequest { Media = type }
-            );
+        internal Task EmulateMediaTypeAsync(MediaType type)
+        {
+            _mediaType = type;
+            return EmulateMediaAsync();
+        }
 
-        internal Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features) =>
-            _client.SendAsync(
-                "Emulation.setEmulatedMedia",
-                new EmulationSetEmulatedMediaFeatureRequest { Features = features }
-            );
+        internal Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features)
+        {
+            _mediaFeatures = features?.ToArray();
+            return EmulateMediaAsync();
+        }
 
         internal Task SetGeolocationAsync(GeolocationOption options)
         {
@@ -274,5 +276,17 @@ namespace PuppeteerSharp
                 ])
                 .ConfigureAwait(false);
         }
+
+        // `Emulation.setEmulatedMedia` resets the media type or the features
+        // when they are omitted, so always send both.
+        private Task EmulateMediaAsync() =>
+            _client.SendAsync(
+                "Emulation.setEmulatedMedia",
+                new EmulationSetEmulatedMediaRequest
+                {
+                    Media = _mediaType,
+                    Features = _mediaFeatures,
+                }
+            );
     }
 }
