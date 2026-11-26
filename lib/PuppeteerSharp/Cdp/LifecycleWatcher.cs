@@ -36,6 +36,7 @@ namespace PuppeteerSharp.Cdp
         private readonly CancellationTokenRegistration _cancellationRegistration;
         private readonly string _initialLoaderId;
         private readonly long _createdAtSequence;
+        private readonly Page _page;
         private IRequest _navigationRequest;
         private bool _hasSameDocumentNavigation;
         private bool _swapped;
@@ -83,6 +84,12 @@ namespace PuppeteerSharp.Cdp
             frame.FrameSwapped += OnFrameSwapped;
             frame.FrameSwappedByActivation += FrameSwappedByActivation;
             frame.FrameDetached += OnFrameDetached;
+            _page = frame.Page as Page;
+            if (_page != null)
+            {
+                _page.Error += OnPageError;
+            }
+
             _networkManager.Request += OnRequest;
             _networkManager.Response += OnResponse;
             _networkManager.RequestFailed += OnRequestFailed;
@@ -123,6 +130,11 @@ namespace PuppeteerSharp.Cdp
             _frame.FrameDetached -= OnFrameDetached;
             _frame.FrameSwapped -= OnFrameSwapped;
             _frame.FrameSwappedByActivation -= FrameSwappedByActivation;
+            if (_page != null)
+            {
+                _page.Error -= OnPageError;
+            }
+
             _networkManager.Request -= OnRequest;
             _networkManager.Response -= OnResponse;
             _networkManager.RequestFailed -= OnRequestFailed;
@@ -232,6 +244,9 @@ namespace PuppeteerSharp.Cdp
 
         private void Terminate(PuppeteerException ex) =>
             _terminationTaskWrapper.TrySetException(ex);
+
+        private void OnPageError(object sender, ErrorEventArgs e) =>
+            Terminate(new PuppeteerException(e.Error));
 
         private void OnRequest(object sender, RequestEventArgs e)
         {
