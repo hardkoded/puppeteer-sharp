@@ -117,7 +117,10 @@ namespace PuppeteerSharp.QueryHandlers
 
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    throw new OperationCanceledException("WaitForSelector has been cancelled.");
+                    throw new OperationCanceledException(
+                        "WaitForSelector has been cancelled.",
+                        cancellationToken
+                    );
                 }
 
                 var predicate =
@@ -171,7 +174,10 @@ namespace PuppeteerSharp.QueryHandlers
                 if (cancellationToken.IsCancellationRequested)
                 {
                     await jsHandle.DisposeAsync().ConfigureAwait(false);
-                    throw new OperationCanceledException("WaitForSelector has been cancelled.");
+                    throw new OperationCanceledException(
+                        "WaitForSelector has been cancelled.",
+                        cancellationToken
+                    );
                 }
 
                 if (jsHandle is not ElementHandle elementHandle)

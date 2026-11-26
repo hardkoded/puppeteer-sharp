@@ -240,6 +240,17 @@ namespace PuppeteerSharp.Tests
             "util fromAbortSignal",
             "does not emit while the signal is not aborted"
         )]
+        // AbortSignal.abort(null) and abort(0) pass a falsy reason. A CancellationToken carries no reason, so cancelling always throws OperationCanceledException
+        [PuppeteerTest(
+            "waittask.spec",
+            "waittask specs Frame.waitForFunction",
+            "should reject with falsy abort reasons"
+        )]
+        [PuppeteerTest(
+            "waittask.spec",
+            "waittask specs Frame.waitForSelector",
+            "should reject with falsy abort reasons"
+        )]
         public void TheseTestWontBeImplemented() { }
     }
 }
