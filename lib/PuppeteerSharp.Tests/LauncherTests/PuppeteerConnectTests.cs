@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -185,6 +186,54 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             Assert.That(await requestHeaderTask, Is.EqualTo(authorizationHeader));
             Assert.That(webSocketAuthorizationHeader, Is.EqualTo(authorizationHeader));
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "BrowserConnector.test",
+                "BrowserConnector _connectToBrowser",
+                "should reject targetFilter for WebDriver BiDi without opening or closing caller transport"
+            )
+        ]
+        public void ShouldRejectTargetFilterForWebDriverBiDiWithoutOpeningOrClosingCallerTransport()
+        {
+            Assert.ThrowsAsync<NotSupportedException>(() =>
+                Puppeteer.ConnectAsync(
+                    new ConnectOptions
+                    {
+                        BrowserWSEndpoint = "ws://localhost:1234",
+                        Protocol = ProtocolType.WebdriverBiDi,
+                        TargetFilter = _ => true,
+                    },
+                    TestConstants.LoggerFactory
+                )
+            );
+
+            // The caller supplies a transport through TransportFactory. A transport that is never
+            // created can't be opened or closed.
+            var transportCreated = false;
+            Assert.ThrowsAsync<NotSupportedException>(() =>
+                Puppeteer.ConnectAsync(
+                    new ConnectOptions
+                    {
+                        BrowserWSEndpoint = "ws://localhost:1234",
+                        TransportFactory = (url, options, cancellationToken) =>
+                        {
+                            transportCreated = true;
+                            return WebSocketTransport.DefaultTransportFactory(
+                                url,
+                                options,
+                                cancellationToken
+                            );
+                        },
+                        Protocol = ProtocolType.WebdriverBiDi,
+                        TargetFilter = _ => true,
+                    },
+                    TestConstants.LoggerFactory
+                )
+            );
+            Assert.That(transportCreated, Is.False);
         }
 
         [

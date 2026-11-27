@@ -48,7 +48,6 @@ namespace PuppeteerSharp
         };
 
         private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();
-        private readonly TaskQueue _screenshotTaskQueue;
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
 
         // Tracks in-flight requests for the page's whole lifetime, not just while something is waiting on
@@ -61,9 +60,8 @@ namespace PuppeteerSharp
         private int _screencastSessionCount;
         private Task _startScreencastTask;
 
-        internal Page(TaskQueue screenshotTaskQueue)
+        internal Page()
         {
-            _screenshotTaskQueue = screenshotTaskQueue;
             TrackNetworkActivity();
         }
 
@@ -768,137 +766,127 @@ namespace PuppeteerSharp
             using var guard = await ((BrowserContext)BrowserContext)
                 .StartScreenshotAsync()
                 .ConfigureAwait(false);
-            return await _screenshotTaskQueue
-                .Enqueue(async () =>
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            var screenshotType = options.Type ?? ScreenshotType.Png;
+
+            if (options.Quality.HasValue)
+            {
+                if (screenshotType != ScreenshotType.Jpeg)
                 {
-                    if (options == null)
-                    {
-                        throw new ArgumentNullException(nameof(options));
-                    }
+                    throw new ArgumentException(
+                        $"options.Quality is unsupported for the {screenshotType} screenshots"
+                    );
+                }
 
-                    var screenshotType = options.Type ?? ScreenshotType.Png;
+                if (options.Quality < 0 || options.Quality > 100)
+                {
+                    throw new ArgumentException(
+                        $"Expected options.quality to be between 0 and 100 (inclusive), got {options.Quality}"
+                    );
+                }
+            }
 
-                    if (options.Quality.HasValue)
-                    {
-                        if (screenshotType != ScreenshotType.Jpeg)
-                        {
-                            throw new ArgumentException(
-                                $"options.Quality is unsupported for the {screenshotType} screenshots"
-                            );
-                        }
+            if (options.Clip?.Width == 0)
+            {
+                throw new PuppeteerException("Expected options.Clip.Width not to be 0.");
+            }
 
-                        if (options.Quality < 0 || options.Quality > 100)
-                        {
-                            throw new ArgumentException(
-                                $"Expected options.quality to be between 0 and 100 (inclusive), got {options.Quality}"
-                            );
-                        }
-                    }
+            if (options.Clip?.Height == 0)
+            {
+                throw new PuppeteerException("Expected options.Clip.Height not to be 0.");
+            }
 
-                    if (options.Clip?.Width == 0)
-                    {
-                        throw new PuppeteerException("Expected options.Clip.Width not to be 0.");
-                    }
+            if (options.Clip != null && options.FullPage)
+            {
+                throw new NotSupportedException("options.clip and options.fullPage are exclusive");
+            }
 
-                    if (options.Clip?.Height == 0)
-                    {
-                        throw new PuppeteerException("Expected options.Clip.Height not to be 0.");
-                    }
-
-                    if (options.Clip != null && options.FullPage)
+            var stack = new DisposableTasksStack();
+            await using (stack.ConfigureAwait(false))
+            {
+                // FromSurface is not supported on Firefox.
+                // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
+                if (Browser.BrowserType == SupportedBrowser.Firefox)
+                {
+                    if (options.FromSurface != null)
                     {
                         throw new NotSupportedException(
-                            "options.clip and options.fullPage are exclusive"
+                            "Screenshots from surface are not supported on Firefox."
                         );
                     }
+                }
 
-                    var stack = new DisposableTasksStack();
-                    await using (stack.ConfigureAwait(false))
+                if (options.Clip != null && options.FullPage)
+                {
+                    throw new ArgumentException("Clip and FullPage are exclusive");
+                }
+
+                var clip =
+                    options.Clip != null ? RoundRectangle(NormalizeRectangle(options.Clip)) : null;
+                var captureBeyondViewport = options.CaptureBeyondViewport;
+
+                if (!ScreenshotBurstModeOn)
+                {
+                    if (options.Clip == null)
                     {
-                        // FromSurface is not supported on Firefox.
-                        // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
-                        if (Browser.BrowserType == SupportedBrowser.Firefox)
+                        if (options.FullPage)
                         {
-                            if (options.FromSurface != null)
+                            // Overwrite clip for full page at all times.
+                            clip = null;
+
+                            if (!captureBeyondViewport)
                             {
-                                throw new NotSupportedException(
-                                    "Screenshots from surface are not supported on Firefox."
-                                );
+                                var scrollDimensions = await ((Frame)MainFrame)
+                                    .IsolatedRealm.EvaluateFunctionAsync<BoundingBox>(
+                                        @"() => {
+                                    const element = document.documentElement;
+                                    return {
+                                        width: element.scrollWidth,
+                                        height: element.scrollHeight,
+                                    };
+                                }"
+                                    )
+                                    .ConfigureAwait(false);
+
+                                var viewport = Viewport;
+
+                                await SetViewportAsync(
+                                        (viewport ?? new ViewPortOptions()) with
+                                        {
+                                            Width = Convert.ToInt32(scrollDimensions.Width),
+                                            Height = Convert.ToInt32(scrollDimensions.Height),
+                                        }
+                                    )
+                                    .ConfigureAwait(false);
+
+                                stack.Defer(() => SetViewportAsync(viewport));
                             }
                         }
-
-                        if (options.Clip != null && options.FullPage)
+                        else
                         {
-                            throw new ArgumentException("Clip and FullPage are exclusive");
+                            captureBeyondViewport = false;
                         }
-
-                        var clip =
-                            options.Clip != null
-                                ? RoundRectangle(NormalizeRectangle(options.Clip))
-                                : null;
-                        var captureBeyondViewport = options.CaptureBeyondViewport;
-
-                        if (!ScreenshotBurstModeOn)
-                        {
-                            if (options.Clip == null)
-                            {
-                                if (options.FullPage)
-                                {
-                                    // Overwrite clip for full page at all times.
-                                    clip = null;
-
-                                    if (!captureBeyondViewport)
-                                    {
-                                        var scrollDimensions = await ((Frame)MainFrame)
-                                            .IsolatedRealm.EvaluateFunctionAsync<BoundingBox>(
-                                                @"() => {
-                                            const element = document.documentElement;
-                                            return {
-                                                width: element.scrollWidth,
-                                                height: element.scrollHeight,
-                                            };
-                                        }"
-                                            )
-                                            .ConfigureAwait(false);
-
-                                        var viewport = Viewport;
-
-                                        await SetViewportAsync(
-                                                (viewport ?? new ViewPortOptions()) with
-                                                {
-                                                    Width = Convert.ToInt32(scrollDimensions.Width),
-                                                    Height = Convert.ToInt32(
-                                                        scrollDimensions.Height
-                                                    ),
-                                                }
-                                            )
-                                            .ConfigureAwait(false);
-
-                                        stack.Defer(() => SetViewportAsync(viewport));
-                                    }
-                                }
-                                else
-                                {
-                                    captureBeyondViewport = false;
-                                }
-                            }
-                        }
-
-                        options.Clip = clip;
-                        options.CaptureBeyondViewport = captureBeyondViewport;
-                        var result = await PerformScreenshotAsync(screenshotType, options)
-                            .ConfigureAwait(false);
-
-                        if (options.BurstMode)
-                        {
-                            ScreenshotBurstModeOptions = options;
-                            ScreenshotBurstModeOn = true;
-                        }
-
-                        return result;
                     }
-                })
-                .ConfigureAwait(false);
+                }
+
+                options.Clip = clip;
+                options.CaptureBeyondViewport = captureBeyondViewport;
+                var result = await PerformScreenshotAsync(screenshotType, options)
+                    .ConfigureAwait(false);
+
+                if (options.BurstMode)
+                {
+                    ScreenshotBurstModeOptions = options;
+                    ScreenshotBurstModeOn = true;
+                }
+
+                return result;
+            }
         }
 
         /// <inheritdoc/>

@@ -88,6 +88,7 @@ public class CdpKeyboard : Keyboard
                 WindowsVirtualKeyCode = description.KeyCode,
                 Code = description.Code,
                 Location = description.Location,
+                IsKeypad = description.Location == 3,
             }
         );
     }
