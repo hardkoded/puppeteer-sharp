@@ -155,6 +155,47 @@ namespace PuppeteerSharp.Tests.InputTests
             PuppeteerTest(
                 "input.spec",
                 "input tests Page.waitForFileChooser",
+                "should reject immediately when the signal is already aborted"
+            )
+        ]
+        public void ShouldRejectImmediatelyWhenTheSignalIsAlreadyAborted()
+        {
+            Assert.CatchAsync<OperationCanceledException>(() =>
+                Page.WaitForFileChooserAsync(
+                    new WaitForOptions
+                    {
+                        CancellationToken = new CancellationToken(true),
+                        Timeout = 1000,
+                    }
+                )
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests Page.waitForFileChooser",
+                "should be able to abort"
+            )
+        ]
+        public void ShouldBeAbleToAbort()
+        {
+            using var cts = new CancellationTokenSource();
+            var task = Page.WaitForFileChooserAsync(
+                new WaitForOptions { CancellationToken = cts.Token }
+            );
+
+            cts.Cancel();
+
+            Assert.CatchAsync<OperationCanceledException>(async () => await task);
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "input.spec",
+                "input tests Page.waitForFileChooser",
                 "should not throw unhandled rejection when file picker is opened without an input element"
             )
         ]
