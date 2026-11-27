@@ -221,7 +221,10 @@ namespace PuppeteerSharp.Tests.Browsers.HttpUtil
 
             Assert.That(ex.Message, Does.Contain("Too many redirects"));
             Assert.That(server.Requests, Is.EqualTo(21));
+
+            var requestsBeforeHead = server.Requests;
             Assert.That(await Helpers.HttpUtil.HeadHttpRequestAsync(server.Url), Is.False);
+            Assert.That(server.Requests - requestsBeforeHead, Is.EqualTo(21));
         }
 
         [Test, PuppeteerTest("httpUtil.test", "downloadFile", "follows up to 20 redirects")]
