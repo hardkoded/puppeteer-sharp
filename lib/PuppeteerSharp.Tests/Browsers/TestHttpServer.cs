@@ -62,17 +62,25 @@ namespace PuppeteerSharp.Tests.Browsers
                 var stream = client.GetStream();
                 var buffer = new byte[4096];
                 var request = new StringBuilder();
+                const int maxRequestLineLength = 8192;
                 int read;
                 while (
-                    request.Length < 8192
-                    && !request.ToString().Contains("\r\n")
+                    !request.ToString().Contains("\r\n")
+                    && request.Length < maxRequestLineLength
                     && (read = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0
                 )
                 {
                     request.Append(Encoding.ASCII.GetString(buffer, 0, read));
                 }
 
-                var requestLine = request.ToString().Split('\r')[0];
+                var lineEnd = request.ToString().IndexOf("\r\n", StringComparison.Ordinal);
+                if (lineEnd < 0 || lineEnd > maxRequestLineLength)
+                {
+                    // EOF or an oversized request line: close the connection.
+                    return;
+                }
+
+                var requestLine = request.ToString().Substring(0, lineEnd);
                 var target = requestLine.Split(' ').ElementAtOrDefault(1) ?? "/";
                 var location = _redirect?.Invoke(target);
                 if (location != null)
