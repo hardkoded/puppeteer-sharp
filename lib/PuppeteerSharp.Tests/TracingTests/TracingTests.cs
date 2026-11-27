@@ -201,5 +201,34 @@ namespace PuppeteerSharp.Tests.TracingTests
 
             Assert.That(exception, Is.Not.Null);
         }
+
+        [
+            Test,
+            PuppeteerTest(
+                "tracing.spec",
+                "Tracing",
+                "should allow starting tracing again after a failed start"
+            )
+        ]
+        public async Task ShouldAllowStartingTracingAgainAfterAFailedStart()
+        {
+            await Page.Tracing.StartAsync(new TracingOptions { Path = _file });
+            var newPage = await Browser.NewPageAsync();
+            try
+            {
+                Assert.CatchAsync(async () =>
+                    await newPage.Tracing.StartAsync(new TracingOptions { Path = _file })
+                );
+                await Page.Tracing.StopAsync();
+
+                await newPage.Tracing.StartAsync();
+                var trace = await newPage.Tracing.StopAsync();
+                Assert.That(trace.Length, Is.GreaterThan(10));
+            }
+            finally
+            {
+                await newPage.CloseAsync();
+            }
+        }
     }
 }

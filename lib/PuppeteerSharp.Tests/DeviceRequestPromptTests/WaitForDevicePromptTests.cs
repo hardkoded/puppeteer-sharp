@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp.Messaging;
@@ -166,6 +167,32 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             );
 
             await promptTask;
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "DeviceRequestPrompt.test.ts",
+                "waitForDevicePrompt",
+                "should reject immediately when the signal is already aborted"
+            )
+        ]
+        public void ShouldRejectImmediatelyWhenTheSignalIsAlreadyAborted()
+        {
+            var client = new MockCDPSession();
+            var timeoutSettings = new TimeoutSettings();
+            var manager = new DeviceRequestPromptManager(client, timeoutSettings);
+
+            Assert.CatchAsync<OperationCanceledException>(() =>
+                manager.WaitForDevicePromptAsync(
+                    new WaitForOptions
+                    {
+                        CancellationToken = new CancellationToken(true),
+                        Timeout = 1000,
+                    }
+                )
+            );
+            Assert.That(client.SentCount, Is.Zero);
         }
 
         [
