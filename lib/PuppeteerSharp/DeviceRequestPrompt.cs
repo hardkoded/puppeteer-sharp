@@ -94,29 +94,47 @@ public class DeviceRequestPrompt
     /// <param name="filter">The filter to apply.</param>
     /// <param name="options">The options.</param>
     /// <returns>A task that resolves to the first device matching the filter.</returns>
-    public Task<DeviceRequestPromptDevice> WaitForDeviceAsync(
+    public async Task<DeviceRequestPromptDevice> WaitForDeviceAsync(
         Func<DeviceRequestPromptDevice, bool> filter,
         WaitForOptions options = default
     )
     {
+        var cancellationToken = options?.CancellationToken ?? default;
+        cancellationToken.ThrowIfCancellationRequested();
+
         foreach (var device in Devices.Where(filter))
         {
-            return Task.FromResult(device);
+            return device;
         }
 
-        var tcs = new TaskCompletionSource<DeviceRequestPromptDevice>();
+        var tcs = new TaskCompletionSource<DeviceRequestPromptDevice>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
         var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
-        var task = tcs.Task.WithTimeout(timeout);
+
+        using var registration = cancellationToken.Register(() =>
+            tcs.TrySetCanceled(cancellationToken)
+        );
 
         NewDevice += OnNewDevice;
-        return task;
+
+        try
+        {
+            return await tcs.Task.WithTimeout(timeout).ConfigureAwait(false);
+        }
+        finally
+        {
+            NewDevice -= OnNewDevice;
+        }
 
         void OnNewDevice(object sender, DeviceRequestPromptDevice e)
         {
             if (filter(e))
             {
-                tcs.TrySetResult(e);
+                // Unsubscribe now: the finally block runs asynchronously, and the rest of
+                // this update must not reach the filter of a wait that already matched.
                 NewDevice -= OnNewDevice;
+                tcs.TrySetResult(e);
             }
         }
     }

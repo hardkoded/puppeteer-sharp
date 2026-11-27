@@ -49,7 +49,7 @@ namespace PuppeteerSharp.PageAccessibility
                         "DOM.describeNode",
                         new DomDescribeNodeRequest
                         {
-                            ObjectId = ((CdpElementHandle)options.Root).RemoteObject.ObjectId,
+                            ObjectId = ((ICdpHandle)options.Root).RemoteObject.ObjectId,
                         }
                     )
                     .ConfigureAwait(false);
@@ -63,11 +63,6 @@ namespace PuppeteerSharp.PageAccessibility
                 return null;
             }
 
-            if (options?.IncludeIframes == true)
-            {
-                await PopulateIframesAsync(defaultRoot, options).ConfigureAwait(false);
-            }
-
             var needle = defaultRoot;
             if (backendNodeId != null)
             {
@@ -79,6 +74,11 @@ namespace PuppeteerSharp.PageAccessibility
                 {
                     return null;
                 }
+            }
+
+            if (options?.IncludeIframes == true)
+            {
+                await PopulateIframesAsync(needle, options).ConfigureAwait(false);
             }
 
             if (options?.InterestingOnly == false)
@@ -95,14 +95,14 @@ namespace PuppeteerSharp.PageAccessibility
 
         internal void UpdateClient(CDPSession client) => _client = client;
 
-        private async Task PopulateIframesAsync(AXNode root, AccessibilitySnapshotOptions options)
+        private async Task PopulateIframesAsync(AXNode node, AccessibilitySnapshotOptions options)
         {
             var realm = _realmProvider?.Invoke();
 
-            if (root.Payload.Role?.Value.ToObject<string>() == "Iframe")
+            if (node.Payload.Role?.Value.ToObject<string>() == "Iframe")
             {
                 if (
-                    root.Payload.BackendDOMNodeId.ValueKind != JsonValueKind.Number
+                    node.Payload.BackendDOMNodeId.ValueKind != JsonValueKind.Number
                     || realm == null
                 )
                 {
@@ -112,35 +112,46 @@ namespace PuppeteerSharp.PageAccessibility
                 try
                 {
                     var handle = await realm
-                        .AdoptBackendNodeAsync(root.Payload.BackendDOMNodeId.GetInt32())
+                        .AdoptBackendNodeAsync(node.Payload.BackendDOMNodeId.GetInt32())
                         .ConfigureAwait(false);
 
-                    if (handle is not IElementHandle elementHandle)
+                    if (handle == null)
                     {
                         return;
                     }
 
-                    var frame = await elementHandle.ContentFrameAsync().ConfigureAwait(false);
-
-                    if (frame is not CdpFrame cdpFrame)
+                    await using (handle.ConfigureAwait(false))
                     {
-                        return;
-                    }
+                        var frame = await handle.ContentFrameAsync().ConfigureAwait(false);
 
-                    var iframeSnapshot = await cdpFrame
-                        .Accessibility.SnapshotAsync(options)
-                        .ConfigureAwait(false);
-                    root.IframeSnapshot = iframeSnapshot;
+                        if (frame is not CdpFrame cdpFrame)
+                        {
+                            return;
+                        }
+
+                        // Scope `Root` to the originating frame; child frames snapshot
+                        // their own full subtrees.
+                        var iframeSnapshot = await cdpFrame
+                            .Accessibility.SnapshotAsync(
+                                new AccessibilitySnapshotOptions
+                                {
+                                    InterestingOnly = options.InterestingOnly,
+                                    IncludeIframes = options.IncludeIframes,
+                                }
+                            )
+                            .ConfigureAwait(false);
+                        node.IframeSnapshot = iframeSnapshot;
+                    }
                 }
                 catch (Exception ex)
                 {
                     // Frames can get detached at any time resulting in errors.
-                    var logger = _client.Connection?.LoggerFactory?.CreateLogger<Accessibility>();
+                    var logger = _client.LoggerFactory?.CreateLogger<Accessibility>();
                     logger?.ErrorGettingIframeAccessibilitySnapshot(ex);
                 }
             }
 
-            await Task.WhenAll(root.Children.Select(child => PopulateIframesAsync(child, options)))
+            await Task.WhenAll(node.Children.Select(child => PopulateIframesAsync(child, options)))
                 .ConfigureAwait(false);
         }
 

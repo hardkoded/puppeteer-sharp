@@ -179,6 +179,40 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             PuppeteerTest(
                 "requestinterception.spec",
                 "request interception Request.continue",
+                "should amend post data to an empty string"
+            )
+        ]
+        public async Task ShouldAmendPostDataToAnEmptyString()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.ContinueAsync(new Payload { PostData = string.Empty });
+            };
+            var requestTask = Server.WaitForRequest("/sleep.zzz", async request =>
+            {
+                using (var reader = new StreamReader(request.Body, Encoding.UTF8))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            });
+
+            await Task.WhenAll(
+                requestTask,
+                Page.EvaluateFunctionAsync(
+                    "() => fetch('/sleep.zzz', { method: 'POST', body: '🐦' })"
+                )
+            );
+
+            Assert.That(await requestTask.Result, Is.Empty);
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "requestinterception.spec",
+                "request interception Request.continue",
                 "should amend both post data and method on navigation"
             )
         ]

@@ -2060,10 +2060,9 @@
       "webDriverBiDi"
     ],
     "expectations": [
-      "FAIL",
-      "PASS"
+      "SKIP"
     ],
-    "comment": "BiDi does not have option for accessible pdf (sometimes generation is flaky)"
+    "comment": "WebDriver BiDi does not support accessible PDF options (tagged/outline)"
   },
   {
     "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
@@ -2076,9 +2075,9 @@
       "webDriverBiDi"
     ],
     "expectations": [
-      "FAIL"
+      "SKIP"
     ],
-    "comment": "BiDi does not have option for pdf with outline"
+    "comment": "WebDriver BiDi does not support PDF outline option"
   },
   {
     "testIdPattern": "[prerender.spec] Prerender can screencast",
@@ -3319,7 +3318,7 @@
     "expectations": [
       "FAIL"
     ],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "targetFilter is not supported with WebDriver BiDi"
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should filter out ignored default argument in Firefox",
@@ -4072,6 +4071,22 @@
     "comment": "CDP specific issue, maybe we can support it from BiDi+"
   },
   {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should amend post data to an empty string",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Firefox does not update `Content-Length` header which makes our TestServer `request.postBody` wait forever, making Mocha timeout"
+  },
+  {
     "testIdPattern": "[requestinterception.spec] request interception Request.resourceType should work for document type",
     "platforms": [
       "darwin",
@@ -4102,23 +4117,6 @@
       "FAIL"
     ],
     "comment": "`HTTPRequest.resourceType()` has no eqivalent in BiDi spec"
-  },
-  {
-    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should run in parallel with page.close()",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL",
-      "PASS"
-    ],
-    "comment": "Started to be flaky"
   },
   {
     "testIdPattern": "[target.spec] Target should create a worker from a service worker",
