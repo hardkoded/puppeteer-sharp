@@ -84,27 +84,15 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<bool> CanDownloadAsync(string revision)
         {
-            try
-            {
-                var url = GetDownloadURL(Browser, Platform, BaseUrl, revision);
+            var url = GetDownloadURL(Browser, Platform, BaseUrl, revision);
 
-                using var handler = new HttpClientHandler { MaxAutomaticRedirections = 20 };
-                if (WebProxy != null)
-                {
-                    handler.Proxy = WebProxy;
-                    handler.UseProxy = true;
-                }
-
-                using var client = new HttpClient(handler);
-                using var requestMessage = new HttpRequestMessage(HttpMethod.Head, url);
-                using var response = await client.SendAsync(requestMessage).ConfigureAwait(false);
-                return response.StatusCode == HttpStatusCode.OK;
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger?.FailedToCheckDownload(ex, Browser, Platform, BaseUrl);
-                return false;
-            }
+            return await HttpUtil
+                .HeadHttpRequestAsync(
+                    url,
+                    WebProxy,
+                    ex => _logger?.FailedToCheckDownload(ex, Browser, Platform, BaseUrl)
+                )
+                .ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
