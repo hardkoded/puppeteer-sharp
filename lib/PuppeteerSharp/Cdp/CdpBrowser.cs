@@ -778,8 +778,7 @@ public class CdpBrowser : Browser
             session,
             context,
             TargetManager,
-            CreateSession,
-            ScreenshotTaskQueue
+            CreateSession
         );
 
         if (IsDevToolsPageTarget(targetInfo.Url))
@@ -790,8 +789,7 @@ public class CdpBrowser : Browser
                 context,
                 TargetManager,
                 CreateSession,
-                DefaultViewport,
-                ScreenshotTaskQueue
+                DefaultViewport
             );
         }
 
@@ -803,8 +801,7 @@ public class CdpBrowser : Browser
                 context,
                 TargetManager,
                 CreateSession,
-                DefaultViewport,
-                ScreenshotTaskQueue
+                DefaultViewport
             );
         }
 
@@ -813,14 +810,7 @@ public class CdpBrowser : Browser
             || targetInfo.Type == TargetType.SharedWorker
         )
         {
-            return new CdpWorkerTarget(
-                targetInfo,
-                session,
-                context,
-                TargetManager,
-                CreateSession,
-                this.ScreenshotTaskQueue
-            );
+            return new CdpWorkerTarget(targetInfo, session, context, TargetManager, CreateSession);
         }
 
         return otherTarget;

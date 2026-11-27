@@ -39,14 +39,12 @@ public class CdpTarget : Target
         CdpCDPSession session,
         CdpBrowserContext context,
         ITargetManager targetManager,
-        Func<bool, Task<CDPSession>> sessionFactory,
-        TaskQueue screenshotTaskQueue
+        Func<bool, Task<CDPSession>> sessionFactory
     )
     {
         TargetInfo = targetInfo;
         Session = session;
         BrowserContext = context;
-        ScreenshotTaskQueue = screenshotTaskQueue;
         TargetManager = targetManager;
         SessionFactory = sessionFactory;
 
@@ -102,8 +100,6 @@ public class CdpTarget : Target
 
     internal CdpBrowser CdpBrowser => Browser as CdpBrowser;
 
-    internal TaskQueue ScreenshotTaskQueue { get; }
-
     /// <summary>
     /// Guards the state shared between <see cref="CloseAsync"/> and the targets that attach sessions.
     /// </summary>
@@ -120,14 +116,10 @@ public class CdpTarget : Target
         if (Session == null)
         {
             var session = (CdpCDPSession)await CreateCDPSessionAsync().ConfigureAwait(false);
-            return await CdpPage
-                .CreateAsync(session, this, null, ScreenshotTaskQueue)
-                .ConfigureAwait(false);
+            return await CdpPage.CreateAsync(session, this, null).ConfigureAwait(false);
         }
 
-        return await CdpPage
-            .CreateAsync((CdpCDPSession)Session, this, null, ScreenshotTaskQueue)
-            .ConfigureAwait(false);
+        return await CdpPage.CreateAsync((CdpCDPSession)Session, this, null).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
