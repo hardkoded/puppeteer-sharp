@@ -32,6 +32,8 @@ public class MockCDPSession : ICDPSession
 {
     public event EventHandler<MessageEventArgs> MessageReceived;
 
+    public int SentCount { get; private set; }
+
     public Task<JsonElement?> SendAsync(
         string method,
         object args = null,
@@ -41,6 +43,7 @@ public class MockCDPSession : ICDPSession
 
     public Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
     {
+        SentCount++;
         return Task.FromResult<T>(default);
     }
 

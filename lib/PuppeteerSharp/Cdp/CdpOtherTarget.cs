@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp
 {
@@ -14,16 +13,14 @@ namespace PuppeteerSharp.Cdp
             CDPSession session,
             BrowserContext context,
             ITargetManager targetManager,
-            Func<bool, Task<CDPSession>> sessionFactory,
-            TaskQueue screenshotTaskQueue
+            Func<bool, Task<CDPSession>> sessionFactory
         )
             : base(
                 targetInfo,
                 (CdpCDPSession)session,
                 (CdpBrowserContext)context,
                 targetManager,
-                sessionFactory,
-                screenshotTaskQueue
+                sessionFactory
             ) { }
     }
 }

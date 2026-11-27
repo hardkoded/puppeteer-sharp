@@ -88,7 +88,7 @@ namespace PuppeteerSharp
             {
                 var url = GetDownloadURL(Browser, Platform, BaseUrl, revision);
 
-                using var handler = new HttpClientHandler();
+                using var handler = new HttpClientHandler { MaxAutomaticRedirections = 20 };
                 if (WebProxy != null)
                 {
                     handler.Proxy = WebProxy;

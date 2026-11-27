@@ -10,7 +10,6 @@ namespace PuppeteerSharp.Cdp
     public class CdpPageTarget : CdpTarget
     {
         private readonly ViewPortOptions _defaultViewport;
-        private readonly TaskQueue _screenshotTaskQueue;
 
         internal CdpPageTarget(
             TargetInfo targetInfo,
@@ -18,20 +17,17 @@ namespace PuppeteerSharp.Cdp
             BrowserContext context,
             ITargetManager targetManager,
             Func<bool, Task<CDPSession>> sessionFactory,
-            ViewPortOptions defaultViewport,
-            TaskQueue screenshotTaskQueue
+            ViewPortOptions defaultViewport
         )
             : base(
                 targetInfo,
                 (CdpCDPSession)session,
                 (CdpBrowserContext)context,
                 targetManager,
-                sessionFactory,
-                screenshotTaskQueue
+                sessionFactory
             )
         {
             _defaultViewport = defaultViewport;
-            _screenshotTaskQueue = screenshotTaskQueue;
             PageTask = null;
         }
 
@@ -61,12 +57,7 @@ namespace PuppeteerSharp.Cdp
                     Session ?? await SessionFactory(false).ConfigureAwait(false)
                 );
 
-                PageTask = CdpPage.CreateAsync(
-                    session,
-                    this,
-                    _defaultViewport,
-                    _screenshotTaskQueue
-                );
+                PageTask = CdpPage.CreateAsync(session, this, _defaultViewport);
             }
 
             return await PageTask.ConfigureAwait(false);
