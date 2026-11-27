@@ -466,6 +466,30 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.That(await Page.EvaluateExpressionAsync<int>("keyLocation"), Is.EqualTo(3));
         }
 
+        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should specify location on keyup")]
+        public async Task ShouldSpecifyLocationOnKeyup()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.EvaluateExpressionAsync(
+                @"{
+              window.addEventListener('keyup', event => window.keyLocation = event.location, true);
+            }"
+            );
+            var textarea = await Page.QuerySelectorAsync("textarea");
+
+            await textarea.PressAsync("Digit5");
+            Assert.That(await Page.EvaluateExpressionAsync<int>("keyLocation"), Is.EqualTo(0));
+
+            await textarea.PressAsync("ControlLeft");
+            Assert.That(await Page.EvaluateExpressionAsync<int>("keyLocation"), Is.EqualTo(1));
+
+            await textarea.PressAsync("ControlRight");
+            Assert.That(await Page.EvaluateExpressionAsync<int>("keyLocation"), Is.EqualTo(2));
+
+            await textarea.PressAsync("NumpadSubtract");
+            Assert.That(await Page.EvaluateExpressionAsync<int>("keyLocation"), Is.EqualTo(3));
+        }
+
         [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should throw on unknown keys")]
         public void ShouldThrowOnUnknownKeys()
         {

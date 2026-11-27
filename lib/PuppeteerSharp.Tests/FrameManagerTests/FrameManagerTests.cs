@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Transport;
 
@@ -429,7 +428,6 @@ public class FrameManagerTests
             session,
             null,
             null,
-            null,
             null
         );
 
@@ -456,11 +454,10 @@ public class FrameManagerTests
             pageSession,
             null,
             targetManager,
-            null,
             null
         );
         var oopifSession = CreateIframeSession(OopifFrameId, MainFrameId);
-        var page = Substitute.For<Page>((TaskQueue)null);
+        var page = Substitute.For<Page>();
         _frameManager = new FrameManager(pageSession, page, new TimeoutSettings(), false, false);
 
         void Attach(CdpTarget target)

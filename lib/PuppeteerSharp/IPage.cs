@@ -1107,6 +1107,13 @@ namespace PuppeteerSharp
         /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
         /// the image won't be saved to the disk.</param>
         /// <param name="options">Screenshot options.</param>
+        /// <remarks>
+        /// While a screenshot is being taken in an <see cref="IBrowser"/>, the following methods will
+        /// automatically wait for the screenshot to finish to prevent interference with the screenshot process:
+        /// <see cref="IBrowserContext.NewPageAsync(CreatePageOptions)"/>,
+        /// <see cref="IBrowser.NewPageAsync(CreatePageOptions)"/> and <see cref="CloseAsync(PageCloseOptions)"/>.
+        /// Calling <see cref="BringToFrontAsync"/> will not wait for existing screenshot operations.
+        /// </remarks>
         Task ScreenshotAsync(string file, ScreenshotOptions options);
 
         /// <summary>
@@ -1120,6 +1127,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         /// <param name="options">Screenshot options.</param>
+        /// <remarks>
+        /// While a screenshot is being taken in an <see cref="IBrowser"/>, the following methods will
+        /// automatically wait for the screenshot to finish to prevent interference with the screenshot process:
+        /// <see cref="IBrowserContext.NewPageAsync(CreatePageOptions)"/>,
+        /// <see cref="IBrowser.NewPageAsync(CreatePageOptions)"/> and <see cref="CloseAsync(PageCloseOptions)"/>.
+        /// Calling <see cref="BringToFrontAsync"/> will not wait for existing screenshot operations.
+        /// </remarks>
         Task<string> ScreenshotBase64Async(ScreenshotOptions options);
 
         /// <summary>
@@ -1133,6 +1147,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
+        /// <remarks>
+        /// While a screenshot is being taken in an <see cref="IBrowser"/>, the following methods will
+        /// automatically wait for the screenshot to finish to prevent interference with the screenshot process:
+        /// <see cref="IBrowserContext.NewPageAsync(CreatePageOptions)"/>,
+        /// <see cref="IBrowser.NewPageAsync(CreatePageOptions)"/> and <see cref="CloseAsync(PageCloseOptions)"/>.
+        /// Calling <see cref="BringToFrontAsync"/> will not wait for existing screenshot operations.
+        /// </remarks>
         Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options);
 
         /// <summary>
@@ -1146,6 +1167,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
+        /// <remarks>
+        /// While a screenshot is being taken in an <see cref="IBrowser"/>, the following methods will
+        /// automatically wait for the screenshot to finish to prevent interference with the screenshot process:
+        /// <see cref="IBrowserContext.NewPageAsync(CreatePageOptions)"/>,
+        /// <see cref="IBrowser.NewPageAsync(CreatePageOptions)"/> and <see cref="CloseAsync(PageCloseOptions)"/>.
+        /// Calling <see cref="BringToFrontAsync"/> will not wait for existing screenshot operations.
+        /// </remarks>
         Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options);
 
         /// <summary>
