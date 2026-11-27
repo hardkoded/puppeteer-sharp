@@ -74,6 +74,13 @@ public class CdpJSHandle : JSHandle, ICdpHandle
     /// <inheritdoc/>
     public override async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
     {
+        ThrowIfDisposed();
+
+        if (RemoteObject.ObjectId == null)
+        {
+            return await base.GetPropertiesAsync().ConfigureAwait(false);
+        }
+
         // We use Runtime.getProperties rather than the iterative version for
         // improved performance as it allows getting everything at once.
         var response = await Client

@@ -825,10 +825,15 @@ namespace PuppeteerSharp
             );
 
         /// <inheritdoc/>
-        public override Task<Dictionary<string, IJSHandle>> GetPropertiesAsync() =>
-            BindIsolatedHandleAsync<Dictionary<string, IJSHandle>, ElementHandle>(element =>
-                element.Handle.GetPropertiesAsync()
-            );
+        public override async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
+        {
+            ThrowIfDisposed();
+
+            return await BindIsolatedHandleAsync<Dictionary<string, IJSHandle>, ElementHandle>(
+                    element => element.Handle.GetPropertiesAsync()
+                )
+                .ConfigureAwait(false);
+        }
 
         /// <inheritdoc/>
         public override Task<T> JsonValueAsync<T>() =>
