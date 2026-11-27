@@ -12,6 +12,8 @@ namespace PuppeteerSharp.Input
 
         public class TransactionData
         {
+            public long Sequence { get; init; }
+
             public Point? Position { get; set; }
 
             public MouseButton? Buttons { get; set; }

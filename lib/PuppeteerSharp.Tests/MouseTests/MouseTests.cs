@@ -224,6 +224,120 @@ namespace PuppeteerSharp.Tests.MouseTests
             Assert.That(boundingBoxAfter.Height, Is.EqualTo(230));
         }
 
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
+                "should send mouse wheel events at the position of the last click"
+            )
+        ]
+        public async Task ShouldSendMouseWheelEventsAtThePositionOfTheLastClick()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
+            await using var elem = await Page.QuerySelectorAsync("div");
+            var boundingBoxBefore = await elem.BoundingBoxAsync();
+
+            await Page.Mouse.ClickAsync(
+                boundingBoxBefore.X + (boundingBoxBefore.Width / 2),
+                boundingBoxBefore.Y + (boundingBoxBefore.Height / 2)
+            );
+
+            await Page.Mouse.WheelAsync(0, -100);
+            var boundingBoxAfter = await elem.BoundingBoxAsync();
+
+            Assert.That(boundingBoxAfter.Width, Is.EqualTo(230));
+            Assert.That(boundingBoxAfter.Height, Is.EqualTo(230));
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
+                "should send mouse wheel events at the position of the last of two clicks made in parallel"
+            )
+        ]
+        public async Task ShouldSendMouseWheelEventsAtThePositionOfTheLastOfTwoClicksMadeInParallel()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var positionTask = Page.EvaluateFunctionAsync<int[]>(
+                @"() => {
+                return new Promise(resolve => {
+                    window.addEventListener('wheel', event => {
+                        resolve([event.clientX, event.clientY]);
+                    }, { once: true });
+                });
+            }"
+            );
+            await Task.WhenAll(Page.Mouse.ClickAsync(100, 100), Page.Mouse.ClickAsync(200, 300));
+            await Page.Mouse.WheelAsync(0, 100);
+            Assert.That(await positionTask, Is.EqualTo(new[] { 200, 300 }));
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
+                "should send mouse wheel events at the position of a move made in parallel with a click"
+            )
+        ]
+        public async Task ShouldSendMouseWheelEventsAtThePositionOfAMoveMadeInParallelWithAClick()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(
+                @"() => {
+                globalThis.positions = new Promise(resolve => {
+                    const positions = [];
+                    window.addEventListener('wheel', event => {
+                        positions.push([event.clientX, event.clientY]);
+                        if (positions.length === 2) {
+                            resolve(positions);
+                        }
+                    });
+                });
+            }"
+            );
+            await Task.WhenAll(
+                Page.Mouse.ClickAsync(100, 100, new ClickOptions { Delay = 100 }),
+                Page.Mouse.MoveAsync(200, 300),
+                Page.Mouse.WheelAsync(0, 100)
+            );
+            await Page.Mouse.WheelAsync(0, 100);
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int[][]>("positions"),
+                Is.EqualTo(new[] { new[] { 200, 300 }, new[] { 200, 300 } })
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
+                "should send mouse wheel events at the position of a click made in parallel"
+            )
+        ]
+        public async Task ShouldSendMouseWheelEventsAtThePositionOfAClickMadeInParallel()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(
+                @"() => {
+                globalThis.position = new Promise(resolve => {
+                    window.addEventListener('wheel', event => {
+                        resolve([event.clientX, event.clientY]);
+                    }, { once: true });
+                });
+            }"
+            );
+            await Task.WhenAll(Page.Mouse.ClickAsync(100, 100), Page.Mouse.WheelAsync(0, 100));
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int[]>("position"),
+                Is.EqualTo(new[] { 100, 100 })
+            );
+        }
+
         [Test, PuppeteerTest("mouse.spec", "Mouse", "should set ctrlKey on the wheel event")]
         public async Task ShouldSetCtrlKeyOnTheWheelEvent()
         {
@@ -273,6 +387,139 @@ namespace PuppeteerSharp.Tests.MouseTests
                         new[] { 180, 260 },
                         new[] { 200, 300 },
                     }
+                )
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
+                "should tween mouse movement from the position of the last click"
+            )
+        ]
+        public async Task ShouldTweenMouseMovementFromThePositionOfTheLastClick()
+        {
+            await Page.Mouse.ClickAsync(100, 100);
+            await AddMouseMoveListenerAsync();
+            await Page.Mouse.MoveAsync(200, 300, new MoveOptions { Steps = 5 });
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int[][]>("result"),
+                Is.EqualTo(
+                    new[]
+                    {
+                        new[] { 120, 140 },
+                        new[] { 140, 180 },
+                        new[] { 160, 220 },
+                        new[] { 180, 260 },
+                        new[] { 200, 300 },
+                    }
+                )
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
+                "should tween mouse movement from the position of a click made in parallel"
+            )
+        ]
+        public async Task ShouldTweenMouseMovementFromThePositionOfAClickMadeInParallel()
+        {
+            await AddMouseMoveListenerAsync();
+            await Task.WhenAll(
+                Page.Mouse.ClickAsync(100, 100),
+                Page.Mouse.MoveAsync(200, 300, new MoveOptions { Steps = 5 })
+            );
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int[][]>("result"),
+                Is.EqualTo(
+                    new[]
+                    {
+                        new[] { 100, 100 },
+                        new[] { 120, 140 },
+                        new[] { 140, 180 },
+                        new[] { 160, 220 },
+                        new[] { 180, 260 },
+                        new[] { 200, 300 },
+                    }
+                )
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
+                "should move after a move made in parallel with a click outside of the viewport"
+            )
+        ]
+        public async Task ShouldMoveAfterAMoveMadeInParallelWithAClickOutsideOfTheViewport()
+        {
+            await Page.Mouse.MoveAsync(100, 100);
+            await Task.WhenAll(
+                IgnoreErrorsAsync(Page.Mouse.ClickAsync(5000, 5000)),
+                Page.Mouse.MoveAsync(200, 300)
+            );
+            await AddMouseMoveListenerAsync();
+            await Page.Mouse.MoveAsync(300, 500, new MoveOptions { Steps = 2 });
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int[][]>("result"),
+                Is.EqualTo(new[] { new[] { 250, 400 }, new[] { 300, 500 } })
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
+                "should move after clicks outside of the viewport made in parallel"
+            )
+        ]
+        public async Task ShouldMoveAfterClicksOutsideOfTheViewportMadeInParallel()
+        {
+            await Page.Mouse.MoveAsync(100, 100);
+            await Task.WhenAll(
+                IgnoreErrorsAsync(Page.Mouse.ClickAsync(5000, 5000)),
+                IgnoreErrorsAsync(Page.Mouse.ClickAsync(6000, 6000))
+            );
+            await AddMouseMoveListenerAsync();
+            await Page.Mouse.MoveAsync(200, 300, new MoveOptions { Steps = 2 });
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int[][]>("result"),
+                Is.EqualTo(
+                    !TestConstants.IsChrome
+                        ? new[] { new[] { 150, 200 }, new[] { 200, 300 } }
+                        : new[] { new[] { 200, 300 } }
+                )
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
+                "should move from the last position after a move outside of the viewport"
+            )
+        ]
+        public async Task ShouldMoveFromTheLastPositionAfterAMoveOutsideOfTheViewport()
+        {
+            await Page.Mouse.MoveAsync(100, 100);
+            await IgnoreErrorsAsync(Page.Mouse.MoveAsync(5000, 5000));
+            await AddMouseMoveListenerAsync();
+            await Page.Mouse.MoveAsync(200, 300, new MoveOptions { Steps = 2 });
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int[][]>("result"),
+                Is.EqualTo(
+                    !TestConstants.IsChrome
+                        ? new[] { new[] { 150, 200 }, new[] { 200, 300 } }
+                        : new[] { new[] { 200, 300 } }
                 )
             );
         }
@@ -504,6 +751,30 @@ namespace PuppeteerSharp.Tests.MouseTests
             );
             await Page.Mouse.ClickAsync(point.X, point.Y);
             await resultTask;
+        }
+
+        private static async Task IgnoreErrorsAsync(Task task)
+        {
+            try
+            {
+                await task;
+            }
+            catch (Exception)
+            {
+                // Some browsers reject actions outside of the viewport.
+            }
+        }
+
+        private Task AddMouseMoveListenerAsync()
+        {
+            return Page.EvaluateExpressionAsync(
+                @"{
+                window.result = [];
+                document.addEventListener('mousemove', event => {
+                    window.result.push([event.clientX, event.clientY]);
+                });
+            }"
+            );
         }
 
         private Task AddMouseDataListenersAsync(IPage page, bool includeMove = false)
