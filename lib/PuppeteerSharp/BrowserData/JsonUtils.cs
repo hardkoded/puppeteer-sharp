@@ -9,7 +9,8 @@ namespace PuppeteerSharp.BrowserData
     {
         public static async Task<T> GetAsync<T>(string url)
         {
-            using var client = new HttpClient();
+            using var handler = new HttpClientHandler { MaxAutomaticRedirections = 20 };
+            using var client = new HttpClient(handler);
             var response = await client.GetStringAsync(url).ConfigureAwait(false);
             return JsonSerializer.Deserialize<T>(
                 response,
@@ -19,7 +20,8 @@ namespace PuppeteerSharp.BrowserData
 
         internal static async Task<string> GetTextAsync(string url)
         {
-            using var client = new HttpClient();
+            using var handler = new HttpClientHandler { MaxAutomaticRedirections = 20 };
+            using var client = new HttpClient(handler);
             return await client.GetStringAsync(url).ConfigureAwait(false);
         }
     }
