@@ -740,7 +740,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldNotCloseThePageThroughTheTargetOfAFrame()
         {
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = ["--site-per-process"];
+            options.Args = [.. options.Args ?? [], "--site-per-process"];
             await using var browser = await Puppeteer.LaunchAsync(
                 options,
                 TestConstants.LoggerFactory
