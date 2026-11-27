@@ -75,7 +75,6 @@ public class BidiPage : Page
     private bool _isJavaScriptEnabled = true;
 
     private BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext)
-        : base(browserContext.ScreenshotTaskQueue)
     {
         BrowserContext = browserContext;
         Browser = browserContext.Browser;
@@ -702,10 +701,9 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task CloseAsync(PageCloseOptions options = null)
     {
-        var guard = await ((BrowserContext)BrowserContext)
+        using var guard = await ((BrowserContext)BrowserContext)
             .WaitForScreenshotOperationsAsync()
             .ConfigureAwait(false);
-        guard?.Dispose();
 
         try
         {

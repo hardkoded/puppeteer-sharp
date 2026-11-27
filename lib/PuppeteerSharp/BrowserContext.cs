@@ -1,18 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
     public abstract class BrowserContext : IBrowserContext
     {
-        private ScreenshotMutex _pageScreenshotMutex;
-        private int _screenshotOperationsCount;
-
         /// <inheritdoc/>
         public event EventHandler<ConsoleEventArgs> Console;
 
@@ -206,38 +201,15 @@ namespace PuppeteerSharp
         /// While screenshot operations are in progress, certain operations like NewPage and Close will wait.
         /// </summary>
         /// <returns>A disposable guard for the screenshot operation.</returns>
-        internal async Task<IDisposable> StartScreenshotAsync()
-        {
-            var mutex = _pageScreenshotMutex ?? new ScreenshotMutex();
-            _pageScreenshotMutex = mutex;
-            Interlocked.Increment(ref _screenshotOperationsCount);
-            return await mutex
-                .AcquireAsync(() =>
-                {
-                    if (Interlocked.Decrement(ref _screenshotOperationsCount) == 0)
-                    {
-                        // Remove the mutex to indicate no ongoing screenshot operation.
-                        _pageScreenshotMutex = null;
-                    }
-                })
-                .ConfigureAwait(false);
-        }
+        internal Task<IDisposable> StartScreenshotAsync() => Browser.StartScreenshotAsync();
 
         /// <summary>
         /// Waits for any ongoing screenshot operations to complete.
         /// Returns null if no screenshot operations are in progress.
         /// </summary>
         /// <returns>A disposable guard, or null if no screenshots are in progress.</returns>
-        internal async Task<IDisposable> WaitForScreenshotOperationsAsync()
-        {
-            var mutex = _pageScreenshotMutex;
-            if (mutex == null)
-            {
-                return null;
-            }
-
-            return await mutex.AcquireAsync().ConfigureAwait(false);
-        }
+        internal Task<IDisposable> WaitForScreenshotOperationsAsync() =>
+            Browser.WaitForScreenshotOperationsAsync();
 
         internal void OnConsole(ConsoleEventArgs args) => Console?.Invoke(this, args);
 
