@@ -129,9 +129,7 @@ namespace PuppeteerSharp.Tests.PageTests
         ]
         public async Task ShouldRejectWhenTheReturnValueCannotBeSerialized()
         {
-            await Page.ExposeFunctionAsync("woof", () =>
-                new { Value = System.Numerics.BigInteger.Parse("42") }
-            );
+            await Page.ExposeFunctionAsync("woof", () => new SelfReferencingResult());
             var message = await Page.EvaluateFunctionAsync<string>(
                 @"async () => {
                 try {
@@ -142,7 +140,10 @@ namespace PuppeteerSharp.Tests.PageTests
                 }
             }"
             );
-            Assert.That(message, Does.Contain("BigInt"));
+            Assert.That(
+                message,
+                Does.Contain("Recursive objects are not allowed").Or.Contain("cycle")
+            );
         }
 
         [
@@ -383,6 +384,11 @@ namespace PuppeteerSharp.Tests.PageTests
             }
 
             Assert.That(((CdpCDPSession)Page.Client).HasPendingCallbacks(), Is.False, message);
+        }
+
+        private sealed class SelfReferencingResult
+        {
+            public SelfReferencingResult Self => this;
         }
     }
 }
