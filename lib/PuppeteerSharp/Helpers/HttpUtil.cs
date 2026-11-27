@@ -72,6 +72,59 @@ internal static class HttpUtil
         }
     }
 
+    /// <summary>
+    /// Sends a HEAD request and reports whether the final response (after up to 20 redirects) is 200.
+    /// Any request failure, such as too many redirects, resolves to <c>false</c>.
+    /// </summary>
+    /// <param name="address">The url to check.</param>
+    /// <param name="proxy">Optional proxy.</param>
+    /// <param name="onError">Optional callback that receives the failure when the request throws.</param>
+    /// <returns>A task that resolves to <c>true</c> when the response status is 200.</returns>
+    internal static async Task<bool> HeadHttpRequestAsync(
+        string address,
+        IWebProxy proxy = null,
+        Action<Exception> onError = null
+    )
+    {
+        try
+        {
+            using var handler = CreateHandler(proxy);
+            using var client = new HttpClient(handler);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Head, address);
+            using var response = await client.SendAsync(requestMessage).ConfigureAwait(false);
+            return response.StatusCode == HttpStatusCode.OK;
+        }
+        catch (HttpRequestException ex)
+        {
+            onError?.Invoke(ex);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Gets the text of a url, following up to 20 redirects.
+    /// </summary>
+    /// <param name="address">The url to read.</param>
+    /// <returns>A task that resolves to the response text.</returns>
+    internal static async Task<string> GetTextAsync(string address)
+    {
+        using var handler = CreateHandler(null);
+        using var client = new HttpClient(handler);
+        return await client.GetStringAsync(address).ConfigureAwait(false);
+    }
+
+    private static HttpClientHandler CreateHandler(IWebProxy proxy)
+    {
+        var handler = new HttpClientHandler { MaxAutomaticRedirections = MaxRedirects };
+        if (proxy != null)
+        {
+            handler.Proxy = proxy;
+            handler.UseProxy = true;
+        }
+
+        return handler;
+    }
+
     private static bool IsTransientError(Exception error) =>
         error switch
         {

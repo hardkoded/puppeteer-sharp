@@ -210,7 +210,7 @@ namespace PuppeteerSharp.Tests.Browsers.HttpUtil
                 "rejects a redirect loop instead of following it forever"
             )
         ]
-        public void RejectsARedirectLoopInsteadOfFollowingItForever()
+        public async Task RejectsARedirectLoopInsteadOfFollowingItForever()
         {
             using var server = new TestHttpServer(_ => 200, _ => "/test");
             var destPath = Path.Combine(_tmpDir, "download.bin");
@@ -221,6 +221,16 @@ namespace PuppeteerSharp.Tests.Browsers.HttpUtil
 
             Assert.That(ex.Message, Does.Contain("Too many redirects"));
             Assert.That(server.Requests, Is.EqualTo(21));
+
+            var requestsBeforeHead = server.Requests;
+            Assert.That(await Helpers.HttpUtil.HeadHttpRequestAsync(server.Url), Is.False);
+            Assert.That(server.Requests - requestsBeforeHead, Is.EqualTo(21));
+
+            var requestsBeforeText = server.Requests;
+            Assert.CatchAsync<HttpRequestException>(() =>
+                Helpers.HttpUtil.GetTextAsync(server.Url)
+            );
+            Assert.That(server.Requests - requestsBeforeText, Is.EqualTo(21));
         }
 
         [Test, PuppeteerTest("httpUtil.test", "downloadFile", "follows up to 20 redirects")]
@@ -236,11 +246,10 @@ namespace PuppeteerSharp.Tests.Browsers.HttpUtil
                     return hop < 20 ? $"/test?hop={hop + 1}" : null;
                 }
             );
-            var destPath = Path.Combine(_tmpDir, "download.bin");
-
-            await Helpers.HttpUtil.DownloadFileAsync(server.Url, destPath);
-
-            Assert.That(File.ReadAllBytes(destPath), Is.EqualTo(_testContent));
+            Assert.That(
+                await Helpers.HttpUtil.GetTextAsync(server.Url),
+                Is.EqualTo(Encoding.UTF8.GetString(_testContent))
+            );
         }
     }
 }
