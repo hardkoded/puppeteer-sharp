@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -41,8 +42,6 @@ namespace PuppeteerSharp
             "disabled-by-default-devtools.timeline.stack",
             "disabled-by-default-v8.cpu_profiler",
         };
-
-        private static readonly TimeSpan _traceFileCloseTimeout = TimeSpan.FromSeconds(5);
 
         private readonly ILogger _logger;
         private bool _recording;
@@ -125,22 +124,28 @@ namespace PuppeteerSharp
             // The page may swap its session while we are stopping, so stick to the current one.
             var client = _client;
 
-            // Completes once the trace file is closed. It stays completed if the trace is never read.
-            var traceFileClosed = Task.CompletedTask;
+            var disconnected = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+            var traceFileClosed = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+
+            // Set by whoever comes first: the handler, before it opens the trace file, or the end of
+            // this method, so that the handler can't open the file afterwards.
+            var traceFileClaimed = 0;
 
             async void OnMessageReceived(object sender, MessageEventArgs e)
             {
-                if (e.MessageID != "Tracing.tracingComplete")
+                if (
+                    e.MessageID != "Tracing.tracingComplete"
+                    || Interlocked.Exchange(ref traceFileClaimed, 1) == 1
+                )
                 {
                     return;
                 }
 
                 client.MessageReceived -= OnMessageReceived;
-
-                var completion = new TaskCompletionSource<bool>(
-                    TaskCreationOptions.RunContinuationsAsynchronously
-                );
-                traceFileClosed = completion.Task;
 
                 try
                 {
@@ -155,7 +160,12 @@ namespace PuppeteerSharp
                     )
                     {
                         tracingData = await ProtocolStreamReader
-                            .ReadProtocolStreamStringAsync(client, stream, outputStream)
+                            .ReadProtocolStreamStringAsync(
+                                client,
+                                stream,
+                                outputStream,
+                                disconnected.Task
+                            )
                             .ConfigureAwait(false);
                     }
 
@@ -171,14 +181,17 @@ namespace PuppeteerSharp
                 }
                 finally
                 {
-                    completion.TrySetResult(true);
+                    traceFileClosed.TrySetResult(true);
                 }
             }
 
-            void OnDisconnected(object sender, EventArgs e) =>
+            void OnDisconnected(object sender, EventArgs e)
+            {
                 taskWrapper.TrySetException(
                     new TargetClosedException("Tracing failed: Target closed.", client.CloseReason)
                 );
+                disconnected.TrySetResult(true);
+            }
 
             client.MessageReceived += OnMessageReceived;
             client.Disconnected += OnDisconnected;
@@ -199,12 +212,15 @@ namespace PuppeteerSharp
             finally
             {
                 client.MessageReceived -= OnMessageReceived;
-                client.Disconnected -= OnDisconnected;
 
-                // After a disconnect the trace file can still be open. The wait is bounded because
-                // a pending protocol call is not guaranteed to complete once the session is gone.
-                await Task.WhenAny(traceFileClosed, Task.Delay(_traceFileCloseTimeout))
-                    .ConfigureAwait(false);
+                // Don't return or throw while the handler has the trace file open.
+                if (Interlocked.Exchange(ref traceFileClaimed, 1) == 1)
+                {
+                    await traceFileClosed.Task.ConfigureAwait(false);
+                }
+
+                // Removed last, because a disconnect is what stops the handler from waiting.
+                client.Disconnected -= OnDisconnected;
             }
         }
 
