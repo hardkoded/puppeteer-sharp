@@ -240,6 +240,39 @@ namespace PuppeteerSharp.Tests
             "util fromAbortSignal",
             "does not emit while the signal is not aborted"
         )]
+        // off() removing a listener added with once() (upstream #15806). PuppeteerSharp exposes C# events: there is no once() or custom off(), and -= removes the delegate that was passed to +=
+        [PuppeteerTest("EventEmitter.spec", "off", "off: removes a listener added with once")]
+        [PuppeteerTest(
+            "EventEmitter.spec",
+            "off",
+            "off: removes only the last added registration of a listener"
+        )]
+        [PuppeteerTest(
+            "EventEmitter.spec",
+            "once",
+            "does not throw if a subclass on() registers no handler"
+        )]
+        [PuppeteerTest(
+            "EventEmitter.spec",
+            "once",
+            "maps the handler even if a subclass overrides listenerCount()"
+        )]
+        [PuppeteerTest(
+            "EventEmitter.spec",
+            "once",
+            "does not map a handler if a subclass on() registers more than one"
+        )]
+        [PuppeteerTest("Page.test", "Page off", "should remove a request listener added with once")]
+        [PuppeteerTest(
+            "Page.test",
+            "Page off",
+            "should call a request listener added with once only once"
+        )]
+        [PuppeteerTest(
+            "Page.test",
+            "Page off",
+            "should remove a request listener added with once after on and off"
+        )]
         public void TheseTestWontBeImplemented() { }
     }
 }
