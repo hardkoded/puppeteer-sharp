@@ -124,6 +124,32 @@ namespace PuppeteerSharp.Tests.PageTests
             PuppeteerTest(
                 "page.spec",
                 "Page Page.exposeFunction",
+                "should reject when the return value cannot be serialized"
+            )
+        ]
+        public async Task ShouldRejectWhenTheReturnValueCannotBeSerialized()
+        {
+            await Page.ExposeFunctionAsync("woof", () =>
+                new { Value = System.Numerics.BigInteger.Parse("42") }
+            );
+            var message = await Page.EvaluateFunctionAsync<string>(
+                @"async () => {
+                try {
+                    await globalThis.woof();
+                    return;
+                } catch (error) {
+                    return error.message;
+                }
+            }"
+            );
+            Assert.That(message, Does.Contain("BigInt"));
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "page.spec",
+                "Page Page.exposeFunction",
                 "should be callable from-inside evaluateOnNewDocument"
             )
         ]

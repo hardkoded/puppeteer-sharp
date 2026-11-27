@@ -275,11 +275,18 @@ internal class ExposableFunction : IAsyncDisposable
                     }
                 }
 
-                // Call the puppeteer function
-                object result;
                 try
                 {
-                    result = await InvokeFunctionAsync(args.ToArray()).ConfigureAwait(false);
+                    // Call the puppeteer function
+                    var result = await InvokeFunctionAsync(args.ToArray()).ConfigureAwait(false);
+
+                    // Resolve with result. A failure to serialize the result rejects the call.
+                    await dataHandle
+                        .EvaluateFunctionAsync(
+                            "([resolve], result) => { resolve(result); }",
+                            result
+                        )
+                        .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -313,23 +320,6 @@ internal class ExposableFunction : IAsyncDisposable
                     {
                         // Ignore errors when rejecting
                     }
-
-                    return;
-                }
-
-                // Resolve with result
-                try
-                {
-                    await dataHandle
-                        .EvaluateFunctionAsync(
-                            "([resolve], result) => { resolve(result); }",
-                            result
-                        )
-                        .ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Ignore errors when resolving
                 }
             }
             finally
