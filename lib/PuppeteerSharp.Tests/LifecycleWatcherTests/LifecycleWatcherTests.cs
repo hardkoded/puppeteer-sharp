@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Transport;
 
@@ -73,7 +72,7 @@ public class LifecycleWatcherTests
     )
     {
         var session = new CdpCDPSession(connection, TargetType.Page, "page", null);
-        var page = Substitute.For<Page>((TaskQueue)null);
+        var page = Substitute.For<Page>();
         var frameManager = new FrameManager(session, page, new TimeoutSettings(), false, false);
         var frame = new CdpFrame(frameManager, "frame-1", null, session);
 
