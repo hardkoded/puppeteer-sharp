@@ -152,19 +152,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
-  },
-  {
-    "comment": "WebDriver BiDi does not support accessible PDF options (tagged/outline). Remove when upstream sync brings the official entry.",
-    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with accessible",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "WebDriver BiDi does not support PDF outline option. Remove when upstream sync brings the official entry.",
-    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with outline",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
   }
 ]
