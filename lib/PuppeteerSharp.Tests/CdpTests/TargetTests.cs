@@ -120,7 +120,6 @@ public class TargetTests
     private sealed class ServiceWorkerTargetFixture : IDisposable
     {
         private readonly Connection _connection;
-        private readonly TaskQueue _screenshotTaskQueue = new();
 
         public ServiceWorkerTargetFixture()
         {
@@ -144,8 +143,7 @@ public class TargetTests
                 null,
                 (BrowserContext)browser.DefaultContext,
                 targetManager,
-                _ => Task.FromException<CDPSession>(new PuppeteerException("Attach failed")),
-                _screenshotTaskQueue
+                _ => Task.FromException<CDPSession>(new PuppeteerException("Attach failed"))
             );
         }
 
@@ -157,7 +155,6 @@ public class TargetTests
         {
             _connection.Dispose();
             Transport.Dispose();
-            _screenshotTaskQueue.Dispose();
         }
     }
 
