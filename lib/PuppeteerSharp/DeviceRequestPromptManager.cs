@@ -54,6 +54,9 @@ public class DeviceRequestPromptManager
             throw new PuppeteerException("Cannot wait for device prompt through detached session!");
         }
 
+        var cancellationToken = options?.CancellationToken ?? default;
+        cancellationToken.ThrowIfCancellationRequested();
+
         var needsEnable =
             _deviceRequestPromptTcs == null || _deviceRequestPromptTcs.Task.IsCompleted;
         var enableTask = Task.CompletedTask;
@@ -65,7 +68,6 @@ public class DeviceRequestPromptManager
         }
 
         var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
-        var cancellationToken = options?.CancellationToken ?? default;
         CancellationTokenRegistration? registration = null;
 
         if (cancellationToken != default)
