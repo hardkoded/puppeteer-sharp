@@ -108,8 +108,12 @@ internal static class HttpUtil
 
         if ((int)response.StatusCode is >= 300 and < 400 && response.Headers.Location != null)
         {
-            // HttpClient stops following redirects after MaxAutomaticRedirections and returns the last 3xx response.
-            throw new DownloadError($"Too many redirects ({MaxRedirects}). URL: {address}", false);
+            // HttpClient returns the last 3xx response once MaxAutomaticRedirections is reached
+            // (or when it refuses an HTTPS to HTTP downgrade).
+            throw new DownloadError(
+                $"Too many redirects ({MaxRedirects}) or redirect not followed: server returned code {(int)response.StatusCode}. URL: {address}",
+                false
+            );
         }
 
         if (!response.IsSuccessStatusCode)

@@ -61,8 +61,18 @@ namespace PuppeteerSharp.Tests.Browsers
                 var attempt = Interlocked.Increment(ref _requests);
                 var stream = client.GetStream();
                 var buffer = new byte[4096];
-                var read = await stream.ReadAsync(buffer, 0, buffer.Length);
-                var requestLine = Encoding.ASCII.GetString(buffer, 0, read).Split('\r')[0];
+                var request = new StringBuilder();
+                int read;
+                while (
+                    request.Length < 8192
+                    && !request.ToString().Contains("\r\n")
+                    && (read = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0
+                )
+                {
+                    request.Append(Encoding.ASCII.GetString(buffer, 0, read));
+                }
+
+                var requestLine = request.ToString().Split('\r')[0];
                 var target = requestLine.Split(' ').ElementAtOrDefault(1) ?? "/";
                 var location = _redirect?.Invoke(target);
                 if (location != null)

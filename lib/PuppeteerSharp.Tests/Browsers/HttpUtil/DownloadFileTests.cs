@@ -216,7 +216,7 @@ namespace PuppeteerSharp.Tests.Browsers.HttpUtil
             var destPath = Path.Combine(_tmpDir, "download.bin");
 
             var ex = Assert.CatchAsync<HttpRequestException>(() =>
-                Helpers.HttpUtil.DownloadFileAsync(server.Url, destPath)
+                Helpers.HttpUtil.DownloadFileAsync(server.Url, destPath, null, 2, 0)
             );
 
             Assert.That(ex.Message, Does.Contain("Too many redirects"));
