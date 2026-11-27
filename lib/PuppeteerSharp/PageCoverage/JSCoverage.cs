@@ -14,6 +14,7 @@ namespace PuppeteerSharp.PageCoverage
     {
         private readonly ConcurrentDictionary<string, string> _scriptURLs = new();
         private readonly ConcurrentDictionary<string, string> _scriptSources = new();
+        private readonly ConcurrentQueue<Task> _scriptParsedTasks = new();
         private readonly ILogger _logger;
 
         private CDPSession _client;
@@ -48,6 +49,8 @@ namespace PuppeteerSharp.PageCoverage
             _enabled = true;
             _scriptURLs.Clear();
             _scriptSources.Clear();
+
+            while (_scriptParsedTasks.TryDequeue(out _)) { }
 
             _client.MessageReceived += Client_MessageReceived;
 
@@ -90,6 +93,10 @@ namespace PuppeteerSharp.PageCoverage
                 .ConfigureAwait(false);
             _client.MessageReceived -= Client_MessageReceived;
 
+            // Chrome sends the script sources before the replies above, but the code that stores them
+            // can still be waiting to run.
+            await Task.WhenAll(_scriptParsedTasks.ToArray()).ConfigureAwait(false);
+
             var coverage = new List<JSCoverageEntry>();
             foreach (var entry in profileResponseTask.Result.Result)
             {
@@ -130,10 +137,11 @@ namespace PuppeteerSharp.PageCoverage
                 switch (e.MessageID)
                 {
                     case "Debugger.scriptParsed":
-                        await OnScriptParsedAsync(
-                                e.MessageData.ToObject<DebuggerScriptParsedResponse>()
-                            )
-                            .ConfigureAwait(false);
+                        var scriptParsedTask = OnScriptParsedAsync(
+                            e.MessageData.ToObject<DebuggerScriptParsedResponse>()
+                        );
+                        _scriptParsedTasks.Enqueue(scriptParsedTask);
+                        await scriptParsedTask.ConfigureAwait(false);
                         break;
                     case "Runtime.executionContextsCleared":
                         OnExecutionContextsCleared();
