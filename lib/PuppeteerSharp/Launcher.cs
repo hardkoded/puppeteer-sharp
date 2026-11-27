@@ -89,6 +89,13 @@ namespace PuppeteerSharp
                 options.Allowlist
             );
 
+            if (options.Protocol == ProtocolType.WebdriverBiDi && options.TargetFilter != null)
+            {
+                throw new NotSupportedException(
+                    "targetFilter is not supported with the WebDriver BiDi protocol"
+                );
+            }
+
             var executable = options.ExecutablePath;
             if (executable == null)
             {
@@ -339,6 +346,13 @@ namespace PuppeteerSharp
                 options.BlockList,
                 options.Allowlist
             );
+
+            if (options.Protocol == ProtocolType.WebdriverBiDi && options.TargetFilter != null)
+            {
+                throw new NotSupportedException(
+                    "targetFilter is not supported with the WebDriver BiDi protocol"
+                );
+            }
 
             var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
                 ? options.BrowserWSEndpoint
