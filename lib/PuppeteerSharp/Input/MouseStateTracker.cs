@@ -12,20 +12,10 @@ namespace PuppeteerSharp.Input
         // Transactions can run in parallel, so we store each of them in this list.
         private readonly List<MouseTransaction.TransactionData> _transactions = [];
 
-        // Continuations can run out of order, so we remember which transaction committed each value.
-        private long _lastSequence;
-        private long _positionSequence;
-        private long _buttonsSequence;
-
         /// <summary>
         /// Gets the current position of the mouse.
         /// </summary>
         internal Point Position => State.Position;
-
-        /// <summary>
-        /// Gets the buttons that are currently being pressed.
-        /// </summary>
-        internal MouseButton Buttons => State.Buttons;
 
         /// <summary>
         /// Gets a snapshot of the committed state with the updates of the in-flight transactions applied on top of it.
@@ -44,15 +34,7 @@ namespace PuppeteerSharp.Input
 
                     foreach (var transaction in _transactions)
                     {
-                        if (transaction.Sequence > _positionSequence)
-                        {
-                            state.Position = transaction.Position ?? state.Position;
-                        }
-
-                        if (transaction.Sequence > _buttonsSequence)
-                        {
-                            state.Buttons = transaction.Buttons ?? state.Buttons;
-                        }
+                        Apply(transaction, state);
                     }
 
                     return state;
@@ -93,9 +75,26 @@ namespace PuppeteerSharp.Input
             }
         }
 
+        private static void Apply(MouseTransaction.TransactionData transaction, MouseState state)
+        {
+            state.Position = transaction.Position ?? state.Position;
+            state.Buttons =
+                (state.Buttons | transaction.PressedButtons) & ~transaction.ReleasedButtons;
+        }
+
+        // .NET continuations can run out of order, so transactions are applied in the order they were created.
+        private void ApplyCommittedTransactions()
+        {
+            while (_transactions.Count > 0 && _transactions[0].IsCommitted)
+            {
+                Apply(_transactions[0], _committedState);
+                _transactions.RemoveAt(0);
+            }
+        }
+
         private MouseTransaction CreateTransaction()
         {
-            var data = new MouseTransaction.TransactionData { Sequence = ++_lastSequence };
+            var data = new MouseTransaction.TransactionData();
             _transactions.Add(data);
 
             return new MouseTransaction()
@@ -105,26 +104,16 @@ namespace PuppeteerSharp.Input
                     lock (_lock)
                     {
                         data.Position = updates.Position ?? data.Position;
-                        data.Buttons = updates.Buttons ?? data.Buttons;
+                        data.PressedButtons |= updates.PressedButtons;
+                        data.ReleasedButtons |= updates.ReleasedButtons;
                     }
                 },
                 Commit = () =>
                 {
                     lock (_lock)
                     {
-                        if (data.Position.HasValue && data.Sequence > _positionSequence)
-                        {
-                            _committedState.Position = data.Position.Value;
-                            _positionSequence = data.Sequence;
-                        }
-
-                        if (data.Buttons.HasValue && data.Sequence > _buttonsSequence)
-                        {
-                            _committedState.Buttons = data.Buttons.Value;
-                            _buttonsSequence = data.Sequence;
-                        }
-
-                        _transactions.Remove(data);
+                        data.IsCommitted = true;
+                        ApplyCommittedTransactions();
                     }
                 },
                 Rollback = () =>
@@ -132,6 +121,7 @@ namespace PuppeteerSharp.Input
                     lock (_lock)
                     {
                         _transactions.Remove(data);
+                        ApplyCommittedTransactions();
                     }
                 },
             };
