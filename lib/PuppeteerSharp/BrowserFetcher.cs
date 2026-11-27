@@ -87,10 +87,8 @@ namespace PuppeteerSharp
             var url = GetDownloadURL(Browser, Platform, BaseUrl, revision);
 
             return await HttpUtil
-                .HeadHttpRequestAsync(
-                    url,
-                    WebProxy,
-                    ex => _logger?.FailedToCheckDownload(ex, Browser, Platform, BaseUrl)
+                .HeadHttpRequestAsync(url, WebProxy, ex =>
+                    _logger?.FailedToCheckDownload(ex, Browser, Platform, BaseUrl)
                 )
                 .ConfigureAwait(false);
         }
