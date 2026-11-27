@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -9,7 +10,7 @@ namespace PuppeteerSharp.Tests.Browsers
 {
     /// <summary>
     /// Minimal raw HTTP server. The handler returns a status code: 200 serves the content,
-    /// 0 drops the connection, -1 never answers, -2 sends headers and then stalls the body, anything else is sent as an empty error response.
+    /// 0 drops the connection, -1 never answers, -2 sends headers and then stalls the body, a redirect function returning a location answers 302 first, anything else is sent as an empty error response.
     /// </summary>
     internal sealed class TestHttpServer : IDisposable
     {
@@ -19,11 +20,13 @@ namespace PuppeteerSharp.Tests.Browsers
 
         private readonly TcpListener _listener = new(IPAddress.Loopback, 0);
         private readonly Func<int, int> _handler;
+        private readonly Func<string, string> _redirect;
         private int _requests;
 
-        public TestHttpServer(Func<int, int> handler)
+        public TestHttpServer(Func<int, int> handler, Func<string, string> redirect = null)
         {
             _handler = handler;
+            _redirect = redirect;
             _listener.Start();
             _ = AcceptLoopAsync();
         }
@@ -58,7 +61,19 @@ namespace PuppeteerSharp.Tests.Browsers
                 var attempt = Interlocked.Increment(ref _requests);
                 var stream = client.GetStream();
                 var buffer = new byte[4096];
-                _ = await stream.ReadAsync(buffer, 0, buffer.Length);
+                var read = await stream.ReadAsync(buffer, 0, buffer.Length);
+                var requestLine = Encoding.ASCII.GetString(buffer, 0, read).Split('\r')[0];
+                var target = requestLine.Split(' ').ElementAtOrDefault(1) ?? "/";
+                var location = _redirect?.Invoke(target);
+                if (location != null)
+                {
+                    var redirectHeader = Encoding.ASCII.GetBytes(
+                        $"HTTP/1.1 302 Found\r\nLocation: {location}\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+                    );
+                    await stream.WriteAsync(redirectHeader, 0, redirectHeader.Length);
+                    return;
+                }
+
                 var status = _handler(attempt);
                 if (status == -1)
                 {

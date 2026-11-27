@@ -13,6 +13,9 @@ namespace PuppeteerSharp.Helpers;
 internal static class HttpUtil
 {
     private const int MaxRetryDelayInMillis = 10000;
+
+    // Same limit as fetch() in Node.js and browsers.
+    private const int MaxRedirects = 20;
     private const int CopyBufferSize = 81920;
     private static readonly TimeSpan _defaultBodyStallTimeout = TimeSpan.FromSeconds(30);
 
@@ -86,7 +89,7 @@ internal static class HttpUtil
         TimeSpan bodyStallTimeout
     )
     {
-        using var handler = new HttpClientHandler();
+        using var handler = new HttpClientHandler { MaxAutomaticRedirections = MaxRedirects };
         if (proxy != null)
         {
             handler.Proxy = proxy;
@@ -102,6 +105,12 @@ internal static class HttpUtil
         using var response = await client
             .GetAsync(address, HttpCompletionOption.ResponseHeadersRead)
             .ConfigureAwait(false);
+
+        if ((int)response.StatusCode is >= 300 and < 400 && response.Headers.Location != null)
+        {
+            // HttpClient stops following redirects after MaxAutomaticRedirections and returns the last 3xx response.
+            throw new DownloadError($"Too many redirects ({MaxRedirects}). URL: {address}", false);
+        }
 
         if (!response.IsSuccessStatusCode)
         {
