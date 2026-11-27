@@ -82,6 +82,32 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             PuppeteerTest(
                 "requestinterception.spec",
                 "request interception Request.respond",
+                "should work with a status code that has no standard reason phrase"
+            )
+        ]
+        public async Task ShouldWorkWithAStatusCodeThatHasNoStandardReasonPhrase()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(
+                    new ResponseData { Status = (HttpStatusCode)419, Body = "Yo, page!" }
+                );
+            };
+
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(response.Status, Is.EqualTo((HttpStatusCode)419));
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("document.body.textContent"),
+                Is.EqualTo("Yo, page!")
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "requestinterception.spec",
+                "request interception Request.respond",
                 "should redirect"
             )
         ]
