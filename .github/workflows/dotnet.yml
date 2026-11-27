@@ -66,10 +66,6 @@ jobs:
             browser: CHROME
             mode: headful
             protocol: cdp
-          - os: ubuntu-latest
-            browser: CHROME
-            mode: headless-shell
-            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headless
@@ -77,10 +73,6 @@ jobs:
           - os: windows-latest
             browser: CHROME
             mode: headful
-            protocol: cdp
-          - os: windows-latest
-            browser: CHROME
-            mode: headless-shell
             protocol: cdp
           - os: ubuntu-latest
             browser: CHROME

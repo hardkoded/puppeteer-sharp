@@ -8,9 +8,27 @@ namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class PageGoBackTests : PuppeteerPageBaseTest
     {
+        public PageGoBackTests()
+        {
+            DefaultOptions = TestConstants.DefaultBrowserOptions();
+
+            if (TestConstants.IsChrome)
+            {
+                // These tests need going back and forward to request the page. Chrome can restore
+                // it from the back/forward cache instead, even with "Cache-Control: no-store" and
+                // the HTTP cache disabled. Then there is no request and no response.
+                DefaultOptions.Args =
+                [
+                    .. DefaultOptions.Args,
+                    "--disable-features=BackForwardCache",
+                ];
+            }
+        }
+
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goBack", "should work")]
         public async Task ShouldWork()
         {
+            await Page.SetCacheEnabledAsync(false);
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
@@ -37,7 +55,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
             var navigation = Page.GoBackAsync(
                 new NavigationOptions { CancellationToken = cts.Token }
             );
-            await requestTask;
+
+            // Fail instead of hanging if going back ends without requesting the page.
+            await await Task.WhenAny(requestTask, navigation);
+            Assert.That(
+                requestTask.IsCompleted,
+                Is.True,
+                "Going back ended without requesting the page"
+            );
 
             cts.Cancel();
             Assert.CatchAsync<OperationCanceledException>(() => navigation);

@@ -23,6 +23,9 @@ namespace PuppeteerSharp
     public abstract class Browser : IBrowser
 #pragma warning disable CA1724
     {
+        private readonly ScreenshotMutex _pageScreenshotMutex = new();
+        private int _screenshotOperationsCount;
+
         /// <inheritdoc/>
         public event EventHandler Closed;
 
@@ -88,8 +91,6 @@ namespace PuppeteerSharp
             Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
         internal bool HasConsoleListeners => Console != null;
-
-        internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
         internal Connection Connection { get; init; }
 
@@ -305,8 +306,36 @@ namespace PuppeteerSharp
                 await CloseAsync().ConfigureAwait(false);
             }
 
-            await ScreenshotTaskQueue.DisposeAsync().ConfigureAwait(false);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Starts a screenshot operation. Screenshot operations are serialized across all the browser contexts.
+        /// </summary>
+        /// <returns>A guard that must be disposed when the screenshot operation completes.</returns>
+        internal Task<IDisposable> StartScreenshotAsync()
+        {
+            Interlocked.Increment(ref _screenshotOperationsCount);
+            return _pageScreenshotMutex.AcquireAsync(() =>
+                Interlocked.Decrement(ref _screenshotOperationsCount)
+            );
+        }
+
+        /// <summary>
+        /// Waits for the ongoing screenshot operations, in any browser context, to complete.
+        /// </summary>
+        /// <returns>
+        /// A guard that blocks new screenshot operations until it is disposed,
+        /// or <c>null</c> if no screenshot operations are in progress.
+        /// </returns>
+        internal async Task<IDisposable> WaitForScreenshotOperationsAsync()
+        {
+            if (Volatile.Read(ref _screenshotOperationsCount) == 0)
+            {
+                return null;
+            }
+
+            return await _pageScreenshotMutex.AcquireAsync().ConfigureAwait(false);
         }
 
         internal virtual bool IsNetworkEnabled() => true;
@@ -358,9 +387,7 @@ namespace PuppeteerSharp
         /// created by Puppeteer.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) =>
-            _ = CloseAsync()
-                .ContinueWith(_ => ScreenshotTaskQueue.DisposeAsync(), TaskScheduler.Default);
+        protected virtual void Dispose(bool disposing) => _ = CloseAsync();
 
         /// <summary>
         /// Emits <see cref="Closed"/> event.
