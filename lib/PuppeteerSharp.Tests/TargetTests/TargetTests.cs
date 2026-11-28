@@ -775,6 +775,35 @@ namespace PuppeteerSharp.Tests.TargetTests
             );
         }
 
+        [
+            Test,
+            PuppeteerTest(
+                "target.spec",
+                "Target",
+                "should throw when creating a page CDP session without CDP support"
+            )
+        ]
+        public async Task ShouldThrowWhenCreatingAPageCdpSessionWithoutCdpSupport()
+        {
+            if (PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("Pages support CDP sessions over CDP.");
+            }
+
+            Exception exception = null;
+
+            try
+            {
+                await Page.CreateCDPSessionAsync().WithTimeout(TestTimeout);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+
+            Assert.That(exception, Is.InstanceOf<PuppeteerException>());
+        }
+
         // Awaited instead of using Assert.ThrowsAsync, which blocks the thread. The code that follows a
         // launch can run on the thread that reads protocol messages, so blocking it can deadlock.
         private static async Task<Exception> CatchCloseExceptionAsync(ITarget target)
