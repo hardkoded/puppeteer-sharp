@@ -52,7 +52,7 @@ Shortcut for `MoveOptions)`, [DownAsync(ClickOptions)](/api/PuppeteerSharp.Input
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L89)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L97)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_Dispose_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_Dispose_System_Boolean_"></a>
@@ -73,7 +73,7 @@ Performs application-defined tasks associated with freeing, releasing, or resett
 | --- | --- | --- |
 | `disposing` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) |  |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L308)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L336)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_DownAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_DownAsync_PuppeteerSharp_Input_ClickOptions_"></a>
@@ -96,7 +96,7 @@ Dispatches a `mousedown` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L115)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L119)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_DragAndDropAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_DragAndDropAsync_System_Decimal_System_Decimal_System_Decimal_System_Decimal_System_Int32_"></a>
@@ -123,7 +123,7 @@ Performs a drag, dragenter, dragover, and drop in sequence.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L250)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L271)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_DragAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_DragAsync_System_Decimal_System_Decimal_System_Decimal_System_Decimal_"></a>
@@ -149,7 +149,7 @@ Dispatches a `drag` event.
 
 **Returns:** [Task&lt;DragData&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task that resolves when the message was confirmed by the browser with the drag data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L186)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L199)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_DragEnterAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_DragEnterAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_"></a>
@@ -174,7 +174,7 @@ Dispatches a `dragenter` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L211)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L229)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_DragOverAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_DragOverAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_"></a>
@@ -199,7 +199,7 @@ Dispatches a `dragover` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L224)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L243)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_DropAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_DropAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_"></a>
@@ -224,7 +224,7 @@ Dispatches a `drop` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L237)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L257)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_MoveAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_MoveAsync_System_Decimal_System_Decimal_PuppeteerSharp_Input_MoveOptions_"></a>
@@ -249,7 +249,7 @@ Dispatches a `mousemove` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L51)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L49)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_ResetAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_ResetAsync"></a>
@@ -266,7 +266,7 @@ Resets the mouse to the default state: No buttons pressed; position at (0,0).
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L270)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L299)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_UpAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_UpAsync_PuppeteerSharp_Input_ClickOptions_"></a>
@@ -289,7 +289,7 @@ Dispatches a `mouseup` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L141)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L149)
 
 <a id="PuppeteerSharp_Cdp_CdpMouse_WheelAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpMouse_WheelAsync_System_Decimal_System_Decimal_"></a>
@@ -313,4 +313,4 @@ Dispatches a `wheel` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L167)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpMouse.cs#L179)

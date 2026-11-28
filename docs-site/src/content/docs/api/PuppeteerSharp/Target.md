@@ -48,7 +48,7 @@ Get the target that opened this target.
 
 Top-level targets return `null`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L29)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L27)
 
 <a id="PuppeteerSharp_Target_Type_"></a>
 <a id="PuppeteerSharp_Target_Type"></a>
@@ -66,7 +66,7 @@ Can be `"page"`, `"background_page"`, `"service_worker"`, `"shared_worker"`, `"b
 
 **Value:** [TargetType](/api/PuppeteerSharp/TargetType/) — The type.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L26)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L24)
 
 <a id="PuppeteerSharp_Target_Url_"></a>
 <a id="PuppeteerSharp_Target_Url"></a>
@@ -83,7 +83,7 @@ Gets the URL.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The URL.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L23)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L21)
 
 ## Methods
 
@@ -104,7 +104,38 @@ regular page target, use [PageAsync()](/api/PuppeteerSharp/ITarget/#PuppeteerSha
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that returns a [IPage](/api/PuppeteerSharp/IPage/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L51)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L49)
+
+<a id="PuppeteerSharp_Target_CloseAsync_"></a>
+<a id="PuppeteerSharp_Target_CloseAsync"></a>
+
+### CloseAsync()
+
+
+```csharp
+public abstract Task CloseAsync()
+```
+
+
+Closes the target. This API is experimental.
+
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the target is closed.
+
+&lt;p&gt;
+It does not create a [IPage](/api/PuppeteerSharp/IPage/) for the target, so it also closes a page target whose page
+could not be created. It does not run `beforeunload` handlers.
+&lt;/p&gt;
+&lt;p&gt;
+Throws if the target does not support closing, for example the browser target, the target of a frame
+or a dedicated worker.
+&lt;/p&gt;
+&lt;p&gt;
+Chrome destroys a service worker only after all CDP sessions attached to it detach. While a different
+session, for example one from [CreateCDPSessionAsync()](/api/PuppeteerSharp/ITarget/#PuppeteerSharp_ITarget_CreateCDPSessionAsync), stays attached to a service worker,
+the returned task might not complete.
+&lt;/p&gt;
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L55)
 
 <a id="PuppeteerSharp_Target_CreateCDPSessionAsync_"></a>
 <a id="PuppeteerSharp_Target_CreateCDPSessionAsync"></a>
@@ -121,7 +152,7 @@ Creates a Chrome Devtools Protocol session attached to the target.
 
 **Returns:** [Task&lt;ICDPSession&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that returns a [ICDPSession](/api/PuppeteerSharp/ICDPSession/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L54)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L52)
 
 <a id="PuppeteerSharp_Target_PageAsync_"></a>
 <a id="PuppeteerSharp_Target_PageAsync"></a>
@@ -138,7 +169,7 @@ Returns the [IPage](/api/PuppeteerSharp/IPage/) associated with the target. If t
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — a task that returns a [IPage](/api/PuppeteerSharp/IPage/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L45)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L43)
 
 <a id="PuppeteerSharp_Target_WorkerAsync_"></a>
 <a id="PuppeteerSharp_Target_WorkerAsync"></a>
@@ -155,4 +186,4 @@ If the target is not of type `"service_worker"` or `"shared_worker"`, returns `n
 
 **Returns:** [Task&lt;WebWorker&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that returns a [WebWorker](/api/PuppeteerSharp/WebWorker/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L48)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L46)

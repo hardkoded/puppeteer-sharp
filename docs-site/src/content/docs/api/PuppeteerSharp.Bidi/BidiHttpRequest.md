@@ -44,7 +44,7 @@ Gets the merged headers including extra HTTP headers.
 
 **Value:** [Dictionary&lt;string, string&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L62)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L56)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_InterceptResolutionState_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_InterceptResolutionState"></a>
@@ -61,7 +61,7 @@ Gets the current intercept resolution state.
 
 **Value:** [InterceptResolutionState](/api/PuppeteerSharp/InterceptResolutionState/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L83)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L77)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_IsInterceptResolutionHandled_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_IsInterceptResolutionHandled"></a>
@@ -78,34 +78,32 @@ Gets whether the intercept resolution has already been handled.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L99)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L93)
 
-## Methods
+<a id="PuppeteerSharp_Bidi_BidiHttpRequest_Worker_"></a>
+<a id="PuppeteerSharp_Bidi_BidiHttpRequest_Worker"></a>
 
-<a id="PuppeteerSharp_Bidi_BidiHttpRequest_AbortAsync_"></a>
-<a id="PuppeteerSharp_Bidi_BidiHttpRequest_AbortAsync_PuppeteerSharp_RequestAbortErrorCode_System_Nullable_System_Int32__"></a>
-
-### AbortAsync(RequestAbortErrorCode, int?)
+### Worker
 
 
 ```csharp
-public override Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
+public override WebWorker Worker { get; }
 ```
 
 
-Aborts request. To use this, request interception should be enabled with [SetRequestInterceptionAsync(bool)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_SetRequestInterceptionAsync_System_Boolean_).
-Exception is immediately thrown if the request interception is not enabled.
+Gets the worker that initiated the request, or null if the request was not initiated by a worker.
 
-**Parameters**
+**Value:** [WebWorker](/api/PuppeteerSharp/WebWorker/) — The worker.
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `errorCode` | [RequestAbortErrorCode](/api/PuppeteerSharp/RequestAbortErrorCode/) | Optional error code. Defaults to [Failed](/api/PuppeteerSharp/RequestAbortErrorCode/#PuppeteerSharp_RequestAbortErrorCode_Failed). |
-| `priority` | [int?](https://learn.microsoft.com/dotnet/api/system.int32) | Optional intercept abort priority. If provided, intercept will be resolved using cooperative handling rules. Otherwise, intercept will be resolved immediately. IMPORTANT: If you set the priority, you will need to attach Request listener using `Task%7d)` instead of [Request](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Request). |
+**Exceptions**
 
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
+| Type | Condition |
+| --- | --- |
+| [NotSupportedException](https://learn.microsoft.com/dotnet/api/system.notsupportedexception) | Always thrown. Worker requests are not available in WebDriver BiDi. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L207)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L97)
+
+## Methods
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_CanBeIntercepted_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_CanBeIntercepted"></a>
@@ -122,7 +120,7 @@ Determines whether this request can be intercepted.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the request can be intercepted; otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L330)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L352)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContentAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContentAsync"></a>
@@ -139,32 +137,7 @@ Fetches the unmodified POST data bytes for the request from the browser.
 
 **Returns:** [Task&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's raw POST data, or `null` when there is none or fetching it fails.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L234)
-
-<a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContinueAsync_"></a>
-<a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContinueAsync_PuppeteerSharp_Payload_System_Nullable_System_Int32__"></a>
-
-### ContinueAsync(Payload, int?)
-
-
-```csharp
-public override Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
-```
-
-
-Continues request with optional request overrides. To use this, request interception should be enabled with [SetRequestInterceptionAsync(bool)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_SetRequestInterceptionAsync_System_Boolean_). Exception is immediately thrown if the request interception is not enabled.
-If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
-
-**Parameters**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `payloadOverrides` | [Payload](/api/PuppeteerSharp/Payload/) | Optional request overwrites. |
-| `priority` | [int?](https://learn.microsoft.com/dotnet/api/system.int32) | Optional intercept abort priority. If provided, intercept will be resolved using cooperative handling rules. Otherwise, intercept will be resolved immediately. IMPORTANT: If you set the priority, you will need to attach Request listener using `Task%7d)` instead of [Request](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Request). |
-
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L131)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L128)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_FetchPostDataAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_FetchPostDataAsync"></a>
@@ -181,31 +154,7 @@ Fetches the POST data for the request from the browser.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's POST data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L231)
-
-<a id="PuppeteerSharp_Bidi_BidiHttpRequest_RespondAsync_"></a>
-<a id="PuppeteerSharp_Bidi_BidiHttpRequest_RespondAsync_PuppeteerSharp_ResponseData_System_Nullable_System_Int32__"></a>
-
-### RespondAsync(ResponseData, int?)
-
-
-```csharp
-public override Task RespondAsync(ResponseData response, int? priority = null)
-```
-
-
-Fulfills request with given response. To use this, request interception should be enabled with [SetRequestInterceptionAsync(bool)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_SetRequestInterceptionAsync_System_Boolean_). Exception is thrown if request interception is not enabled.
-
-**Parameters**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `response` | [ResponseData](/api/PuppeteerSharp/ResponseData/) | Response that will fulfill this request. |
-| `priority` | [int?](https://learn.microsoft.com/dotnet/api/system.int32) | Optional intercept abort priority. If provided, intercept will be resolved using cooperative handling rules. Otherwise, intercept will be resolved immediately. IMPORTANT: If you set the priority, you will need to attach Request listener using `Task%7d)` instead of [Request](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Request). |
-
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L167)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L125)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_VerifyInterception_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_VerifyInterception"></a>
@@ -226,4 +175,4 @@ Verifies that request interception is enabled and the request has not been handl
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | Thrown when interception is not enabled or request is already handled. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L316)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L338)

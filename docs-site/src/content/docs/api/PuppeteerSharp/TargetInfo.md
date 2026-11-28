@@ -79,6 +79,23 @@ Get the target that opened this target.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetInfo.cs#L38)
 
+<a id="PuppeteerSharp_TargetInfo_ParentFrameId_"></a>
+<a id="PuppeteerSharp_TargetInfo_ParentFrameId"></a>
+
+### ParentFrameId
+
+
+```csharp
+public string ParentFrameId { get; set; }
+```
+
+
+Gets the id of the parent frame, for iframe targets.
+
+**Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetInfo.cs#L54)
+
 <a id="PuppeteerSharp_TargetInfo_Subtype_"></a>
 <a id="PuppeteerSharp_TargetInfo_Subtype"></a>
 

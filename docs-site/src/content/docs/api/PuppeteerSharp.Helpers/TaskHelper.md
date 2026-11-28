@@ -69,7 +69,7 @@ this method throws immediately when any task fails or is canceled.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when all tasks complete successfully.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L199)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L237)
 
 <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_"></a>
 <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_System_Threading_Tasks_Task_System_Func_System_Threading_Tasks_Task__System_Int32_System_Threading_CancellationToken_"></a>
@@ -95,7 +95,7 @@ Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after &lt;code class=
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L68)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L76)
 
 <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_System_Threading_Tasks_Task_System_Func_System_Threading_Tasks_Task__System_TimeSpan_System_Threading_CancellationToken_"></a>
 
@@ -120,7 +120,7 @@ Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after a given &lt;cod
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L85)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L99)
 
 <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_System_Threading_Tasks_Task_System_Nullable_System_Int32__System_Func_System_TimeSpan_System_Exception__System_Threading_CancellationToken_"></a>
 
@@ -170,7 +170,7 @@ Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after a given &lt;cod
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L48)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L54)
 
 <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_System_Threading_Tasks_Task___0__System_Action_System_Int32_"></a>
 
@@ -200,7 +200,7 @@ Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after &lt;code class=
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The task result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L120)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L139)
 
 <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_System_Threading_Tasks_Task___0__System_Action_System_TimeSpan_"></a>
 
@@ -230,7 +230,7 @@ Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after a given &lt;cod
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The task result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L133)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L155)
 
 <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_System_Threading_Tasks_Task___0__System_Nullable_System_Int32__System_Func_System_TimeSpan_System_Exception__"></a>
 
@@ -260,7 +260,7 @@ Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after &lt;code class=
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The task result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L164)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L190)
 
 <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_System_Threading_Tasks_Task___0__System_TimeSpan_System_Func_System_TimeSpan_System_Exception__"></a>
 
@@ -290,4 +290,4 @@ Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after a given &lt;cod
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The task result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L177)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs#L211)

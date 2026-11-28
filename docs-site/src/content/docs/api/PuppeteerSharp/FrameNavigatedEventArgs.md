@@ -44,7 +44,7 @@ Gets or sets the frame.
 
 **Value:** [IFrame](/api/PuppeteerSharp/IFrame/) — The frame.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/FrameNavigatedEventArgs.cs#L27)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/FrameNavigatedEventArgs.cs#L31)
 
 <a id="PuppeteerSharp_FrameNavigatedEventArgs_Type_"></a>
 <a id="PuppeteerSharp_FrameNavigatedEventArgs_Type"></a>
@@ -61,4 +61,4 @@ Navigation type.
 
 **Value:** [NavigationType](/api/PuppeteerSharp.Cdp.Messaging/NavigationType/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/FrameNavigatedEventArgs.cs#L32)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/FrameNavigatedEventArgs.cs#L36)

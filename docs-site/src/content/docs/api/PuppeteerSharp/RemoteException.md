@@ -55,7 +55,7 @@ beyond the synchronous part of your handler, call [Move()](/api/PuppeteerSharp/I
 the handler and dispose of the handle yourself once you are done with it.
 The handle is shared by all handlers of the event.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L69)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L71)
 
 <a id="PuppeteerSharp_RemoteException_Location_"></a>
 <a id="PuppeteerSharp_RemoteException_Location"></a>
@@ -75,7 +75,7 @@ coordinates reported for the exception.
 
 **Value:** [ConsoleMessageLocation](/api/PuppeteerSharp/ConsoleMessageLocation/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L56)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L58)
 
 <a id="PuppeteerSharp_RemoteException_Name_"></a>
 <a id="PuppeteerSharp_RemoteException_Name"></a>
@@ -93,7 +93,7 @@ Empty string if the thrown value is not an error, for example a primitive, a pla
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L42)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L44)
 
 <a id="PuppeteerSharp_RemoteException_StackTrace_"></a>
 <a id="PuppeteerSharp_RemoteException_StackTrace"></a>
@@ -111,7 +111,7 @@ Empty for compilation and syntax errors.
 
 **Value:** [IReadOnlyList&lt;ConsoleMessageLocation&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L48)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L50)
 
 <a id="PuppeteerSharp_RemoteException_Text_"></a>
 <a id="PuppeteerSharp_RemoteException_Text"></a>
@@ -130,4 +130,4 @@ For other thrown values it is their description, for example `Object` for a plai
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L36)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RemoteException.cs#L38)

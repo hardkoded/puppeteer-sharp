@@ -111,7 +111,7 @@ Determines whether the specified object is equal to the current object.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the specified object  is equal to the current object; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CookiePartitionKey.cs#L35)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CookiePartitionKey.cs#L36)
 
 <a id="PuppeteerSharp_CookiePartitionKey_GetHashCode_"></a>
 <a id="PuppeteerSharp_CookiePartitionKey_GetHashCode"></a>
@@ -128,4 +128,4 @@ Serves as the default hash function.
 
 **Returns:** [int](https://learn.microsoft.com/dotnet/api/system.int32) — A hash code for the current object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CookiePartitionKey.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CookiePartitionKey.cs#L39)

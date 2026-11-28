@@ -65,7 +65,7 @@ Gets the process, if any was created by this launcher.
 
 **Value:** [LauncherBase](/api/PuppeteerSharp/LauncherBase/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs#L47)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs#L48)
 
 ## Methods
 
@@ -90,7 +90,7 @@ Attaches Puppeteer to an existing process instance. The browser will be closed w
 
 **Returns:** [Task&lt;IBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A connected browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs#L264)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs#L324)
 
 <a id="PuppeteerSharp_Launcher_LaunchAsync_"></a>
 <a id="PuppeteerSharp_Launcher_LaunchAsync_PuppeteerSharp_LaunchOptions_"></a>
@@ -118,4 +118,4 @@ See &lt;a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-b
 for a description of the differences between Chromium and Chrome.
 &lt;a href="https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md"&gt;This article&lt;/a&gt; describes some differences for Linux users.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs#L60)

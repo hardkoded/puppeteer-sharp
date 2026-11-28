@@ -84,7 +84,7 @@ Closes the session.
 | --- | --- | --- |
 | `reason` | [string](https://learn.microsoft.com/dotnet/api/system.string) |  |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiCdpSession.cs#L68)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiCdpSession.cs#L75)
 
 <a id="PuppeteerSharp_Bidi_BidiCdpSession_DetachAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiCdpSession_DetachAsync"></a>
@@ -107,7 +107,7 @@ Detaches session from target. Once detached, session won't emit any events and c
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | If the [Connection](/api/PuppeteerSharp.Cdp/Connection/) is closed. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiCdpSession.cs#L65)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiCdpSession.cs#L72)
 
 <a id="PuppeteerSharp_Bidi_BidiCdpSession_SendAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiCdpSession_SendAsync_System_String_System_Object_System_Boolean_PuppeteerSharp_CommandOptions_"></a>

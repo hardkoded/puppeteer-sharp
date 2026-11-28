@@ -48,7 +48,7 @@ regular page target, use [PageAsync()](/api/PuppeteerSharp/ITarget/#PuppeteerSha
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that returns a [IPage](/api/PuppeteerSharp/IPage/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPageTarget.cs#L33)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPageTarget.cs#L37)
 
 <a id="PuppeteerSharp_Cdp_CdpPageTarget_CheckIfInitialized_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPageTarget_CheckIfInitialized"></a>
@@ -63,7 +63,7 @@ protected override void CheckIfInitialized()
 
 Check is the target is not initialized.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPageTarget.cs#L97)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPageTarget.cs#L100)
 
 <a id="PuppeteerSharp_Cdp_CdpPageTarget_PageAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpPageTarget_PageAsync"></a>
@@ -80,4 +80,4 @@ Returns the [IPage](/api/PuppeteerSharp/IPage/) associated with the target. If t
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — a task that returns a [IPage](/api/PuppeteerSharp/IPage/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPageTarget.cs#L48)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpPageTarget.cs#L52)

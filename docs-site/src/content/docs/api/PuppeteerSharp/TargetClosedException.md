@@ -63,7 +63,7 @@ Initializes a new instance of the [TargetClosedException](./) class.
 | --- | --- | --- |
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetClosedException.cs#L22)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetClosedException.cs#L20)
 
 <a id="PuppeteerSharp_TargetClosedException__ctor_System_String_System_Exception_"></a>
 
@@ -84,7 +84,7 @@ Initializes a new instance of the [TargetClosedException](./) class.
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 | `innerException` | [Exception](https://learn.microsoft.com/dotnet/api/system.exception) | Inner exception. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetClosedException.cs#L31)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetClosedException.cs#L28)
 
 <a id="PuppeteerSharp_TargetClosedException__ctor_System_String_System_String_"></a>
 
@@ -105,7 +105,7 @@ Initializes a new instance of the [TargetClosedException](./) class.
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 | `closeReason` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Close reason. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetClosedException.cs#L40)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetClosedException.cs#L36)
 
 ## Properties
 
@@ -124,4 +124,4 @@ Close Reason.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The close reason.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetClosedException.cs#L47)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetClosedException.cs#L43)

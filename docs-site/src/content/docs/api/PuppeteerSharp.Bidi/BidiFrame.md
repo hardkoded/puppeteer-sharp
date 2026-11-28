@@ -72,7 +72,7 @@ Gets the child frames of the this frame.
 
 **Value:** [IReadOnlyCollection&lt;IFrame&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L64)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L74)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_Client_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_Client"></a>
@@ -89,7 +89,7 @@ Gets the CDPSession associated with this environment.
 
 **Value:** [ICDPSession](/api/PuppeteerSharp/ICDPSession/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L81)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L91)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_Detached_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_Detached"></a>
@@ -106,7 +106,7 @@ Gets a value indicating if the frame is detached or not.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L75)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L85)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_Page_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_Page"></a>
@@ -123,7 +123,7 @@ The [IPage](/api/PuppeteerSharp/IPage/) associated with the frame.
 
 **Value:** [IPage](/api/PuppeteerSharp/IPage/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L78)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L88)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_Url_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_Url"></a>
@@ -140,7 +140,7 @@ Gets the frame's url.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L72)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L82)
 
 ## Methods
 
@@ -165,7 +165,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<l
 
 **Returns:** [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L111)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L121)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_ExtensionRealms_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_ExtensionRealms"></a>
@@ -182,7 +182,7 @@ Retrieves the list of extension realms within this frame.
 
 **Returns:** [IReadOnlyList&lt;Realm&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1) — A list of [Realm](/api/PuppeteerSharp/Realm/) instances representing extension execution contexts.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L564)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L719)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_FrameElementAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_FrameElementAsync"></a>
@@ -199,7 +199,7 @@ The frame element associated with this frame (if any).
 
 **Returns:** [Task&lt;ElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the frame element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L543)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L697)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_GetDeviceRequestPromptManager_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_GetDeviceRequestPromptManager"></a>
@@ -216,7 +216,7 @@ Gets the prompts manager for the current client.
 
 **Returns:** [DeviceRequestPromptManager](/api/PuppeteerSharp/DeviceRequestPromptManager/) — The [DeviceRequestPromptManager](/api/PuppeteerSharp/DeviceRequestPromptManager/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L621)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L789)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_GoToAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_GoToAsync_System_String_PuppeteerSharp_NavigationOptions_"></a>
@@ -256,7 +256,7 @@ The only exceptions are navigation to `about:blank` or navigation to the same UR
 
 &gt; **NOTE** Headless mode doesn't support navigation to a PDF document. See the &lt;see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295"&gt;upstream issue&lt;/see&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L209)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L265)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_SetContentAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_"></a>
@@ -285,7 +285,7 @@ Sets the HTML markup to the page.
 This API is obsolete.
 :::
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L178)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L199)
 
 <a id="PuppeteerSharp_Bidi_BidiFrame_WaitForNavigationAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiFrame_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -321,4 +321,4 @@ await Page.MainFrame.ClickAsync("a.my-link");
 await navigationTask;
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L266)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiFrame.cs#L340)

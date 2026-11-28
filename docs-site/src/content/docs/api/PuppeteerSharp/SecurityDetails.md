@@ -64,7 +64,7 @@ Initializes a new instance of the [SecurityDetails](./) class.
 | `validTo` | [long](https://learn.microsoft.com/dotnet/api/system.int64) | Valid to. |
 | `protocol` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Protocol. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L24)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L22)
 
 <a id="PuppeteerSharp_SecurityDetails__ctor_System_String_System_String_System_Int64_System_Int64_System_String_System_String___"></a>
 
@@ -89,7 +89,7 @@ Initializes a new instance of the [SecurityDetails](./) class.
 | `protocol` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Protocol. |
 | `subjectAlternativeNames` | [string\[\]](https://learn.microsoft.com/dotnet/api/system.string) | Subject alternative names. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L40)
 
 ## Properties
 
@@ -108,7 +108,7 @@ Gets the issuer.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The issuer.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L58)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L67)
 
 <a id="PuppeteerSharp_SecurityDetails_Protocol_"></a>
 <a id="PuppeteerSharp_SecurityDetails_Protocol"></a>
@@ -125,7 +125,7 @@ Gets the protocol.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The protocol.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L76)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L85)
 
 <a id="PuppeteerSharp_SecurityDetails_SubjectAlternativeNames_"></a>
 <a id="PuppeteerSharp_SecurityDetails_SubjectAlternativeNames"></a>
@@ -142,7 +142,7 @@ Gets the list of subject alternative names (SANs) of the certificate.
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string) — The list of subject alternative names (SANs) of the certificate.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L82)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L91)
 
 <a id="PuppeteerSharp_SecurityDetails_SubjectName_"></a>
 <a id="PuppeteerSharp_SecurityDetails_SubjectName"></a>
@@ -159,7 +159,7 @@ Gets the name of the subject.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The name of the subject.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L52)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L61)
 
 <a id="PuppeteerSharp_SecurityDetails_ValidFrom_"></a>
 <a id="PuppeteerSharp_SecurityDetails_ValidFrom"></a>
@@ -176,7 +176,7 @@ Gets the valid from.
 
 **Value:** [long](https://learn.microsoft.com/dotnet/api/system.int64) — The valid from.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L64)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L73)
 
 <a id="PuppeteerSharp_SecurityDetails_ValidTo_"></a>
 <a id="PuppeteerSharp_SecurityDetails_ValidTo"></a>
@@ -193,4 +193,4 @@ Gets the valid to.
 
 **Value:** [long](https://learn.microsoft.com/dotnet/api/system.int64) — The valid to.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L70)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SecurityDetails.cs#L79)

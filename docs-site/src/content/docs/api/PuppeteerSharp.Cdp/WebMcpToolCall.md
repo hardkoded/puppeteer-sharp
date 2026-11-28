@@ -42,7 +42,7 @@ Tool invocation identifier.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/WebMcpToolCall.cs#L48)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/WebMcpToolCall.cs#L51)
 
 <a id="PuppeteerSharp_Cdp_WebMcpToolCall_Input_"></a>
 <a id="PuppeteerSharp_Cdp_WebMcpToolCall_Input"></a>
@@ -59,7 +59,7 @@ The input parameters used for the call.
 
 **Value:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/WebMcpToolCall.cs#L51)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/WebMcpToolCall.cs#L54)
 
 <a id="PuppeteerSharp_Cdp_WebMcpToolCall_Tool_"></a>
 <a id="PuppeteerSharp_Cdp_WebMcpToolCall_Tool"></a>
@@ -76,4 +76,4 @@ Tool that was called.
 
 **Value:** [WebMcpTool](/api/PuppeteerSharp.Cdp/WebMcpTool/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/WebMcpToolCall.cs#L54)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/WebMcpToolCall.cs#L57)

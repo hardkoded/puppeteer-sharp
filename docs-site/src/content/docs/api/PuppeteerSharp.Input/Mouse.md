@@ -69,7 +69,7 @@ public void Dispose()
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L47)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L58)
 
 <a id="PuppeteerSharp_Input_Mouse_Dispose_System_Boolean_"></a>
 
@@ -89,7 +89,7 @@ Performs application-defined tasks associated with freeing, releasing, or resett
 | --- | --- | --- |
 | `disposing` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) |  |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L54)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L65)
 
 <a id="PuppeteerSharp_Input_Mouse_DownAsync_"></a>
 <a id="PuppeteerSharp_Input_Mouse_DownAsync_PuppeteerSharp_Input_ClickOptions_"></a>
@@ -139,7 +139,7 @@ Performs a drag, dragenter, dragover, and drop in sequence.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L41)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L46)
 
 <a id="PuppeteerSharp_Input_Mouse_DragAsync_"></a>
 <a id="PuppeteerSharp_Input_Mouse_DragAsync_System_Decimal_System_Decimal_System_Decimal_System_Decimal_"></a>
@@ -190,7 +190,7 @@ Dispatches a `dragenter` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L32)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L37)
 
 <a id="PuppeteerSharp_Input_Mouse_DragOverAsync_"></a>
 <a id="PuppeteerSharp_Input_Mouse_DragOverAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_"></a>
@@ -215,7 +215,7 @@ Dispatches a `dragover` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L35)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L40)
 
 <a id="PuppeteerSharp_Input_Mouse_DropAsync_"></a>
 <a id="PuppeteerSharp_Input_Mouse_DropAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_"></a>
@@ -240,7 +240,7 @@ Dispatches a `drop` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L43)
 
 <a id="PuppeteerSharp_Input_Mouse_MoveAsync_"></a>
 <a id="PuppeteerSharp_Input_Mouse_MoveAsync_System_Decimal_System_Decimal_PuppeteerSharp_Input_MoveOptions_"></a>
@@ -282,7 +282,7 @@ Resets the mouse to the default state: No buttons pressed; position at (0,0).
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L44)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Mouse.cs#L55)
 
 <a id="PuppeteerSharp_Input_Mouse_UpAsync_"></a>
 <a id="PuppeteerSharp_Input_Mouse_UpAsync_PuppeteerSharp_Input_ClickOptions_"></a>

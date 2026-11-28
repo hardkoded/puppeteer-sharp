@@ -65,7 +65,7 @@ Initializes a new instance of the [PuppeteerException](./) class.
 | --- | --- | --- |
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerException.cs#L22)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerException.cs#L20)
 
 <a id="PuppeteerSharp_PuppeteerException__ctor_System_String_System_Exception_"></a>
 
@@ -86,4 +86,4 @@ Initializes a new instance of the [PuppeteerException](./) class.
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 | `innerException` | [Exception](https://learn.microsoft.com/dotnet/api/system.exception) | Inner exception. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerException.cs#L31)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerException.cs#L28)

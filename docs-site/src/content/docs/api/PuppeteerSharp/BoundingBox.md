@@ -67,7 +67,7 @@ Initializes a new instance of the [BoundingBox](./) class.
 | `width` | [decimal](https://learn.microsoft.com/dotnet/api/system.decimal) | Width. |
 | `height` | [decimal](https://learn.microsoft.com/dotnet/api/system.decimal) | Height. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L25)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L23)
 
 ## Properties
 
@@ -86,7 +86,7 @@ The height of the element in pixels.
 
 **Value:** [decimal](https://learn.microsoft.com/dotnet/api/system.decimal) — The height.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L55)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L53)
 
 <a id="PuppeteerSharp_BoundingBox_Width_"></a>
 <a id="PuppeteerSharp_BoundingBox_Width"></a>
@@ -103,7 +103,7 @@ The width of the element in pixels.
 
 **Value:** [decimal](https://learn.microsoft.com/dotnet/api/system.decimal) — The width.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L49)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L47)
 
 <a id="PuppeteerSharp_BoundingBox_X_"></a>
 <a id="PuppeteerSharp_BoundingBox_X"></a>
@@ -120,7 +120,7 @@ The x coordinate of the element in pixels.
 
 **Value:** [decimal](https://learn.microsoft.com/dotnet/api/system.decimal) — The x.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L37)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L35)
 
 <a id="PuppeteerSharp_BoundingBox_Y_"></a>
 <a id="PuppeteerSharp_BoundingBox_Y"></a>
@@ -137,7 +137,7 @@ The y coordinate of the element in pixels.
 
 **Value:** [decimal](https://learn.microsoft.com/dotnet/api/system.decimal) — The y.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L43)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L41)
 
 ## Methods
 
@@ -163,7 +163,7 @@ Determines whether the specified [BoundingBox](./) is equal to the current [Boun
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the specified [BoundingBox](./) is equal to the current
     [BoundingBox](./); otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L74)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L72)
 
 <a id="PuppeteerSharp_BoundingBox_Equals_System_Object_"></a>
 
@@ -185,7 +185,7 @@ Determines whether the specified object is equal to the current object.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the specified object  is equal to the current object; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L58)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L56)
 
 <a id="PuppeteerSharp_BoundingBox_GetHashCode_"></a>
 <a id="PuppeteerSharp_BoundingBox_GetHashCode"></a>
@@ -202,4 +202,4 @@ Serves as the default hash function.
 
 **Returns:** [int](https://learn.microsoft.com/dotnet/api/system.int32) — A hash code for the current object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L82)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoundingBox.cs#L76)

@@ -52,7 +52,7 @@ Current list of selectable devices.
 
 **Value:** [List&lt;DeviceRequestPromptDevice&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/DeviceRequestPrompt.cs#L51)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/DeviceRequestPrompt.cs#L56)
 
 ## Methods
 
@@ -71,7 +71,7 @@ Cancel the prompt.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves after the cancel message is processed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/DeviceRequestPrompt.cs#L119)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/DeviceRequestPrompt.cs#L146)
 
 <a id="PuppeteerSharp_DeviceRequestPrompt_SelectAsync_"></a>
 <a id="PuppeteerSharp_DeviceRequestPrompt_SelectAsync_PuppeteerSharp_DeviceRequestPromptDevice_"></a>
@@ -94,7 +94,7 @@ Select a device in the prompt's list.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves after the select message is processed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/DeviceRequestPrompt.cs#L58)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/DeviceRequestPrompt.cs#L63)
 
 <a id="PuppeteerSharp_DeviceRequestPrompt_WaitForDeviceAsync_"></a>
 <a id="PuppeteerSharp_DeviceRequestPrompt_WaitForDeviceAsync_System_Func_PuppeteerSharp_DeviceRequestPromptDevice_System_Boolean__PuppeteerSharp_WaitForOptions_"></a>
@@ -118,4 +118,4 @@ Resolve to the first device in the prompt matching a filter.
 
 **Returns:** [Task&lt;DeviceRequestPromptDevice&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to the first device matching the filter.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/DeviceRequestPrompt.cs#L91)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/DeviceRequestPrompt.cs#L97)

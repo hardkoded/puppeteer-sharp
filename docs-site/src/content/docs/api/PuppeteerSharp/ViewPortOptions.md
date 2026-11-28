@@ -61,7 +61,7 @@ Gets or sets the device scale factor.
 
 **Value:** [double](https://learn.microsoft.com/dotnet/api/system.double) — Specify device scale factor (can be thought of as dpr). Defaults to 1.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L39)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L35)
 
 <a id="PuppeteerSharp_ViewPortOptions_HasTouch_"></a>
 <a id="PuppeteerSharp_ViewPortOptions_HasTouch"></a>
@@ -78,7 +78,7 @@ Gets or sets if viewport supports touch events.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — Specifies if viewport supports touch events. Defaults to `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L51)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L47)
 
 <a id="PuppeteerSharp_ViewPortOptions_Height_"></a>
 <a id="PuppeteerSharp_ViewPortOptions_Height"></a>
@@ -95,7 +95,7 @@ Gets or sets the height.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32) — The page height in pixels.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L27)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L23)
 
 <a id="PuppeteerSharp_ViewPortOptions_IsLandscape_"></a>
 <a id="PuppeteerSharp_ViewPortOptions_IsLandscape"></a>
@@ -112,7 +112,7 @@ Gets or sets if viewport is in landscape mode.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — Specifies if viewport is in landscape mode. Defaults to `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L45)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L41)
 
 <a id="PuppeteerSharp_ViewPortOptions_IsMobile_"></a>
 <a id="PuppeteerSharp_ViewPortOptions_IsMobile"></a>
@@ -129,7 +129,7 @@ Gets or sets whether the meta viewport tag is taken into account.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — Whether the meta viewport tag is taken into account. Defaults to `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L33)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L29)
 
 <a id="PuppeteerSharp_ViewPortOptions_Width_"></a>
 <a id="PuppeteerSharp_ViewPortOptions_Width"></a>
@@ -146,4 +146,4 @@ Gets or sets the width.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32) — The page width in pixels.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L21)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ViewPortOptions.cs#L17)

@@ -63,7 +63,7 @@ Initializes a new instance of the [SelectorException](./) class.
 | --- | --- | --- |
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SelectorException.cs#L29)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SelectorException.cs#L27)
 
 <a id="PuppeteerSharp_SelectorException__ctor_System_String_System_Exception_"></a>
 
@@ -84,7 +84,7 @@ Initializes a new instance of the [SelectorException](./) class.
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 | `innerException` | [Exception](https://learn.microsoft.com/dotnet/api/system.exception) | Inner exception. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SelectorException.cs#L48)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SelectorException.cs#L46)
 
 <a id="PuppeteerSharp_SelectorException__ctor_System_String_System_String_"></a>
 
@@ -105,7 +105,7 @@ Initializes a new instance of the [SelectorException](./) class.
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 | `selector` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Selector. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SelectorException.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SelectorException.cs#L35)
 
 ## Properties
 
@@ -124,4 +124,4 @@ Gets the selector.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The selector.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SelectorException.cs#L56)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/SelectorException.cs#L53)

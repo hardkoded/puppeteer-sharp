@@ -45,7 +45,7 @@ resetting unmanaged resources asynchronously.
 
 **Returns:** [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) — A task that represents the asynchronous dispose operation.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenRecorder.cs#L229)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenRecorder.cs#L258)
 
 <a id="PuppeteerSharp_ScreenRecorder_StopAsync_"></a>
 <a id="PuppeteerSharp_ScreenRecorder_StopAsync"></a>
@@ -62,4 +62,4 @@ Stops the recorder.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that completes when the recorder has stopped.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenRecorder.cs#L165)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenRecorder.cs#L193)

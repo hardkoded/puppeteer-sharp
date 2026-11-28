@@ -59,4 +59,4 @@ An interval at which the `pageFunction` is executed. If no value is specified wi
 
 **Value:** [int?](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForFunctionOptions.cs#L19)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForFunctionOptions.cs#L20)

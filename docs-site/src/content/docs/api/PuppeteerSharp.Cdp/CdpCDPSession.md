@@ -44,7 +44,7 @@ True if the session has been detached, false otherwise.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpCDPSession.cs#L54)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpCDPSession.cs#L59)
 
 ## Methods
 
@@ -67,7 +67,7 @@ Closes the session.
 | --- | --- | --- |
 | `closeReason` | [string](https://learn.microsoft.com/dotnet/api/system.string) | The close reason. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpCDPSession.cs#L132)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpCDPSession.cs#L163)
 
 <a id="PuppeteerSharp_Cdp_CdpCDPSession_DetachAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpCDPSession_DetachAsync"></a>
@@ -90,7 +90,7 @@ Detaches session from target. Once detached, session won't emit any events and c
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | If the [Connection](/api/PuppeteerSharp.Cdp/Connection/) is closed. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpCDPSession.cs#L65)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpCDPSession.cs#L80)
 
 <a id="PuppeteerSharp_Cdp_CdpCDPSession_SendAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpCDPSession_SendAsync_System_String_System_Object_System_Boolean_PuppeteerSharp_CommandOptions_"></a>
@@ -122,4 +122,4 @@ Protocol methods can be called with this method.
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | If the [Connection](/api/PuppeteerSharp.Cdp/Connection/) is closed. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpCDPSession.cs#L77)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpCDPSession.cs#L99)

@@ -50,4 +50,4 @@ Snapshots the async.
 
 **Returns:** [Task&lt;SerializedAXNode&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The async.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs#L29)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/Accessibility.cs#L33)

@@ -37,7 +37,7 @@ await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 await Page.Tracing.StopAsync();
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs#L27)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs#L28)
 
 ## Methods
 
@@ -79,4 +79,4 @@ Stops tracing.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Stop task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs#L101)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs#L118)

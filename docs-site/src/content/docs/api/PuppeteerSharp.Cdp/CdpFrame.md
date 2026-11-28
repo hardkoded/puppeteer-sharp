@@ -53,7 +53,7 @@ void dumpFrameTree(IFrame frame, string indent)
 }
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L37)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L38)
 
 ## Properties
 
@@ -72,7 +72,7 @@ Gets the child frames of the this frame.
 
 **Value:** [IReadOnlyCollection&lt;IFrame&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L69)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L75)
 
 <a id="PuppeteerSharp_Cdp_CdpFrame_Client_"></a>
 <a id="PuppeteerSharp_Cdp_CdpFrame_Client"></a>
@@ -89,7 +89,7 @@ Gets the CDPSession associated with this environment.
 
 **Value:** [ICDPSession](/api/PuppeteerSharp/ICDPSession/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L63)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L69)
 
 <a id="PuppeteerSharp_Cdp_CdpFrame_Page_"></a>
 <a id="PuppeteerSharp_Cdp_CdpFrame_Page"></a>
@@ -106,7 +106,7 @@ The [IPage](/api/PuppeteerSharp/IPage/) associated with the frame.
 
 **Value:** [IPage](/api/PuppeteerSharp/IPage/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L66)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L72)
 
 ## Methods
 
@@ -131,7 +131,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<l
 
 **Returns:** [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L204)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L245)
 
 <a id="PuppeteerSharp_Cdp_CdpFrame_ExtensionRealms_"></a>
 <a id="PuppeteerSharp_Cdp_CdpFrame_ExtensionRealms"></a>
@@ -148,7 +148,7 @@ Retrieves the list of extension realms within this frame.
 
 **Returns:** [IReadOnlyList&lt;Realm&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1) — A list of [Realm](/api/PuppeteerSharp/Realm/) instances representing extension execution contexts.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L288)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L345)
 
 <a id="PuppeteerSharp_Cdp_CdpFrame_FrameElementAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpFrame_FrameElementAsync"></a>
@@ -165,7 +165,7 @@ The frame element associated with this frame (if any).
 
 **Returns:** [Task&lt;ElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the frame element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L271)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L323)
 
 <a id="PuppeteerSharp_Cdp_CdpFrame_GetDeviceRequestPromptManager_"></a>
 <a id="PuppeteerSharp_Cdp_CdpFrame_GetDeviceRequestPromptManager"></a>
@@ -182,7 +182,7 @@ Gets the prompts manager for the current client.
 
 **Returns:** [DeviceRequestPromptManager](/api/PuppeteerSharp/DeviceRequestPromptManager/) — The [DeviceRequestPromptManager](/api/PuppeteerSharp/DeviceRequestPromptManager/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L403)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L480)
 
 <a id="PuppeteerSharp_Cdp_CdpFrame_GoToAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpFrame_GoToAsync_System_String_PuppeteerSharp_NavigationOptions_"></a>
@@ -222,7 +222,7 @@ The only exceptions are navigation to `about:blank` or navigation to the same UR
 
 &gt; **NOTE** Headless mode doesn't support navigation to a PDF document. See the &lt;see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295"&gt;upstream issue&lt;/see&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L84)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L96)
 
 <a id="PuppeteerSharp_Cdp_CdpFrame_OnDetach_"></a>
 <a id="PuppeteerSharp_Cdp_CdpFrame_OnDetach"></a>
@@ -237,7 +237,7 @@ protected override void OnDetach()
 
 Called when this frame is being detached. Subclasses can override to perform additional cleanup.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L392)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L469)
 
 <a id="PuppeteerSharp_Cdp_CdpFrame_SetContentAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpFrame_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_"></a>
@@ -266,7 +266,7 @@ Sets the HTML markup to the page.
 This API is obsolete.
 :::
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L184)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L217)
 
 <a id="PuppeteerSharp_Cdp_CdpFrame_WaitForNavigationAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpFrame_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -302,4 +302,4 @@ await Page.MainFrame.ClickAsync("a.my-link");
 await navigationTask;
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L156)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpFrame.cs#L184)

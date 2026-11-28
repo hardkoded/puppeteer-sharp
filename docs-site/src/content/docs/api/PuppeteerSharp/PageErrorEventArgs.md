@@ -109,7 +109,7 @@ or any other type (including `null`) when the page throws a primitive value.
 
 **Value:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageErrorEventArgs.cs#L55)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageErrorEventArgs.cs#L59)
 
 <a id="PuppeteerSharp_PageErrorEventArgs_Message_"></a>
 <a id="PuppeteerSharp_PageErrorEventArgs_Message"></a>
@@ -126,7 +126,7 @@ Error Message.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The message.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageErrorEventArgs.cs#L49)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageErrorEventArgs.cs#L53)
 
 <a id="PuppeteerSharp_PageErrorEventArgs_StackTrace_"></a>
 <a id="PuppeteerSharp_PageErrorEventArgs_StackTrace"></a>
@@ -143,4 +143,4 @@ Gets the stack trace of the error, innermost frame first. Empty when the browser
 
 **Value:** [IReadOnlyList&lt;ConsoleMessageLocation&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageErrorEventArgs.cs#L60)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageErrorEventArgs.cs#L64)

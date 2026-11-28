@@ -43,7 +43,7 @@ Emitted when a tool invocation starts.
 
 **Value:** [EventHandler&lt;WebMcpToolCall&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L66)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L68)
 
 <a id="PuppeteerSharp_Cdp_CdpWebMcp_ToolResponded"></a>
 
@@ -59,7 +59,7 @@ Emitted when a tool invocation completes or fails.
 
 **Value:** [EventHandler&lt;WebMcpToolCallResult&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L69)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L71)
 
 <a id="PuppeteerSharp_Cdp_CdpWebMcp_ToolsAdded"></a>
 
@@ -75,7 +75,7 @@ Emitted when tools are added to the page.
 
 **Value:** [EventHandler&lt;WebMcpToolsAddedEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L60)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L62)
 
 <a id="PuppeteerSharp_Cdp_CdpWebMcp_ToolsRemoved"></a>
 
@@ -91,7 +91,7 @@ Emitted when tools are removed from the page.
 
 **Value:** [EventHandler&lt;WebMcpToolsRemovedEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L63)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L65)
 
 ## Methods
 
@@ -110,4 +110,4 @@ Gets all WebMCP tools registered on the page.
 
 **Returns:** `WebMcpTool\[\]` — Array of registered tools.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L75)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L77)

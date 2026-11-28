@@ -237,7 +237,7 @@ Adds a `<script>` tag into the page with the desired url or content.
 
 **Returns:** [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L223)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L248)
 
 <a id="PuppeteerSharp_Frame_AddStyleTagAsync_"></a>
 <a id="PuppeteerSharp_Frame_AddStyleTagAsync_PuppeteerSharp_AddTagOptions_"></a>
@@ -260,7 +260,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<l
 
 **Returns:** [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L220)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L245)
 
 <a id="PuppeteerSharp_Frame_ClickAsync_"></a>
 <a id="PuppeteerSharp_Frame_ClickAsync_System_String_PuppeteerSharp_Input_ClickOptions_"></a>
@@ -290,7 +290,7 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L322)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L363)
 
 <a id="PuppeteerSharp_Frame_EvaluateExpressionAsync_"></a>
 <a id="PuppeteerSharp_Frame_EvaluateExpressionAsync_System_String_"></a>
@@ -315,7 +315,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L92)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L95)
 
 <a id="PuppeteerSharp_Frame_EvaluateExpressionAsync__1_System_String_"></a>
 
@@ -345,7 +345,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L95)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L99)
 
 <a id="PuppeteerSharp_Frame_EvaluateExpressionHandleAsync_"></a>
 <a id="PuppeteerSharp_Frame_EvaluateExpressionHandleAsync_System_String_"></a>
@@ -374,7 +374,7 @@ Passes an expression to the [EvaluateExpressionHandleAsync(string)](/api/Puppete
 var handle = await Page.MainFrame.EvaluateExpressionHandleAsync("1 + 2");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L104)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L111)
 
 <a id="PuppeteerSharp_Frame_EvaluateFunctionAsync_"></a>
 <a id="PuppeteerSharp_Frame_EvaluateFunctionAsync_System_String_System_Object___"></a>
@@ -401,7 +401,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L98)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L103)
 
 <a id="PuppeteerSharp_Frame_EvaluateFunctionAsync__1_System_String_System_Object___"></a>
 
@@ -433,7 +433,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L101)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L107)
 
 <a id="PuppeteerSharp_Frame_EvaluateFunctionHandleAsync_"></a>
 <a id="PuppeteerSharp_Frame_EvaluateFunctionHandleAsync_System_String_System_Object___"></a>
@@ -474,7 +474,7 @@ var resultHandle = await Page.MainFrame.EvaluateFunctionHandleAsync("body => bod
 return await resultHandle.JsonValueAsync(); // prints body's innerHTML
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L107)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L115)
 
 <a id="PuppeteerSharp_Frame_ExtensionRealms_"></a>
 <a id="PuppeteerSharp_Frame_ExtensionRealms"></a>
@@ -491,7 +491,7 @@ Retrieves the list of extension realms within this frame.
 
 **Returns:** [IReadOnlyList&lt;Realm&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1) — A list of [Realm](/api/PuppeteerSharp/Realm/) instances representing extension execution contexts.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L425)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L472)
 
 <a id="PuppeteerSharp_Frame_FocusAsync_"></a>
 <a id="PuppeteerSharp_Frame_FocusAsync_System_String_"></a>
@@ -520,7 +520,7 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt; and f
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L349)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L390)
 
 <a id="PuppeteerSharp_Frame_FrameElementAsync_"></a>
 <a id="PuppeteerSharp_Frame_FrameElementAsync"></a>
@@ -537,7 +537,7 @@ The frame element associated with this frame (if any).
 
 **Returns:** [Task&lt;ElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the frame element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L388)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L429)
 
 <a id="PuppeteerSharp_Frame_GetContentAsync_"></a>
 <a id="PuppeteerSharp_Frame_GetContentAsync_PuppeteerSharp_GetContentOptions_"></a>
@@ -560,7 +560,7 @@ Gets the full HTML contents of the page, including the doctype.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the HTML content.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L289)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L325)
 
 <a id="PuppeteerSharp_Frame_GetDeviceRequestPromptManager_"></a>
 <a id="PuppeteerSharp_Frame_GetDeviceRequestPromptManager"></a>
@@ -577,7 +577,7 @@ Gets the prompts manager for the current client.
 
 **Returns:** [DeviceRequestPromptManager](/api/PuppeteerSharp/DeviceRequestPromptManager/) — The [DeviceRequestPromptManager](/api/PuppeteerSharp/DeviceRequestPromptManager/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L489)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L535)
 
 <a id="PuppeteerSharp_Frame_GetTitleAsync_"></a>
 <a id="PuppeteerSharp_Frame_GetTitleAsync"></a>
@@ -594,7 +594,7 @@ Returns page's title.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — page's title.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L319)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L359)
 
 <a id="PuppeteerSharp_Frame_GoToAsync_"></a>
 <a id="PuppeteerSharp_Frame_GoToAsync_System_String_PuppeteerSharp_NavigationOptions_"></a>
@@ -687,7 +687,7 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L336)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L377)
 
 <a id="PuppeteerSharp_Frame_Locator_"></a>
 <a id="PuppeteerSharp_Frame_Locator_System_String_"></a>
@@ -711,7 +711,7 @@ details and supported actions.
 
 **Returns:** [Locator](/api/PuppeteerSharp.Locators/Locator/) — A locator for the provided selector.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L122)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L137)
 
 <a id="PuppeteerSharp_Frame_LocatorFunction_"></a>
 <a id="PuppeteerSharp_Frame_LocatorFunction_System_String_"></a>
@@ -735,7 +735,7 @@ details and supported actions.
 
 **Returns:** [Locator](/api/PuppeteerSharp.Locators/Locator/) — A locator for the provided function.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L126)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L141)
 
 <a id="PuppeteerSharp_Frame_OnDetach_"></a>
 <a id="PuppeteerSharp_Frame_OnDetach"></a>
@@ -750,7 +750,7 @@ protected virtual void OnDetach()
 
 Called when this frame is being detached. Subclasses can override to perform additional cleanup.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L481)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L529)
 
 <a id="PuppeteerSharp_Frame_QuerySelectorAllAsync_"></a>
 <a id="PuppeteerSharp_Frame_QuerySelectorAllAsync_System_String_"></a>
@@ -773,7 +773,7 @@ Queries frame for the selector. If no elements match the selector, the return va
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to ElementHandles pointing to the frame elements.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L195)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L217)
 
 <a id="PuppeteerSharp_Frame_QuerySelectorAllAsync_System_String_PuppeteerSharp_QueryOptions_"></a>
 
@@ -796,7 +796,7 @@ Queries frame for the selector. If no elements match the selector, the return va
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to ElementHandles pointing to the frame elements.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L202)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L224)
 
 <a id="PuppeteerSharp_Frame_QuerySelectorAllHandleAsync_"></a>
 <a id="PuppeteerSharp_Frame_QuerySelectorAllHandleAsync_System_String_"></a>
@@ -819,7 +819,7 @@ A utility function to be used with `Object%5b%5d)`.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of `document.querySelectorAll` result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L181)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L203)
 
 <a id="PuppeteerSharp_Frame_QuerySelectorAsync_"></a>
 <a id="PuppeteerSharp_Frame_QuerySelectorAsync_System_String_"></a>
@@ -842,7 +842,7 @@ Queries frame for the selector. If there's no such element within the frame, the
 
 **Returns:** [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to [IElementHandle](/api/PuppeteerSharp/IElementHandle/) pointing to the frame element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L188)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L210)
 
 <a id="PuppeteerSharp_Frame_SelectAsync_"></a>
 <a id="PuppeteerSharp_Frame_SelectAsync_System_String_System_String___"></a>
@@ -873,7 +873,7 @@ If there's no &lt;select&gt; element matching selector, the method throws an err
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L168)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L190)
 
 <a id="PuppeteerSharp_Frame_SetContentAsync_"></a>
 <a id="PuppeteerSharp_Frame_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_"></a>
@@ -902,7 +902,7 @@ Sets the HTML markup to the page.
 This API is obsolete.
 :::
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L309)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L346)
 
 <a id="PuppeteerSharp_Frame_SetContentAsync_System_String_PuppeteerSharp_SetContentOptions_"></a>
 
@@ -925,7 +925,7 @@ Sets the HTML markup to the page.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L313)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L352)
 
 <a id="PuppeteerSharp_Frame_TapAsync_"></a>
 <a id="PuppeteerSharp_Frame_TapAsync_System_String_"></a>
@@ -954,7 +954,7 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L362)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L403)
 
 <a id="PuppeteerSharp_Frame_TypeAsync_"></a>
 <a id="PuppeteerSharp_Frame_TypeAsync_System_String_System_String_PuppeteerSharp_Input_TypeOptions_"></a>
@@ -994,7 +994,7 @@ await frame.TypeAsync("#mytextarea", "Hello"); // Types instantly
 await frame.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L375)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L416)
 
 <a id="PuppeteerSharp_Frame_WaitForDevicePromptAsync_"></a>
 <a id="PuppeteerSharp_Frame_WaitForDevicePromptAsync_PuppeteerSharp_WaitForOptions_"></a>
@@ -1029,7 +1029,7 @@ currently active device prompt.
 
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L216)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L241)
 
 <a id="PuppeteerSharp_Frame_WaitForExpressionAsync_"></a>
 <a id="PuppeteerSharp_Frame_WaitForExpressionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_"></a>
@@ -1059,7 +1059,7 @@ Waits for an expression to be evaluated to a truthy value.
 | --- | --- |
 | [WaitTaskTimeoutException](/api/PuppeteerSharp/WaitTaskTimeoutException/) | If timeout occurred. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L157)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L179)
 
 <a id="PuppeteerSharp_Frame_WaitForFunctionAsync_"></a>
 <a id="PuppeteerSharp_Frame_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___"></a>
@@ -1090,7 +1090,7 @@ Waits for a function to be evaluated to a truthy value.
 | --- | --- |
 | [WaitTaskTimeoutException](/api/PuppeteerSharp/WaitTaskTimeoutException/) | If timeout occurred. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L146)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L164)
 
 <a id="PuppeteerSharp_Frame_WaitForNavigationAsync_"></a>
 <a id="PuppeteerSharp_Frame_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_"></a>
@@ -1126,7 +1126,7 @@ await Page.MainFrame.ClickAsync("a.my-link");
 await navigationTask;
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L89)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L92)
 
 <a id="PuppeteerSharp_Frame_WaitForSelectorAsync_"></a>
 <a id="PuppeteerSharp_Frame_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_"></a>
@@ -1157,7 +1157,7 @@ Waits for a selector to be added to the DOM.
 | --- | --- |
 | [WaitTaskTimeoutException](/api/PuppeteerSharp/WaitTaskTimeoutException/) | If timeout occurred. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L110)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L119)
 
 <a id="PuppeteerSharp_Frame_WaitForXPathAsync_"></a>
 <a id="PuppeteerSharp_Frame_WaitForXPathAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_"></a>
@@ -1205,7 +1205,7 @@ foreach (var current in new[] { "https://example.com", "https://google.com", "ht
 await browser.CloseAsync();
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L130)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L145)
 
 <a id="PuppeteerSharp_Frame_XPathAsync_"></a>
 <a id="PuppeteerSharp_Frame_XPathAsync_System_String_"></a>
@@ -1228,4 +1228,4 @@ Evaluates the XPath expression.
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L209)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L234)
