@@ -543,8 +543,10 @@ function outsideFences(text, transform) {
 }
 
 function escapeAnglesOutsideCode(markdown) {
-    const parts = markdown.split(/(```[\s\S]*?```|`[^`\n]*`)/g);
-    return parts.map((part, index) => (index % 2 === 1 ? part : part.replace(/</g, "&lt;").replace(/>/g, "&gt;"))).join("");
+    return outsideFences(markdown, (prose) => prose
+        .split(/(`[^`\n]*`)/g)
+        .map((part, index) => (index % 2 === 1 ? part : part.replace(/</g, "&lt;").replace(/>/g, "&gt;")))
+        .join(""));
 }
 
 function decode(value) {
