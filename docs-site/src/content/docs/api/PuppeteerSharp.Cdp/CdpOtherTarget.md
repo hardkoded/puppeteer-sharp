@@ -25,4 +25,4 @@ Other target.
 
 **Implements:** [ITarget](/api/PuppeteerSharp/ITarget/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpOtherTarget.cs#L10)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpOtherTarget.cs#L9)

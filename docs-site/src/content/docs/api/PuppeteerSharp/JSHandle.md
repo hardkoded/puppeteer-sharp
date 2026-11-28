@@ -46,7 +46,7 @@ Gets a value indicating whether this [IJSHandle](/api/PuppeteerSharp/IJSHandle/)
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if disposed; otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L19)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L17)
 
 ## Methods
 
@@ -66,7 +66,7 @@ If moved, resets the flag and returns `true`.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if disposal should be skipped.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L97)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L118)
 
 <a id="PuppeteerSharp_JSHandle_DisposeAsync_"></a>
 <a id="PuppeteerSharp_JSHandle_DisposeAsync"></a>
@@ -84,7 +84,7 @@ resetting unmanaged resources asynchronously.
 
 **Returns:** [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) — A task that represents the asynchronous dispose operation.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L70)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L75)
 
 <a id="PuppeteerSharp_JSHandle_EvaluateFunctionAsync_"></a>
 <a id="PuppeteerSharp_JSHandle_EvaluateFunctionAsync_System_String_System_Object___"></a>
@@ -111,7 +111,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L79)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L87)
 
 <a id="PuppeteerSharp_JSHandle_EvaluateFunctionAsync__1_System_String_System_Object___"></a>
 
@@ -143,7 +143,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L87)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L96)
 
 <a id="PuppeteerSharp_JSHandle_EvaluateFunctionHandleAsync_"></a>
 <a id="PuppeteerSharp_JSHandle_EvaluateFunctionHandleAsync_System_String_System_Object___"></a>
@@ -170,7 +170,7 @@ Executes a script in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L73)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L78)
 
 <a id="PuppeteerSharp_JSHandle_GetPropertiesAsync_"></a>
 <a id="PuppeteerSharp_JSHandle_GetPropertiesAsync"></a>
@@ -197,7 +197,7 @@ var documentHandle = properties["document"];
 await handle.DisposeAsync();
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L36)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L35)
 
 <a id="PuppeteerSharp_JSHandle_GetPropertyAsync_"></a>
 <a id="PuppeteerSharp_JSHandle_GetPropertyAsync_System_String_"></a>
@@ -220,7 +220,7 @@ Fetches a single property from the referenced object.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task of [IJSHandle](/api/PuppeteerSharp/IJSHandle/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L28)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L26)
 
 <a id="PuppeteerSharp_JSHandle_JsonValueAsync_"></a>
 <a id="PuppeteerSharp_JSHandle_JsonValueAsync"></a>
@@ -239,7 +239,7 @@ Returns a JSON representation of the object.
 
 The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L57)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L61)
 
 <a id="PuppeteerSharp_JSHandle_JsonValueAsync__1"></a>
 
@@ -263,7 +263,7 @@ Returns a JSON representation of the object.
 
 The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L60)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L65)
 
 <a id="PuppeteerSharp_JSHandle_Move_"></a>
 <a id="PuppeteerSharp_JSHandle_Move"></a>
@@ -281,4 +281,4 @@ This is useful when you want to keep the handle alive past an `await using` scop
 
 **Returns:** [IJSHandle](/api/PuppeteerSharp/IJSHandle/) — The handle itself.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L63)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/JSHandle.cs#L68)

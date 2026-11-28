@@ -86,7 +86,7 @@ Cannot be used along with [BlockList](#PuppeteerSharp_LaunchOptions_BlockList).
 Pattern to allow a specific domain: `*://example.com/*`
 Pattern to allow all subdomains: `*://*.example.com/*`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L320)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L329)
 
 <a id="PuppeteerSharp_LaunchOptions_Args_"></a>
 <a id="PuppeteerSharp_LaunchOptions_Args"></a>
@@ -141,7 +141,7 @@ Cannot be used along with [Allowlist](#PuppeteerSharp_LaunchOptions_Allowlist).
 Pattern to block a specific domain: `*://example.com/*`
 Pattern to block all subdomains: `*://*.evil.com/*`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L290)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L299)
 
 <a id="PuppeteerSharp_LaunchOptions_Browser_"></a>
 <a id="PuppeteerSharp_LaunchOptions_Browser"></a>
@@ -158,7 +158,7 @@ The browser to be used (Chrome, Chromium, Firefox).
 
 **Value:** [SupportedBrowser](/api/PuppeteerSharp/SupportedBrowser/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L198)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L206)
 
 <a id="PuppeteerSharp_LaunchOptions_Channel_"></a>
 <a id="PuppeteerSharp_LaunchOptions_Channel"></a>
@@ -192,7 +192,7 @@ Gets or sets the default Viewport.
 
 **Value:** [ViewPortOptions](/api/PuppeteerSharp/ViewPortOptions/) — The default Viewport.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L184)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L186)
 
 <a id="PuppeteerSharp_LaunchOptions_Devtools_"></a>
 <a id="PuppeteerSharp_LaunchOptions_Devtools"></a>
@@ -210,6 +210,23 @@ Whether to auto-open DevTools panel for each tab. If this option is true, the he
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L81)
+
+<a id="PuppeteerSharp_LaunchOptions_DownloadBehavior_"></a>
+<a id="PuppeteerSharp_LaunchOptions_DownloadBehavior"></a>
+
+### DownloadBehavior
+
+
+```csharp
+public DownloadBehavior DownloadBehavior { get; set; }
+```
+
+
+Gets or sets the download behavior applied to the default browser context.
+
+**Value:** [DownloadBehavior](/api/PuppeteerSharp/DownloadBehavior/) — The download behavior.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L192)
 
 <a id="PuppeteerSharp_LaunchOptions_DumpIO_"></a>
 <a id="PuppeteerSharp_LaunchOptions_DumpIO"></a>
@@ -250,7 +267,7 @@ load the provided paths as unpacked extensions.
 &lt;p&gt;Passing a `string[]` is only supported with Firefox (BiDi) at this time.&lt;/p&gt;
 &lt;p&gt;In Firefox, there is no known command line flag to disable addons so they are always enabled.&lt;/p&gt;
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L241)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L250)
 
 <a id="PuppeteerSharp_LaunchOptions_EnqueueAsyncMessages_"></a>
 <a id="PuppeteerSharp_LaunchOptions_EnqueueAsyncMessages"></a>
@@ -273,7 +290,7 @@ This should normally be set to `true` to support applications that aren't `async
 has legacy code that is not async which makes calls into PuppeteerSharp. If you experience issues, or your application is not mixed sync/async use, you
 can set this to `false` (default).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L210)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L218)
 
 <a id="PuppeteerSharp_LaunchOptions_EnqueueTransportMessages_"></a>
 <a id="PuppeteerSharp_LaunchOptions_EnqueueTransportMessages"></a>
@@ -293,7 +310,7 @@ If not [PuppeteerSharp.Transport](/api/PuppeteerSharp.Transport/) is set this wi
 It's set to `true` by default because it's the safest way to send commands to Chromium.
 Setting this to `false` proved to work in .NET Core, but it tends to fail on .NET Framework.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L193)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L201)
 
 <a id="PuppeteerSharp_LaunchOptions_Env_"></a>
 <a id="PuppeteerSharp_LaunchOptions_Env"></a>
@@ -344,7 +361,7 @@ Gets or sets the list of extension paths that will be enabled in Incognito and o
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L246)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L255)
 
 <a id="PuppeteerSharp_LaunchOptions_ExtraPrefsFirefox_"></a>
 <a id="PuppeteerSharp_LaunchOptions_ExtraPrefsFirefox"></a>
@@ -361,7 +378,7 @@ Additional preferences that can be passed when launching with Firefox. &lt;see f
 
 **Value:** [Dictionary&lt;string, object&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L223)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L232)
 
 <a id="PuppeteerSharp_LaunchOptions_HandleDevToolsAsPage_"></a>
 <a id="PuppeteerSharp_LaunchOptions_HandleDevToolsAsPage"></a>
@@ -378,7 +395,7 @@ Whether to handle the DevTools windows as pages in Puppeteer. Supported only in 
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L251)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L260)
 
 <a id="PuppeteerSharp_LaunchOptions_Headers_"></a>
 <a id="PuppeteerSharp_LaunchOptions_Headers"></a>
@@ -487,7 +504,7 @@ Experimental setting to disable monitoring issue events by default.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L178)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L180)
 
 <a id="PuppeteerSharp_LaunchOptions_LogProcess_"></a>
 <a id="PuppeteerSharp_LaunchOptions_LogProcess"></a>
@@ -530,7 +547,7 @@ work such as [IRequest](/api/PuppeteerSharp/IRequest/) and [IResponse](/api/Pupp
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L173)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L175)
 
 <a id="PuppeteerSharp_LaunchOptions_Pipe_"></a>
 <a id="PuppeteerSharp_LaunchOptions_Pipe"></a>
@@ -548,7 +565,7 @@ Only supported for Chrome/Chromium with CDP protocol.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L257)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L266)
 
 <a id="PuppeteerSharp_LaunchOptions_Protocol_"></a>
 <a id="PuppeteerSharp_LaunchOptions_Protocol"></a>
@@ -567,7 +584,7 @@ Firefox always uses WebDriver BiDi regardless of this setting.
 
 **Value:** [ProtocolType](/api/PuppeteerSharp/ProtocolType/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L264)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L273)
 
 <a id="PuppeteerSharp_LaunchOptions_ProtocolTimeout_"></a>
 <a id="PuppeteerSharp_LaunchOptions_ProtocolTimeout"></a>
@@ -585,7 +602,7 @@ Defaults to 180_000.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L218)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L227)
 
 <a id="PuppeteerSharp_LaunchOptions_SlowMo_"></a>
 <a id="PuppeteerSharp_LaunchOptions_SlowMo"></a>
@@ -616,10 +633,11 @@ public Func<Target, bool> TargetFilter { get; set; }
 
 
 Callback to decide if Puppeteer should connect to a given target or not.
+Supported only with CDP.
 
 **Value:** [Func&lt;Target, bool&gt;](https://learn.microsoft.com/dotnet/api/system.func-2)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L215)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L224)
 
 <a id="PuppeteerSharp_LaunchOptions_Timeout_"></a>
 <a id="PuppeteerSharp_LaunchOptions_Timeout"></a>
@@ -653,7 +671,7 @@ Optional factory for [IConnectionTransport](/api/PuppeteerSharp.Transport/IConne
 
 **Value:** [TransportFactory](/api/PuppeteerSharp.Transport/TransportFactory/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L166)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L168)
 
 <a id="PuppeteerSharp_LaunchOptions_UserDataDir_"></a>
 <a id="PuppeteerSharp_LaunchOptions_UserDataDir"></a>
@@ -687,7 +705,7 @@ Wait for the initial page before initializing.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L228)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L237)
 
 <a id="PuppeteerSharp_LaunchOptions_WebSocketFactory_"></a>
 <a id="PuppeteerSharp_LaunchOptions_WebSocketFactory"></a>

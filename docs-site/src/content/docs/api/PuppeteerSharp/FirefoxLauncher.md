@@ -50,7 +50,7 @@ Initializes a new instance of the [FirefoxLauncher](./) class.
 | `executable` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Full path of executable. |
 | `options` | [LaunchOptions](/api/PuppeteerSharp/LaunchOptions/) | Options for launching Firefox. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/FirefoxLauncher.cs#L31)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/FirefoxLauncher.cs#L28)
 
 ## Methods
 
@@ -69,4 +69,4 @@ Returns a string that represents the current object.
 
 **Returns:** [string](https://learn.microsoft.com/dotnet/api/system.string) — A string that represents the current object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/FirefoxLauncher.cs#L40)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/FirefoxLauncher.cs#L37)

@@ -62,7 +62,7 @@ Bottom margin, accepts values labeled with units.
 
 **Value:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Media/MarginOptions.cs#L33)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Media/MarginOptions.cs#L31)
 
 <a id="PuppeteerSharp_Media_MarginOptions_Left_"></a>
 <a id="PuppeteerSharp_Media_MarginOptions_Left"></a>
@@ -80,7 +80,7 @@ Left margin, accepts values labeled with units.
 
 **Value:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Media/MarginOptions.cs#L27)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Media/MarginOptions.cs#L25)
 
 <a id="PuppeteerSharp_Media_MarginOptions_Right_"></a>
 <a id="PuppeteerSharp_Media_MarginOptions_Right"></a>
@@ -98,7 +98,7 @@ Right margin, accepts values labeled with units.
 
 **Value:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Media/MarginOptions.cs#L39)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Media/MarginOptions.cs#L37)
 
 <a id="PuppeteerSharp_Media_MarginOptions_Top_"></a>
 <a id="PuppeteerSharp_Media_MarginOptions_Top"></a>
@@ -116,4 +116,4 @@ Top margin, accepts values labeled with units.
 
 **Value:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Media/MarginOptions.cs#L21)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Media/MarginOptions.cs#L19)

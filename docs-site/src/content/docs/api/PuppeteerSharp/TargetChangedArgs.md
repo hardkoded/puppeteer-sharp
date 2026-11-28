@@ -42,7 +42,7 @@ Gets the target.
 
 **Value:** [Target](/api/PuppeteerSharp/Target/) — The target.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetChangedArgs.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetChangedArgs.cs#L36)
 
 <a id="PuppeteerSharp_TargetChangedArgs_TargetInfo_"></a>
 <a id="PuppeteerSharp_TargetChangedArgs_TargetInfo"></a>
@@ -59,4 +59,4 @@ Gets the target info.
 
 **Value:** [TargetInfo](/api/PuppeteerSharp/TargetInfo/) — The target info.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetChangedArgs.cs#L28)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/TargetChangedArgs.cs#L26)

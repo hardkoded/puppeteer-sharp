@@ -61,7 +61,7 @@ Display header and footer. Defaults to `false`.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L27)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L25)
 
 <a id="PuppeteerSharp_PdfOptions_FooterTemplate_"></a>
 <a id="PuppeteerSharp_PdfOptions_FooterTemplate"></a>
@@ -83,7 +83,7 @@ HTML template for the print footer. Should be valid HTML markup with following c
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L47)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L45)
 
 <a id="PuppeteerSharp_PdfOptions_Format_"></a>
 <a id="PuppeteerSharp_PdfOptions_Format"></a>
@@ -100,7 +100,7 @@ Paper format. If set, takes priority over [Width](#PuppeteerSharp_PdfOptions_Wid
 
 **Value:** [PaperFormat](/api/PuppeteerSharp.Media/PaperFormat/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L67)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L65)
 
 <a id="PuppeteerSharp_PdfOptions_HeaderTemplate_"></a>
 <a id="PuppeteerSharp_PdfOptions_HeaderTemplate"></a>
@@ -122,7 +122,7 @@ HTML template for the print header. Should be valid HTML markup with following c
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L37)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L35)
 
 <a id="PuppeteerSharp_PdfOptions_Height_"></a>
 <a id="PuppeteerSharp_PdfOptions_Height"></a>
@@ -140,7 +140,7 @@ Paper height, accepts values labeled with units.
 
 **Value:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L78)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L76)
 
 <a id="PuppeteerSharp_PdfOptions_Landscape_"></a>
 <a id="PuppeteerSharp_PdfOptions_Landscape"></a>
@@ -157,7 +157,7 @@ Paper orientation.. Defaults to `false`.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L57)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L55)
 
 <a id="PuppeteerSharp_PdfOptions_MarginOptions_"></a>
 <a id="PuppeteerSharp_PdfOptions_MarginOptions"></a>
@@ -174,7 +174,7 @@ Paper margins, defaults to none.
 
 **Value:** [MarginOptions](/api/PuppeteerSharp.Media/MarginOptions/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L84)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L82)
 
 <a id="PuppeteerSharp_PdfOptions_OmitBackground_"></a>
 <a id="PuppeteerSharp_PdfOptions_OmitBackground"></a>
@@ -191,7 +191,7 @@ Hides default white background and allows generating pdfs with transparency.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L95)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L93)
 
 <a id="PuppeteerSharp_PdfOptions_Outline_"></a>
 <a id="PuppeteerSharp_PdfOptions_Outline"></a>
@@ -211,7 +211,7 @@ Generate document outline.
 If this is enabled the PDF will also be tagged (accessible)
 Currently only works in old Headless (headless = true).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L109)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L107)
 
 <a id="PuppeteerSharp_PdfOptions_PageRanges_"></a>
 <a id="PuppeteerSharp_PdfOptions_PageRanges"></a>
@@ -228,7 +228,7 @@ Paper ranges to print, e.g., `1-5, 8, 11-13`. Defaults to the empty string, whic
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L62)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L60)
 
 <a id="PuppeteerSharp_PdfOptions_PreferCSSPageSize_"></a>
 <a id="PuppeteerSharp_PdfOptions_PreferCSSPageSize"></a>
@@ -246,7 +246,7 @@ Defaults to `false`, which will scale the content to fit the paper size.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L90)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L88)
 
 <a id="PuppeteerSharp_PdfOptions_PrintBackground_"></a>
 <a id="PuppeteerSharp_PdfOptions_PrintBackground"></a>
@@ -263,7 +263,7 @@ Print background graphics. Defaults to `false`.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L52)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L50)
 
 <a id="PuppeteerSharp_PdfOptions_Scale_"></a>
 <a id="PuppeteerSharp_PdfOptions_Scale"></a>
@@ -280,7 +280,7 @@ Scale of the webpage rendering. Defaults to `1`. Scale amount must be between 0.
 
 **Value:** [decimal](https://learn.microsoft.com/dotnet/api/system.decimal)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L22)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L20)
 
 <a id="PuppeteerSharp_PdfOptions_Tagged_"></a>
 <a id="PuppeteerSharp_PdfOptions_Tagged"></a>
@@ -297,7 +297,7 @@ Generate tagged (accessible) PDF.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L100)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L98)
 
 <a id="PuppeteerSharp_PdfOptions_Timeout_"></a>
 <a id="PuppeteerSharp_PdfOptions_Timeout"></a>
@@ -317,7 +317,7 @@ Timeout in milliseconds. Pass `0` to disable timeout.
 
 The default value can be changed by using the [DefaultTimeout](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_DefaultTimeout) property.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L125)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L123)
 
 <a id="PuppeteerSharp_PdfOptions_WaitForFonts_"></a>
 <a id="PuppeteerSharp_PdfOptions_WaitForFonts"></a>
@@ -338,7 +338,7 @@ background.
 
 Defaults to `true`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L117)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L115)
 
 <a id="PuppeteerSharp_PdfOptions_Width_"></a>
 <a id="PuppeteerSharp_PdfOptions_Width"></a>
@@ -356,4 +356,4 @@ Paper width, accepts values labeled with units.
 
 **Value:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L72)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PdfOptions.cs#L70)

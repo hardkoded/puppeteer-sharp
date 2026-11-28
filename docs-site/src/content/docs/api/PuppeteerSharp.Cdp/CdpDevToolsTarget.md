@@ -25,4 +25,4 @@ DevTools target.
 
 **Implements:** [ITarget](/api/PuppeteerSharp/ITarget/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpDevToolsTarget.cs#L10)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpDevToolsTarget.cs#L9)

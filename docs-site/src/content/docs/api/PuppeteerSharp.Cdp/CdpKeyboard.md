@@ -82,7 +82,7 @@ Shortcut for `DownOptions)` and [UpAsync(string)](/api/PuppeteerSharp.Input/IKey
 If &lt;code class="paramref"&gt;key&lt;/code&gt; is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The [Text](/api/PuppeteerSharp.Input/DownOptions/#PuppeteerSharp_Input_DownOptions_Text) option can be specified to force an input event to be generated.
 Modifier keys DO effect `PressOptions)`. Holding down `Shift` will type the text in upper case.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpKeyboard.cs#L125)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpKeyboard.cs#L131)
 
 <a id="PuppeteerSharp_Cdp_CdpKeyboard_SendCharacterAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpKeyboard_SendCharacterAsync_System_String_"></a>
@@ -105,7 +105,7 @@ Dispatches a `keypress` and `input` event. This does not send a `keydown` or `ke
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpKeyboard.cs#L89)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpKeyboard.cs#L97)
 
 <a id="PuppeteerSharp_Cdp_CdpKeyboard_TypeAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpKeyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_"></a>
@@ -131,7 +131,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 
 To press a special key, like `Control` or `ArrowDown`, use `PressOptions)`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpKeyboard.cs#L96)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpKeyboard.cs#L101)
 
 <a id="PuppeteerSharp_Cdp_CdpKeyboard_UpAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpKeyboard_UpAsync_System_String_"></a>
@@ -154,4 +154,4 @@ Dispatches a `keyup` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpKeyboard.cs#L70)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpKeyboard.cs#L74)

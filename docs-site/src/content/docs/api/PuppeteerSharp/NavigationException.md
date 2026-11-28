@@ -63,7 +63,7 @@ Initializes a new instance of the [NavigationException](./) class.
 | --- | --- | --- |
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L22)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L20)
 
 <a id="PuppeteerSharp_NavigationException__ctor_System_String_System_Exception_"></a>
 
@@ -84,7 +84,7 @@ Initializes a new instance of the [NavigationException](./) class.
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 | `innerException` | [Exception](https://learn.microsoft.com/dotnet/api/system.exception) | Inner exception. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L42)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L40)
 
 <a id="PuppeteerSharp_NavigationException__ctor_System_String_System_String_System_Exception_"></a>
 
@@ -106,7 +106,7 @@ Initializes a new instance of the [NavigationException](./) class.
 | `url` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Url. |
 | `innerException` | [Exception](https://learn.microsoft.com/dotnet/api/system.exception) | Inner exception. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L32)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L29)
 
 ## Properties
 
@@ -125,7 +125,7 @@ Gets a message that describes the current exception.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The error message that explains the reason for the exception, or an empty string ("").
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L46)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L44)
 
 <a id="PuppeteerSharp_NavigationException_Url_"></a>
 <a id="PuppeteerSharp_NavigationException_Url"></a>
@@ -142,4 +142,4 @@ Url that caused the exception.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The URL.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L63)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationException.cs#L61)

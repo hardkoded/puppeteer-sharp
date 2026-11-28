@@ -45,7 +45,7 @@ Gets or sets a value indicating whether to ensure the element is in the viewport
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L45)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L50)
 
 <a id="PuppeteerSharp_Locators_Locator_Timeout_"></a>
 <a id="PuppeteerSharp_Locators_Locator_Timeout"></a>
@@ -54,11 +54,11 @@ Gets or sets a value indicating whether to ensure the element is in the viewport
 
 
 ```csharp
-protected int Timeout { get; set; }
+public int Timeout { get; protected set; }
 ```
 
 
-Gets or sets the timeout in milliseconds.
+Gets the timeout in milliseconds that determines when the locator times out for actions.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32)
 
@@ -79,7 +79,7 @@ Gets or sets the visibility option.
 
 **Value:** `VisibilityOption?`
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L35)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L45)
 
 <a id="PuppeteerSharp_Locators_Locator_WaitForEnabled_"></a>
 <a id="PuppeteerSharp_Locators_Locator_WaitForEnabled"></a>
@@ -96,7 +96,7 @@ Gets or sets a value indicating whether to wait for the element to be enabled.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L54)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L59)
 
 <a id="PuppeteerSharp_Locators_Locator_WaitForStableBoundingBox_"></a>
 <a id="PuppeteerSharp_Locators_Locator_WaitForStableBoundingBox"></a>
@@ -113,7 +113,25 @@ Gets or sets a value indicating whether to wait for a stable bounding box.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L63)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L68)
+
+## Events
+
+<a id="PuppeteerSharp_Locators_Locator_Action"></a>
+
+### Action
+
+
+```csharp
+public event EventHandler Action
+```
+
+
+Emitted every time before the locator performs an action on the located element(s).
+
+**Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L35)
 
 ## Methods
 
@@ -138,7 +156,24 @@ Clicks the located element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the click is performed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L234)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L257)
+
+<a id="PuppeteerSharp_Locators_Locator_Clone_"></a>
+<a id="PuppeteerSharp_Locators_Locator_Clone"></a>
+
+### Clone()
+
+
+```csharp
+public Locator Clone()
+```
+
+
+Clones the locator.
+
+**Returns:** [Locator](./) — A new locator with the same options.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L148)
 
 <a id="PuppeteerSharp_Locators_Locator_FillAsync_"></a>
 <a id="PuppeteerSharp_Locators_Locator_FillAsync_System_String_PuppeteerSharp_Locators_LocatorActionOptions_"></a>
@@ -162,16 +197,16 @@ Fills the located element with the provided value.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the fill is performed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L293)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L322)
 
 <a id="PuppeteerSharp_Locators_Locator_Filter_"></a>
-<a id="PuppeteerSharp_Locators_Locator_Filter_System_String_"></a>
+<a id="PuppeteerSharp_Locators_Locator_Filter_System_String_System_Object___"></a>
 
-### Filter(string)
+### Filter(string, params object[])
 
 
 ```csharp
-public Locator Filter(string predicate)
+public Locator Filter(string predicate, params object[] args)
 ```
 
 
@@ -183,10 +218,11 @@ If the predicate does not match, the locator will retry.
 | Name | Type | Description |
 | --- | --- | --- |
 | `predicate` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A JavaScript function expression that takes an element and returns a boolean. |
+| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Additional serializable values or handles forwarded to the predicate after the element. |
 
 **Returns:** [Locator](./) — A new locator that filters based on the predicate.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L140)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L160)
 
 <a id="PuppeteerSharp_Locators_Locator_FilterHandle_"></a>
 <a id="PuppeteerSharp_Locators_Locator_FilterHandle_System_Func_PuppeteerSharp_IJSHandle_System_Threading_Tasks_Task_System_Boolean___"></a>
@@ -210,7 +246,7 @@ If the predicate does not match, the locator will retry.
 
 **Returns:** [Locator](./) — A new locator that filters based on the predicate.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L161)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L182)
 
 <a id="PuppeteerSharp_Locators_Locator_HoverAsync_"></a>
 <a id="PuppeteerSharp_Locators_Locator_HoverAsync_PuppeteerSharp_Locators_LocatorActionOptions_"></a>
@@ -233,16 +269,16 @@ Hovers over the located element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the hover is performed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L257)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L281)
 
 <a id="PuppeteerSharp_Locators_Locator_Map_"></a>
-<a id="PuppeteerSharp_Locators_Locator_Map_System_String_"></a>
+<a id="PuppeteerSharp_Locators_Locator_Map_System_String_System_Object___"></a>
 
-### Map(string)
+### Map(string, params object[])
 
 
 ```csharp
-public Locator Map(string mapper)
+public Locator Map(string mapper, params object[] args)
 ```
 
 
@@ -253,10 +289,11 @@ Maps the locator using the provided mapper.
 | Name | Type | Description |
 | --- | --- | --- |
 | `mapper` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A JavaScript function expression that transforms the element. |
+| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Additional serializable values or handles forwarded to the mapper after the element. |
 
 **Returns:** [Locator](./) — A new locator that maps the element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L150)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L171)
 
 <a id="PuppeteerSharp_Locators_Locator_MapHandle_"></a>
 <a id="PuppeteerSharp_Locators_Locator_MapHandle_System_Func_PuppeteerSharp_IJSHandle_System_Threading_Tasks_Task_PuppeteerSharp_IJSHandle___"></a>
@@ -279,7 +316,7 @@ Maps the locator using a handle-based mapper.
 
 **Returns:** [Locator](./) — A new locator that maps the element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L171)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L192)
 
 <a id="PuppeteerSharp_Locators_Locator_Race_"></a>
 <a id="PuppeteerSharp_Locators_Locator_Race_PuppeteerSharp_Locators_Locator___"></a>
@@ -302,7 +339,7 @@ Creates a new locator that races multiple locators, returning the first one to r
 
 **Returns:** [Locator](./) — A new locator that resolves to the first matching locator's result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L74)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L79)
 
 <a id="PuppeteerSharp_Locators_Locator_ScrollAsync_"></a>
 <a id="PuppeteerSharp_Locators_Locator_ScrollAsync_PuppeteerSharp_Locators_LocatorScrollOptions_"></a>
@@ -325,7 +362,7 @@ Scrolls the located element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the scroll is performed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L270)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L295)
 
 <a id="PuppeteerSharp_Locators_Locator_SetEnsureElementIsInTheViewport_"></a>
 <a id="PuppeteerSharp_Locators_Locator_SetEnsureElementIsInTheViewport_System_Boolean_"></a>
@@ -334,7 +371,7 @@ Scrolls the located element.
 
 
 ```csharp
-public Locator SetEnsureElementIsInTheViewport(bool value)
+public virtual Locator SetEnsureElementIsInTheViewport(bool value)
 ```
 
 
@@ -346,9 +383,9 @@ Sets whether to ensure the element is scrolled into the viewport.
 | --- | --- | --- |
 | `value` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Whether to ensure the element is in the viewport. |
 
-**Returns:** [Locator](./) — The locator instance for chaining.
+**Returns:** [Locator](./) — A new locator instance with the setting changed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L117)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L125)
 
 <a id="PuppeteerSharp_Locators_Locator_SetTimeout_"></a>
 <a id="PuppeteerSharp_Locators_Locator_SetTimeout_System_Int32_"></a>
@@ -357,7 +394,7 @@ Sets whether to ensure the element is scrolled into the viewport.
 
 
 ```csharp
-public Locator SetTimeout(int timeout)
+public virtual Locator SetTimeout(int timeout)
 ```
 
 
@@ -369,9 +406,9 @@ Sets the timeout for the locator.
 | --- | --- | --- |
 | `timeout` | [int](https://learn.microsoft.com/dotnet/api/system.int32) | Timeout in milliseconds. |
 
-**Returns:** [Locator](./) — The locator instance for chaining.
+**Returns:** [Locator](./) — A new locator instance with the timeout changed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L84)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L89)
 
 <a id="PuppeteerSharp_Locators_Locator_SetVisibility_"></a>
 <a id="PuppeteerSharp_Locators_Locator_SetVisibility_System_Nullable_PuppeteerSharp_Locators_VisibilityOption__"></a>
@@ -380,7 +417,7 @@ Sets the timeout for the locator.
 
 
 ```csharp
-public Locator SetVisibility(VisibilityOption? visibility)
+public virtual Locator SetVisibility(VisibilityOption? visibility)
 ```
 
 
@@ -392,9 +429,9 @@ Sets the visibility option for the locator.
 | --- | --- | --- |
 | `visibility` | `VisibilityOption?` | The visibility option. |
 
-**Returns:** [Locator](./) — The locator instance for chaining.
+**Returns:** [Locator](./) — A new locator instance with the visibility changed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L95)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L101)
 
 <a id="PuppeteerSharp_Locators_Locator_SetWaitForEnabled_"></a>
 <a id="PuppeteerSharp_Locators_Locator_SetWaitForEnabled_System_Boolean_"></a>
@@ -403,7 +440,7 @@ Sets the visibility option for the locator.
 
 
 ```csharp
-public Locator SetWaitForEnabled(bool value)
+public virtual Locator SetWaitForEnabled(bool value)
 ```
 
 
@@ -415,9 +452,9 @@ Sets whether to wait for the element to be enabled before acting.
 | --- | --- | --- |
 | `value` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Whether to wait for enabled. |
 
-**Returns:** [Locator](./) — The locator instance for chaining.
+**Returns:** [Locator](./) — A new locator instance with the setting changed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L106)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L113)
 
 <a id="PuppeteerSharp_Locators_Locator_SetWaitForStableBoundingBox_"></a>
 <a id="PuppeteerSharp_Locators_Locator_SetWaitForStableBoundingBox_System_Boolean_"></a>
@@ -426,7 +463,7 @@ Sets whether to wait for the element to be enabled before acting.
 
 
 ```csharp
-public Locator SetWaitForStableBoundingBox(bool value)
+public virtual Locator SetWaitForStableBoundingBox(bool value)
 ```
 
 
@@ -438,9 +475,9 @@ Sets whether to wait for a stable bounding box before acting.
 | --- | --- | --- |
 | `value` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Whether to wait for a stable bounding box. |
 
-**Returns:** [Locator](./) — The locator instance for chaining.
+**Returns:** [Locator](./) — A new locator instance with the setting changed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L128)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L137)
 
 <a id="PuppeteerSharp_Locators_Locator_WaitAsync_"></a>
 <a id="PuppeteerSharp_Locators_Locator_WaitAsync_PuppeteerSharp_Locators_LocatorActionOptions_"></a>
@@ -463,7 +500,7 @@ Waits for the locator to locate an element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the element is located.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L219)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L242)
 
 <a id="PuppeteerSharp_Locators_Locator_WaitAsync__1_PuppeteerSharp_Locators_LocatorActionOptions_"></a>
 
@@ -492,7 +529,7 @@ Note this requires the value to be JSON-serializable.
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to the serialized value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L195)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L218)
 
 <a id="PuppeteerSharp_Locators_Locator_WaitHandleAsync_"></a>
 <a id="PuppeteerSharp_Locators_Locator_WaitHandleAsync_PuppeteerSharp_Locators_LocatorActionOptions_"></a>
@@ -515,4 +552,4 @@ Waits for the locator to get a handle from the page.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to a handle for the located element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L181)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Locators/Locator.cs#L202)

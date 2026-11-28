@@ -63,7 +63,7 @@ Initializes a new instance of the [WaitTaskTimeoutException](./) class.
 | --- | --- | --- |
 | `timeout` | [int](https://learn.microsoft.com/dotnet/api/system.int32) | Timeout. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L30)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L27)
 
 <a id="PuppeteerSharp_WaitTaskTimeoutException__ctor_System_Int32_System_String_"></a>
 
@@ -84,7 +84,7 @@ Initializes a new instance of the [WaitTaskTimeoutException](./) class.
 | `timeout` | [int](https://learn.microsoft.com/dotnet/api/system.int32) | Timeout. |
 | `elementType` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Element type. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L40)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L38)
 
 <a id="PuppeteerSharp_WaitTaskTimeoutException__ctor_System_String_"></a>
 
@@ -104,7 +104,7 @@ Initializes a new instance of the [WaitTaskTimeoutException](./) class.
 | --- | --- | --- |
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L22)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L20)
 
 <a id="PuppeteerSharp_WaitTaskTimeoutException__ctor_System_String_System_Exception_"></a>
 
@@ -125,7 +125,7 @@ Initializes a new instance of the [WaitTaskTimeoutException](./) class.
 | `message` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Message. |
 | `innerException` | [Exception](https://learn.microsoft.com/dotnet/api/system.exception) | Inner exception. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L51)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L50)
 
 ## Properties
 
@@ -144,7 +144,7 @@ Element type the WaitTask was waiting for.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L65)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L63)
 
 <a id="PuppeteerSharp_WaitTaskTimeoutException_Timeout_"></a>
 <a id="PuppeteerSharp_WaitTaskTimeoutException_Timeout"></a>
@@ -161,4 +161,4 @@ Timeout that caused the exception.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32) — The timeout.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitTaskTimeoutException.cs#L57)

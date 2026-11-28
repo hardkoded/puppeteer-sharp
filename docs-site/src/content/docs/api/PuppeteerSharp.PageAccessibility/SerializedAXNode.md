@@ -667,7 +667,7 @@ Indicates whether the current object is equal to another object of the same type
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the current object is equal to the &lt;code class="paramref"&gt;other&lt;/code&gt; parameter; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L199)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L201)
 
 <a id="PuppeteerSharp_PageAccessibility_SerializedAXNode_Equals_System_Object_"></a>
 
@@ -689,7 +689,7 @@ Determines whether the specified object is equal to the current object.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the specified object  is equal to the current object; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L236)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L243)
 
 <a id="PuppeteerSharp_PageAccessibility_SerializedAXNode_GetHashCode_"></a>
 <a id="PuppeteerSharp_PageAccessibility_SerializedAXNode_GetHashCode"></a>
@@ -706,4 +706,4 @@ Serves as the default hash function.
 
 **Returns:** [int](https://learn.microsoft.com/dotnet/api/system.int32) — A hash code for the current object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L239)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L246)

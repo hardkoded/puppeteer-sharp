@@ -25,7 +25,7 @@ Worker target.
 
 **Implements:** [ITarget](/api/PuppeteerSharp/ITarget/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWorkerTarget.cs#L10)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWorkerTarget.cs#L11)
 
 ## Methods
 
@@ -44,4 +44,4 @@ If the target is not of type `"service_worker"` or `"shared_worker"`, returns `n
 
 **Returns:** [Task&lt;WebWorker&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that returns a [WebWorker](/api/PuppeteerSharp/WebWorker/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWorkerTarget.cs#L26)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWorkerTarget.cs#L31)

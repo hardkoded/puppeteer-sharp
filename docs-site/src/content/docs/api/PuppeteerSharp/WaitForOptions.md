@@ -62,7 +62,7 @@ Initializes a new instance of the [WaitForOptions](./) class.
 | --- | --- | --- |
 | `timeout` | [int](https://learn.microsoft.com/dotnet/api/system.int32) | Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs#L21)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs#L19)
 
 ## Properties
 
@@ -84,7 +84,7 @@ A [CancellationToken](#PuppeteerSharp_WaitForOptions_CancellationToken) to abort
 This is the .NET equivalent of the upstream AbortController/AbortSignal pattern.
 When the token is cancelled, the wait operation will throw a [OperationCanceledException](https://learn.microsoft.com/dotnet/api/system.operationcanceledexception).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs#L39)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs#L37)
 
 <a id="PuppeteerSharp_WaitForOptions_Timeout_"></a>
 <a id="PuppeteerSharp_WaitForOptions_Timeout"></a>
@@ -102,4 +102,4 @@ The default value can be changed by setting the [DefaultTimeout](/api/PuppeteerS
 
 **Value:** [int?](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs#L30)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForOptions.cs#L28)

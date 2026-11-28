@@ -101,7 +101,7 @@ Cannot be used along with [BlockList](#PuppeteerSharp_ConnectOptions_BlockList).
 Pattern to allow a specific domain: `*://example.com/*`
 Pattern to allow all subdomains: `*://*.example.com/*`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L209)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L210)
 
 <a id="PuppeteerSharp_ConnectOptions_BlockList_"></a>
 <a id="PuppeteerSharp_ConnectOptions_BlockList"></a>
@@ -150,7 +150,7 @@ Cannot be used along with [Allowlist](#PuppeteerSharp_ConnectOptions_Allowlist).
 Pattern to block a specific domain: `*://example.com/*`
 Pattern to block all subdomains: `*://*.evil.com/*`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L164)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L165)
 
 <a id="PuppeteerSharp_ConnectOptions_BrowserURL_"></a>
 <a id="PuppeteerSharp_ConnectOptions_BrowserURL"></a>
@@ -279,7 +279,7 @@ Whether to handle the DevTools windows as pages in Puppeteer. Supported only in 
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L120)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L121)
 
 <a id="PuppeteerSharp_ConnectOptions_Headers_"></a>
 <a id="PuppeteerSharp_ConnectOptions_Headers"></a>
@@ -318,7 +318,7 @@ Optional callback to initialize properties as soon as the [IBrowser](/api/Puppet
 
 **Value:** [Action&lt;IBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.action-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L115)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L116)
 
 <a id="PuppeteerSharp_ConnectOptions_IssuesEnabled_"></a>
 <a id="PuppeteerSharp_ConnectOptions_IssuesEnabled"></a>
@@ -373,7 +373,7 @@ Firefox always uses WebDriver BiDi regardless of this setting.
 
 **Value:** [ProtocolType](/api/PuppeteerSharp/ProtocolType/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L127)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L128)
 
 <a id="PuppeteerSharp_ConnectOptions_ProtocolTimeout_"></a>
 <a id="PuppeteerSharp_ConnectOptions_ProtocolTimeout"></a>
@@ -391,7 +391,7 @@ Defaults to 180_000.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L110)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L111)
 
 <a id="PuppeteerSharp_ConnectOptions_SlowMo_"></a>
 <a id="PuppeteerSharp_ConnectOptions_SlowMo"></a>
@@ -422,10 +422,11 @@ public Func<Target, bool> TargetFilter { get; set; }
 
 
 Callback to decide if Puppeteer should connect to a given target or not.
+Supported only with CDP.
 
 **Value:** [Func&lt;Target, bool&gt;](https://learn.microsoft.com/dotnet/api/system.func-2)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L107)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConnectOptions.cs#L108)
 
 <a id="PuppeteerSharp_ConnectOptions_TransportFactory_"></a>
 <a id="PuppeteerSharp_ConnectOptions_TransportFactory"></a>

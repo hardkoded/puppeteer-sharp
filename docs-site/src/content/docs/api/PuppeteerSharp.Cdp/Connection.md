@@ -44,7 +44,7 @@ Connection close reason.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L88)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L102)
 
 <a id="PuppeteerSharp_Cdp_Connection_Delay_"></a>
 <a id="PuppeteerSharp_Cdp_Connection_Delay"></a>
@@ -61,7 +61,7 @@ Gets the sleep time when a message is received.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32) — The delay.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L71)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L85)
 
 <a id="PuppeteerSharp_Cdp_Connection_IsClosed_"></a>
 <a id="PuppeteerSharp_Cdp_Connection_IsClosed"></a>
@@ -78,7 +78,7 @@ Gets a value indicating whether this [Connection](./) is closed.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if is closed; otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L83)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L97)
 
 <a id="PuppeteerSharp_Cdp_Connection_LoggerFactory_"></a>
 <a id="PuppeteerSharp_Cdp_Connection_LoggerFactory"></a>
@@ -95,7 +95,7 @@ Gets the logger factory.
 
 **Value:** [ILoggerFactory](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory) — The logger factory.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L94)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L108)
 
 <a id="PuppeteerSharp_Cdp_Connection_Transport_"></a>
 <a id="PuppeteerSharp_Cdp_Connection_Transport"></a>
@@ -112,7 +112,7 @@ Gets the Connection transport.
 
 **Value:** [IConnectionTransport](/api/PuppeteerSharp.Transport/IConnectionTransport/) — Connection transport.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L77)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L91)
 
 <a id="PuppeteerSharp_Cdp_Connection_Url_"></a>
 <a id="PuppeteerSharp_Cdp_Connection_Url"></a>
@@ -129,7 +129,7 @@ Gets the WebSocket URL.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The URL.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L65)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L79)
 
 ## Events
 
@@ -147,7 +147,7 @@ Occurs when the connection is closed.
 
 **Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L50)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L64)
 
 <a id="PuppeteerSharp_Cdp_Connection_MessageReceived"></a>
 
@@ -163,7 +163,7 @@ Occurs when a message from chromium is received.
 
 **Value:** [EventHandler&lt;MessageEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L55)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L69)
 
 ## Methods
 
@@ -180,7 +180,7 @@ public void Dispose()
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L105)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L119)
 
 <a id="PuppeteerSharp_Cdp_Connection_SendAsync_"></a>
 <a id="PuppeteerSharp_Cdp_Connection_SendAsync_System_String_System_Object_System_Boolean_PuppeteerSharp_CommandOptions_"></a>
@@ -212,7 +212,7 @@ Protocol methods can be called with this method.
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | If the [Connection](./) is closed. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L112)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L126)
 
 <a id="PuppeteerSharp_Cdp_Connection_SendAsync__1_System_String_System_Object_PuppeteerSharp_CommandOptions_"></a>
 
@@ -242,4 +242,4 @@ Protocol methods can be called with this method.
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L155)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/Connection.cs#L186)

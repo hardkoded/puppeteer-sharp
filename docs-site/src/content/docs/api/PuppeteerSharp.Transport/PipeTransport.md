@@ -52,7 +52,7 @@ Initializes a new instance of the [PipeTransport](./) class.
 | `pipeWrite` | [Stream](https://learn.microsoft.com/dotnet/api/system.io.stream) | The stream to write messages to (browser reads from this). |
 | `pipeRead` | [Stream](https://learn.microsoft.com/dotnet/api/system.io.stream) | The stream to read messages from (browser writes to this). |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L31)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L35)
 
 ## Properties
 
@@ -71,7 +71,7 @@ Gets a value indicating whether this [IConnectionTransport](/api/PuppeteerSharp.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L44)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L48)
 
 ## Events
 
@@ -89,7 +89,7 @@ Occurs when the transport is closed.
 
 **Value:** [EventHandler&lt;TransportClosedEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L42)
 
 <a id="PuppeteerSharp_Transport_PipeTransport_MessageReceived"></a>
 
@@ -105,7 +105,7 @@ Occurs when a message is received.
 
 **Value:** [EventHandler&lt;MessageReceivedEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L41)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L45)
 
 ## Methods
 
@@ -122,7 +122,7 @@ public void Dispose()
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L109)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L114)
 
 <a id="PuppeteerSharp_Transport_PipeTransport_Dispose_System_Boolean_"></a>
 
@@ -142,7 +142,7 @@ Releases resources used by the [PipeTransport](./).
 | --- | --- | --- |
 | `disposing` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Whether disposal was initiated by [Dispose()](#PuppeteerSharp_Transport_PipeTransport_Dispose). |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L119)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L124)
 
 <a id="PuppeteerSharp_Transport_PipeTransport_SendAsync_"></a>
 <a id="PuppeteerSharp_Transport_PipeTransport_SendAsync_System_Byte___"></a>
@@ -165,7 +165,7 @@ Sends a message using the transport.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L64)
 
 <a id="PuppeteerSharp_Transport_PipeTransport_Start_"></a>
 <a id="PuppeteerSharp_Transport_PipeTransport_Start"></a>
@@ -180,7 +180,7 @@ public void Start()
 
 Starts the background receive loop.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L49)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L53)
 
 <a id="PuppeteerSharp_Transport_PipeTransport_StopReading_"></a>
 <a id="PuppeteerSharp_Transport_PipeTransport_StopReading"></a>
@@ -195,4 +195,4 @@ public void StopReading()
 
 Stops reading incoming data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L98)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/PipeTransport.cs#L103)

@@ -42,7 +42,7 @@ Browser.
 
 **Value:** [SupportedBrowser](/api/PuppeteerSharp/SupportedBrowser/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L29)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L34)
 
 <a id="PuppeteerSharp_BrowserData_InstalledBrowser_BuildId_"></a>
 <a id="PuppeteerSharp_BrowserData_InstalledBrowser_BuildId"></a>
@@ -59,7 +59,7 @@ Gets or sets the buildID.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L34)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L39)
 
 <a id="PuppeteerSharp_BrowserData_InstalledBrowser_PermissionsFixed_"></a>
 <a id="PuppeteerSharp_BrowserData_InstalledBrowser_PermissionsFixed"></a>
@@ -79,7 +79,7 @@ If the platform does not require permissions to be fixed, this will be null.
 
 **Value:** [bool?](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L47)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L52)
 
 <a id="PuppeteerSharp_BrowserData_InstalledBrowser_Platform_"></a>
 <a id="PuppeteerSharp_BrowserData_InstalledBrowser_Platform"></a>
@@ -96,7 +96,7 @@ Revision platform.
 
 **Value:** [Platform](/api/PuppeteerSharp/Platform/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L39)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L44)
 
 ## Methods
 
@@ -121,4 +121,4 @@ Get executable path.
 | --- | --- |
 | [ArgumentException](https://learn.microsoft.com/dotnet/api/system.argumentexception) | For not supported [Platform](#PuppeteerSharp_BrowserData_InstalledBrowser_Platform). |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserData/InstalledBrowser.cs#L64)

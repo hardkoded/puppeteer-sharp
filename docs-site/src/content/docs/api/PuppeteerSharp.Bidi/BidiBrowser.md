@@ -25,7 +25,7 @@ Represents a browser connected using the Bidi protocol.
 
 **Implements:** [IBrowser](/api/PuppeteerSharp/IBrowser/), [IDisposable](https://learn.microsoft.com/dotnet/api/system.idisposable), [IAsyncDisposable](https://learn.microsoft.com/dotnet/api/system.iasyncdisposable)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L42)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L43)
 
 ## Properties
 
@@ -46,7 +46,7 @@ Get debug information from Puppeteer.
 
 Currently, includes pending protocol calls. In the future, more info might be added.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L81)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L95)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_DefaultContext_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_DefaultContext"></a>
@@ -63,7 +63,7 @@ Returns the default browser context. The default browser context can not be clos
 
 **Value:** [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) — The default context.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L78)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L89)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_IsClosed_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_IsClosed"></a>
@@ -80,7 +80,7 @@ Gets a value indicating if the browser is closed.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L66)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L76)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_IsConnected_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_IsConnected"></a>
@@ -97,7 +97,7 @@ Indicates that the browser is connected.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L69)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L79)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_Target_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_Target"></a>
@@ -114,7 +114,7 @@ A target associated with the browser.
 
 **Value:** [ITarget](/api/PuppeteerSharp/ITarget/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L75)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L86)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_WebSocketEndpoint_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_WebSocketEndpoint"></a>
@@ -137,7 +137,7 @@ You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/versio
 Learn more about the devtools protocol &lt;a href="https://chromedevtools.github.io/devtools-protocol"&gt;https://chromedevtools.github.io/devtools-protocol&lt;/a&gt;
 and the browser endpoint &lt;a href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"&gt;https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L72)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L82)
 
 ## Methods
 
@@ -164,7 +164,7 @@ Adds a new screen with specified parameters and returns a [ScreenInfo](/api/Pupp
 
 Only supported in headless mode.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L191)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L221)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_BrowserContexts_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_BrowserContexts"></a>
@@ -181,7 +181,7 @@ Returns an array of all open [IBrowserContext](/api/PuppeteerSharp/IBrowserConte
 
 **Returns:** `IBrowserContext\[\]` — An array of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) objects.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L250)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L295)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_CloseAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_CloseAsync"></a>
@@ -198,7 +198,7 @@ Closes Chromium and all of its pages (if any were opened). The browser object it
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L135)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L167)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_CreateBrowserContextAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_CreateBrowserContextAsync_PuppeteerSharp_BrowserContextOptions_"></a>
@@ -235,7 +235,7 @@ using(var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
 }
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L243)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L284)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_Disconnect_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_Disconnect"></a>
@@ -250,7 +250,7 @@ public override void Disconnect()
 
 Disconnects Puppeteer from the browser, but leaves the process running. After calling [Disconnect()](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowser_Disconnect), the browser object is considered disposed and cannot be used anymore.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L128)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L135)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_ExtensionsAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_ExtensionsAsync"></a>
@@ -267,7 +267,7 @@ Returns a map of installed extensions, keyed by extension ID.
 
 **Returns:** [Task&lt;IReadOnlyDictionary&lt;string, Extension&gt;&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to a dictionary of extension ID to [Extension](/api/PuppeteerSharp/Extension/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L215)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L255)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_GetPWAStateAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_GetPWAStateAsync_PuppeteerSharp_GetPWAStateOptions_"></a>
@@ -294,7 +294,7 @@ registered file handlers.
 Only available over a pipe connection. See [InstallPWAAsync(InstallPWAOptions)](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowser_InstallPWAAsync_PuppeteerSharp_InstallPWAOptions_). Meaningful
 only for an app that is currently installed; querying an unknown manifest id rejects.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L231)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L271)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_GetUserAgentAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_GetUserAgentAsync"></a>
@@ -313,7 +313,7 @@ Gets the browser's original user agent.
 
 Pages can override browser user agent with `UserAgentMetadata)`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L125)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L131)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_GetVersionAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_GetVersionAsync"></a>
@@ -332,7 +332,7 @@ Gets the browser's version.
 
 the format of [GetVersionAsync()](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowser_GetVersionAsync) might change with future releases of Chromium.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L122)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L127)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_GetWindowBoundsAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_GetWindowBoundsAsync_System_String_"></a>
@@ -355,7 +355,7 @@ Gets the specified window bounds.
 
 **Returns:** [Task&lt;WindowBounds&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to the [WindowBounds](/api/PuppeteerSharp/WindowBounds/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L258)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L305)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_InstallExtensionAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_InstallExtensionAsync_System_String_PuppeteerSharp_ExtensionInstallOptions_"></a>
@@ -379,7 +379,7 @@ Installs an unpacked extension and returns the extension ID.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to the extension ID.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L199)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L229)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_InstallPWAAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_InstallPWAAsync_PuppeteerSharp_InstallPWAOptions_"></a>
@@ -409,7 +409,7 @@ The returned manifest id echoes [ManifestId](/api/PuppeteerSharp/InstallPWAOptio
 to [LaunchPWAAsync(LaunchPWAOptions)](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowser_LaunchPWAAsync_PuppeteerSharp_LaunchPWAOptions_), [GetPWAStateAsync(GetPWAStateOptions)](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowser_GetPWAStateAsync_PuppeteerSharp_GetPWAStateOptions_), or
 [UninstallPWAAsync(UninstallPWAOptions)](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowser_UninstallPWAAsync_PuppeteerSharp_UninstallPWAOptions_).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L219)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L259)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_LaunchPWAAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_LaunchPWAAsync_PuppeteerSharp_LaunchPWAOptions_"></a>
@@ -438,7 +438,7 @@ targets through [Targets()](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowse
 (the app's web contents). If Chromium focuses an existing app window, this returns that window's
 existing page.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L227)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L267)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_NewPageAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_NewPageAsync_PuppeteerSharp_CreatePageOptions_"></a>
@@ -461,7 +461,7 @@ Creates a new page.
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a new [IPage](/api/PuppeteerSharp/IPage/) object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L184)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L213)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_RemoveScreenAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_RemoveScreenAsync_System_String_"></a>
@@ -486,7 +486,7 @@ Removes the screen associated with the given screen ID, unless it is the primary
 
 Only supported in headless mode. Fails if the primary screen ID is specified.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L195)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L225)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_ScreensAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_ScreensAsync"></a>
@@ -503,7 +503,7 @@ Gets a list of [ScreenInfo](/api/PuppeteerSharp/ScreenInfo/) objects.
 
 **Returns:** [Task&lt;ScreenInfo\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to an array of screen information objects.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L187)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L217)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_SetWindowBoundsAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_SetWindowBoundsAsync_System_String_PuppeteerSharp_WindowBounds_"></a>
@@ -527,7 +527,7 @@ Sets the specified window bounds.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that resolves when the bounds have been set.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L275)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L322)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_Targets_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_Targets"></a>
@@ -544,7 +544,7 @@ Returns An Array of all active targets.
 
 **Returns:** `ITarget\[\]` — An Array of all active targets.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L235)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L275)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_UninstallExtensionAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_UninstallExtensionAsync_System_String_"></a>
@@ -567,7 +567,7 @@ Uninstalls a previously installed extension by its ID.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the extension is uninstalled.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L208)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L245)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowser_UninstallPWAAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowser_UninstallPWAAsync_PuppeteerSharp_UninstallPWAOptions_"></a>
@@ -592,4 +592,4 @@ Uninstalls a previously installed Progressive Web App (PWA).
 
 Only available over a pipe connection. See [InstallPWAAsync(InstallPWAOptions)](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowser_InstallPWAAsync_PuppeteerSharp_InstallPWAOptions_).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L223)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L263)

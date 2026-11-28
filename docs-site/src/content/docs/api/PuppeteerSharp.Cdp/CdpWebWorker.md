@@ -54,7 +54,7 @@ The CDP session client the WebWorker belongs to.
 
 **Value:** [ICDPSession](/api/PuppeteerSharp/ICDPSession/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L115)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L126)
 
 ## Methods
 
@@ -73,7 +73,7 @@ Closes the worker.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that completes when the worker is closed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L125)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L136)
 
 <a id="PuppeteerSharp_Cdp_CdpWebWorker_EvaluateExpressionAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpWebWorker_EvaluateExpressionAsync__1_System_String_"></a>
@@ -104,7 +104,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L183)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L170)
 
 <a id="PuppeteerSharp_Cdp_CdpWebWorker_EvaluateExpressionHandleAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpWebWorker_EvaluateExpressionHandleAsync_System_String_"></a>
@@ -129,7 +129,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L190)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L177)
 
 <a id="PuppeteerSharp_Cdp_CdpWebWorker_EvaluateFunctionAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpWebWorker_EvaluateFunctionAsync_System_String_System_Object___"></a>
@@ -156,7 +156,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L176)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L163)
 
 <a id="PuppeteerSharp_Cdp_CdpWebWorker_EvaluateFunctionAsync__1_System_String_System_Object___"></a>
 
@@ -188,7 +188,7 @@ Executes a function in the context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L169)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L156)
 
 <a id="PuppeteerSharp_Cdp_CdpWebWorker_WaitForFunctionAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpWebWorker_WaitForFunctionAsync_System_String_PuppeteerSharp_WaitForFunctionOptions_System_Object___"></a>
@@ -214,4 +214,4 @@ evaluated in the worker's context.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of the truthy value returned by the function.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L197)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebWorker.cs#L184)

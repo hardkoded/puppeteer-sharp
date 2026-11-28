@@ -64,7 +64,7 @@ resetting unmanaged resources asynchronously.
 
 **Returns:** [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) — A task that represents the asynchronous dispose operation.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpJSHandle.cs#L105)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpJSHandle.cs#L117)
 
 <a id="PuppeteerSharp_Cdp_CdpJSHandle_GetPropertiesAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpJSHandle_GetPropertiesAsync"></a>
@@ -133,4 +133,4 @@ Returns a string that represents the current object.
 
 **Returns:** [string](https://learn.microsoft.com/dotnet/api/system.string) — A string that represents the current object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpJSHandle.cs#L124)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpJSHandle.cs#L138)

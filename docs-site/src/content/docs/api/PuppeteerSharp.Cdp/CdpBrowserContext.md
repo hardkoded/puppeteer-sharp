@@ -44,7 +44,7 @@ Clears all permission overrides for the browser context.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L114)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L143)
 
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_CloseAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_CloseAsync"></a>
@@ -61,7 +61,7 @@ Closes the browser context. All the targets that belong to the browser context w
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L70)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L84)
 
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_GetCookiesAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_GetCookiesAsync"></a>
@@ -78,7 +78,7 @@ Gets all cookies in the browser context.
 
 **Returns:** [Task&lt;CookieParam\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [CookieParam](/api/PuppeteerSharp/CookieParam/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L121)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L150)
 
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_NewPageAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_NewPageAsync_PuppeteerSharp_CreatePageOptions_"></a>
@@ -101,7 +101,7 @@ Creates a new page.
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a new [IPage](/api/PuppeteerSharp/IPage/) object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L62)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L77)
 
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_OverridePermissionsAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_OverridePermissionsAsync_System_String_System_Collections_Generic_IEnumerable_PuppeteerSharp_OverridePermission__"></a>
@@ -130,7 +130,7 @@ Overrides the browser context permissions.
 var context = browser.DefaultBrowserContext;
 await context.OverridePermissionsAsync("https://html5demos.com", new List&lt;string&gt; {"geolocation"});
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L81)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L95)
 
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_PagesAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_PagesAsync_System_Boolean_"></a>
@@ -155,7 +155,7 @@ An array of all pages inside the browser context.
     Non visible pages, such as `"background_page"`, will not be listed here.
     You can find them using [PageAsync()](/api/PuppeteerSharp/ITarget/#PuppeteerSharp_ITarget_PageAsync).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L49)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L50)
 
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_SetCookieAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_SetCookieAsync_PuppeteerSharp_CookieData___"></a>
@@ -178,7 +178,7 @@ Sets cookies in the browser context.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L130)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L162)
 
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_SetPermissionAsync_"></a>
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_SetPermissionAsync_System_String_PuppeteerSharp_PermissionEntry___"></a>
@@ -202,7 +202,7 @@ Sets the permission for a specific origin.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L90)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L110)
 
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_Targets_"></a>
 <a id="PuppeteerSharp_Cdp_CdpBrowserContext_Targets"></a>

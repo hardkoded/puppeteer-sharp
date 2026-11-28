@@ -50,7 +50,7 @@ Initializes a new instance of the [WebSocketTransport](./) class.
 | `scheduler` | [TransportTaskScheduler](/api/PuppeteerSharp.Transport/TransportTaskScheduler/) | The scheduler to use for long-running tasks. |
 | `queueRequests` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Indicates whether requests should be queued. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L48)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L53)
 
 ## Fields
 
@@ -119,7 +119,7 @@ Gets a value indicating whether this [IConnectionTransport](/api/PuppeteerSharp.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L73)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L82)
 
 ## Events
 
@@ -137,7 +137,7 @@ Occurs when the transport is closed.
 
 **Value:** [EventHandler&lt;TransportClosedEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L63)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L72)
 
 <a id="PuppeteerSharp_Transport_WebSocketTransport_MessageReceived"></a>
 
@@ -153,7 +153,7 @@ Occurs when a message is received.
 
 **Value:** [EventHandler&lt;MessageReceivedEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L68)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L77)
 
 ## Methods
 
@@ -170,7 +170,7 @@ public void Dispose()
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L99)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L118)
 
 <a id="PuppeteerSharp_Transport_WebSocketTransport_Dispose_System_Boolean_"></a>
 
@@ -190,7 +190,7 @@ Close the WebSocketTransport.
 | --- | --- | --- |
 | `disposing` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Indicates whether disposal was initiated by [Dispose()](#PuppeteerSharp_Transport_WebSocketTransport_Dispose) operation. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L109)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L128)
 
 <a id="PuppeteerSharp_Transport_WebSocketTransport_SendAsync_"></a>
 <a id="PuppeteerSharp_Transport_WebSocketTransport_SendAsync_System_Byte___"></a>
@@ -213,7 +213,7 @@ Sends a message using the transport.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L76)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L85)
 
 <a id="PuppeteerSharp_Transport_WebSocketTransport_StopReading_"></a>
 <a id="PuppeteerSharp_Transport_WebSocketTransport_StopReading"></a>
@@ -228,4 +228,4 @@ public void StopReading()
 
 Stops reading incoming data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L86)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/WebSocketTransport.cs#L101)

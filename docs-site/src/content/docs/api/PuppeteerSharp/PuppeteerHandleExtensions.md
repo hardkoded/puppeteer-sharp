@@ -80,7 +80,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L79)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L94)
 
 <a id="PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync__1_PuppeteerSharp_IElementHandle_System_String_System_Object___"></a>
 
@@ -116,7 +116,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If &lt;code class="paramref"&gt;elementHandle&lt;/code&gt; is `null`. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L60)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L69)
 
 <a id="PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync__1_PuppeteerSharp_IJSHandle_System_String_System_Object___"></a>
 
@@ -146,7 +146,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the return value of `pageFunction`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L108)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L132)
 
 <a id="PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_IElementHandle__System_String_System_Object___"></a>
 
@@ -182,7 +182,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If &lt;code class="paramref"&gt;elementHandleTask&lt;/code&gt; resolves to `null`. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L35)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L38)
 
 <a id="PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync__1_System_Threading_Tasks_Task_PuppeteerSharp_IJSHandle__System_String_System_Object___"></a>
 
@@ -212,4 +212,4 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the return value of `pageFunction`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L90)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L108)

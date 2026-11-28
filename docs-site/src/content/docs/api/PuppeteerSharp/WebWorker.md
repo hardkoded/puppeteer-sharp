@@ -235,7 +235,7 @@ Closes the worker.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that completes when the worker is closed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L200)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L206)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_EvaluateExpressionAsync__1_System_String_"></a>
@@ -291,7 +291,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L166)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L168)
 
 <a id="PuppeteerSharp_WebWorker_EvaluateFunctionAsync_"></a>
 <a id="PuppeteerSharp_WebWorker_EvaluateFunctionAsync_System_String_System_Object___"></a>
@@ -376,4 +376,4 @@ evaluated in the worker's context.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of the truthy value returned by the function.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L177)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WebWorker.cs#L179)

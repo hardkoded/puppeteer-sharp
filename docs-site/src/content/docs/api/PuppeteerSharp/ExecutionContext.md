@@ -47,7 +47,7 @@ This can be changed to avoid bot detection by services that look for known autom
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L43)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L50)
 
 ## Methods
 
@@ -64,7 +64,7 @@ public void Dispose()
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L103)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L117)
 
 <a id="PuppeteerSharp_ExecutionContext_DisposeAsync_"></a>
 <a id="PuppeteerSharp_ExecutionContext_DisposeAsync"></a>
@@ -82,7 +82,7 @@ resetting unmanaged resources asynchronously.
 
 **Returns:** [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) — A task that represents the asynchronous dispose operation.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L87)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L101)
 
 <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync_"></a>
 <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync_System_String_"></a>
@@ -107,7 +107,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L63)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L70)
 
 <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync__1_System_String_"></a>
 
@@ -137,7 +137,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L67)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L74)
 
 <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionHandleAsync_"></a>
 <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionHandleAsync_System_String_"></a>
@@ -162,7 +162,7 @@ Executes a script in browser context.
 
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L71)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L78)
 
 <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_"></a>
 <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_System_String_System_Object___"></a>
@@ -189,7 +189,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L79)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L93)
 
 <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync__1_System_String_System_Object___"></a>
 
@@ -221,7 +221,7 @@ Executes a function in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L83)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L97)
 
 <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionHandleAsync_"></a>
 <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionHandleAsync_System_String_System_Object___"></a>
@@ -248,7 +248,7 @@ Executes a script in browser context.
 If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
 [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L75)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L84)
 
 <a id="PuppeteerSharp_ExecutionContext_GetPuppeteerUtilAsync_"></a>
 <a id="PuppeteerSharp_ExecutionContext_GetPuppeteerUtilAsync"></a>
@@ -265,4 +265,4 @@ Gets the PuppeteerUtil handle.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The PuppeteerUtil handle.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L110)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs#L124)

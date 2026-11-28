@@ -71,7 +71,7 @@ Gets Base endpoint.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L72)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L75)
 
 <a id="PuppeteerSharp_LauncherBase_HasExited_"></a>
 <a id="PuppeteerSharp_LauncherBase_HasExited"></a>
@@ -88,7 +88,7 @@ Indicates whether Base process has exited.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L84)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L86)
 
 <a id="PuppeteerSharp_LauncherBase_IsExiting_"></a>
 <a id="PuppeteerSharp_LauncherBase_IsExiting"></a>
@@ -105,7 +105,7 @@ Indicates whether Base process is exiting.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L79)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L81)
 
 <a id="PuppeteerSharp_LauncherBase_Process_"></a>
 <a id="PuppeteerSharp_LauncherBase_Process"></a>
@@ -122,7 +122,7 @@ Gets Base process details.
 
 **Value:** [Process](https://learn.microsoft.com/dotnet/api/system.diagnostics.process)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L67)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L70)
 
 ## Methods
 
@@ -139,7 +139,7 @@ public void Dispose()
 
 Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L112)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L116)
 
 <a id="PuppeteerSharp_LauncherBase_Dispose_System_Boolean_"></a>
 
@@ -159,7 +159,7 @@ Disposes Base process and any temporary user directory.
 | --- | --- | --- |
 | `disposing` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Indicates whether disposal was initiated by [Dispose()](#PuppeteerSharp_LauncherBase_Dispose) operation. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L236)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L249)
 
 <a id="PuppeteerSharp_LauncherBase_EnsureExitAsync_"></a>
 <a id="PuppeteerSharp_LauncherBase_EnsureExitAsync_System_Nullable_System_TimeSpan__"></a>
@@ -183,7 +183,7 @@ Kills the Base process if it has not exited within this period.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the process is exited or killed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L130)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L134)
 
 <a id="PuppeteerSharp_LauncherBase_Finalize_"></a>
 <a id="PuppeteerSharp_LauncherBase_Finalize"></a>
@@ -198,7 +198,7 @@ protected ~LauncherBase()
 
 Finalizes an instance of the [LauncherBase](./) class.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L62)
 
 <a id="PuppeteerSharp_LauncherBase_KillAsync_"></a>
 <a id="PuppeteerSharp_LauncherBase_KillAsync"></a>
@@ -215,7 +215,7 @@ Asynchronously kills Base process.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the process is killed.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L138)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L143)
 
 <a id="PuppeteerSharp_LauncherBase_SetEnvVariables_"></a>
 <a id="PuppeteerSharp_LauncherBase_SetEnvVariables_System_Collections_Generic_IDictionary_System_String_System_String__System_Collections_Generic_IDictionary_System_String_System_String__System_Collections_IDictionary_"></a>
@@ -238,7 +238,7 @@ Set Env Variables.
 | `customEnv` | [IDictionary&lt;string, string&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.idictionary-2) | The customEnv. |
 | `realEnv` | [IDictionary](https://learn.microsoft.com/dotnet/api/system.collections.idictionary) | The realEnv. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L206)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L215)
 
 <a id="PuppeteerSharp_LauncherBase_StartAsync_"></a>
 <a id="PuppeteerSharp_LauncherBase_StartAsync"></a>
@@ -255,7 +255,7 @@ Asynchronously starts Base process.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when after start process begins.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L122)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L126)
 
 <a id="PuppeteerSharp_LauncherBase_WaitForExitAsync_"></a>
 <a id="PuppeteerSharp_LauncherBase_WaitForExitAsync_System_Nullable_System_TimeSpan__"></a>
@@ -279,4 +279,4 @@ Waits for Base process exit within a given timeout.
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — `true` if Base process has exited within the given &lt;code class="paramref"&gt;timeout&lt;/code&gt;,
     or `false` otherwise.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L146)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L151)

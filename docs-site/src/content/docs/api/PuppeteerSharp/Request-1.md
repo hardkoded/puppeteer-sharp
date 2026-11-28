@@ -33,7 +33,7 @@ Supports all classes in the .NET class hierarchy and provides low-level services
 
 **Derived:** [BidiHttpRequest](/api/PuppeteerSharp.Bidi/BidiHttpRequest/), [CdpHttpRequest](/api/PuppeteerSharp.Cdp/CdpHttpRequest/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L9)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L10)
 
 ## Properties
 
@@ -52,7 +52,7 @@ Gets the failure.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The failure.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L20)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L26)
 
 <a id="PuppeteerSharp_Request_1_Frame_"></a>
 <a id="PuppeteerSharp_Request_1_Frame"></a>
@@ -69,7 +69,7 @@ Gets the frame.
 
 **Value:** [IFrame](/api/PuppeteerSharp/IFrame/) — The frame.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L32)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L38)
 
 <a id="PuppeteerSharp_Request_1_HasPostData_"></a>
 <a id="PuppeteerSharp_Request_1_HasPostData"></a>
@@ -88,7 +88,7 @@ In that case, use [FetchPostDataAsync()](/api/PuppeteerSharp/IRequest/#Puppeteer
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L56)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L68)
 
 <a id="PuppeteerSharp_Request_1_Headers_"></a>
 <a id="PuppeteerSharp_Request_1_Headers"></a>
@@ -105,7 +105,7 @@ Gets the HTTP headers.
 
 **Value:** [Dictionary&lt;string, string&gt;](https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2) — HTTP headers.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L44)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L56)
 
 <a id="PuppeteerSharp_Request_1_Id_"></a>
 <a id="PuppeteerSharp_Request_1_Id"></a>
@@ -122,7 +122,7 @@ Gets the request identifier.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The request identifier.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L14)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L20)
 
 <a id="PuppeteerSharp_Request_1_Initiator_"></a>
 <a id="PuppeteerSharp_Request_1_Initiator"></a>
@@ -139,7 +139,7 @@ Information about the request initiator.
 
 **Value:** [Initiator](/api/PuppeteerSharp/Initiator/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L53)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L65)
 
 <a id="PuppeteerSharp_Request_1_InterceptResolutionState_"></a>
 <a id="PuppeteerSharp_Request_1_InterceptResolutionState"></a>
@@ -156,7 +156,7 @@ Gets the current intercept resolution state.
 
 **Value:** [InterceptResolutionState](/api/PuppeteerSharp/InterceptResolutionState/)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L62)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L74)
 
 <a id="PuppeteerSharp_Request_1_InterceptionId_"></a>
 <a id="PuppeteerSharp_Request_1_InterceptionId"></a>
@@ -173,7 +173,7 @@ Gets the interception identifier.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The interception identifier.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L17)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L23)
 
 <a id="PuppeteerSharp_Request_1_IsInterceptResolutionHandled_"></a>
 <a id="PuppeteerSharp_Request_1_IsInterceptResolutionHandled"></a>
@@ -190,7 +190,7 @@ Gets whether the intercept resolution has already been handled.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L71)
 
 <a id="PuppeteerSharp_Request_1_IsNavigationRequest_"></a>
 <a id="PuppeteerSharp_Request_1_IsNavigationRequest"></a>
@@ -207,7 +207,7 @@ Gets whether this request is driving frame's navigation.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L35)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L47)
 
 <a id="PuppeteerSharp_Request_1_Method_"></a>
 <a id="PuppeteerSharp_Request_1_Method"></a>
@@ -224,7 +224,41 @@ Gets the HTTP method.
 
 **Value:** [HttpMethod](https://learn.microsoft.com/dotnet/api/system.net.http.httpmethod) — HTTP method.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L38)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L50)
+
+<a id="PuppeteerSharp_Request_1_Page_"></a>
+<a id="PuppeteerSharp_Request_1_Page"></a>
+
+### Page
+
+
+```csharp
+public IPage Page { get; }
+```
+
+
+Gets the page that initiated the request, or null if navigating to error pages or the request is coming from a worker.
+
+**Value:** [IPage](/api/PuppeteerSharp/IPage/) — The page.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L41)
+
+<a id="PuppeteerSharp_Request_1_PendingResolutionState_"></a>
+<a id="PuppeteerSharp_Request_1_PendingResolutionState"></a>
+
+### PendingResolutionState
+
+
+```csharp
+protected InterceptResolutionState PendingResolutionState { get; }
+```
+
+
+Gets the resolution state built from the calls made with a priority.
+
+**Value:** [InterceptResolutionState](/api/PuppeteerSharp/InterceptResolutionState/)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L89)
 
 <a id="PuppeteerSharp_Request_1_PostData_"></a>
 <a id="PuppeteerSharp_Request_1_PostData"></a>
@@ -241,7 +275,7 @@ Gets the post data.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The post data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L41)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L53)
 
 <a id="PuppeteerSharp_Request_1_RedirectChain_"></a>
 <a id="PuppeteerSharp_Request_1_RedirectChain"></a>
@@ -283,7 +317,7 @@ var chain = response.Request.RedirectChain;
 Console.WriteLine(chain.Length); // 0
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L50)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L62)
 
 <a id="PuppeteerSharp_Request_1_ResourceType_"></a>
 <a id="PuppeteerSharp_Request_1_ResourceType"></a>
@@ -300,7 +334,7 @@ Gets the type of the resource.
 
 **Value:** [ResourceType](/api/PuppeteerSharp/ResourceType/) — The type of the resource.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L29)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L35)
 
 <a id="PuppeteerSharp_Request_1_Response_"></a>
 <a id="PuppeteerSharp_Request_1_Response"></a>
@@ -315,7 +349,7 @@ public virtual TResponse Response { get; }
 
 **Value:** `TResponse`
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L23)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L29)
 
 <a id="PuppeteerSharp_Request_1_Url_"></a>
 <a id="PuppeteerSharp_Request_1_Url"></a>
@@ -332,7 +366,24 @@ Gets the URL.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The URL.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L47)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L59)
+
+<a id="PuppeteerSharp_Request_1_Worker_"></a>
+<a id="PuppeteerSharp_Request_1_Worker"></a>
+
+### Worker
+
+
+```csharp
+public virtual WebWorker Worker { get; }
+```
+
+
+Gets the worker that initiated the request, or null if the request was not initiated by a worker.
+
+**Value:** [WebWorker](/api/PuppeteerSharp/WebWorker/) — The worker.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L44)
 
 ## Methods
 
@@ -343,7 +394,7 @@ Gets the URL.
 
 
 ```csharp
-public abstract Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
+public Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
 ```
 
 
@@ -359,7 +410,7 @@ Exception is immediately thrown if the request interception is not enabled.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L90)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L191)
 
 <a id="PuppeteerSharp_Request_1_CanBeIntercepted_"></a>
 <a id="PuppeteerSharp_Request_1_CanBeIntercepted"></a>
@@ -376,7 +427,33 @@ Determines whether this request can be intercepted.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the request can be intercepted; otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L122)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L299)
+
+<a id="PuppeteerSharp_Request_1_ClaimInterceptionPayload_"></a>
+<a id="PuppeteerSharp_Request_1_ClaimInterceptionPayload_PuppeteerSharp_InterceptResolutionAction_System_Int32_"></a>
+
+### ClaimInterceptionPayload(InterceptResolutionAction, int)
+
+
+```csharp
+protected bool ClaimInterceptionPayload(InterceptResolutionAction action, int priority)
+```
+
+
+In Cooperative Intercept Mode, an action takes its payload (the overrides of Continue,
+the response of Respond or the error reason of Abort) from the call with the highest priority,
+or from the latest of the calls that share that priority.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `action` | [InterceptResolutionAction](/api/PuppeteerSharp/InterceptResolutionAction/) | The action whose payload is being provided. |
+| `priority` | [int](https://learn.microsoft.com/dotnet/api/system.int32) | The priority of the call. |
+
+**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `false` if a call with a higher priority has already provided the payload of the action.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L309)
 
 <a id="PuppeteerSharp_Request_1_ContentAsync_"></a>
 <a id="PuppeteerSharp_Request_1_ContentAsync"></a>
@@ -393,7 +470,7 @@ Fetches the unmodified POST data bytes for the request from the browser.
 
 **Returns:** [Task&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's raw POST data, or `null` when there is none or fetching it fails.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L98)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L230)
 
 <a id="PuppeteerSharp_Request_1_ContinueAsync_"></a>
 <a id="PuppeteerSharp_Request_1_ContinueAsync_PuppeteerSharp_Payload_System_Nullable_System_Int32__"></a>
@@ -402,7 +479,7 @@ Fetches the unmodified POST data bytes for the request from the browser.
 
 
 ```csharp
-public abstract Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
+public Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
 ```
 
 
@@ -418,7 +495,7 @@ If the URL is set it won't perform a redirect. The request will be silently forw
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L84)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L93)
 
 <a id="PuppeteerSharp_Request_1_FetchPostDataAsync_"></a>
 <a id="PuppeteerSharp_Request_1_FetchPostDataAsync"></a>
@@ -435,7 +512,7 @@ Fetches the POST data for the request from the browser.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's POST data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L95)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L227)
 
 <a id="PuppeteerSharp_Request_1_RespondAsync_"></a>
 <a id="PuppeteerSharp_Request_1_RespondAsync_PuppeteerSharp_ResponseData_System_Nullable_System_Int32__"></a>
@@ -444,7 +521,7 @@ Fetches the POST data for the request from the browser.
 
 
 ```csharp
-public abstract Task RespondAsync(ResponseData response, int? priority = null)
+public Task RespondAsync(ResponseData response, int? priority = null)
 ```
 
 
@@ -459,7 +536,7 @@ Fulfills request with given response. To use this, request interception should b
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L87)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L142)
 
 <a id="PuppeteerSharp_Request_1_VerifyInterception_"></a>
 <a id="PuppeteerSharp_Request_1_VerifyInterception"></a>
@@ -480,4 +557,4 @@ Verifies that request interception is enabled and the request has not been handl
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | Thrown when interception is not enabled or request is already handled. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L116)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Request.cs#L293)

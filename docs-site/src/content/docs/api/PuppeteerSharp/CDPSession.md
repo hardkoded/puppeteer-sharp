@@ -46,7 +46,7 @@ Close reason if the session has been closed.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L62)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L61)
 
 <a id="PuppeteerSharp_CDPSession_Detached_"></a>
 <a id="PuppeteerSharp_CDPSession_Detached"></a>
@@ -63,7 +63,7 @@ True if the session has been detached, false otherwise.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L65)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L64)
 
 <a id="PuppeteerSharp_CDPSession_Id_"></a>
 <a id="PuppeteerSharp_CDPSession_Id"></a>
@@ -80,7 +80,7 @@ Gets the session identifier.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The session identifier.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L58)
 
 <a id="PuppeteerSharp_CDPSession_LoggerFactory_"></a>
 <a id="PuppeteerSharp_CDPSession_LoggerFactory"></a>
@@ -97,7 +97,7 @@ Gets the logger factory.
 
 **Value:** [ILoggerFactory](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory) — The logger factory.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L68)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L67)
 
 ## Events
 
@@ -115,7 +115,7 @@ Occurs when the connection is closed.
 
 **Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L46)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L45)
 
 <a id="PuppeteerSharp_CDPSession_MessageReceived"></a>
 
@@ -147,7 +147,7 @@ Occurs when the session is attached to the target.
 
 **Value:** [EventHandler&lt;SessionEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L49)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L48)
 
 <a id="PuppeteerSharp_CDPSession_SessionDetached"></a>
 
@@ -163,7 +163,7 @@ Occurs when the session is detached from the target.
 
 **Value:** [EventHandler&lt;SessionEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L52)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L51)
 
 ## Methods
 
@@ -186,7 +186,7 @@ Closes the session.
 | --- | --- | --- |
 | `closeReason` | [string](https://learn.microsoft.com/dotnet/api/system.string) | The close reason. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L102)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L110)
 
 <a id="PuppeteerSharp_CDPSession_DetachAsync_"></a>
 <a id="PuppeteerSharp_CDPSession_DetachAsync"></a>
@@ -209,7 +209,7 @@ Detaches session from target. Once detached, session won't emit any events and c
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | If the [Connection](/api/PuppeteerSharp.Cdp/Connection/) is closed. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L99)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L107)
 
 <a id="PuppeteerSharp_CDPSession_OnDisconnected_"></a>
 <a id="PuppeteerSharp_CDPSession_OnDisconnected"></a>
@@ -224,7 +224,7 @@ protected void OnDisconnected()
 
 Emits [Disconnected](#PuppeteerSharp_CDPSession_Disconnected) event.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L177)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L187)
 
 <a id="PuppeteerSharp_CDPSession_OnMessageReceived_"></a>
 <a id="PuppeteerSharp_CDPSession_OnMessageReceived_PuppeteerSharp_MessageEventArgs_"></a>
@@ -245,7 +245,7 @@ Emits [MessageReceived](#PuppeteerSharp_CDPSession_MessageReceived) event.
 | --- | --- | --- |
 | `e` | [MessageEventArgs](/api/PuppeteerSharp/MessageEventArgs/) | Event arguments. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L157)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L167)
 
 <a id="PuppeteerSharp_CDPSession_SendAsync_"></a>
 <a id="PuppeteerSharp_CDPSession_SendAsync_System_String_System_Object_System_Boolean_PuppeteerSharp_CommandOptions_"></a>
@@ -277,7 +277,7 @@ Protocol methods can be called with this method.
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | If the [Connection](/api/PuppeteerSharp.Cdp/Connection/) is closed. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L96)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L99)
 
 <a id="PuppeteerSharp_CDPSession_SendAsync__1_System_String_System_Object_PuppeteerSharp_CommandOptions_"></a>
 
@@ -307,4 +307,4 @@ Protocol methods can be called with this method.
 
 **Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L88)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs#L87)

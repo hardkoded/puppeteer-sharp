@@ -84,7 +84,7 @@ Extra [IJsonTypeInfoResolver](https://learn.microsoft.com/dotnet/api/system.text
 
 This property must be set before using any PuppeteerSharp API.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L67)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L69)
 
 <a id="PuppeteerSharp_Puppeteer_NetworkConditions_"></a>
 <a id="PuppeteerSharp_Puppeteer_NetworkConditions"></a>
@@ -113,7 +113,7 @@ using(var page = await browser.NewPageAsync())
 }
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L59)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L60)
 
 ## Methods
 
@@ -139,7 +139,7 @@ Attaches Puppeteer to an existing Chromium instance. The browser will be closed 
 
 **Returns:** [Task&lt;IBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A connected browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L111)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L115)
 
 <a id="PuppeteerSharp_Puppeteer_CreateBrowserFetcher_"></a>
 <a id="PuppeteerSharp_Puppeteer_CreateBrowserFetcher_PuppeteerSharp_BrowserFetcherOptions_"></a>
@@ -162,7 +162,7 @@ Creates the browser fetcher.
 
 **Returns:** [IBrowserFetcher](/api/PuppeteerSharp/IBrowserFetcher/) — The browser fetcher.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L119)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L125)
 
 <a id="PuppeteerSharp_Puppeteer_GetDefaultArgs_"></a>
 <a id="PuppeteerSharp_Puppeteer_GetDefaultArgs_PuppeteerSharp_LaunchOptions_"></a>
@@ -185,7 +185,7 @@ Returns an array of argument based on the options provided and the platform wher
 
 **Returns:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string) — Chromium arguments.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L79)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L81)
 
 <a id="PuppeteerSharp_Puppeteer_LaunchAsync_"></a>
 <a id="PuppeteerSharp_Puppeteer_LaunchAsync_PuppeteerSharp_LaunchOptions_Microsoft_Extensions_Logging_ILoggerFactory_"></a>
@@ -220,7 +220,7 @@ Puppeteer looks for certain &lt;a href="https://en.wikipedia.org/wiki/Environmen
 - `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `ILoggerFactory)`.
   **BEWARE**: Puppeteer is only &lt;a href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy"&gt;guaranteed to work&lt;/a&gt; with the bundled Chromium, use at your own risk.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L102)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L104)
 
 <a id="PuppeteerSharp_Puppeteer_SetFollowSymlinks_"></a>
 <a id="PuppeteerSharp_Puppeteer_SetFollowSymlinks_System_Boolean_"></a>
@@ -241,4 +241,4 @@ Defines whether Puppeteer should follow symlinks for file operations.
 | --- | --- | --- |
 | `followSymlinks` | [bool](https://learn.microsoft.com/dotnet/api/system.boolean) | Whether Puppeteer should follow symlinks. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L125)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L132)

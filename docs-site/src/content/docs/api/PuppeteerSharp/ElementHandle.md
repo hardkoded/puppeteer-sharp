@@ -66,7 +66,7 @@ Converts this [IElementHandle](/api/PuppeteerSharp/IElementHandle/) into a [Loca
 
 **Returns:** [Locator](/api/PuppeteerSharp.Locators/Locator/) — A [Locator](/api/PuppeteerSharp.Locators/Locator/) backed by this element handle.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L768)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L865)
 
 <a id="PuppeteerSharp_ElementHandle_AssertConnectedElementAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_AssertConnectedElementAsync"></a>
@@ -89,7 +89,7 @@ Checks whether the element is still connected to the browser.
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | The exception if the element is not connected. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L790)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L889)
 
 <a id="PuppeteerSharp_ElementHandle_AutofillAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_AutofillAsync_PuppeteerSharp_AutofillData_"></a>
@@ -117,7 +117,7 @@ Throws an error if the form cannot be autofilled.
 Currently, Puppeteer supports auto-filling credit card information only and
 in Chrome in the new headless and headful modes only.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L765)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L862)
 
 <a id="PuppeteerSharp_ElementHandle_BackendNodeIdAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_BackendNodeIdAsync"></a>
@@ -134,7 +134,7 @@ When connected using Chrome DevTools Protocol, it returns a DOM.BackendNodeId fo
 
 **Returns:** [Task&lt;int&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves to the backend node ID.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L762)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L859)
 
 <a id="PuppeteerSharp_ElementHandle_BindIsolatedHandleAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_BindIsolatedHandleAsync__2_System_Func___1_System_Threading_Tasks_Task___0___"></a>
@@ -170,7 +170,7 @@ Executes a function in the isolated context.
 | --- | --- |
 | [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception) | Thrown if &lt;code class="paramref"&gt;action&lt;/code&gt; is `null`. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L817)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L919)
 
 <a id="PuppeteerSharp_ElementHandle_BoundingBoxAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_BoundingBoxAsync"></a>
@@ -188,7 +188,7 @@ or null if the element is not visible.
 
 **Returns:** [Task&lt;BoundingBox&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The BoundingBox task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L306)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L345)
 
 <a id="PuppeteerSharp_ElementHandle_BoxModelAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_BoxModelAsync"></a>
@@ -205,7 +205,7 @@ returns boxes of the element, or `null` if the element is not visible. Box point
 
 **Returns:** [Task&lt;BoxModel&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task BoxModel task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L343)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L386)
 
 <a id="PuppeteerSharp_ElementHandle_ClickAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_ClickAsync_PuppeteerSharp_Input_ClickOptions_"></a>
@@ -234,7 +234,7 @@ Scrolls element into view if needed, and then uses [Mouse](/api/PuppeteerSharp/I
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | if the element is detached from DOM. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L150)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L169)
 
 <a id="PuppeteerSharp_ElementHandle_ClickablePointAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_ClickablePointAsync_System_Nullable_PuppeteerSharp_Offset__"></a>
@@ -263,7 +263,7 @@ Returns the middle point within an element unless a specific offset is provided.
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | When the node is not visible or not an HTMLElement. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L714)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L785)
 
 <a id="PuppeteerSharp_ElementHandle_ContentFrameAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_ContentFrameAsync"></a>
@@ -280,7 +280,7 @@ Resolves the frame associated with the element..
 
 **Returns:** [Task&lt;IFrame&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the frame associated with the element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L459)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L506)
 
 <a id="PuppeteerSharp_ElementHandle_DisposeAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_DisposeAsync"></a>
@@ -298,7 +298,7 @@ resetting unmanaged resources asynchronously.
 
 **Returns:** [ValueTask](https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask) — A task that represents the asynchronous dispose operation.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L748)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L845)
 
 <a id="PuppeteerSharp_ElementHandle_DragAndDropAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_DragAndDropAsync_PuppeteerSharp_IElementHandle_System_Int32_"></a>
@@ -322,7 +322,7 @@ Performs a drag, dragenter, dragover, and drop in sequence.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L691)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L756)
 
 <a id="PuppeteerSharp_ElementHandle_DragAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_DragAsync_PuppeteerSharp_IElementHandle_"></a>
@@ -345,7 +345,7 @@ This method creates and captures a dragevent from the element.
 
 **Returns:** [Task&lt;DragData&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task that resolves when the message was confirmed by the browser with the drag data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L589)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L647)
 
 <a id="PuppeteerSharp_ElementHandle_DragAsync_System_Decimal_System_Decimal_"></a>
 
@@ -368,7 +368,7 @@ This method creates and captures a dragevent from the element.
 
 **Returns:** [Task&lt;DragData&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task that resolves when the message was confirmed by the browser with the drag data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L536)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L594)
 
 <a id="PuppeteerSharp_ElementHandle_DragEnterAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_DragEnterAsync_PuppeteerSharp_DragData_"></a>
@@ -391,7 +391,7 @@ Dispatches a `dragenter` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L647)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L706)
 
 <a id="PuppeteerSharp_ElementHandle_DragOverAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_DragOverAsync_PuppeteerSharp_DragData_"></a>
@@ -414,7 +414,7 @@ Dispatches a `dragover` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L657)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L718)
 
 <a id="PuppeteerSharp_ElementHandle_DropAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_DropAsync_PuppeteerSharp_DragData_"></a>
@@ -437,7 +437,7 @@ Performs a dragenter, dragover, and drop in sequence.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L667)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L730)
 
 <a id="PuppeteerSharp_ElementHandle_DropAsync_PuppeteerSharp_IElementHandle_"></a>
 
@@ -459,7 +459,7 @@ Performs a dragenter, dragover, and drop in sequence.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L677)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L742)
 
 <a id="PuppeteerSharp_ElementHandle_FocusAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_FocusAsync"></a>
@@ -476,7 +476,7 @@ Calls `focus` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLE
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L212)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L241)
 
 <a id="PuppeteerSharp_ElementHandle_GetPropertiesAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_GetPropertiesAsync"></a>
@@ -503,7 +503,7 @@ var documentHandle = properties["document"];
 await handle.DisposeAsync();
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L740)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L828)
 
 <a id="PuppeteerSharp_ElementHandle_GetPropertyAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_GetPropertyAsync_System_String_"></a>
@@ -526,7 +526,7 @@ Fetches a single property from the referenced object.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task of [IJSHandle](/api/PuppeteerSharp/IJSHandle/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L736)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L822)
 
 <a id="PuppeteerSharp_ElementHandle_HoverAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_HoverAsync"></a>
@@ -543,7 +543,7 @@ Scrolls element into view if needed, and then uses [Mouse](/api/PuppeteerSharp/I
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element is successfully hovered.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L140)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L157)
 
 <a id="PuppeteerSharp_ElementHandle_IsHiddenAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_IsHiddenAsync"></a>
@@ -560,7 +560,7 @@ Checks if an element is hidden using the same mechanism as `WaitForSelectorOptio
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to true if the element is hidden.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L732)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L816)
 
 <a id="PuppeteerSharp_ElementHandle_IsIntersectingViewportAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_IsIntersectingViewportAsync_System_Decimal_"></a>
@@ -583,7 +583,7 @@ Evaluates if the element is visible in the current viewport. If an element is an
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task which resolves to true if the element is visible in the current viewport.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L462)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L509)
 
 <a id="PuppeteerSharp_ElementHandle_IsVisibleAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_IsVisibleAsync"></a>
@@ -600,7 +600,7 @@ Checks if an element is visible using the same mechanism as `WaitForSelectorOpti
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to true if the element is visible.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L728)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L810)
 
 <a id="PuppeteerSharp_ElementHandle_JsonValueAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_JsonValueAsync__1"></a>
@@ -625,7 +625,7 @@ Returns a JSON representation of the object.
 
 The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L744)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L839)
 
 <a id="PuppeteerSharp_ElementHandle_PressAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_"></a>
@@ -651,7 +651,7 @@ Focuses the element, and then uses `DownOptions)` and [UpAsync(string)](/api/Pup
 
 If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also be generated. The [Text](/api/PuppeteerSharp.Input/DownOptions/#PuppeteerSharp_Input_DownOptions_Text) option can be specified to force an input event to be generated.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L225)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L256)
 
 <a id="PuppeteerSharp_ElementHandle_QuerySelectorAllAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_QuerySelectorAllAsync_System_String_"></a>
@@ -674,7 +674,7 @@ Runs `element.querySelectorAll` within the page. If no elements match the select
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to ElementHandles pointing to the frame elements.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L247)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L279)
 
 <a id="PuppeteerSharp_ElementHandle_QuerySelectorAllAsync_System_String_PuppeteerSharp_QueryOptions_"></a>
 
@@ -697,7 +697,7 @@ Runs `element.querySelectorAll` within the page. If no elements match the select
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to ElementHandles pointing to the frame elements.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L251)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L283)
 
 <a id="PuppeteerSharp_ElementHandle_QuerySelectorAllHandleAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_QuerySelectorAllHandleAsync_System_String_"></a>
@@ -720,7 +720,7 @@ A utility function to be used with `Object%5b%5d)`.
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of `document.querySelectorAll` result.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L262)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L296)
 
 <a id="PuppeteerSharp_ElementHandle_QuerySelectorAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_QuerySelectorAsync_System_String_"></a>
@@ -743,7 +743,7 @@ The method runs `element.querySelector` within the page. If no element matches t
 
 **Returns:** [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to [IElementHandle](/api/PuppeteerSharp/IElementHandle/) pointing to the frame element.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L234)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L265)
 
 <a id="PuppeteerSharp_ElementHandle_ScreenshotAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_ScreenshotAsync_System_String_"></a>
@@ -791,7 +791,7 @@ If the element is detached from DOM, the method throws an error.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L47)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L48)
 
 <a id="PuppeteerSharp_ElementHandle_ScreenshotBase64Async_"></a>
 <a id="PuppeteerSharp_ElementHandle_ScreenshotBase64Async"></a>
@@ -809,7 +809,7 @@ If the element is detached from DOM, the method throws an error.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [string](https://learn.microsoft.com/dotnet/api/system.string) containing the image data as base64.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L90)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L99)
 
 <a id="PuppeteerSharp_ElementHandle_ScreenshotBase64Async_PuppeteerSharp_ElementScreenshotOptions_"></a>
 
@@ -832,7 +832,7 @@ If the element is detached from DOM, the method throws an error.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [string](https://learn.microsoft.com/dotnet/api/system.string) containing the image data as base64.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L93)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L103)
 
 <a id="PuppeteerSharp_ElementHandle_ScreenshotDataAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_ScreenshotDataAsync"></a>
@@ -850,7 +850,7 @@ If the element is detached from DOM, the method throws an error.
 
 **Returns:** [Task&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [byte](https://learn.microsoft.com/dotnet/api/system.byte)[] containing the image data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L70)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L72)
 
 <a id="PuppeteerSharp_ElementHandle_ScreenshotDataAsync_PuppeteerSharp_ElementScreenshotOptions_"></a>
 
@@ -873,7 +873,7 @@ If the element is detached from DOM, the method throws an error.
 
 **Returns:** [Task&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [byte](https://learn.microsoft.com/dotnet/api/system.byte)[] containing the image data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L86)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L95)
 
 <a id="PuppeteerSharp_ElementHandle_ScreenshotStreamAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_ScreenshotStreamAsync"></a>
@@ -891,7 +891,7 @@ If the element is detached from DOM, the method throws an error.
 
 **Returns:** [Task&lt;Stream&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [Stream](https://learn.microsoft.com/dotnet/api/system.io.stream) containing the image data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L63)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L64)
 
 <a id="PuppeteerSharp_ElementHandle_ScreenshotStreamAsync_PuppeteerSharp_ElementScreenshotOptions_"></a>
 
@@ -914,7 +914,7 @@ If the element is detached from DOM, the method throws an error.
 
 **Returns:** [Task&lt;Stream&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a [Stream](https://learn.microsoft.com/dotnet/api/system.io.stream) containing the image data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L66)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L68)
 
 <a id="PuppeteerSharp_ElementHandle_ScrollIntoViewAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_ScrollIntoViewAsync"></a>
@@ -931,7 +931,7 @@ Scrolls the element into view using either the automation protocol client or by 
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L774)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L871)
 
 <a id="PuppeteerSharp_ElementHandle_SelectAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_SelectAsync_System_String___"></a>
@@ -962,7 +962,7 @@ await handle.SelectAsync("blue"); // single selection
 await handle.SelectAsync("red", "green", "blue"); // multiple selections
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L486)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L539)
 
 <a id="PuppeteerSharp_ElementHandle_TapAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_TapAsync"></a>
@@ -985,7 +985,7 @@ Scrolls element into view if needed, and then uses `Decimal)` to tap in the cent
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | if the element is detached from DOM. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L166)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L189)
 
 <a id="PuppeteerSharp_ElementHandle_ToString_"></a>
 <a id="PuppeteerSharp_ElementHandle_ToString"></a>
@@ -1019,7 +1019,7 @@ public Task TouchEndAsync()
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L203)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L232)
 
 <a id="PuppeteerSharp_ElementHandle_TouchMoveAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_TouchMoveAsync_PuppeteerSharp_Input_ITouchHandle_"></a>
@@ -1042,7 +1042,7 @@ Dispatches a `touchmove` event.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A Task that resolves when the message was confirmed by the browser.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L185)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L212)
 
 <a id="PuppeteerSharp_ElementHandle_TouchStartAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_TouchStartAsync"></a>
@@ -1059,7 +1059,7 @@ Dispatches a `touchstart` event.
 
 **Returns:** [Task&lt;ITouchHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task that resolves to the [ITouchHandle](/api/PuppeteerSharp.Input/ITouchHandle/) for the started touch.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L176)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L201)
 
 <a id="PuppeteerSharp_ElementHandle_TypeAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_"></a>
@@ -1102,7 +1102,7 @@ await elementHandle.TypeAsync("some text");
 await elementHandle.PressAsync("Enter");
 ```
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L216)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L247)
 
 <a id="PuppeteerSharp_ElementHandle_UploadFileAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_UploadFileAsync_System_Boolean_System_String___"></a>
@@ -1128,7 +1128,7 @@ Uploads files.
 
 This method expects `elementHandle` to point to an `input element` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"&gt;https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L163)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L186)
 
 <a id="PuppeteerSharp_ElementHandle_UploadFileAsync_System_String___"></a>
 
@@ -1152,7 +1152,7 @@ Uploads files.
 
 This method expects `elementHandle` to point to an `input element` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"&gt;https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input&lt;/a&gt;.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L160)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L183)
 
 <a id="PuppeteerSharp_ElementHandle_WaitForSelectorAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_"></a>
@@ -1177,7 +1177,7 @@ Waits for a selector to be added to the DOM.
 **Returns:** [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A task that resolves when element specified by selector string is added to DOM.
     Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L73)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L76)
 
 <a id="PuppeteerSharp_ElementHandle_XPathAsync_"></a>
 <a id="PuppeteerSharp_ElementHandle_XPathAsync_System_String_"></a>
@@ -1200,4 +1200,4 @@ Evaluates the XPath expression relative to the elementHandle. If there's no such
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L290)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L327)

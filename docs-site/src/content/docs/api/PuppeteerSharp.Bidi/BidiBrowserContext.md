@@ -44,7 +44,7 @@ Clears all permission overrides for the browser context.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L145)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L180)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_CloseAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_CloseAsync"></a>
@@ -61,7 +61,7 @@ Closes the browser context. All the targets that belong to the browser context w
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L244)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L299)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_GetCookiesAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_GetCookiesAsync"></a>
@@ -78,7 +78,7 @@ Gets all cookies in the browser context.
 
 **Returns:** [Task&lt;CookieParam\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [CookieParam](/api/PuppeteerSharp/CookieParam/).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L170)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L209)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_NewPageAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_NewPageAsync_PuppeteerSharp_CreatePageOptions_"></a>
@@ -101,7 +101,7 @@ Creates a new page.
 
 **Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a new [IPage](/api/PuppeteerSharp/IPage/) object.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L195)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L248)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_OverridePermissionsAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_OverridePermissionsAsync_System_String_System_Collections_Generic_IEnumerable_PuppeteerSharp_OverridePermission__"></a>
@@ -130,7 +130,7 @@ Overrides the browser context permissions.
 var context = browser.DefaultBrowserContext;
 await context.OverridePermissionsAsync("https://html5demos.com", new List&lt;string&gt; {"geolocation"});
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L60)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L62)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_PagesAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_PagesAsync_System_Boolean_"></a>
@@ -155,7 +155,7 @@ An array of all pages inside the browser context.
     Non visible pages, such as `"background_page"`, will not be listed here.
     You can find them using [PageAsync()](/api/PuppeteerSharp/ITarget/#PuppeteerSharp_ITarget_PageAsync).
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L192)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L244)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_SetCookieAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_SetCookieAsync_PuppeteerSharp_CookieData___"></a>
@@ -178,7 +178,7 @@ Sets cookies in the browser context.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L177)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L220)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_SetPermissionAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_SetPermissionAsync_System_String_PuppeteerSharp_PermissionEntry___"></a>
@@ -202,7 +202,7 @@ Sets the permission for a specific origin.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L108)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L115)
 
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_Targets_"></a>
 <a id="PuppeteerSharp_Bidi_BidiBrowserContext_Targets"></a>
@@ -219,4 +219,4 @@ Gets an array of all active targets inside the browser context.
 
 **Returns:** `ITarget\[\]` — An array of all active targets inside the browser context.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L265)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowserContext.cs#L321)
