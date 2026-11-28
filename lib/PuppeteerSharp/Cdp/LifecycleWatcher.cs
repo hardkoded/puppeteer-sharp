@@ -83,6 +83,7 @@ namespace PuppeteerSharp.Cdp
             frame.FrameSwapped += OnFrameSwapped;
             frame.FrameSwappedByActivation += FrameSwappedByActivation;
             frame.FrameDetached += OnFrameDetached;
+            frame.Page.Error += OnPageError;
             _networkManager.Request += OnRequest;
             _networkManager.Response += OnResponse;
             _networkManager.RequestFailed += OnRequestFailed;
@@ -123,6 +124,7 @@ namespace PuppeteerSharp.Cdp
             _frame.FrameDetached -= OnFrameDetached;
             _frame.FrameSwapped -= OnFrameSwapped;
             _frame.FrameSwappedByActivation -= FrameSwappedByActivation;
+            _frame.Page.Error -= OnPageError;
             _networkManager.Request -= OnRequest;
             _networkManager.Response -= OnResponse;
             _networkManager.RequestFailed -= OnRequestFailed;
@@ -232,6 +234,11 @@ namespace PuppeteerSharp.Cdp
 
         private void Terminate(PuppeteerException ex) =>
             _terminationTaskWrapper.TrySetException(ex);
+
+        // The watcher counts as a listener of Page.Error, so a crash during a navigation fails
+        // the navigation instead of being thrown as a TargetCrashedException.
+        private void OnPageError(object sender, ErrorEventArgs e) =>
+            Terminate(new PuppeteerException(e.Error));
 
         private void OnRequest(object sender, RequestEventArgs e)
         {

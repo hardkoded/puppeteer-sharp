@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
@@ -27,7 +28,10 @@ namespace PuppeteerSharp.Tests.PageTests
             Page.Error += EventHandler;
 
             var crashUrl = TestConstants.IsChrome ? "chrome://crash" : "about:crashcontent";
-            await Task.WhenAll(errorTask.Task, Page.GoToAsync(crashUrl).ContinueWith(_ => { }));
+            await Task.WhenAll(
+                errorTask.Task.WithTimeout(10_000),
+                Page.GoToAsync(crashUrl).ContinueWith(_ => { })
+            );
 
             Assert.That(await errorTask.Task, Is.EqualTo("Page crashed!"));
         }
