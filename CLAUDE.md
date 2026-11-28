@@ -157,4 +157,4 @@ Rules that stay on and that CSharpier output still meets:
 
 ### Analyzer rules
 
-- CA2000: Dispose objects before losing scope. It also applies to test code. Declare disposable test doubles with `using`. When ownership moves to another object, wrap the allocation in `#pragma warning disable CA2000 // Ownership is transferred to ...`, in one shared helper if several tests need it.
+- CA2000: Dispose objects before losing scope. It also applies to test code. Declare disposable test doubles with `using`. When ownership moves to another object or something else ends the object's lifetime (for example a `CdpBrowser` created on a test connection that is disposed on its own), wrap the allocation in `#pragma warning disable CA2000` and `restore`, with a comment explaining why, in one shared helper if several tests need it.

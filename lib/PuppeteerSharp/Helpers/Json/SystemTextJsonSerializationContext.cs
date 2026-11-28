@@ -246,6 +246,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(TargetAttachToTargetRequest))]
 [JsonSerializable(typeof(TargetAttachToTargetResponse))]
 [JsonSerializable(typeof(TargetCloseTargetRequest))]
+[JsonSerializable(typeof(TargetCloseTargetResponse))]
 [JsonSerializable(typeof(TargetCreateBrowserContextRequest))]
 [JsonSerializable(typeof(TargetCreatedResponse))]
 [JsonSerializable(typeof(TargetCreateTargetRequest))]

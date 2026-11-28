@@ -21,7 +21,10 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
@@ -29,6 +32,8 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc />
 public class CdpTarget : Target
 {
+    private TaskCompletionSource<bool> _closeOperation;
+
     internal CdpTarget(
         TargetInfo targetInfo,
         CdpCDPSession session,
@@ -95,6 +100,16 @@ public class CdpTarget : Target
 
     internal CdpBrowser CdpBrowser => Browser as CdpBrowser;
 
+    /// <summary>
+    /// Guards the state shared between <see cref="CloseAsync"/> and the targets that attach sessions.
+    /// </summary>
+    private protected object CloseLock { get; } = new();
+
+    /// <summary>
+    /// Whether <see cref="CloseAsync"/> is closing the target. Read it while holding <see cref="CloseLock"/>.
+    /// </summary>
+    private protected bool IsClosing => _closeOperation != null;
+
     /// <inheritdoc/>
     public override async Task<IPage> AsPageAsync()
     {
@@ -124,6 +139,47 @@ public class CdpTarget : Target
         return session;
     }
 
+    /// <inheritdoc/>
+    public override async Task CloseAsync()
+    {
+        // Chrome closes the whole page when it closes the target of a frame.
+        if (TargetInfo.Type == TargetType.IFrame)
+        {
+            throw new PuppeteerException("The target of a frame does not support closing");
+        }
+
+        // Concurrent calls share one close operation, because a second
+        // `Target.closeTarget` fails if the target is already gone.
+        TaskCompletionSource<bool> operation;
+        var isNewOperation = false;
+        lock (CloseLock)
+        {
+            // Checked under the lock, so that a close which another thread just finished
+            // is not started again.
+            if (CloseTask.IsCompleted)
+            {
+                return;
+            }
+
+            if (_closeOperation == null)
+            {
+                _closeOperation = new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
+                isNewOperation = true;
+            }
+
+            operation = _closeOperation;
+        }
+
+        if (isNewOperation)
+        {
+            _ = CloseInternalAsync(operation);
+        }
+
+        await operation.Task.ConfigureAwait(false);
+    }
+
     internal void SetSession(CdpCDPSession session)
     {
         Session = session;
@@ -146,11 +202,83 @@ public class CdpTarget : Target
     }
 
     /// <summary>
+    /// Returns the sessions that Puppeteer keeps attached to the target.
+    /// </summary>
+    /// <returns>A task that returns the attached sessions.</returns>
+    internal virtual Task<IReadOnlyCollection<CdpCDPSession>> AttachedSessionsAsync() =>
+        Task.FromResult(TargetManager.GetAttachedSessions(TargetId));
+
+    /// <summary>
     /// Check is the target is not initialized.
     /// </summary>
     protected internal virtual void CheckIfInitialized()
     {
         IsInitialized = true;
         InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);
+    }
+
+    private static async Task DetachAsync(CdpCDPSession session)
+    {
+        if (session.Detached)
+        {
+            return;
+        }
+
+        // `DetachAsync()` sends the command on the connection, which fails for a session
+        // attached through a page. There is no parent connection if the parent session is
+        // already gone.
+        var parentConnection = session.ParentConnection;
+        if (parentConnection == null)
+        {
+            return;
+        }
+
+        try
+        {
+            await parentConnection
+                .SendAsync(
+                    "Target.detachFromTarget",
+                    new TargetDetachFromTargetRequest { SessionId = session.Id }
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception) when (session.Detached)
+        {
+            // Chrome might have detached the session already, for example because
+            // its page closed.
+        }
+    }
+
+    private async Task CloseInternalAsync(TaskCompletionSource<bool> operation)
+    {
+        try
+        {
+            await CdpBrowser.CloseTargetAsync(TargetId).ConfigureAwait(false);
+
+            if (TargetInfo.Type == TargetType.ServiceWorker)
+            {
+                // Chrome reports a closed service worker as destroyed only after the
+                // sessions attached to it detach.
+                var sessions = await AttachedSessionsAsync().ConfigureAwait(false);
+                await Task.WhenAll(sessions.Select(DetachAsync)).ConfigureAwait(false);
+            }
+
+            await CloseTask.ConfigureAwait(false);
+            EndCloseOperation();
+            operation.TrySetResult(true);
+        }
+        catch (Exception ex)
+        {
+            EndCloseOperation();
+            operation.TrySetException(ex);
+        }
+    }
+
+    private void EndCloseOperation()
+    {
+        lock (CloseLock)
+        {
+            _closeOperation = null;
+        }
     }
 }

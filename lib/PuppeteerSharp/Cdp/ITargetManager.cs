@@ -38,6 +38,15 @@ namespace PuppeteerSharp
         AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets();
 
         /// <summary>
+        /// Returns the sessions that the target manager keeps attached to the target with the given ID.
+        /// A target that was reported gone and is attached again gets a new <see cref="CdpTarget"/>,
+        /// so the sessions are matched by ID.
+        /// </summary>
+        /// <param name="targetId">Target id.</param>
+        /// <returns>The attached sessions.</returns>
+        IReadOnlyCollection<CdpCDPSession> GetAttachedSessions(string targetId);
+
+        /// <summary>
         /// Returns the attached iframe target that has the given frame as its root frame.
         /// </summary>
         /// <param name="frameId">Frame id.</param>

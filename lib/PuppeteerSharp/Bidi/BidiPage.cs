@@ -94,7 +94,9 @@ public class BidiPage : Page
     public override CDPSession Client { get; }
 
     /// <inheritdoc />
-    public override Target Target { get; }
+    public override Target Target =>
+        ((BidiBrowserContext)BrowserContext).GetTargetForPage(this)
+        ?? throw new PuppeteerException("Target not found for page");
 
     /// <inheritdoc />
     public override IFrame[] Frames

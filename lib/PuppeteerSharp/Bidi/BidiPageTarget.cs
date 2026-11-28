@@ -43,7 +43,11 @@ internal class BidiPageTarget(BidiPage page) : Target
 
     public override Task<IPage> AsPageAsync() => Task.FromResult<IPage>(page);
 
-    public override Task<ICDPSession> CreateCDPSessionAsync() => page.CreateCDPSessionAsync();
+    // Page.CreateCDPSessionAsync calls this method, so this must not call back into the page.
+    public override Task<ICDPSession> CreateCDPSessionAsync() =>
+        throw new PuppeteerException("Not supported");
+
+    public override Task CloseAsync() => page.CloseAsync();
 }
 
 #endif

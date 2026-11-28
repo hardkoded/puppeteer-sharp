@@ -39,8 +39,7 @@ public class CdpWebWorker : WebWorker
     private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
     private readonly Func<bool> _hasOwnerExceptionListeners;
     private readonly Action<RemoteException> _forwardException;
-    private readonly string _id;
-    private readonly TargetType _targetType;
+    private readonly CdpTarget _target;
     private readonly TaskCompletionSource<bool> _workerScriptLoaded = new(
         TaskCreationOptions.RunContinuationsAsynchronously
     );
@@ -59,9 +58,8 @@ public class CdpWebWorker : WebWorker
         _hasOwnerExceptionListeners = hasOwnerExceptionListeners ?? (() => false);
         _forwardException = forwardException ?? (_ => { });
         _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
-        _id = target.TargetId;
         Client = client;
-        _targetType = target.Type;
+        _target = target;
         World = new IsolatedWorld(null, this, new TimeoutSettings(), true);
         _consoleAPICalled = consoleAPICalled;
         _exceptionThrown = exceptionThrown;
@@ -137,38 +135,11 @@ public class CdpWebWorker : WebWorker
     /// <returns>A <see cref="Task"/> that completes when the worker is closed.</returns>
     public override async Task CloseAsync()
     {
-        switch (_targetType)
+        switch (_target.Type)
         {
             case TargetType.ServiceWorker:
-                if (!CdpCDPSession.Detached)
-                {
-                    await CdpCDPSession
-                        .Connection.SendAsync(
-                            "Target.closeTarget",
-                            new TargetCloseTargetRequest() { TargetId = _id }
-                        )
-                        .ConfigureAwait(false);
-
-                    await CdpCDPSession
-                        .Connection.SendAsync(
-                            "Target.detachFromTarget",
-                            new TargetDetachFromTargetRequest() { SessionId = Client.Id }
-                        )
-                        .ConfigureAwait(false);
-                }
-
-                break;
             case TargetType.SharedWorker:
-                if (!CdpCDPSession.Detached)
-                {
-                    await CdpCDPSession
-                        .Connection.SendAsync(
-                            "Target.closeTarget",
-                            new TargetCloseTargetRequest() { TargetId = _id }
-                        )
-                        .ConfigureAwait(false);
-                }
-
+                await _target.CloseAsync().ConfigureAwait(false);
                 break;
             default:
                 await EvaluateFunctionAsync(

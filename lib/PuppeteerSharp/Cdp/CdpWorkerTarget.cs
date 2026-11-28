@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 
@@ -29,8 +30,55 @@ namespace PuppeteerSharp.Cdp
         /// <inheritdoc/>
         public override Task<WebWorker> WorkerAsync()
         {
-            _workerTask ??= WorkerInternalAsync();
-            return _workerTask;
+            lock (CloseLock)
+            {
+                if (_workerTask == null)
+                {
+                    // CloseAsync() detaches the sessions that are attached when Chrome closes
+                    // the target, so a session attached later would keep a closed service
+                    // worker alive.
+                    if (IsClosing)
+                    {
+                        return Task.FromException<WebWorker>(
+                            new TargetClosedException("Target closed")
+                        );
+                    }
+
+                    _workerTask = WorkerInternalAsync();
+                }
+
+                return _workerTask;
+            }
+        }
+
+        internal override async Task<IReadOnlyCollection<CdpCDPSession>> AttachedSessionsAsync()
+        {
+            var sessions = new HashSet<CdpCDPSession>(
+                await base.AttachedSessionsAsync().ConfigureAwait(false)
+            );
+
+            Task<WebWorker> workerTask;
+            lock (CloseLock)
+            {
+                workerTask = _workerTask;
+            }
+
+            // Puppeteer detaches from service workers unless network rules are set,
+            // so WorkerAsync() may attach a session of its own.
+            if (workerTask != null)
+            {
+                try
+                {
+                    var worker = await workerTask.ConfigureAwait(false);
+                    sessions.Add((CdpCDPSession)worker.Client);
+                }
+                catch (Exception)
+                {
+                    // A failed WorkerAsync() call already faulted for its caller.
+                }
+            }
+
+            return sessions;
         }
 
         private async Task<WebWorker> WorkerInternalAsync()
