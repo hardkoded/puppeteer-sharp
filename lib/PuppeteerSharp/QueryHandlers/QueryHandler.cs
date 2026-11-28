@@ -108,16 +108,20 @@ namespace PuppeteerSharp.QueryHandlers
                     as ElementHandle;
             }
 
+            var cancellationToken = options?.CancellationToken ?? default;
+
             try
             {
                 var waitForVisible = options?.Visible ?? false;
                 var waitForHidden = options?.Hidden ?? false;
                 var timeout = options?.Timeout;
-                var cancellationToken = options?.CancellationToken ?? default;
 
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    throw new OperationCanceledException("WaitForSelector has been cancelled.");
+                    throw new OperationCanceledException(
+                        "WaitForSelector has been cancelled.",
+                        cancellationToken
+                    );
                 }
 
                 var predicate =
@@ -171,7 +175,10 @@ namespace PuppeteerSharp.QueryHandlers
                 if (cancellationToken.IsCancellationRequested)
                 {
                     await jsHandle.DisposeAsync().ConfigureAwait(false);
-                    throw new OperationCanceledException("WaitForSelector has been cancelled.");
+                    throw new OperationCanceledException(
+                        "WaitForSelector has been cancelled.",
+                        cancellationToken
+                    );
                 }
 
                 if (jsHandle is not ElementHandle elementHandle)
@@ -184,8 +191,12 @@ namespace PuppeteerSharp.QueryHandlers
                         .MainRealm.TransferHandleAsync(elementHandle)
                         .ConfigureAwait(false) as IElementHandle;
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
+                when (cancellationToken.IsCancellationRequested
+                    && ex.CancellationToken == cancellationToken
+                )
             {
+                // Only the caller's own cancellation is rethrown as is, like signal.reason upstream.
                 throw;
             }
             catch (Exception ex)

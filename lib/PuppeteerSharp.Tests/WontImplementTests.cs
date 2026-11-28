@@ -240,6 +240,17 @@ namespace PuppeteerSharp.Tests
             "util fromAbortSignal",
             "does not emit while the signal is not aborted"
         )]
+        // AbortSignal.abort(null) and abort(0) pass a falsy reason. A CancellationToken carries no reason, so cancelling always throws OperationCanceledException
+        [PuppeteerTest(
+            "waittask.spec",
+            "waittask specs Frame.waitForFunction",
+            "should reject with falsy abort reasons"
+        )]
+        [PuppeteerTest(
+            "waittask.spec",
+            "waittask specs Frame.waitForSelector",
+            "should reject with falsy abort reasons"
+        )]
         // off() removing a listener added with once() (upstream #15806). PuppeteerSharp exposes C# events: there is no once() or custom off(), and -= removes the delegate that was passed to +=
         [PuppeteerTest("EventEmitter.spec", "off", "off: removes a listener added with once")]
         [PuppeteerTest(

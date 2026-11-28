@@ -74,7 +74,10 @@ namespace PuppeteerSharp
             {
                 _cancellationTokenRegistration = cancellationToken.Register(() =>
                     _ = TerminateAsync(
-                        new OperationCanceledException("WaitTask has been cancelled.")
+                        new OperationCanceledException(
+                            "WaitTask has been cancelled.",
+                            cancellationToken
+                        )
                     )
                 );
             }
