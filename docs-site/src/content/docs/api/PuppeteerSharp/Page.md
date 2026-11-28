@@ -1862,7 +1862,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync<T1, T2>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L411)
 
@@ -1897,7 +1897,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync<T1, T2, T3>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L417)
 
@@ -1933,7 +1933,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync<T1, T2, T3, T4>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L423)
 
@@ -1970,7 +1970,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync<T1, T2, T3, T4, T5>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L429)
 

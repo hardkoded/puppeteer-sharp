@@ -143,9 +143,9 @@ Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
 ```
 
 
-Returns a `Dictionary<T>` with property names as keys and [IJSHandle](./) instances for the property values.
+Returns a `Dictionary<T1, T2>` with property names as keys and [IJSHandle](./) instances for the property values.
 
-**Returns:** [Task&lt;Dictionary&lt;string, IJSHandle&gt;&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a `Dictionary<T>`.
+**Returns:** [Task&lt;Dictionary&lt;string, IJSHandle&gt;&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a `Dictionary<T1, T2>`.
 
 **Example**
 

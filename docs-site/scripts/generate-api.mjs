@@ -393,7 +393,12 @@ function labelFor(uid) {
     const name = parenthesis >= 0 ? decoded.slice(0, parenthesis) : decoded;
     const segments = name.split(".");
     const short = (parenthesis >= 0 ? segments.slice(-2).join(".") : segments.pop()) || name;
-    return `${short.replace(/`+(\d+)/g, "<T>")}${parenthesis >= 0 ? "()" : ""}`;
+    return `${short.replace(/`+(\d+)/g, (_, arity) => genericArguments(Number(arity)))}${parenthesis >= 0 ? "()" : ""}`;
+}
+
+function genericArguments(arity) {
+    if (arity <= 1) return "<T>";
+    return `<${Array.from({ length: arity }, (_, index) => `T${index + 1}`).join(", ")}>`;
 }
 
 function displayName(item) {
