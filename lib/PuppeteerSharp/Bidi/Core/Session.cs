@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -35,10 +36,15 @@ using WebDriverBiDi.Session;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
+internal class Session(BidiConnection driver, NewCommandResult info) : IDisposable
 {
+    private const string ConnectionBrokeReason =
+        "Session already destroyed, probably because the connection broke.";
+
     private readonly ConcurrentSet<WebDriverBiDi.BrowsingContext.NavigationEventArgs> _fragmentSeen =
         new();
+
+    private int _isEnded;
 
     public event EventHandler<SessionEndArgs> Ended;
 
@@ -80,7 +86,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     public event EventHandler<FileDialogOpenedEventArgs> InputFileDialogOpened;
 
-    public BiDiDriver Driver { get; } = driver;
+    public BidiConnection Driver { get; } = driver;
 
     public NewCommandResult Info { get; } = info;
 
@@ -89,7 +95,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     internal ScriptInjector ScriptInjector => ScriptInjector.Default;
 
     public static async Task<Session> FromAsync(
-        BiDiDriver driver,
+        BidiConnection driver,
         NewCommandParameters capabilities,
         ILoggerFactory loggerFactory
     )
@@ -101,6 +107,18 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     }
 
     public void Dispose() { }
+
+    public async Task EndAsync()
+    {
+        try
+        {
+            await Driver.Session.EndAsync(new EndCommandParameters()).ConfigureAwait(false);
+        }
+        finally
+        {
+            Dispose("Session already ended.");
+        }
+    }
 
     public async Task SubscribeAsync(string[] events, string[] contexts = null)
     {
@@ -119,6 +137,21 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     internal virtual void OnBrowsingContextContextCreated(BrowsingContextEventArgs e) =>
         BrowsingContextContextCreated?.Invoke(this, e);
+
+    /// <summary>
+    /// Ends the session locally. It only has effect the first time it is called.
+    /// </summary>
+    /// <param name="reason">Why the session ended.</param>
+    internal void Dispose(string reason)
+    {
+        if (Interlocked.Exchange(ref _isEnded, 1) == 1)
+        {
+            return;
+        }
+
+        Driver.Closed -= OnConnectionClosed;
+        OnEnded(new SessionEndArgs { Reason = reason ?? ConnectionBrokeReason });
+    }
 
     private async Task InitializeAsync()
     {
@@ -144,7 +177,17 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Driver.BrowsingContext.OnUserPromptClosed.AddObserver(OnBrowsingContextUserPromptClosed);
         Driver.Log.OnEntryAdded.AddObserver(OnLogEntryAdded);
         Driver.Input.OnFileDialogOpened.AddObserver(OnInputFileDialogOpened);
+
+        Driver.Closed += OnConnectionClosed;
+
+        // The connection might have been closed before we started listening.
+        if (Driver.IsClosed)
+        {
+            Dispose(ConnectionBrokeReason);
+        }
     }
+
+    private void OnConnectionClosed(object sender, EventArgs e) => Dispose(ConnectionBrokeReason);
 
     private void OnFragmentNavigated(WebDriverBiDi.BrowsingContext.NavigationEventArgs info)
     {

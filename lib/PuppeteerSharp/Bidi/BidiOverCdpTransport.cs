@@ -27,6 +27,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -52,7 +53,7 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
     private readonly CdpConnection _cdpConnection;
     private readonly CDPSession _mapperSession;
     private readonly ILogger _logger;
-    private bool _isClosed;
+    private int _isClosed;
 
     private BidiOverCdpTransport(
         CdpConnection cdpConnection,
@@ -66,6 +67,13 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
 
         // Listen for BiDi responses from the mapper via Runtime.bindingCalled
         _mapperSession.MessageReceived += OnMapperSessionMessage;
+        _cdpConnection.Disconnected += OnCdpDisconnected;
+
+        // The CDP connection might have been closed while the mapper was starting.
+        if (_cdpConnection.IsClosed)
+        {
+            Close();
+        }
     }
 
     /// <inheritdoc/>
@@ -75,14 +83,14 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
     public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
     /// <inheritdoc/>
-    public bool IsClosed => _isClosed;
+    public bool IsClosed => Volatile.Read(ref _isClosed) == 1;
 
     internal CdpConnection CdpConnection => _cdpConnection;
 
     /// <inheritdoc/>
     public async Task SendAsync(byte[] message)
     {
-        if (_isClosed)
+        if (IsClosed)
         {
             return;
         }
@@ -235,6 +243,8 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
         return reader.ReadToEnd();
     }
 
+    private void OnCdpDisconnected(object sender, EventArgs e) => Close();
+
     private void OnMapperSessionMessage(object sender, MessageEventArgs e)
     {
         if (e.MessageID != "Runtime.bindingCalled")
@@ -269,12 +279,12 @@ internal sealed class BidiOverCdpTransport : IConnectionTransport
 
     private void Close()
     {
-        if (_isClosed)
+        if (Interlocked.Exchange(ref _isClosed, 1) == 1)
         {
             return;
         }
 
-        _isClosed = true;
+        _cdpConnection.Disconnected -= OnCdpDisconnected;
         _mapperSession.MessageReceived -= OnMapperSessionMessage;
         Closed?.Invoke(this, new TransportClosedEventArgs("BidiOverCdp transport closed"));
     }

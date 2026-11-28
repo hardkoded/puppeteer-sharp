@@ -27,6 +27,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
@@ -41,6 +42,8 @@ namespace PuppeteerSharp.Bidi;
 /// </summary>
 public class BidiBrowser : Browser
 {
+    private const int SessionEndTimeout = 5_000;
+
     private readonly IBrowserOptions _options;
     private readonly ConcurrentDictionary<UserContext, BidiBrowserContext> _browserContexts = new();
     private readonly ILogger<BidiBrowser> _logger;
@@ -49,6 +52,8 @@ public class BidiBrowser : Browser
     private readonly bool _networkEnabled;
     private readonly bool _issuesEnabled;
     private bool _isClosed;
+    private int _isCloseRequested;
+    private bool _isDisconnectRequested;
 
     private BidiBrowser(
         Core.Browser browserCore,
@@ -129,14 +134,41 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override void Disconnect()
     {
-        Driver.StopAsync().GetAwaiter().GetResult();
-        Detach();
+        _isDisconnectRequested = true;
+
+        try
+        {
+            if (IsConnected)
+            {
+                // The wait is bounded because the response can't be processed while this method
+                // blocks the thread dispatching messages, e.g. when called from an event handler.
+                BrowserCore
+                    .Session.EndAsync()
+                    .WithTimeout(SessionEndTimeout)
+                    .GetAwaiter()
+                    .GetResult();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.FailedToEndSession(ex);
+        }
+        finally
+        {
+            Driver.StopAsync().GetAwaiter().GetResult();
+
+            // No-op unless the session could not be ended and the driver is still closing.
+            BrowserCore.Session.Dispose("Browser disconnected.");
+            Detach();
+        }
     }
 
     /// <inheritdoc />
     public override async Task CloseAsync()
     {
-        if (_isClosed)
+        // A browser which lost its connection still has to go through the close callback,
+        // otherwise a launched browser process could be left running.
+        if (Interlocked.Exchange(ref _isCloseRequested, 1) == 1)
         {
             return;
         }
@@ -146,13 +178,16 @@ public class BidiBrowser : Browser
         {
             try
             {
-                try
+                if (IsConnected)
                 {
-                    await BrowserCore.CloseAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.FailedToSendBrowserCloseCommand(ex);
+                    try
+                    {
+                        await BrowserCore.CloseAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.FailedToSendBrowserCloseCommand(ex);
+                    }
                 }
 
                 if (CloseCallback != null)
@@ -162,15 +197,7 @@ public class BidiBrowser : Browser
             }
             finally
             {
-                try
-                {
-                    await Driver.StopAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.FailedToStopDriver(ex);
-                }
-
+                await StopDriverAsync().ConfigureAwait(false);
                 Detach();
             }
         }
@@ -337,7 +364,7 @@ public class BidiBrowser : Browser
         Justification = "We return the session, the browser needs to dispose the session"
     )]
     internal static Task<BidiBrowser> CreateAsync(
-        BiDiDriver driver,
+        BidiConnection driver,
         LaunchOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher,
@@ -345,7 +372,7 @@ public class BidiBrowser : Browser
     ) => CreateAsync(driver, options, loggerFactory, launcher, closeCallback, null);
 
     internal static Task<BidiBrowser> CreateAsync(
-        BiDiDriver driver,
+        BidiConnection driver,
         ConnectOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher,
@@ -358,7 +385,7 @@ public class BidiBrowser : Browser
         Justification = "We return the session, the browser needs to dispose the session"
     )]
     internal static async Task<BidiBrowser> CreateAsync(
-        BiDiDriver driver,
+        BidiConnection driver,
         IBrowserOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher,
@@ -563,13 +590,31 @@ public class BidiBrowser : Browser
 
     private void OnBrowserCoreDisconnected(object sender, ClosedEventArgs e)
     {
-        _isClosed = true;
+        // A launched browser the caller disconnected from keeps running.
+        if (!_isDisconnectRequested || CloseCallback == null)
+        {
+            _isClosed = true;
+        }
+
         OnDisconnected();
     }
 
     private void OnProcessExited(object sender, EventArgs e)
     {
-        BrowserCore.Dispose();
+        BrowserCore.Dispose("Browser process exited.", true);
+        _ = StopDriverAsync();
+    }
+
+    private async Task StopDriverAsync()
+    {
+        try
+        {
+            await Driver.StopAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.FailedToStopDriver(ex);
+        }
     }
 
     private void Detach()
