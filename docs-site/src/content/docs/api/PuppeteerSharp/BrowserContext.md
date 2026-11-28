@@ -74,7 +74,7 @@ public bool IsClosed { get; }
 ```
 
 
-Whether this &lt;a href="IBrowserContext"&gt;IBrowserContext&lt;/a&gt; is closed.
+Whether this [IBrowserContext](IBrowserContext) is closed.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
@@ -93,7 +93,7 @@ public event EventHandler<ConsoleEventArgs> Console
 
 
 Raised when JavaScript within any page or worker in the browser context calls one of the console API methods, e.g. `console.log` or `console.dir`.
-Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via `Targets()`.
+Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via `PageAsync()` or `PagesAsync()`. `Targets()` only lists targets and does not attach to them.
 Service and shared workers are not attached automatically: their messages are only delivered after `WorkerAsync()` has been called for their target.
 With WebDriver BiDi, service and shared worker console messages are not reported.
 
@@ -212,7 +212,7 @@ public event EventHandler<TargetChangedArgs> TargetCreated
 ```
 
 
-Raised when a target is created, for example when a new page is opened by `window.open` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Window/open&lt;/a&gt; or [NewPageAsync(CreatePageOptions)](/api/PuppeteerSharp/IBrowserContext/#PuppeteerSharp_IBrowserContext_NewPageAsync_PuppeteerSharp_CreatePageOptions_).
+Raised when a target is created, for example when a new page is opened by `window.open` [https://developer.mozilla.org/en-US/docs/Web/API/Window/open](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [NewPageAsync(CreatePageOptions)](/api/PuppeteerSharp/IBrowserContext/#PuppeteerSharp_IBrowserContext_NewPageAsync_PuppeteerSharp_CreatePageOptions_).
 
 **Value:** [EventHandler&lt;TargetChangedArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 

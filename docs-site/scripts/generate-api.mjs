@@ -418,6 +418,7 @@ function isDocumentedType(item) {
 function isVisibleMember(item, parent) {
     if (String(item.uid).endsWith("*")) return false;
     if (parent?.type === "Enum" && item.type === "Field") return true;
+    if (parent?.type === "Interface") return true;
     return isVisible(item, parent);
 }
 
@@ -480,6 +481,8 @@ function renderComment(value, fromId) {
     text = text.replace(/<xref href="([^"]+)"[^>]*\/>/gi, (_, href) => linkToUid(fromId, decode(href)));
     text = text.replace(/<see(?:also)?\s+cref="([^"]+)"\s*\/>/gi, (_, cref) => linkToUid(fromId, cref));
     text = text.replace(/<para>([\s\S]*?)<\/para>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`);
+    text = text.replace(/<p>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`);
+    text = text.replace(/<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, inner) => `[${inner.trim()}](${decode(href)})`);
     text = text.replace(/<br\s*\/?>/gi, "\n");
     text = text.replace(/<(c|code)>([\s\S]*?)<\/\1>/gi, (_, _tag, code) => `\`${decode(code).replace(/`/g, "")}\``);
     text = text.replace(/<paramref\s+name="([^"]+)"\s*\/>/gi, "`$1`");

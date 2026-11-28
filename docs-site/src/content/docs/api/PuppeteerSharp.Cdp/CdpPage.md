@@ -205,7 +205,7 @@ public override Task AuthenticateAsync(Credentials credentials)
 ```
 
 
-Provide credentials for http authentication &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"&gt;https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication&lt;/a&gt;.
+Provide credentials for http authentication [https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
 
 **Parameters**
 
@@ -571,7 +571,7 @@ Changes the timezone of the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `timezoneId` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Timezone to set. See &lt;a href="https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1"&gt;ICU’s `metaZones.txt`&lt;/a&gt; for a list of supported timezone IDs. Passing `null` disables timezone emulation. |
+| `timezoneId` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Timezone to set. See [ICU’s `metaZones.txt`](https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1) for a list of supported timezone IDs. Passing `null` disables timezone emulation. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The viewport task.
 

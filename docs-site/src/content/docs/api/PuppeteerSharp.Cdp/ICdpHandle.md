@@ -24,3 +24,22 @@ CDP Specific handle info.
 **Derived:** [CdpElementHandle](/api/PuppeteerSharp.Cdp/CdpElementHandle/), [CdpJSHandle](/api/PuppeteerSharp.Cdp/CdpJSHandle/)
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/ICdpHandle.cs#L30)
+
+## Properties
+
+<a id="PuppeteerSharp_Cdp_ICdpHandle_RemoteObject_"></a>
+<a id="PuppeteerSharp_Cdp_ICdpHandle_RemoteObject"></a>
+
+### RemoteObject
+
+
+```csharp
+RemoteObject RemoteObject { get; }
+```
+
+
+CDP remote object.
+
+**Value:** [RemoteObject](/api/PuppeteerSharp.Cdp.Messaging/RemoteObject/)
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/ICdpHandle.cs#L35)

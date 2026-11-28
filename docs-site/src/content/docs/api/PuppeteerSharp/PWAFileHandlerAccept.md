@@ -56,7 +56,7 @@ public string MediaType { get; set; }
 
 
 Gets or sets the mime type, as per
-&lt;a href="https://www.iana.org/assignments/media-types/media-types.xhtml"&gt;the IANA media types registry&lt;/a&gt;.
+[the IANA media types registry](https://www.iana.org/assignments/media-types/media-types.xhtml).
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 

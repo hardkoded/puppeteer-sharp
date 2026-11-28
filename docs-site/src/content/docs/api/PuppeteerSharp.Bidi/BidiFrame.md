@@ -311,7 +311,7 @@ It is useful for when you run code which will indirectly cause the frame to navi
     In case of multiple redirects, the navigation will resolve with the response of the last redirect.
     In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
-Usage of the `History API` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/History_API&lt;/a&gt; to change the URL is considered a navigation.
+Usage of the `History API` [https://developer.mozilla.org/en-US/docs/Web/API/History_API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 **Example**
 

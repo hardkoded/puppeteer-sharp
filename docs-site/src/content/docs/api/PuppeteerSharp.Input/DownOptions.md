@@ -41,7 +41,7 @@ public string[] Commands { get; set; }
 
 
 If specified, the commands of keyboard shortcuts.
-See &lt;a href="https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h"&gt;Chromium Source Code&lt;/a&gt; for valid command names.
+See [Chromium Source Code](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h) for valid command names.
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string)
 

@@ -134,8 +134,8 @@ Gets the Browser websocket url.
 Browser websocket endpoint which can be used as an argument to `ILoggerFactory)`.
 The format is `ws://${host}:${port}/devtools/browser/[id]`
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`.
-Learn more about the devtools protocol &lt;a href="https://chromedevtools.github.io/devtools-protocol"&gt;https://chromedevtools.github.io/devtools-protocol&lt;/a&gt;
-and the browser endpoint &lt;a href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"&gt;https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target&lt;/a&gt;.
+Learn more about the devtools protocol [https://chromedevtools.github.io/devtools-protocol](https://chromedevtools.github.io/devtools-protocol)
+and the browser endpoint [https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L82)
 

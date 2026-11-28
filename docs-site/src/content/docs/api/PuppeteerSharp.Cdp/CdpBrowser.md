@@ -441,10 +441,10 @@ Targets that are already on a blocked URL when this method is called stay attach
 the blocked page. This differs from launching the browser with network restrictions, where such
 targets are detached on the initial attach.
 
-&lt;p&gt;
+
+
 The restrictions have the same WebTransport and WebRTC limitations as
 [BlockList](/api/PuppeteerSharp/ConnectOptions/#PuppeteerSharp_ConnectOptions_BlockList) and [Allowlist](/api/PuppeteerSharp/ConnectOptions/#PuppeteerSharp_ConnectOptions_Allowlist).
-&lt;/p&gt;
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowser.cs#L508)
 

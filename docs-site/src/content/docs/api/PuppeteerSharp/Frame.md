@@ -1116,7 +1116,7 @@ It is useful for when you run code which will indirectly cause the frame to navi
     In case of multiple redirects, the navigation will resolve with the response of the last redirect.
     In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
-Usage of the `History API` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/History_API&lt;/a&gt; to change the URL is considered a navigation.
+Usage of the `History API` [https://developer.mozilla.org/en-US/docs/Web/API/History_API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 **Example**
 
@@ -1224,7 +1224,7 @@ Evaluates the XPath expression.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate&lt;/a&gt;. |
+| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate [https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate). |
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/).
 

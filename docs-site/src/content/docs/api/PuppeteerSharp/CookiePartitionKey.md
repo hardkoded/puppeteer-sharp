@@ -87,7 +87,7 @@ Indicates whether the current object is equal to another object of the same type
 | --- | --- | --- |
 | `other` | [CookiePartitionKey](./) | An object to compare with this object. |
 
-**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the current object is equal to the &lt;code class="paramref"&gt;other&lt;/code&gt; parameter; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
+**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — [true](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) if the current object is equal to the &lt;code class="paramref"&gt;other&lt;/code&gt; parameter; otherwise, [false](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CookiePartitionKey.cs#L24)
 
@@ -109,7 +109,7 @@ Determines whether the specified object is equal to the current object.
 | --- | --- | --- |
 | `obj` | [object](https://learn.microsoft.com/dotnet/api/system.object) | The object to compare with the current object. |
 
-**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the specified object  is equal to the current object; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
+**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — [true](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) if the specified object  is equal to the current object; otherwise, [false](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CookiePartitionKey.cs#L36)
 

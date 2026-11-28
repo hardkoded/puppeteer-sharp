@@ -1,6 +1,6 @@
 ---
 title: "CdpWebWorker"
-description: "The Worker class represents a WebWorker (<a href=\"https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI\">https://developer.mozilla.org/en-US/docs/We..."
+description: "The Worker class represents a WebWorker (https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI). The events WorkerCreated and WorkerDestroyed are em..."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class CdpWebWorker : WebWorker
 ```
 
 
-The Worker class represents a WebWorker (&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API&lt;/a&gt;).
+The Worker class represents a WebWorker ([https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)).
 The events [WorkerCreated](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WorkerCreated) and [WorkerDestroyed](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WorkerDestroyed) are emitted on the page object to signal the worker lifecycle.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → [WebWorker](/api/PuppeteerSharp/WebWorker/)

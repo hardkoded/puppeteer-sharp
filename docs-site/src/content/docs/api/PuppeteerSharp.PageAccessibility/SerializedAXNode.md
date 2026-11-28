@@ -57,7 +57,7 @@ public bool Atomic { get; set; }
 ```
 
 
-Whether the live region is &lt;a href="https://www.w3.org/TR/wai-aria/#aria-atomic"&gt;atomic&lt;/a&gt;.
+Whether the live region is [atomic](https://www.w3.org/TR/wai-aria/#aria-atomic).
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
@@ -91,7 +91,7 @@ public bool Busy { get; set; }
 ```
 
 
-Whether the node is &lt;a href="https://www.w3.org/TR/wai-aria/#aria-busy"&gt;busy&lt;/a&gt;.
+Whether the node is [busy](https://www.w3.org/TR/wai-aria/#aria-busy).
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
@@ -159,7 +159,7 @@ public string Details { get; set; }
 ```
 
 
-The &lt;a href="https://www.w3.org/TR/wai-aria/#aria-details"&gt;details&lt;/a&gt; for the node.
+The [details](https://www.w3.org/TR/wai-aria/#aria-details) for the node.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
@@ -193,7 +193,7 @@ public string Errormessage { get; set; }
 ```
 
 
-The &lt;a href="https://www.w3.org/TR/wai-aria/#aria-errormessage"&gt;error message&lt;/a&gt; for the node.
+The [error message](https://www.w3.org/TR/wai-aria/#aria-errormessage) for the node.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
@@ -312,7 +312,7 @@ public string Live { get; set; }
 ```
 
 
-The &lt;a href="https://www.w3.org/TR/wai-aria/#aria-live"&gt;live&lt;/a&gt; status of the node.
+The [live](https://www.w3.org/TR/wai-aria/#aria-live) status of the node.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
@@ -346,7 +346,7 @@ public bool Modal { get; set; }
 ```
 
 
-Whether the node is &lt;a href="https://en.wikipedia.org/wiki/Modal_window"&gt;modal&lt;/a&gt;.
+Whether the node is [modal](https://en.wikipedia.org/wiki/Modal_window).
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
@@ -465,7 +465,7 @@ public string Relevant { get; set; }
 ```
 
 
-The &lt;a href="https://www.w3.org/TR/wai-aria/#aria-relevant"&gt;relevant&lt;/a&gt; changes for the live region.
+The [relevant](https://www.w3.org/TR/wai-aria/#aria-relevant) changes for the live region.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
@@ -665,7 +665,7 @@ Indicates whether the current object is equal to another object of the same type
 | --- | --- | --- |
 | `other` | [SerializedAXNode](./) | An object to compare with this object. |
 
-**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the current object is equal to the &lt;code class="paramref"&gt;other&lt;/code&gt; parameter; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
+**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — [true](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) if the current object is equal to the &lt;code class="paramref"&gt;other&lt;/code&gt; parameter; otherwise, [false](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L201)
 
@@ -687,7 +687,7 @@ Determines whether the specified object is equal to the current object.
 | --- | --- | --- |
 | `obj` | [object](https://learn.microsoft.com/dotnet/api/system.object) | The object to compare with the current object. |
 
-**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the specified object  is equal to the current object; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
+**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — [true](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) if the specified object  is equal to the current object; otherwise, [false](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L243)
 

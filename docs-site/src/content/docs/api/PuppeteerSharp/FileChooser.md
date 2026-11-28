@@ -53,7 +53,7 @@ public bool IsMultiple { get; }
 ```
 
 
-Whether file chooser allow for &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple"&gt;multiple&lt;/a&gt; file selection.
+Whether file chooser allow for [multiple](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple) file selection.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 

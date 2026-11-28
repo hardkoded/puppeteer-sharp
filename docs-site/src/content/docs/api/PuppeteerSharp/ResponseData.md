@@ -72,7 +72,7 @@ public string ContentType { get; set; }
 ```
 
 
-If set, equals to setting &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type"&gt;https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type&lt;/a&gt; response header.
+If set, equals to setting [https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) response header.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The Content-Type.
 

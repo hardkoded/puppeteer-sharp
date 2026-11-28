@@ -187,8 +187,8 @@ Gets the Browser websocket url.
 Browser websocket endpoint which can be used as an argument to `ILoggerFactory)`.
 The format is `ws://${host}:${port}/devtools/browser/[id]`
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`.
-Learn more about the devtools protocol &lt;a href="https://chromedevtools.github.io/devtools-protocol"&gt;https://chromedevtools.github.io/devtools-protocol&lt;/a&gt;
-and the browser endpoint &lt;a href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"&gt;https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target&lt;/a&gt;.
+Learn more about the devtools protocol [https://chromedevtools.github.io/devtools-protocol](https://chromedevtools.github.io/devtools-protocol)
+and the browser endpoint [https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs#L66)
 
@@ -221,7 +221,7 @@ public event EventHandler<ConsoleEventArgs> Console
 
 
 Raised when JavaScript within any page or worker in the browser calls one of the console API methods, e.g. `console.log` or `console.dir`.
-Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via `Targets()`.
+Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via `PageAsync()` or `PagesAsync()`. `Targets()` only lists targets and does not attach to them.
 Service and shared workers are not attached automatically: their messages are only delivered after `WorkerAsync()` has been called for their target.
 With WebDriver BiDi, service and shared worker console messages are not reported.
 
@@ -358,7 +358,7 @@ public event EventHandler<TargetChangedArgs> TargetCreated
 ```
 
 
-Raised when a target is created, for example when a new page is opened by `window.open` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Window/open&lt;/a&gt; or [NewPageAsync(CreatePageOptions)](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowser_NewPageAsync_PuppeteerSharp_CreatePageOptions_).
+Raised when a target is created, for example when a new page is opened by `window.open` [https://developer.mozilla.org/en-US/docs/Web/API/Window/open](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [NewPageAsync(CreatePageOptions)](/api/PuppeteerSharp/IBrowser/#PuppeteerSharp_IBrowser_NewPageAsync_PuppeteerSharp_CreatePageOptions_).
 
 **Value:** [EventHandler&lt;TargetChangedArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
@@ -1090,10 +1090,10 @@ Targets that are already on a blocked URL when this method is called stay attach
 the blocked page. This differs from launching the browser with network restrictions, where such
 targets are detached on the initial attach.
 
-&lt;p&gt;
+
+
 The restrictions have the same WebTransport and WebRTC limitations as
 [BlockList](/api/PuppeteerSharp/ConnectOptions/#PuppeteerSharp_ConnectOptions_BlockList) and [Allowlist](/api/PuppeteerSharp/ConnectOptions/#PuppeteerSharp_ConnectOptions_Allowlist).
-&lt;/p&gt;
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs#L155)
 

@@ -79,7 +79,7 @@ public string ManifestId { get; set; }
 
 
 Gets or sets the id from the web app's manifest file, commonly the URL of the site installing the web app.
-See &lt;a href="https://web.dev/learn/pwa/web-app-manifest"&gt;Web app manifest&lt;/a&gt;.
+See [Web app manifest](https://web.dev/learn/pwa/web-app-manifest).
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 

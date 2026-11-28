@@ -53,7 +53,7 @@ Dispatches a `keydown` event.
 
 If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [UpAsync(string)](/api/PuppeteerSharp.Input/IKeyboard/#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_)
-After the key is pressed once, subsequent calls to `DownOptions)` will have &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat"&gt;repeat&lt;/a&gt; set to `true`. To release the key, use [UpAsync(string)](/api/PuppeteerSharp.Input/IKeyboard/#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
+After the key is pressed once, subsequent calls to `DownOptions)` will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to `true`. To release the key, use [UpAsync(string)](/api/PuppeteerSharp.Input/IKeyboard/#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpKeyboard.cs#L43)
 

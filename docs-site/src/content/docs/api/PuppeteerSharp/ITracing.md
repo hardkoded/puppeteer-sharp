@@ -36,3 +36,45 @@ await Page.Tracing.StopAsync();
 ```
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ITracing.cs#L19)
+
+## Methods
+
+<a id="PuppeteerSharp_ITracing_StartAsync_"></a>
+<a id="PuppeteerSharp_ITracing_StartAsync_PuppeteerSharp_TracingOptions_"></a>
+
+### StartAsync(TracingOptions)
+
+
+```csharp
+Task StartAsync(TracingOptions options = null)
+```
+
+
+Starts tracing.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `options` | [TracingOptions](/api/PuppeteerSharp/TracingOptions/) | Tracing options. |
+
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Start task.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ITracing.cs#L26)
+
+<a id="PuppeteerSharp_ITracing_StopAsync_"></a>
+<a id="PuppeteerSharp_ITracing_StopAsync"></a>
+
+### StopAsync()
+
+
+```csharp
+Task<string> StopAsync()
+```
+
+
+Stops tracing.
+
+**Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Stop task.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ITracing.cs#L32)

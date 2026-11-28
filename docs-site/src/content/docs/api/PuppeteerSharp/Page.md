@@ -460,7 +460,7 @@ public event EventHandler DOMContentLoaded
 ```
 
 
-Raised when the JavaScript `DOMContentLoaded` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded"&gt;https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded&lt;/a&gt; event is dispatched.
+Raised when the JavaScript `DOMContentLoaded` [https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) event is dispatched.
 
 **Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
 
@@ -626,7 +626,7 @@ public event EventHandler Load
 ```
 
 
-Raised when the JavaScript `load` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/Events/load"&gt;https://developer.mozilla.org/en-US/docs/Web/Events/load&lt;/a&gt; event is dispatched.
+Raised when the JavaScript `load` [https://developer.mozilla.org/en-US/docs/Web/Events/load](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
 
 **Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
 
@@ -795,7 +795,7 @@ public event EventHandler<WorkerEventArgs> WorkerCreated
 ```
 
 
-Emitted when a dedicated WebWorker (&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API&lt;/a&gt;) is spawned by the page.
+Emitted when a dedicated WebWorker ([https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)) is spawned by the page.
 
 **Value:** [EventHandler&lt;WorkerEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
@@ -811,7 +811,7 @@ public event EventHandler<WorkerEventArgs> WorkerDestroyed
 ```
 
 
-Emitted when a dedicated WebWorker (&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API&lt;/a&gt;) is terminated.
+Emitted when a dedicated WebWorker ([https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)) is terminated.
 
 **Value:** [EventHandler&lt;WorkerEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
@@ -953,7 +953,7 @@ public abstract Task AuthenticateAsync(Credentials credentials)
 ```
 
 
-Provide credentials for http authentication &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"&gt;https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication&lt;/a&gt;.
+Provide credentials for http authentication [https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
 
 **Parameters**
 
@@ -1457,7 +1457,7 @@ Changes the timezone of the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `timezoneId` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Timezone to set. See &lt;a href="https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1"&gt;ICU’s `metaZones.txt`&lt;/a&gt; for a list of supported timezone IDs. Passing `null` disables timezone emulation. |
+| `timezoneId` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Timezone to set. See [ICU’s `metaZones.txt`](https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1) for a list of supported timezone IDs. Passing `null` disables timezone emulation. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The viewport task.
 
@@ -2838,7 +2838,7 @@ public Task<ScreenRecording> RecordAsync(RecordOptions options = null)
 
 
 Records this [IPage](/api/PuppeteerSharp/IPage/) using the Chrome DevTools Protocol
-&lt;a href="https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording"&gt;Page.startScreenRecording&lt;/a&gt; API.
+[Page.startScreenRecording](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording) API.
 
 **Parameters**
 
@@ -3979,7 +3979,7 @@ It is useful for when you run code which will indirectly cause the page to navig
     In case of multiple redirects, the navigation will resolve with the response of the last redirect.
     In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
-Usage of the `History API` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/History_API&lt;/a&gt; to change the URL is considered a navigation.
+Usage of the `History API` [https://developer.mozilla.org/en-US/docs/Web/API/History_API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 **Example**
 
@@ -4276,7 +4276,7 @@ Evaluates the XPath expression.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate&lt;/a&gt;. |
+| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate [https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate). |
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/).
 

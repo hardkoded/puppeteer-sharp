@@ -51,7 +51,7 @@ Shell = 2
 ```
 
 
-Launches the browser in the old headless mode &lt;a href="https://developer.chrome.com/docs/automation-and-testing/headless-chrome-shell"&gt;https://developer.chrome.com/docs/automation-and-testing/headless-chrome-shell&lt;/a&gt;.
+Launches the browser in the old headless mode [https://developer.chrome.com/docs/automation-and-testing/headless-chrome-shell](https://developer.chrome.com/docs/automation-and-testing/headless-chrome-shell).
 
 **Value:** [HeadlessMode](./)
 
@@ -67,7 +67,7 @@ True = 0
 ```
 
 
-Launches the browser in the new headless mode &lt;a href="https://developer.chrome.com/docs/automation-and-testing/headless"&gt;https://developer.chrome.com/docs/automation-and-testing/headless&lt;/a&gt;.
+Launches the browser in the new headless mode [https://developer.chrome.com/docs/automation-and-testing/headless](https://developer.chrome.com/docs/automation-and-testing/headless).
 
 **Value:** [HeadlessMode](./)
 

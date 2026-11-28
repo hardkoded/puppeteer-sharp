@@ -31,3 +31,28 @@ By default, Puppeteer tries to approximate this filtering, exposing only the "in
 **Derived:** [Accessibility](/api/PuppeteerSharp.PageAccessibility/Accessibility/)
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/IAccessibility.cs#L15)
+
+## Methods
+
+<a id="PuppeteerSharp_PageAccessibility_IAccessibility_SnapshotAsync_"></a>
+<a id="PuppeteerSharp_PageAccessibility_IAccessibility_SnapshotAsync_PuppeteerSharp_PageAccessibility_AccessibilitySnapshotOptions_"></a>
+
+### SnapshotAsync(AccessibilitySnapshotOptions)
+
+
+```csharp
+Task<SerializedAXNode> SnapshotAsync(AccessibilitySnapshotOptions options = null)
+```
+
+
+Snapshots the async.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `options` | [AccessibilitySnapshotOptions](/api/PuppeteerSharp.PageAccessibility/AccessibilitySnapshotOptions/) | Options. |
+
+**Returns:** [Task&lt;SerializedAXNode&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — The async.
+
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/IAccessibility.cs#L22)

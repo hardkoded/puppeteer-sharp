@@ -125,7 +125,10 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         return await _request.GetResponseContentAsync().ConfigureAwait(false);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Not supported in WebDriver BiDi. The returned task is always faulted with a <see cref="NotSupportedException"/>.
+    /// </summary>
+    /// <returns>A faulted task.</returns>
     public override Task<Stream> StreamAsync() =>
         Task.FromException<Stream>(
             new NotSupportedException("Response.StreamAsync is not supported in WebDriver BiDi.")

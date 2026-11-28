@@ -472,7 +472,7 @@ public Task FocusAsync()
 ```
 
 
-Calls `focus` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"&gt;https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus&lt;/a&gt; on the element.
+Calls `focus` [https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus) on the element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -1126,7 +1126,7 @@ Uploads files.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-This method expects `elementHandle` to point to an `input element` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"&gt;https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input&lt;/a&gt;.
+This method expects `elementHandle` to point to an `input element` [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L186)
 
@@ -1150,7 +1150,7 @@ Uploads files.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-This method expects `elementHandle` to point to an `input element` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"&gt;https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input&lt;/a&gt;.
+This method expects `elementHandle` to point to an `input element` [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L183)
 
@@ -1196,7 +1196,7 @@ Evaluates the XPath expression relative to the elementHandle. If there's no such
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate&lt;/a&gt;. |
+| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate [https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate). |
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/).
 

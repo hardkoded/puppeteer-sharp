@@ -184,6 +184,6 @@ Uploads files.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-This method expects `elementHandle` to point to an `input element` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"&gt;https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input&lt;/a&gt;.
+This method expects `elementHandle` to point to an `input element` [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpElementHandle.cs#L124)

@@ -42,7 +42,7 @@ Replace lone surrogates with U+FFFD replacement character.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
-This functionality relies on the toWellFormed function. &lt;a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toWellFormed"&gt;See.&lt;/a&gt;.
+This functionality relies on the toWellFormed function. [See.](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toWellFormed).
 It's set to false by default to prevent extra processing when not needed.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/GetContentOptions.cs#L37)

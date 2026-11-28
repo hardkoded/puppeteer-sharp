@@ -61,40 +61,52 @@ A list of URL patterns to allow. When set, the browser can only access URLs matc
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string)
 
-&lt;p&gt;
 **Requires Chrome 149+.**
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 This option allows you to restrict the browser from accessing any URLs
 except for those that match the patterns in the allowlist.
-It uses the standard &lt;a href="https://urlpattern.spec.whatwg.org/"&gt;URLPattern&lt;/a&gt; API to match URLs.
-&lt;/p&gt;
-&lt;p&gt;
+It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
+
+
+
+
 When connecting to an existing browser, Puppeteer will silently detach from any
 already open targets that violate the patterns.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 For any network requests made by the browser (including navigations and
 subresources like images or scripts), the request will fail with an error
 if the URL does not match any pattern in the allowlist.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Currently only supported for CDP connections.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 The allowlist does not apply to WebTransport and to TURN over TCP at
 this time. The browser opens WebTransport connections to URLs that do
 not match a pattern in the allowlist. The browser also opens TCP
 connections to TURN servers that are not in the allowlist.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 The allowlist blocks all WebRTC traffic over UDP. WebRTC peers do not
 connect and the browser does not send UDP requests to STUN and TURN
 servers. A pattern in the allowlist cannot allow this traffic.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Cannot be used along with [BlockList](#PuppeteerSharp_ConnectOptions_BlockList).
-&lt;/p&gt;
 
 **Example**
 
@@ -118,32 +130,40 @@ A list of URL patterns to block.
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string)
 
-&lt;p&gt;
 This option allows you to restrict the browser from accessing specific
-URLs or origins. It uses the standard &lt;a href="https://urlpattern.spec.whatwg.org/"&gt;URLPattern&lt;/a&gt; API to match URLs.
-&lt;/p&gt;
-&lt;p&gt;
+URLs or origins. It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
+
+
+
+
 When connecting to an existing browser, Puppeteer will silently detach from any
 already open targets that violate the patterns.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 For any network requests made by the browser (including navigations and
 subresources like images or scripts), the request will fail with an error
 if the URL matches a blocked pattern.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Currently only supported for CDP connections.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 The blocklist does not apply to WebTransport and WebRTC at this time.
 The browser opens WebTransport connections to URLs that match a blocked
 pattern. The browser also connects WebRTC peers and sends requests to
 STUN and TURN servers (over UDP and TCP) on blocked hosts. Patterns such
 as `stun:*` and `turn:*` do not block these requests.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Cannot be used along with [Allowlist](#PuppeteerSharp_ConnectOptions_Allowlist).
-&lt;/p&gt;
 
 **Example**
 
@@ -164,7 +184,7 @@ public string BrowserURL { get; set; }
 
 
 A browser url to connect to, in format `http://${host}:${port}`.
-Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from &lt;a href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"&gt;metadata endpoin&lt;/a&gt;.
+Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from [metadata endpoin](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 

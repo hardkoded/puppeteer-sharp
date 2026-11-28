@@ -32,7 +32,7 @@ Chrome DevTools Protocol browser and page implementation.
 | [CdpTarget](/api/PuppeteerSharp.Cdp/CdpTarget/) | Target. |
 | [CdpTouchscreen](/api/PuppeteerSharp.Cdp/CdpTouchscreen/) | Supports all classes in the .NET class hierarchy and provides low-level services to derived classes. This is the ultimate base class of all .NET classes; it is the root of the type hierarchy. |
 | [CdpWebMcp](/api/PuppeteerSharp.Cdp/CdpWebMcp/) | Experimental WebMCP API. Requires Chrome 149+ with --enable-features=WebMCP flag. |
-| [CdpWebWorker](/api/PuppeteerSharp.Cdp/CdpWebWorker/) | The Worker class represents a WebWorker (<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI">https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI</a>). The events WorkerCreated and WorkerDestroyed are emitted on the page object to signal the worker lifecycle. |
+| [CdpWebWorker](/api/PuppeteerSharp.Cdp/CdpWebWorker/) | The Worker class represents a WebWorker (https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI). The events WorkerCreated and WorkerDestroyed are emitted on the page object to signal the worker lifecycle. |
 | [CdpWorkerTarget](/api/PuppeteerSharp.Cdp/CdpWorkerTarget/) | Worker target. |
 | [Connection](/api/PuppeteerSharp.Cdp/Connection/) | A connection handles the communication with a Chromium browser. |
 | [WebMcpAnnotation](/api/PuppeteerSharp.Cdp/WebMcpAnnotation/) | Tool annotations for a WebMCP tool. |
