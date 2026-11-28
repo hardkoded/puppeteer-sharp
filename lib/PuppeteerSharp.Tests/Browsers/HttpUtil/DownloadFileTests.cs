@@ -201,5 +201,55 @@ namespace PuppeteerSharp.Tests.Browsers.HttpUtil
 
             Assert.That(server.Requests, Is.EqualTo(1));
         }
+
+        [
+            Test,
+            PuppeteerTest(
+                "httpUtil.test",
+                "downloadFile",
+                "rejects a redirect loop instead of following it forever"
+            )
+        ]
+        public async Task RejectsARedirectLoopInsteadOfFollowingItForever()
+        {
+            using var server = new TestHttpServer(_ => 200, _ => "/test");
+            var destPath = Path.Combine(_tmpDir, "download.bin");
+
+            var ex = Assert.CatchAsync<HttpRequestException>(() =>
+                Helpers.HttpUtil.DownloadFileAsync(server.Url, destPath, null, 2, 0)
+            );
+
+            Assert.That(ex.Message, Does.Contain("Too many redirects"));
+            Assert.That(server.Requests, Is.EqualTo(21));
+
+            var requestsBeforeHead = server.Requests;
+            Assert.That(await Helpers.HttpUtil.HeadHttpRequestAsync(server.Url), Is.False);
+            Assert.That(server.Requests - requestsBeforeHead, Is.EqualTo(21));
+
+            var requestsBeforeText = server.Requests;
+            Assert.CatchAsync<HttpRequestException>(() =>
+                Helpers.HttpUtil.GetTextAsync(server.Url)
+            );
+            Assert.That(server.Requests - requestsBeforeText, Is.EqualTo(21));
+        }
+
+        [Test, PuppeteerTest("httpUtil.test", "downloadFile", "follows up to 20 redirects")]
+        public async Task FollowsUpTo20Redirects()
+        {
+            using var server = new TestHttpServer(
+                _ => 200,
+                target =>
+                {
+                    var hop = target.Contains("hop=")
+                        ? int.Parse(target.Substring(target.IndexOf("hop=") + 4))
+                        : 0;
+                    return hop < 20 ? $"/test?hop={hop + 1}" : null;
+                }
+            );
+            Assert.That(
+                await Helpers.HttpUtil.GetTextAsync(server.Url),
+                Is.EqualTo(Encoding.UTF8.GetString(_testContent))
+            );
+        }
     }
 }

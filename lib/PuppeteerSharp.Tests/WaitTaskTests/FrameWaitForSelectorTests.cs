@@ -101,6 +101,49 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             PuppeteerTest(
                 "waittask.spec",
                 "waittask specs Frame.waitForSelector",
+                "should preserve custom Error and AbortSignal.timeout abort reasons"
+            )
+        ]
+        public async Task ShouldPreserveCustomErrorAndAbortSignalTimeoutAbortReasons()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            // A CancellationToken carries no custom reason. The token on the exception
+            // is the .NET counterpart of signal.reason.
+            using var abortedCts = new CancellationTokenSource();
+            abortedCts.Cancel();
+            var exception = Assert.ThrowsAsync<OperationCanceledException>(() =>
+                Page.WaitForSelectorAsync(
+                    "wrong",
+                    new WaitForSelectorOptions { CancellationToken = abortedCts.Token }
+                )
+            );
+            Assert.That(exception.CancellationToken, Is.EqualTo(abortedCts.Token));
+
+            using var cts = new CancellationTokenSource();
+            var task = Page.WaitForSelectorAsync(
+                "wrong",
+                new WaitForSelectorOptions { CancellationToken = cts.Token }
+            );
+            cts.CancelAfter(10);
+            exception = Assert.ThrowsAsync<OperationCanceledException>(() => task);
+            Assert.That(exception.CancellationToken, Is.EqualTo(cts.Token));
+
+            using var timeoutCts = new CancellationTokenSource(10);
+            exception = Assert.ThrowsAsync<OperationCanceledException>(() =>
+                Page.WaitForSelectorAsync(
+                    "wrong",
+                    new WaitForSelectorOptions { CancellationToken = timeoutCts.Token }
+                )
+            );
+            Assert.That(exception.CancellationToken, Is.EqualTo(timeoutCts.Token));
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "waittask.spec",
+                "waittask specs Frame.waitForSelector",
                 "should work with removed MutationObserver"
             )
         ]

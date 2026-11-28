@@ -1,6 +1,6 @@
-using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.BrowserData
@@ -9,18 +9,13 @@ namespace PuppeteerSharp.BrowserData
     {
         public static async Task<T> GetAsync<T>(string url)
         {
-            using var client = new HttpClient();
-            var response = await client.GetStringAsync(url).ConfigureAwait(false);
+            var response = await HttpUtil.GetTextAsync(url).ConfigureAwait(false);
             return JsonSerializer.Deserialize<T>(
                 response,
                 JsonHelper.DefaultJsonSerializerSettings.Value
             );
         }
 
-        internal static async Task<string> GetTextAsync(string url)
-        {
-            using var client = new HttpClient();
-            return await client.GetStringAsync(url).ConfigureAwait(false);
-        }
+        internal static Task<string> GetTextAsync(string url) => HttpUtil.GetTextAsync(url);
     }
 }

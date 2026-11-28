@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -179,7 +181,18 @@ namespace PuppeteerSharp.Tests.CookiesTests
             }"
             );
 
-            var cookies = (await Page.GetCookiesAsync()).OrderBy(c => c.Name).ToList();
+            // The evaluation can return before both writes reach the cookie store that
+            // GetCookiesAsync reads.
+            var stored = await Page.GetCookiesAsync();
+            var stopwatch = Stopwatch.StartNew();
+            while (stored.Length < 2 && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
+            {
+                await Task.Delay(50);
+                stored = await Page.GetCookiesAsync();
+            }
+
+            Assert.That(stored, Has.Exactly(2).Items);
+            var cookies = stored.OrderBy(c => c.Name).ToList();
 
             var cookie = cookies[0];
             Assert.That(cookie.Name, Is.EqualTo("password"));

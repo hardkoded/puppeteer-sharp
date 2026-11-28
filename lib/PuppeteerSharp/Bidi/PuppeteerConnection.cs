@@ -28,7 +28,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Transport;
 using WebDriverBiDi.Protocol;
-using BidiConnection = WebDriverBiDi.Protocol.Connection;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -36,7 +35,7 @@ namespace PuppeteerSharp.Bidi;
 /// A connection implementation that bridges PuppeteerSharp's IConnectionTransport to WebDriverBiDi's Connection.
 /// This allows using custom transport factories with BiDi protocol.
 /// </summary>
-internal class PuppeteerConnection : BidiConnection
+internal class PuppeteerConnection : Connection
 {
     private readonly IConnectionTransport _transport;
     private bool _isActive;
@@ -58,10 +57,27 @@ internal class PuppeteerConnection : BidiConnection
     /// <inheritdoc/>
     protected override bool IsConnectionOpen => _isActive;
 
+    /// <summary>
+    /// Reports to the BiDi driver that the connection is gone, if the transport is closed.
+    /// A transport closed before the driver started could not do it from its Closed event.
+    /// </summary>
+    /// <returns>Whether the transport is closed.</returns>
+    internal async Task<bool> ReportIfTransportClosedAsync()
+    {
+        if (!_transport.IsClosed)
+        {
+            return false;
+        }
+
+        await ReportTransportClosedAsync().ConfigureAwait(false);
+        return true;
+    }
+
     /// <inheritdoc/>
     protected override Task StartConnectionAsync(CancellationToken cancellationToken = default)
     {
-        _isActive = true;
+        // The transport might have been closed before the driver was started.
+        _isActive = !_transport.IsClosed;
         return Task.CompletedTask;
     }
 
@@ -122,9 +138,28 @@ internal class PuppeteerConnection : BidiConnection
         }
     }
 
-    private void OnTransportClosed(object sender, TransportClosedEventArgs e)
+    private async void OnTransportClosed(object sender, TransportClosedEventArgs e)
     {
         _isActive = false;
+
+        try
+        {
+            await ReportTransportClosedAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            // This is an event listener, we don't want to crash the whole process.
+        }
+    }
+
+    private async Task ReportTransportClosedAsync()
+    {
+        // Let the BiDi driver know that the connection is gone, so it fails the pending
+        // commands and closes once the messages already received are dispatched.
+        await NotifyRemoteDisconnectedObserversAsync().ConfigureAwait(false);
+
+        // The driver won't stop a connection it knows is lost, so release the transport here.
+        _transport.Dispose();
     }
 }
 

@@ -240,6 +240,9 @@ namespace PuppeteerSharp.Helpers
             Exception exception
         );
 
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Failed to end BiDi session")]
+        internal static partial void FailedToEndSession(this ILogger logger, Exception exception);
+
         [LoggerMessage(Level = LogLevel.Error, Message = "Failed to run setup.exe")]
         internal static partial void FailedToRunSetupExe(this ILogger logger, Exception exception);
 

@@ -346,6 +346,9 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
+        cancellationToken.ThrowIfCancellationRequested();
+
         var timeout = options?.Timeout ?? DefaultTimeout;
         var fileChooserTcs = new TaskCompletionSource<FileChooser>(
             TaskCreationOptions.RunContinuationsAsynchronously
@@ -364,6 +367,10 @@ public class BidiPage : Page
         }
 
         BidiMainFrame.BrowsingContext.FileDialogOpened += FileDialogOpenedHandler;
+
+        using var registration = cancellationToken.Register(() =>
+            fileChooserTcs.TrySetCanceled(cancellationToken)
+        );
 
         try
         {

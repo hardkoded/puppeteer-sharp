@@ -108,10 +108,12 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
                 TestConstants.LoggerFactory
             );
             var devtoolsPageTarget = await browser.WaitForTargetAsync(t =>
-                t.Type == TargetType.Other
+                t.Type == TargetType.Other && t.Url.StartsWith("devtools")
             );
             await using var page = await devtoolsPageTarget.PageAsync();
-            Assert.That(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"), Is.True);
+
+            // The target can be reported before the DevTools front end has defined its globals.
+            await page.WaitForFunctionAsync("() => Boolean(window.DevToolsAPI)");
             var pages = await browser.PagesAsync();
             Assert.That(pages, Does.Contain(page));
         }
@@ -136,10 +138,12 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
                 TestConstants.LoggerFactory
             );
             var devtoolsPageTarget = await browser.WaitForTargetAsync(t =>
-                t.Type == TargetType.Other
+                t.Type == TargetType.Other && t.Url.StartsWith("devtools")
             );
             await using var page = await devtoolsPageTarget.PageAsync();
-            Assert.That(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"), Is.True);
+
+            // The target can be reported before the DevTools front end has defined its globals.
+            await page.WaitForFunctionAsync("() => Boolean(window.DevToolsAPI)");
             var pages = await browser.PagesAsync();
             Assert.That(pages, Does.Contain(page));
         }

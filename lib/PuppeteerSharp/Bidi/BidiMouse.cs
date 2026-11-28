@@ -38,7 +38,7 @@ internal class BidiMouse(BidiPage page) : Mouse
     private readonly WheelSourceActions _wheelSource = new();
     private readonly TaskQueue _actionsQueue = new();
     private readonly HashSet<MouseButton> _pressedButtons = [];
-    private Point _lastMovePoint = new() { X = 0, Y = 0 };
+    private readonly MouseStateTracker _state = new();
 
     public override Task DropAsync(decimal x, decimal y, DragData data) =>
         throw new NotImplementedException();
@@ -57,9 +57,19 @@ internal class BidiMouse(BidiPage page) : Mouse
         {
             // BiDi uses releaseActions() which releases all buttons/keys automatically
             // The browser handles the release order (typically in reverse order of press)
-            _lastMovePoint = new Point { X = 0, Y = 0 };
             _pressedButtons.Clear();
-            await page.BidiMainFrame.BrowsingContext.ReleaseActionsAsync().ConfigureAwait(false);
+            await _state
+                .WithTransactionAsync(updateState =>
+                {
+                    updateState(
+                        new MouseTransaction.TransactionData
+                        {
+                            Position = new Point { X = 0, Y = 0 },
+                        }
+                    );
+                    return page.BidiMainFrame.BrowsingContext.ReleaseActionsAsync();
+                })
+                .ConfigureAwait(false);
         });
     }
 
@@ -67,30 +77,26 @@ internal class BidiMouse(BidiPage page) : Mouse
     {
         return _actionsQueue.Enqueue(async () =>
         {
-            var from = _lastMovePoint;
+            var from = _state.Position;
             var to = new Point { X = Math.Round(x), Y = Math.Round(y) };
 
             var steps = options?.Steps ?? 0;
 
+            // Each step is sent on its own. The browser stops at the first action it rejects, and
+            // the tracked position has to be the one of the last step that reached it.
             for (var i = 0; i < steps; ++i)
             {
-                _mouseSource.Actions.Add(
-                    new PointerMoveAction
-                    {
-                        X = (long)(from.X + ((to.X - from.X) * (i / (decimal)steps))),
-                        Y = (long)(from.Y + ((to.Y - from.Y) * (i / (decimal)steps))),
-                    }
-                );
+                await MovePointerAsync(
+                        new Point
+                        {
+                            X = (long)(from.X + ((to.X - from.X) * (i / (decimal)steps))),
+                            Y = (long)(from.Y + ((to.Y - from.Y) * (i / (decimal)steps))),
+                        }
+                    )
+                    .ConfigureAwait(false);
             }
 
-            _mouseSource.Actions.Add(new PointerMoveAction { X = (long)to.X, Y = (long)to.Y });
-
-            _lastMovePoint = to;
-
-            await page
-                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource])
-                .ConfigureAwait(false);
-            _mouseSource.Actions.Clear();
+            await MovePointerAsync(to).ConfigureAwait(false);
         });
     }
 
@@ -101,10 +107,8 @@ internal class BidiMouse(BidiPage page) : Mouse
             var button = options?.Button ?? MouseButton.Left;
             _mouseSource.Actions.Add(new PointerDownAction(GetBidiButton(button)));
 
-            await page
-                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource])
+            await PerformActionsAsync(_mouseSource, _mouseSource.Actions.Clear)
                 .ConfigureAwait(false);
-            _mouseSource.Actions.Clear();
             _pressedButtons.Add(button);
         });
     }
@@ -116,10 +120,8 @@ internal class BidiMouse(BidiPage page) : Mouse
             var button = options?.Button ?? MouseButton.Left;
             _mouseSource.Actions.Add(new PointerUpAction(GetBidiButton(button)));
 
-            await page
-                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource])
+            await PerformActionsAsync(_mouseSource, _mouseSource.Actions.Clear)
                 .ConfigureAwait(false);
-            _mouseSource.Actions.Clear();
             _pressedButtons.Remove(button);
         });
     }
@@ -128,20 +130,19 @@ internal class BidiMouse(BidiPage page) : Mouse
     {
         return _actionsQueue.Enqueue(async () =>
         {
+            var position = _state.Position;
             _wheelSource.Actions.Add(
                 new WheelScrollAction
                 {
-                    X = (long)_lastMovePoint.X,
-                    Y = (long)_lastMovePoint.Y,
+                    X = (long)position.X,
+                    Y = (long)position.Y,
                     DeltaX = (long)deltaX,
                     DeltaY = (long)deltaY,
                 }
             );
 
-            await page
-                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_wheelSource])
+            await PerformActionsAsync(_wheelSource, _wheelSource.Actions.Clear)
                 .ConfigureAwait(false);
-            _wheelSource.Actions.Clear();
         });
     }
 
@@ -162,9 +163,8 @@ internal class BidiMouse(BidiPage page) : Mouse
     {
         return _actionsQueue.Enqueue(async () =>
         {
-            _mouseSource.Actions.Add(
-                new PointerMoveAction { X = (long)Math.Round(x), Y = (long)Math.Round(y) }
-            );
+            var to = new Point { X = Math.Round(x), Y = Math.Round(y) };
+            _mouseSource.Actions.Add(new PointerMoveAction { X = (long)to.X, Y = (long)to.Y });
 
             var pointerDownAction = new PointerDownAction(
                 GetBidiButton(options?.Button ?? MouseButton.Left)
@@ -190,10 +190,13 @@ internal class BidiMouse(BidiPage page) : Mouse
 
             _mouseSource.Actions.Add(pointerUpAction);
 
-            await page
-                .BidiMainFrame.BrowsingContext.PerformActionsAsync([_mouseSource])
+            await _state
+                .WithTransactionAsync(updateState =>
+                {
+                    updateState(new MouseTransaction.TransactionData { Position = to });
+                    return PerformActionsAsync(_mouseSource, _mouseSource.Actions.Clear);
+                })
                 .ConfigureAwait(false);
-            _mouseSource.Actions.Clear();
         });
     }
 
@@ -202,6 +205,34 @@ internal class BidiMouse(BidiPage page) : Mouse
         if (disposing)
         {
             _actionsQueue.Dispose();
+        }
+    }
+
+    private Task MovePointerAsync(Point position)
+    {
+        _mouseSource.Actions.Add(
+            new PointerMoveAction { X = (long)position.X, Y = (long)position.Y }
+        );
+
+        return _state.WithTransactionAsync(updateState =>
+        {
+            updateState(new MouseTransaction.TransactionData { Position = position });
+            return PerformActionsAsync(_mouseSource, _mouseSource.Actions.Clear);
+        });
+    }
+
+    private async Task PerformActionsAsync(SourceActions source, Action clearActions)
+    {
+        try
+        {
+            await page
+                .BidiMainFrame.BrowsingContext.PerformActionsAsync([source])
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            // The sources are reused, so the actions of a failed command must not be sent again.
+            clearActions();
         }
     }
 
@@ -219,13 +250,6 @@ internal class BidiMouse(BidiPage page) : Mouse
                 $"Unsupported mouse button: {optionsButton}"
             ),
         };
-    }
-
-    private struct Point
-    {
-        public decimal X { get; init; }
-
-        public decimal Y { get; init; }
     }
 }
 

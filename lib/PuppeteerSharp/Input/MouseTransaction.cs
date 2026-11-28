@@ -12,9 +12,14 @@ namespace PuppeteerSharp.Input
 
         public class TransactionData
         {
+            public bool IsCommitted { get; set; }
+
             public Point? Position { get; set; }
 
-            public MouseButton? Buttons { get; set; }
+            // Buttons are tracked as changes, so a transaction never carries the buttons of another one.
+            public MouseButton PressedButtons { get; set; }
+
+            public MouseButton ReleasedButtons { get; set; }
         }
     }
 }
