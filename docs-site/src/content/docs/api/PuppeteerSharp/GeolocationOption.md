@@ -124,7 +124,7 @@ Determines whether the specified object is equal to the current object.
 | --- | --- | --- |
 | `obj` | [object](https://learn.microsoft.com/dotnet/api/system.object) | The object to compare with the current object. |
 
-**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the specified object  is equal to the current object; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
+**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — [true](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) if the specified object  is equal to the current object; otherwise, [false](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/GeolocationOption.cs#L42)
 

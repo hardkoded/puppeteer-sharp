@@ -209,16 +209,16 @@ The method launches a browser instance with given arguments. The browser will be
 
 **Returns:** [Task&lt;IBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A connected browser.
 
-See &lt;a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/"&gt;this article&lt;/a&gt;
+See [this article](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/)
 for a description of the differences between Chromium and Chrome.
-&lt;a href="https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md"&gt;This article&lt;/a&gt; describes some differences for Linux users.
+[This article](https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
 Environment Variables
-Puppeteer looks for certain &lt;a href="https://en.wikipedia.org/wiki/Environment_variable"&gt;environment variables&lt;/a&gt;() to aid its operations.
-- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See `ILoggerFactory)` on how executable path is inferred.
-  **BEWARE**: Puppeteer is only &lt;a href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy"&gt;guaranteed to work&lt;/a&gt; with the bundled Chromium, use at your own risk.
-- `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `ILoggerFactory)`.
-  **BEWARE**: Puppeteer is only &lt;a href="https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy"&gt;guaranteed to work&lt;/a&gt; with the bundled Chromium, use at your own risk.
+Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable)() to aid its operations.
+- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See `Puppeteer.LaunchAsync()` on how executable path is inferred.
+  **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
+- `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `Puppeteer.LaunchAsync()`.
+  **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L104)
 

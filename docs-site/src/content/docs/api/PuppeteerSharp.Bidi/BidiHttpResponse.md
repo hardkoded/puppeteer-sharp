@@ -21,7 +21,7 @@ public class BidiHttpResponse : Response<BidiHttpRequest>, IResponse
 
 Supports all classes in the .NET class hierarchy and provides low-level services to derived classes. This is the ultimate base class of all .NET classes; it is the root of the type hierarchy.
 
-**Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → `Response&lt;BidiHttpRequest&gt;`
+**Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → `Response<BidiHttpRequest>`
 
 **Implements:** [IResponse](/api/PuppeteerSharp/IResponse/)
 
@@ -46,7 +46,7 @@ Total number of bytes received for this request over the network.
 
 The value is updated when the response finishes loading. During the `Response` event, it only covers
 the bytes received up to the response headers. To get the total encoded transfer size (headers + compressed
-body), read it in a `RequestFinished` handler or after awaiting [BufferAsync()](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_BufferAsync).
+body), read it in a `RequestFinished` handler. Awaiting [BufferAsync()](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_BufferAsync) does not guarantee the final size is available.
 If the request fails after the response is received, the value is not updated. If the browser does not
 report a size, e.g. for `data:` or `file:` URLs, the value is `0`.
 
@@ -99,11 +99,8 @@ public override Task<Stream> StreamAsync()
 ```
 
 
-Returns a Task which resolves to a stream of the response body, with chunks delivered as they arrive from the network.
+Not supported in WebDriver BiDi. The returned task is always faulted with a [NotSupportedException](https://learn.microsoft.com/dotnet/api/system.notsupportedexception).
 
-**Returns:** [Task&lt;Stream&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a stream of the response body.
+**Returns:** [Task&lt;Stream&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A faulted task.
 
-Call this from the [Response](/api/PuppeteerSharp/Page/#PuppeteerSharp_Page_Response) event to receive the body while it is still loading.
-If the body has already finished loading, the stream contains the whole body as a single chunk.
-
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpResponse.cs#L129)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpResponse.cs#L132)

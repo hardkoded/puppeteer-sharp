@@ -206,7 +206,7 @@ Navigates to an url.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-`WaitUntilNavigation%5b%5d)` will throw an error if:
+`IFrame.GoToAsync()` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
 - target URL is invalid.
 - the `timeout` is exceeded during navigation.
@@ -214,10 +214,10 @@ Navigates to an url.
 - the main resource failed to load.
 - the URL is blocked by blocklist/allowlist rules.
 
-`WaitUntilNavigation%5b%5d)` will not throw an error when any valid HTTP status code is returned by the remote server,
+`IFrame.GoToAsync()` will not throw an error when any valid HTTP status code is returned by the remote server,
 including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [Status](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_Status)
 
-&gt; **NOTE** `WaitUntilNavigation%5b%5d)` either throws an error or returns a main resource response.
+&gt; **NOTE** `IFrame.GoToAsync()` either throws an error or returns a main resource response.
 The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
 &gt; **NOTE** Headless mode doesn't support navigation to a PDF document. See the &lt;see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295"&gt;upstream issue&lt;/see&gt;.
@@ -292,7 +292,7 @@ It is useful for when you run code which will indirectly cause the frame to navi
     In case of multiple redirects, the navigation will resolve with the response of the last redirect.
     In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
-Usage of the `History API` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/History_API&lt;/a&gt; to change the URL is considered a navigation.
+Usage of the `History API` [https://developer.mozilla.org/en-US/docs/Web/API/History_API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 **Example**
 

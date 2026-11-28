@@ -38,7 +38,7 @@ public string[] Allowlist { get; set; }
 ```
 
 
-A list of &lt;a href="https://urlpattern.spec.whatwg.org/"&gt;URLPattern&lt;/a&gt; strings to allow.
+A list of [URLPattern](https://urlpattern.spec.whatwg.org/) strings to allow.
 Mutually exclusive with [BlockList](#PuppeteerSharp_NetworkRestrictions_BlockList).
 Passing an empty array or `null` means no restriction.
 
@@ -61,7 +61,7 @@ public string[] BlockList { get; set; }
 ```
 
 
-A list of &lt;a href="https://urlpattern.spec.whatwg.org/"&gt;URLPattern&lt;/a&gt; strings to block.
+A list of [URLPattern](https://urlpattern.spec.whatwg.org/) strings to block.
 Mutually exclusive with [Allowlist](#PuppeteerSharp_NetworkRestrictions_Allowlist).
 Passing an empty array or `null` means no restriction.
 

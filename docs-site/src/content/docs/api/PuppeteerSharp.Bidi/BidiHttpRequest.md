@@ -21,7 +21,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>, IRequest
 
 Supports all classes in the .NET class hierarchy and provides low-level services to derived classes. This is the ultimate base class of all .NET classes; it is the root of the type hierarchy.
 
-**Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → `Request&lt;BidiHttpResponse&gt;`
+**Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → `Request<BidiHttpResponse>`
 
 **Implements:** [IRequest](/api/PuppeteerSharp/IRequest/)
 
@@ -91,9 +91,9 @@ public override WebWorker Worker { get; }
 ```
 
 
-Gets the worker that initiated the request, or null if the request was not initiated by a worker.
+Not supported in WebDriver BiDi. Unlike the CDP implementation, which returns the worker that issued the request or `null`, this getter always throws.
 
-**Value:** [WebWorker](/api/PuppeteerSharp/WebWorker/) — The worker.
+**Value:** [WebWorker](/api/PuppeteerSharp/WebWorker/)
 
 **Exceptions**
 
@@ -101,7 +101,7 @@ Gets the worker that initiated the request, or null if the request was not initi
 | --- | --- |
 | [NotSupportedException](https://learn.microsoft.com/dotnet/api/system.notsupportedexception) | Always thrown. Worker requests are not available in WebDriver BiDi. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L97)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L99)
 
 ## Methods
 
@@ -120,7 +120,7 @@ Determines whether this request can be intercepted.
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the request can be intercepted; otherwise, `false`.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L352)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L354)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContentAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_ContentAsync"></a>
@@ -137,7 +137,7 @@ Fetches the unmodified POST data bytes for the request from the browser.
 
 **Returns:** [Task&lt;byte\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's raw POST data, or `null` when there is none or fetching it fails.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L128)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L130)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_FetchPostDataAsync_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_FetchPostDataAsync"></a>
@@ -154,7 +154,7 @@ Fetches the POST data for the request from the browser.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the request's POST data.
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L125)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L127)
 
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_VerifyInterception_"></a>
 <a id="PuppeteerSharp_Bidi_BidiHttpRequest_VerifyInterception"></a>
@@ -175,4 +175,4 @@ Verifies that request interception is enabled and the request has not been handl
 | --- | --- |
 | [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/) | Thrown when interception is not enabled or request is already handled. |
 
-[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L338)
+[View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiHttpRequest.cs#L340)

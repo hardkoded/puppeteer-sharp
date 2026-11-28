@@ -61,25 +61,31 @@ A list of URL patterns to allow. When set, the browser can only access URLs matc
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string)
 
-&lt;p&gt;
 **Requires Chrome 149+.**
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 This option allows you to restrict the browser from accessing any URLs
 except for those that match the patterns in the allowlist.
-It uses the standard &lt;a href="https://urlpattern.spec.whatwg.org/"&gt;URLPattern&lt;/a&gt; API to match URLs.
-&lt;/p&gt;
-&lt;p&gt;
+It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
+
+
+
+
 For any network requests made by the browser (including navigations and
 subresources like images or scripts), the request will fail with an error
 if the URL does not match any pattern in the allowlist.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Currently only supported for CDP connections.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Cannot be used along with [BlockList](#PuppeteerSharp_LaunchOptions_BlockList).
-&lt;/p&gt;
 
 **Example**
 
@@ -99,7 +105,7 @@ public string[] Args { get; set; }
 ```
 
 
-Additional arguments to pass to the browser instance. List of Chromium flags can be found &lt;a href="http://peter.sh/experiments/chromium-command-line-switches/"&gt;here&lt;/a&gt;.
+Additional arguments to pass to the browser instance. List of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string)
 
@@ -120,21 +126,25 @@ A list of URL patterns to block.
 
 **Value:** [string\[\]](https://learn.microsoft.com/dotnet/api/system.string)
 
-&lt;p&gt;
 This option allows you to restrict the browser from accessing specific
-URLs or origins. It uses the standard &lt;a href="https://urlpattern.spec.whatwg.org/"&gt;URLPattern&lt;/a&gt; API to match URLs.
-&lt;/p&gt;
-&lt;p&gt;
+URLs or origins. It uses the standard [URLPattern](https://urlpattern.spec.whatwg.org/) API to match URLs.
+
+
+
+
 For any network requests made by the browser (including navigations and
 subresources like images or scripts), the request will fail with an error
 if the URL matches a blocked pattern.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Currently only supported for CDP connections.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Cannot be used along with [Allowlist](#PuppeteerSharp_LaunchOptions_Allowlist).
-&lt;/p&gt;
 
 **Example**
 
@@ -262,10 +272,18 @@ load the provided paths as unpacked extensions.
 
 **Value:** [EnableExtensionsOption](/api/PuppeteerSharp/EnableExtensionsOption/)
 
-&lt;p&gt;In Chrome, setting this to `true` or a `string[]` replaces the
-`--disable-extensions` flag with `--enable-unsafe-extension-debugging`.&lt;/p&gt;
-&lt;p&gt;Passing a `string[]` is only supported with Firefox (BiDi) at this time.&lt;/p&gt;
-&lt;p&gt;In Firefox, there is no known command line flag to disable addons so they are always enabled.&lt;/p&gt;
+In Chrome, setting this to `true` or a `string[]` replaces the
+`--disable-extensions` flag with `--enable-unsafe-extension-debugging`.
+
+
+
+
+Passing a `string[]` is only supported with Firefox (BiDi) at this time.
+
+
+
+
+In Firefox, there is no known command line flag to disable addons so they are always enabled.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LaunchOptions.cs#L250)
 
@@ -280,7 +298,7 @@ public bool EnqueueAsyncMessages { get; set; }
 ```
 
 
-Affects how responses to `CommandOptions)` are returned to the caller. If `true` (default), the
+Affects how responses to `CDPSession.SendAsync()` are returned to the caller. If `true` (default), the
 response is delivered to the caller on its own thread; otherwise, the response is delivered the same way [MessageReceived](/api/PuppeteerSharp/CDPSession/#PuppeteerSharp_CDPSession_MessageReceived)
 events are raised.
 
@@ -723,7 +741,7 @@ If [PuppeteerSharp.Transport](/api/PuppeteerSharp.Transport/) is set this proper
 
 **Value:** [WebSocketFactory](/api/PuppeteerSharp.Transport/WebSocketFactory/)
 
-If you need to run Puppeteer-Sharp on Windows 7, you can use [WebSocketFactory](#PuppeteerSharp_LaunchOptions_WebSocketFactory) to inject &lt;a href="https://www.nuget.org/packages/System.Net.WebSockets.Client.Managed/"&gt;System.Net.WebSockets.Client.Managed&lt;/a&gt;.
+If you need to run Puppeteer-Sharp on Windows 7, you can use [WebSocketFactory](#PuppeteerSharp_LaunchOptions_WebSocketFactory) to inject [System.Net.WebSockets.Client.Managed](https://www.nuget.org/packages/System.Net.WebSockets.Client.Managed/).
 
 &lt;example&gt;
 

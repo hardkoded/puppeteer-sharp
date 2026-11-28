@@ -112,11 +112,11 @@ public int DefaultNavigationTimeout { get; set; }
 
 
 This setting will change the default maximum time for the following methods:
-- `NavigationOptions)`
+- `IPage.GoToAsync()`
 - [GoBackAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_GoBackAsync_PuppeteerSharp_NavigationOptions_)
 - [GoForwardAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_GoForwardAsync_PuppeteerSharp_NavigationOptions_)
 - [ReloadAsync(ReloadOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_ReloadAsync_PuppeteerSharp_ReloadOptions_)
-- `NavigationOptions)`
+- `IPage.SetContentAsync()`
 - [WaitForNavigationAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_)
 **NOTE** [DefaultNavigationTimeout](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_DefaultNavigationTimeout) takes priority over. [DefaultTimeout](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_DefaultTimeout)
 
@@ -138,15 +138,15 @@ public int DefaultTimeout { get; set; }
 This setting will change the default maximum times for the following methods:
 - [GoBackAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_GoBackAsync_PuppeteerSharp_NavigationOptions_)
 - [GoForwardAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_GoForwardAsync_PuppeteerSharp_NavigationOptions_)
-- `NavigationOptions)`
+- `IPage.GoToAsync()`
 - [ReloadAsync(ReloadOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_ReloadAsync_PuppeteerSharp_ReloadOptions_)
-- `NavigationOptions)`
-- `Object%5b%5d)`
+- `IPage.SetContentAsync()`
+- `IPage.WaitForFunctionAsync()`
 - [WaitForNavigationAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_)
-- `WaitForOptions)`
-- `WaitForOptions)`
-- `WaitForSelectorOptions)`
-- `WaitForFunctionOptions)`.
+- `IPage.WaitForRequestAsync()`
+- `IPage.WaitForResponseAsync()`
+- `IPage.WaitForSelectorAsync()`
+- `IPage.WaitForExpressionAsync()`.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32)
 
@@ -165,7 +165,7 @@ public abstract IFrame[] Frames { get; }
 
 Gets all frames attached to the page.
 
-**Value:** `IFrame\[\]` — An array of all frames attached to the page.
+**Value:** `IFrame[]` — An array of all frames attached to the page.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L161)
 
@@ -396,7 +396,7 @@ public abstract WebWorker[] Workers { get; }
 
 Gets all workers in the page.
 
-**Value:** `WebWorker\[\]`
+**Value:** `WebWorker[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L164)
 
@@ -460,7 +460,7 @@ public event EventHandler DOMContentLoaded
 ```
 
 
-Raised when the JavaScript `DOMContentLoaded` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded"&gt;https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded&lt;/a&gt; event is dispatched.
+Raised when the JavaScript `DOMContentLoaded` [https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) event is dispatched.
 
 **Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
 
@@ -626,7 +626,7 @@ public event EventHandler Load
 ```
 
 
-Raised when the JavaScript `load` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/Events/load"&gt;https://developer.mozilla.org/en-US/docs/Web/Events/load&lt;/a&gt; event is dispatched.
+Raised when the JavaScript `load` [https://developer.mozilla.org/en-US/docs/Web/Events/load](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
 
 **Value:** [EventHandler](https://learn.microsoft.com/dotnet/api/system.eventhandler)
 
@@ -795,7 +795,7 @@ public event EventHandler<WorkerEventArgs> WorkerCreated
 ```
 
 
-Emitted when a dedicated WebWorker (&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API&lt;/a&gt;) is spawned by the page.
+Emitted when a dedicated WebWorker ([https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)) is spawned by the page.
 
 **Value:** [EventHandler&lt;WorkerEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
@@ -811,7 +811,7 @@ public event EventHandler<WorkerEventArgs> WorkerDestroyed
 ```
 
 
-Emitted when a dedicated WebWorker (&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API&lt;/a&gt;) is terminated.
+Emitted when a dedicated WebWorker ([https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)) is terminated.
 
 **Value:** [EventHandler&lt;WorkerEventArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
@@ -830,7 +830,7 @@ public void AddRequestInterceptor(Func<IRequest, Task> interceptionTask)
 ```
 
 
-`Int32%7d)`, `Int32%7d)`, and `Int32%7d)` can accept an optional `priority` to activate Cooperative Intercept Mode.
+`IRequest.RespondAsync()`, `IRequest.AbortAsync()`, and `IRequest.ContinueAsync()` can accept an optional `priority` to activate Cooperative Intercept Mode.
 In Cooperative Mode, all interception tasks are guaranteed to run and all async handlers are awaited.
 The interception is resolved to the highest-priority resolution.
 In the event of a tie, `abort` &gt; `respond` &gt; `continue`.
@@ -953,7 +953,7 @@ public abstract Task AuthenticateAsync(Credentials credentials)
 ```
 
 
-Provide credentials for http authentication &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"&gt;https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication&lt;/a&gt;.
+Provide credentials for http authentication [https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
 
 **Parameters**
 
@@ -1018,7 +1018,7 @@ public Task ClickAsync(string selector, ClickOptions options = null)
 ```
 
 
-Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scrolls it into view if needed, and then uses [Mouse](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Mouse) to click in the center of the element.
+Fetches an element with `selector`, scrolls it into view if needed, and then uses [Mouse](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Mouse) to click in the center of the element.
 
 **Parameters**
 
@@ -1027,13 +1027,13 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | `selector` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked. |
 | `options` | [ClickOptions](/api/PuppeteerSharp.Input/ClickOptions/) | click options. |
 
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching &lt;code class="paramref"&gt;selector&lt;/code&gt; is successfully clicked.
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching `selector` is successfully clicked.
 
 **Exceptions**
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L915)
 
@@ -1117,7 +1117,7 @@ Deletes cookies from the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieParam\[\]` | Cookies to delete. |
+| `cookies` | `CookieParam[]` | Cookies to delete. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -1199,7 +1199,7 @@ Emulates given device metrics and user agent.
 
 This method is a shortcut for calling two methods:
 [SetViewportAsync(ViewPortOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_SetViewportAsync_PuppeteerSharp_ViewPortOptions_)
-`UserAgentMetadata)`
+`IPage.SetUserAgentAsync()`
 To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the [Devices](/api/PuppeteerSharp/Puppeteer/#PuppeteerSharp_Puppeteer_Devices).
 [EmulateAsync(DeviceDescriptor)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_EmulateAsync_PuppeteerSharp_Mobile_DeviceDescriptor_) will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
@@ -1457,7 +1457,7 @@ Changes the timezone of the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `timezoneId` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Timezone to set. See &lt;a href="https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1"&gt;ICU’s `metaZones.txt`&lt;/a&gt; for a list of supported timezone IDs. Passing `null` disables timezone emulation. |
+| `timezoneId` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Timezone to set. See [ICU’s `metaZones.txt`](https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1) for a list of supported timezone IDs. Passing `null` disables timezone emulation. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The viewport task.
 
@@ -1760,7 +1760,7 @@ public Task ExposeFunctionAsync(string name, Action puppeteerFunction)
 
 
 Adds a function called `name` on the page's `window` object.
-When called, the function executes &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves when &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; completes.
+When called, the function executes `puppeteerFunction` in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves when `puppeteerFunction` completes.
 
 **Parameters**
 
@@ -1771,8 +1771,8 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `Action)` survive navigations.
+If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
+Functions installed via `IPage.ExposeFunctionAsync()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L403)
 
@@ -1810,13 +1810,13 @@ public Task ExposeFunctionAsync<TResult>(string name, Func<TResult> puppeteerFun
 
 
 Adds a function called `name` on the page's `window` object.
-When called, the function executes &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;.
+When called, the function executes `puppeteerFunction` in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of `puppeteerFunction`.
 
 **Type parameters**
 
 | Name | Description |
 | --- | --- |
-| `TResult` | The result of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
+| `TResult` | The result of `puppeteerFunction`. |
 
 **Parameters**
 
@@ -1827,8 +1827,8 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `Func%7b%60%600%7d)` survive navigations.
+If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
+Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L407)
 
@@ -1843,14 +1843,14 @@ public Task ExposeFunctionAsync<T, TResult>(string name, Func<T, TResult> puppet
 
 
 Adds a function called `name` on the page's `window` object.
-When called, the function executes &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;.
+When called, the function executes `puppeteerFunction` in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of `puppeteerFunction`.
 
 **Type parameters**
 
 | Name | Description |
 | --- | --- |
-| `T` | The parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `TResult` | The result of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
+| `T` | The parameter of `puppeteerFunction`. |
+| `TResult` | The result of `puppeteerFunction`. |
 
 **Parameters**
 
@@ -1861,8 +1861,8 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `Func%7b%60%600%2c%60%601%7d)` survive navigations.
+If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
+Functions installed via `IPage.ExposeFunctionAsync<T1, T2>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L411)
 
@@ -1877,15 +1877,15 @@ public Task ExposeFunctionAsync<T1, T2, TResult>(string name, Func<T1, T2, TResu
 
 
 Adds a function called `name` on the page's `window` object.
-When called, the function executes &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;.
+When called, the function executes `puppeteerFunction` in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of `puppeteerFunction`.
 
 **Type parameters**
 
 | Name | Description |
 | --- | --- |
-| `T1` | The first parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `T2` | The second parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `TResult` | The result of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
+| `T1` | The first parameter of `puppeteerFunction`. |
+| `T2` | The second parameter of `puppeteerFunction`. |
+| `TResult` | The result of `puppeteerFunction`. |
 
 **Parameters**
 
@@ -1896,8 +1896,8 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `Func%7b%60%600%2c%60%601%2c%60%602%7d)` survive navigations.
+If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
+Functions installed via `IPage.ExposeFunctionAsync<T1, T2, T3>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L417)
 
@@ -1912,16 +1912,16 @@ public Task ExposeFunctionAsync<T1, T2, T3, TResult>(string name, Func<T1, T2, T
 
 
 Adds a function called `name` on the page's `window` object.
-When called, the function executes &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;.
+When called, the function executes `puppeteerFunction` in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of `puppeteerFunction`.
 
 **Type parameters**
 
 | Name | Description |
 | --- | --- |
-| `T1` | The first parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `T2` | The second parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `T3` | The third parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `TResult` | The result of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
+| `T1` | The first parameter of `puppeteerFunction`. |
+| `T2` | The second parameter of `puppeteerFunction`. |
+| `T3` | The third parameter of `puppeteerFunction`. |
+| `TResult` | The result of `puppeteerFunction`. |
 
 **Parameters**
 
@@ -1932,8 +1932,8 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `Func%7b%60%600%2c%60%601%2c%60%602%2c%60%603%7d)` survive navigations.
+If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
+Functions installed via `IPage.ExposeFunctionAsync<T1, T2, T3, T4>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L423)
 
@@ -1948,17 +1948,17 @@ public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T
 
 
 Adds a function called `name` on the page's `window` object.
-When called, the function executes &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;.
+When called, the function executes `puppeteerFunction` in C# and returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) which resolves to the return value of `puppeteerFunction`.
 
 **Type parameters**
 
 | Name | Description |
 | --- | --- |
-| `T1` | The first parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `T2` | The second parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `T3` | The third parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `T4` | The fourth parameter of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
-| `TResult` | The result of &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt;. |
+| `T1` | The first parameter of `puppeteerFunction`. |
+| `T2` | The second parameter of `puppeteerFunction`. |
+| `T3` | The third parameter of `puppeteerFunction`. |
+| `T4` | The fourth parameter of `puppeteerFunction`. |
+| `TResult` | The result of `puppeteerFunction`. |
 
 **Parameters**
 
@@ -1969,8 +1969,8 @@ When called, the function executes &lt;code class="paramref"&gt;puppeteerFunctio
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-If the &lt;code class="paramref"&gt;puppeteerFunction&lt;/code&gt; returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `Func%7b%60%600%2c%60%601%2c%60%602%2c%60%603%2c%60%604%7d)` survive navigations.
+If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
+Functions installed via `IPage.ExposeFunctionAsync<T1, T2, T3, T4, T5>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L429)
 
@@ -2003,7 +2003,7 @@ public Task FocusAsync(string selector)
 ```
 
 
-Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt; and focuses it.
+Fetches an element with `selector` and focuses it.
 
 **Parameters**
 
@@ -2011,13 +2011,13 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt; and f
 | --- | --- | --- |
 | `selector` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A selector to search for element to focus. If there are multiple elements satisfying the selector, the first will be focused. |
 
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching &lt;code class="paramref"&gt;selector&lt;/code&gt; is successfully focused.
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching `selector` is successfully focused.
 
 **Exceptions**
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L922)
 
@@ -2157,22 +2157,22 @@ Navigates to an url.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-`WaitUntilNavigation%5b%5d)` will throw an error if:
+`IPage.GoToAsync()` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
 - target URL is invalid.
 - the `timeout` is exceeded during navigation.
 - the remote server does not respond or is unreachable.
 - the main resource failed to load.
 
-`WaitUntilNavigation%5b%5d)` will not throw an error when any valid HTTP status code is returned by the remote server,
+`IPage.GoToAsync()` will not throw an error when any valid HTTP status code is returned by the remote server,
 including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [Status](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_Status)
 
-&gt; **NOTE** `WaitUntilNavigation%5b%5d)` either throws an error or returns a main resource response.
+&gt; **NOTE** `IPage.GoToAsync()` either throws an error or returns a main resource response.
 The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
 &gt; **NOTE** Headless mode doesn't support navigation to a PDF document. See the &lt;see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295"&gt;upstream issue&lt;/see&gt;.
 
-Shortcut for. `WaitUntilNavigation%5b%5d)`
+Shortcut for. `IFrame.GoToAsync()`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L456)
 
@@ -2217,7 +2217,7 @@ Navigates to an url.
 | --- | --- | --- |
 | `url` | [string](https://learn.microsoft.com/dotnet/api/system.string) | URL to navigate page to. The url should include scheme, e.g. https://. |
 | `timeout` | [int?](https://learn.microsoft.com/dotnet/api/system.int32) | Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. |
-| `waitUntil` | `WaitUntilNavigation\[\]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
+| `waitUntil` | `WaitUntilNavigation[]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
@@ -2237,7 +2237,7 @@ public abstract Task<bool> HasDevToolsAsync()
 Returns true if DevTools is attached to the current page.
 Use [OpenDevToolsAsync()](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_OpenDevToolsAsync) to get the DevTools page.
 
-**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with true if DevTools is attached.
+**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task<T>` that completes with true if DevTools is attached.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L909)
 
@@ -2252,7 +2252,7 @@ public Task HoverAsync(string selector)
 ```
 
 
-Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scrolls it into view if needed, and then uses [Mouse](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Mouse) to hover over the center of the element.
+Fetches an element with `selector`, scrolls it into view if needed, and then uses [Mouse](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Mouse) to hover over the center of the element.
 
 **Parameters**
 
@@ -2260,13 +2260,13 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- | --- |
 | `selector` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered. |
 
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching &lt;code class="paramref"&gt;selector&lt;/code&gt; is successfully hovered.
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching `selector` is successfully hovered.
 
 **Exceptions**
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L919)
 
@@ -2513,7 +2513,7 @@ public abstract Task<IPage> OpenDevToolsAsync()
 Opens DevTools for this page if not already open and returns the DevTools page.
 This method is only available in Chrome.
 
-**Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with the DevTools page.
+**Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task<T>` that completes with the DevTools page.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L906)
 
@@ -2742,7 +2742,7 @@ public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
 ```
 
 
-Runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty%60%601`.
+Runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -2764,7 +2764,7 @@ public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOption
 ```
 
 
-Runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty%60%601`.
+Runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -2788,7 +2788,7 @@ public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
 ```
 
 
-A utility function to be used with `Object%5b%5d)`.
+A utility function to be used with `PuppeteerHandleExtensions.EvaluateFunctionAsync<T>()`.
 
 **Parameters**
 
@@ -2838,7 +2838,7 @@ public Task<ScreenRecording> RecordAsync(RecordOptions options = null)
 
 
 Records this [IPage](/api/PuppeteerSharp/IPage/) using the Chrome DevTools Protocol
-&lt;a href="https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording"&gt;Page.startScreenRecording&lt;/a&gt; API.
+[Page.startScreenRecording](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording) API.
 
 **Parameters**
 
@@ -2892,7 +2892,7 @@ Reloads the page.
 | Name | Type | Description |
 | --- | --- | --- |
 | `timeout` | [int?](https://learn.microsoft.com/dotnet/api/system.int32) | Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. |
-| `waitUntil` | `WaitUntilNavigation\[\]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
+| `waitUntil` | `WaitUntilNavigation[]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
@@ -2909,7 +2909,7 @@ public abstract Task RemoveExposedFunctionAsync(string name)
 ```
 
 
-Removes a previously added function via `Action)`.
+Removes a previously added function via `IPage.ExposeFunctionAsync()`.
 
 **Parameters**
 
@@ -3237,7 +3237,7 @@ If there's no &lt;select&gt; element matching selector, the method throws an err
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L969)
 
@@ -3399,7 +3399,7 @@ Clears all of the current cookies and then sets the cookies for the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieParam\[\]` | Cookies to set. |
+| `cookies` | `CookieParam[]` | Cookies to set. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -3476,7 +3476,7 @@ Sets the page's geolocation.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-Consider using `OverridePermission%7d)` to grant permissions for the page to read its geolocation.
+Consider using `IBrowserContext.OverridePermissionsAsync()` to grant permissions for the page to read its geolocation.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L289)
 
@@ -3537,8 +3537,8 @@ public abstract Task SetRequestInterceptionAsync(bool value)
 ```
 
 
-Activating request interception enables `AbortAsync`,
-`ContinueAsync` and `RespondAsync` methods.
+Activating request interception enables `IRequest.AbortAsync()`,
+`IRequest.ContinueAsync()` and `IRequest.RespondAsync()` methods.
 
 **Parameters**
 
@@ -3664,7 +3664,7 @@ public Task TapAsync(string selector)
 ```
 
 
-Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scrolls it into view if needed, and then uses [Touchscreen](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Touchscreen) to tap in the center of the element.
+Fetches an element with `selector`, scrolls it into view if needed, and then uses [Touchscreen](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Touchscreen) to tap in the center of the element.
 
 **Parameters**
 
@@ -3672,13 +3672,13 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- | --- |
 | `selector` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A selector to search for element to tap. If there are multiple elements satisfying the selector, the first will be clicked. |
 
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching &lt;code class="paramref"&gt;selector&lt;/code&gt; is successfully tapped.
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching `selector` is successfully tapped.
 
 **Exceptions**
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Page.cs#L301)
 
@@ -3732,9 +3732,9 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
-To press a special key, like `Control` or `ArrowDown` use `PressOptions)`.
+To press a special key, like `Control` or `ArrowDown` use `IKeyboard.PressAsync()`.
 
 **Example**
 
@@ -3979,7 +3979,7 @@ It is useful for when you run code which will indirectly cause the page to navig
     In case of multiple redirects, the navigation will resolve with the response of the last redirect.
     In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
-Usage of the `History API` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/History_API&lt;/a&gt; to change the URL is considered a navigation.
+Usage of the `History API` [https://developer.mozilla.org/en-US/docs/Web/API/History_API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 **Example**
 
@@ -4276,7 +4276,7 @@ Evaluates the XPath expression.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate&lt;/a&gt;. |
+| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate [https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate). |
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/).
 

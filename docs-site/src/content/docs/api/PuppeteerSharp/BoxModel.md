@@ -40,7 +40,7 @@ public BoxModelPoint[] Border { get; set; }
 
 Gets the Border box.
 
-**Value:** `BoxModelPoint\[\]`
+**Value:** `BoxModelPoint[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs#L21)
 
@@ -57,7 +57,7 @@ public BoxModelPoint[] Content { get; set; }
 
 Gets the Content box.
 
-**Value:** `BoxModelPoint\[\]`
+**Value:** `BoxModelPoint[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs#L11)
 
@@ -91,7 +91,7 @@ public BoxModelPoint[] Margin { get; set; }
 
 Gets the Margin box.
 
-**Value:** `BoxModelPoint\[\]`
+**Value:** `BoxModelPoint[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs#L26)
 
@@ -108,7 +108,7 @@ public BoxModelPoint[] Padding { get; set; }
 
 Gets the Padding box.
 
-**Value:** `BoxModelPoint\[\]`
+**Value:** `BoxModelPoint[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BoxModel.cs#L16)
 

@@ -57,6 +57,6 @@ public PWAFileHandler[] FileHandlers { get; set; }
 
 Gets or sets the file handlers registered by the app with the OS.
 
-**Value:** `PWAFileHandler\[\]`
+**Value:** `PWAFileHandler[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PWAState.cs#L16)

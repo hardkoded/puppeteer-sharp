@@ -40,6 +40,6 @@ public CallFrame[] CallFrames { get; set; }
 
 Gets or sets the call frames in the stack trace.
 
-**Value:** `CallFrame\[\]`
+**Value:** `CallFrame[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/InitiatorStackTrace.cs#L33)

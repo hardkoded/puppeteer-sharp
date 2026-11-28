@@ -54,7 +54,7 @@ Total number of bytes received for this request over the network.
 
 The value is updated when the response finishes loading. During the `Response` event, it only covers
 the bytes received up to the response headers. To get the total encoded transfer size (headers + compressed
-body), read it in a `RequestFinished` handler or after awaiting [BufferAsync()](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_BufferAsync).
+body), read it in a `RequestFinished` handler. Awaiting [BufferAsync()](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_BufferAsync) does not guarantee the final size is available.
 If the request fails after the response is received, the value is not updated. If the browser does not
 report a size, e.g. for `data:` or `file:` URLs, the value is `0`.
 
@@ -336,7 +336,7 @@ public Task<T> JsonAsync<T>(JsonSerializerOptions options = null)
 ```
 
 
-Returns a Task which resolves to a &lt;code class="typeparamref"&gt;T&lt;/code&gt; representation of response body.
+Returns a Task which resolves to a `T` representation of response body.
 
 **Type parameters**
 
@@ -350,7 +350,7 @@ Returns a Task which resolves to a &lt;code class="typeparamref"&gt;T&lt;/code&g
 | --- | --- | --- |
 | `options` | [JsonSerializerOptions](https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions) | Parsing options. |
 
-**Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a &lt;code class="typeparamref"&gt;T&lt;/code&gt; representation of response body.
+**Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a `T` representation of response body.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Response.cs#L83)
 

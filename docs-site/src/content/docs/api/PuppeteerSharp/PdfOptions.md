@@ -1,6 +1,6 @@
 ---
 title: "PdfOptions"
-description: "Options to be used in PdfOptions), PdfStreamAsync(PdfOptions) and PdfDataAsync(PdfOptions)."
+description: "Options to be used in IPage.PdfAsync(), PdfStreamAsync(PdfOptions) and PdfDataAsync(PdfOptions)."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public record PdfOptions : IEquatable<PdfOptions>
 ```
 
 
-Options to be used in `PdfOptions)`, [PdfStreamAsync(PdfOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_PdfStreamAsync_PuppeteerSharp_PdfOptions_) and [PdfDataAsync(PdfOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_PdfDataAsync_PuppeteerSharp_PdfOptions_).
+Options to be used in `IPage.PdfAsync()`, [PdfStreamAsync(PdfOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_PdfStreamAsync_PuppeteerSharp_PdfOptions_) and [PdfDataAsync(PdfOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_PdfDataAsync_PuppeteerSharp_PdfOptions_).
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

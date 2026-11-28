@@ -1,6 +1,6 @@
 ---
 title: "CdpWebWorker"
-description: "The Worker class represents a WebWorker (<a href=\"https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI\">https://developer.mozilla.org/en-US/docs/We..."
+description: "The Worker class represents a WebWorker (https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI). The events WorkerCreated and WorkerDestroyed are em..."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class CdpWebWorker : WebWorker
 ```
 
 
-The Worker class represents a WebWorker (&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API&lt;/a&gt;).
+The Worker class represents a WebWorker ([https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)).
 The events [WorkerCreated](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WorkerCreated) and [WorkerDestroyed](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WorkerDestroyed) are emitted on the page object to signal the worker lifecycle.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → [WebWorker](/api/PuppeteerSharp/WebWorker/)
@@ -201,7 +201,7 @@ public override Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunct
 ```
 
 
-Waits for the provided function, &lt;code class="paramref"&gt;script&lt;/code&gt;, to return a truthy value when
+Waits for the provided function, `script`, to return a truthy value when
 evaluated in the worker's context.
 
 **Parameters**
@@ -210,7 +210,7 @@ evaluated in the worker's context.
 | --- | --- | --- |
 | `script` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Function to be evaluated in the worker context until it returns a truthy value. |
 | `options` | [WaitForFunctionOptions](/api/PuppeteerSharp/WaitForFunctionOptions/) | Options for configuring waiting behavior. |
-| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to &lt;code class="paramref"&gt;script&lt;/code&gt;. |
+| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `script`. |
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of the truthy value returned by the function.
 

@@ -174,7 +174,7 @@ Sets cookies in the browser context.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieData\[\]` | Cookies to set. |
+| `cookies` | `CookieData[]` | Cookies to set. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -198,7 +198,7 @@ Sets the permission for a specific origin.
 | Name | Type | Description |
 | --- | --- | --- |
 | `origin` | [string](https://learn.microsoft.com/dotnet/api/system.string) | The origin to set the permission for, e.g. "https://example.com". Use "*" for all origins (CDP only). |
-| `permissions` | `PermissionEntry\[\]` | The permissions to set. |
+| `permissions` | `PermissionEntry[]` | The permissions to set. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
@@ -217,6 +217,6 @@ public override ITarget[] Targets()
 
 Gets an array of all active targets inside the browser context.
 
-**Returns:** `ITarget\[\]` — An array of all active targets inside the browser context.
+**Returns:** `ITarget[]` — An array of all active targets inside the browser context.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowserContext.cs#L46)

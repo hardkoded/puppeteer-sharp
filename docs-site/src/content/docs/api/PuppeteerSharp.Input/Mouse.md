@@ -42,7 +42,7 @@ public abstract Task ClickAsync(decimal x, decimal y, ClickOptions options = nul
 ```
 
 
-Shortcut for `MoveOptions)`, [DownAsync(ClickOptions)](/api/PuppeteerSharp.Input/IMouse/#PuppeteerSharp_Input_IMouse_DownAsync_PuppeteerSharp_Input_ClickOptions_) and [UpAsync(ClickOptions)](/api/PuppeteerSharp.Input/IMouse/#PuppeteerSharp_Input_IMouse_UpAsync_PuppeteerSharp_Input_ClickOptions_).
+Shortcut for `IMouse.MoveAsync()`, [DownAsync(ClickOptions)](/api/PuppeteerSharp.Input/IMouse/#PuppeteerSharp_Input_IMouse_DownAsync_PuppeteerSharp_Input_ClickOptions_) and [UpAsync(ClickOptions)](/api/PuppeteerSharp.Input/IMouse/#PuppeteerSharp_Input_IMouse_UpAsync_PuppeteerSharp_Input_ClickOptions_).
 
 **Parameters**
 

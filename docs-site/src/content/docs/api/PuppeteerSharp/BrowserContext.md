@@ -74,7 +74,7 @@ public bool IsClosed { get; }
 ```
 
 
-Whether this &lt;a href="IBrowserContext"&gt;IBrowserContext&lt;/a&gt; is closed.
+Whether this [IBrowserContext](IBrowserContext) is closed.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 
@@ -93,7 +93,7 @@ public event EventHandler<ConsoleEventArgs> Console
 
 
 Raised when JavaScript within any page or worker in the browser context calls one of the console API methods, e.g. `console.log` or `console.dir`.
-Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via `Targets()`.
+Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via `PageAsync()` or `PagesAsync()`. `Targets()` only lists targets and does not attach to them.
 Service and shared workers are not attached automatically: their messages are only delivered after `WorkerAsync()` has been called for their target.
 With WebDriver BiDi, service and shared worker console messages are not reported.
 
@@ -212,7 +212,7 @@ public event EventHandler<TargetChangedArgs> TargetCreated
 ```
 
 
-Raised when a target is created, for example when a new page is opened by `window.open` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Window/open&lt;/a&gt; or [NewPageAsync(CreatePageOptions)](/api/PuppeteerSharp/IBrowserContext/#PuppeteerSharp_IBrowserContext_NewPageAsync_PuppeteerSharp_CreatePageOptions_).
+Raised when a target is created, for example when a new page is opened by `window.open` [https://developer.mozilla.org/en-US/docs/Web/API/Window/open](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [NewPageAsync(CreatePageOptions)](/api/PuppeteerSharp/IBrowserContext/#PuppeteerSharp_IBrowserContext_NewPageAsync_PuppeteerSharp_CreatePageOptions_).
 
 **Value:** [EventHandler&lt;TargetChangedArgs&gt;](https://learn.microsoft.com/dotnet/api/system.eventhandler-1)
 
@@ -287,7 +287,7 @@ Removes cookies from the browser context.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieParam\[\]` | Complete [CookieParam](/api/PuppeteerSharp/CookieParam/) objects to be removed. |
+| `cookies` | `CookieParam[]` | Complete [CookieParam](/api/PuppeteerSharp/CookieParam/) objects to be removed. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -310,7 +310,7 @@ Deletes cookies matching the provided filters in this browser context.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `filters` | `DeleteCookiesRequest\[\]` | Filters to match cookies against. |
+| `filters` | `DeleteCookiesRequest[]` | Filters to match cookies against. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -479,7 +479,7 @@ Sets cookies in the browser context.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieData\[\]` | Cookies to set. |
+| `cookies` | `CookieData[]` | Cookies to set. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -503,7 +503,7 @@ Sets the permission for a specific origin.
 | Name | Type | Description |
 | --- | --- | --- |
 | `origin` | [string](https://learn.microsoft.com/dotnet/api/system.string) | The origin to set the permission for, e.g. "https://example.com". Use "*" for all origins (CDP only). |
-| `permissions` | `PermissionEntry\[\]` | The permissions to set. |
+| `permissions` | `PermissionEntry[]` | The permissions to set. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
@@ -522,7 +522,7 @@ public abstract ITarget[] Targets()
 
 Gets an array of all active targets inside the browser context.
 
-**Returns:** `ITarget\[\]` — An array of all active targets inside the browser context.
+**Returns:** `ITarget[]` — An array of all active targets inside the browser context.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs#L53)
 

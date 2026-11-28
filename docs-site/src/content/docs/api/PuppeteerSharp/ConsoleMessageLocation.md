@@ -135,7 +135,7 @@ Indicates whether the current object is equal to another object of the same type
 | --- | --- | --- |
 | `other` | [ConsoleMessageLocation](./) | An object to compare with this object. |
 
-**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the current object is equal to the &lt;code class="paramref"&gt;other&lt;/code&gt; parameter; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
+**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — [true](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) if the current object is equal to the `other` parameter; otherwise, [false](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L55)
 
@@ -157,7 +157,7 @@ Determines whether the specified object is equal to the current object.
 | --- | --- | --- |
 | `obj` | [object](https://learn.microsoft.com/dotnet/api/system.object) | The object to compare with the current object. |
 
-**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;true&lt;/a&gt; if the specified object  is equal to the current object; otherwise, &lt;a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool"&gt;false&lt;/a&gt;.
+**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — [true](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) if the specified object  is equal to the current object; otherwise, [false](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ConsoleMessageLocation.cs#L59)
 
@@ -197,8 +197,8 @@ Overriding == operator for [ConsoleMessageLocation](./).
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `location1` | [ConsoleMessageLocation](./) | the value to compare against &lt;code class="paramref"&gt;location2&lt;/code&gt;. |
-| `location2` | [ConsoleMessageLocation](./) | the value to compare against &lt;code class="paramref"&gt;location1&lt;/code&gt;. |
+| `location1` | [ConsoleMessageLocation](./) | the value to compare against `location2`. |
+| `location2` | [ConsoleMessageLocation](./) | the value to compare against `location1`. |
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the two instances are equal to the same value.
 
@@ -221,8 +221,8 @@ Overriding != operator for [ConsoleMessageLocation](./).
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `location1` | [ConsoleMessageLocation](./) | the value to compare against &lt;code class="paramref"&gt;location2&lt;/code&gt;. |
-| `location2` | [ConsoleMessageLocation](./) | the value to compare against &lt;code class="paramref"&gt;location1&lt;/code&gt;. |
+| `location1` | [ConsoleMessageLocation](./) | the value to compare against `location2`. |
+| `location2` | [ConsoleMessageLocation](./) | the value to compare against `location1`. |
 
 **Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — `true` if the two instances are not equal to the same value.
 

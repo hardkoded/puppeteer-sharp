@@ -114,8 +114,8 @@ The method launches a browser instance with given arguments. The browser will be
 
 **Returns:** [Task&lt;IBrowser&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A connected browser.
 
-See &lt;a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/"&gt;this article&lt;/a&gt;
+See [this article](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/)
 for a description of the differences between Chromium and Chrome.
-&lt;a href="https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md"&gt;This article&lt;/a&gt; describes some differences for Linux users.
+[This article](https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Launcher.cs#L60)

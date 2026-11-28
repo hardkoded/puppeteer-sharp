@@ -92,7 +92,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc/>
     public override bool IsInterceptResolutionHandled { get; protected set; }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Not supported in WebDriver BiDi. Unlike the CDP implementation, which returns the worker that issued the request or <c>null</c>, this getter always throws.
+    /// </summary>
     /// <exception cref="NotSupportedException">Always thrown. Worker requests are not available in WebDriver BiDi.</exception>
     public override WebWorker Worker =>
         throw new NotSupportedException("Worker is not supported in WebDriver BiDi.");

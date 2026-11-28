@@ -1676,7 +1676,7 @@ public static implicit operator string(Key key)
 ```
 
 
-Converts the &lt;code class="paramref"&gt;key&lt;/code&gt; to its underlining string value.
+Converts the `key` to its underlining string value.
 
 **Parameters**
 

@@ -192,7 +192,7 @@ function renderNamespace(ns) {
         lines.push(`## ${kindHeading[kind]}`, "");
         lines.push("| Type | Summary |", "| --- | --- |");
         for (const type of group) {
-            const summary = tableCell(plain(type.summary) || "");
+            const summary = tableCell((plain(type.summary) || "").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
             lines.push(`| ${linkToUid(pageId, type.uid, displayName(type))} | ${summary} |`);
         }
         lines.push("");
@@ -361,7 +361,7 @@ function linkToUid(fromId, uid, text) {
     }
     const ref = refs.get(id);
     if (ref?.href && /^https?:\/\//.test(ref.href)) return `[${label}](${ref.href})`;
-    return `\`${label.replace(/`/g, "")}\``;
+    return `\`${String(text || labelFor(id)).replace(/`/g, "")}\``;
 }
 
 function locate(uid) {
@@ -383,8 +383,22 @@ function labelFor(uid) {
     if (ref?.name) return ref.name;
     const item = byUid.get(uid);
     if (item) return displayName(item);
-    const short = uid.split(".").pop() || uid;
-    return short.replace(/`(\d+)/g, "<T>");
+    let decoded = uid;
+    try {
+        decoded = decodeURIComponent(uid);
+    } catch {
+        // Keep the raw uid when it is not valid percent-encoding.
+    }
+    const parenthesis = decoded.indexOf("(");
+    const name = parenthesis >= 0 ? decoded.slice(0, parenthesis) : decoded;
+    const segments = name.split(".");
+    const short = (parenthesis >= 0 ? segments.slice(-2).join(".") : segments.pop()) || name;
+    return `${short.replace(/`+(\d+)/g, (_, arity) => genericArguments(Number(arity)))}${parenthesis >= 0 ? "()" : ""}`;
+}
+
+function genericArguments(arity) {
+    if (arity <= 1) return "<T>";
+    return `<${Array.from({ length: arity }, (_, index) => `T${index + 1}`).join(", ")}>`;
 }
 
 function displayName(item) {
@@ -418,6 +432,7 @@ function isDocumentedType(item) {
 function isVisibleMember(item, parent) {
     if (String(item.uid).endsWith("*")) return false;
     if (parent?.type === "Enum" && item.type === "Field") return true;
+    if (parent?.type === "Interface") return true;
     return isVisible(item, parent);
 }
 
@@ -480,8 +495,11 @@ function renderComment(value, fromId) {
     text = text.replace(/<xref href="([^"]+)"[^>]*\/>/gi, (_, href) => linkToUid(fromId, decode(href)));
     text = text.replace(/<see(?:also)?\s+cref="([^"]+)"\s*\/>/gi, (_, cref) => linkToUid(fromId, cref));
     text = text.replace(/<para>([\s\S]*?)<\/para>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`);
+    text = outsideFences(text, (part) => part
+        .replace(/<p>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`)
+        .replace(/<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, inner) => `[${inner.trim()}](${decode(href)})`));
     text = text.replace(/<br\s*\/?>/gi, "\n");
-    text = text.replace(/<(c|code)>([\s\S]*?)<\/\1>/gi, (_, _tag, code) => `\`${decode(code).replace(/`/g, "")}\``);
+    text = outsideFences(text, (part) => part.replace(/<(c|code)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/gi, (_, _tag, code) => `\`${decode(code).replace(/`/g, "")}\``));
     text = text.replace(/<paramref\s+name="([^"]+)"\s*\/>/gi, "`$1`");
     text = text.replace(/<typeparamref\s+name="([^"]+)"\s*\/>/gi, "`$1`");
     text = text.replace(/<(strong|b)>([\s\S]*?)<\/\1>/gi, "**$2**");
@@ -500,9 +518,40 @@ function listToMarkdown(inner, numbered) {
     }).join("\n")}\n`;
 }
 
+function outsideFences(text, transform) {
+    const lines = text.split("\n");
+    const out = [];
+    let prose = [];
+    let fenceMarker = null;
+    const flush = () => {
+        if (prose.length > 0) out.push(transform(prose.join("\n")));
+        prose = [];
+    };
+    for (const line of lines) {
+        if (fenceMarker) {
+            out.push(line);
+            const closing = /^\s*(`{3,})\s*$/.exec(line);
+            if (closing && closing[1].length >= fenceMarker.length) fenceMarker = null;
+            continue;
+        }
+        const opening = /^\s*(`{3,})[^`]*$/.exec(line);
+        if (opening) {
+            flush();
+            fenceMarker = opening[1];
+            out.push(line);
+            continue;
+        }
+        prose.push(line);
+    }
+    flush();
+    return out.join("\n");
+}
+
 function escapeAnglesOutsideCode(markdown) {
-    const parts = markdown.split(/(```[\s\S]*?```|`[^`\n]*`)/g);
-    return parts.map((part, index) => (index % 2 === 1 ? part : part.replace(/</g, "&lt;").replace(/>/g, "&gt;"))).join("");
+    return outsideFences(markdown, (prose) => prose
+        .split(/(`[^`\n]*`)/g)
+        .map((part, index) => (index % 2 === 1 ? part : part.replace(/</g, "&lt;").replace(/>/g, "&gt;")))
+        .join(""));
 }
 
 function decode(value) {

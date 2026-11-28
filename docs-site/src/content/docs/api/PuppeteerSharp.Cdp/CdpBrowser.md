@@ -105,7 +105,7 @@ public override IBrowserContext[] BrowserContexts()
 
 Returns an array of all open [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/). In a newly created browser, this will return a single instance of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/).
 
-**Returns:** `IBrowserContext\[\]` — An array of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) objects.
+**Returns:** `IBrowserContext[]` — An array of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) objects.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowser.cs#L203)
 
@@ -237,7 +237,7 @@ Gets the browser's original user agent.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the browser's original user agent.
 
-Pages can override browser user agent with `UserAgentMetadata)`.
+Pages can override browser user agent with `IPage.SetUserAgentAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowser.cs#L160)
 
@@ -441,10 +441,10 @@ Targets that are already on a blocked URL when this method is called stay attach
 the blocked page. This differs from launching the browser with network restrictions, where such
 targets are detached on the initial attach.
 
-&lt;p&gt;
+
+
 The restrictions have the same WebTransport and WebRTC limitations as
 [BlockList](/api/PuppeteerSharp/ConnectOptions/#PuppeteerSharp_ConnectOptions_BlockList) and [Allowlist](/api/PuppeteerSharp/ConnectOptions/#PuppeteerSharp_ConnectOptions_Allowlist).
-&lt;/p&gt;
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowser.cs#L508)
 
@@ -502,7 +502,7 @@ public override ITarget[] Targets()
 
 Returns An Array of all active targets.
 
-**Returns:** `ITarget\[\]` — An Array of all active targets.
+**Returns:** `ITarget[]` — An Array of all active targets.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowser.cs#L152)
 

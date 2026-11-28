@@ -44,7 +44,7 @@ public CoverageEntryRange[] Ranges { get; set; }
 
 Script ranges that were executed. Ranges are sorted and non-overlapping.
 
-**Value:** `CoverageEntryRange\[\]`
+**Value:** `CoverageEntryRange[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageCoverage/CoverageEntry.cs#L16)
 

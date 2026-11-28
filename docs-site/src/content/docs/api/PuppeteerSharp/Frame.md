@@ -273,7 +273,7 @@ public Task ClickAsync(string selector, ClickOptions options = null)
 ```
 
 
-Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scrolls it into view if needed, and then uses [Mouse](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Mouse) to click in the center of the element.
+Fetches an element with `selector`, scrolls it into view if needed, and then uses [Mouse](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Mouse) to click in the center of the element.
 
 **Parameters**
 
@@ -282,13 +282,13 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | `selector` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked. |
 | `options` | [ClickOptions](/api/PuppeteerSharp.Input/ClickOptions/) | click options. |
 
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching &lt;code class="paramref"&gt;selector&lt;/code&gt; is successfully clicked.
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching `selector` is successfully clicked.
 
 **Exceptions**
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L363)
 
@@ -366,7 +366,7 @@ Passes an expression to the [EvaluateExpressionHandleAsync(string)](/api/Puppete
 | --- | --- | --- |
 | `script` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to be evaluated in the. [ExecutionContext](/api/PuppeteerSharp/ExecutionContext/) |
 
-**Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Resolves to the return value of &lt;code class="paramref"&gt;script&lt;/code&gt;.
+**Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Resolves to the return value of `script`.
 
 **Example**
 
@@ -446,16 +446,16 @@ public Task<IJSHandle> EvaluateFunctionHandleAsync(string function, params objec
 ```
 
 
-Passes a function to the `Object%5b%5d)`, returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), then `Object%5b%5d)` would wait for the [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) to resolve and return its value.
+Passes a function to the `IExecutionContext.EvaluateFunctionAsync()`, returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), then `ExecutionContext.EvaluateFunctionHandleAsync()` would wait for the [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) to resolve and return its value.
 
 **Parameters**
 
 | Name | Type | Description |
 | --- | --- | --- |
 | `function` | [string](https://learn.microsoft.com/dotnet/api/system.string) |  |
-| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to &lt;code class="paramref"&gt;func&lt;/code&gt;. |
+| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `func`. |
 
-**Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Resolves to the return value of &lt;code class="paramref"&gt;func&lt;/code&gt;.
+**Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Resolves to the return value of `func`.
 
 **Example**
 
@@ -465,7 +465,7 @@ return handle; // Handle for the global object.
 ```
 
 
-[IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments to the `Object%5b%5d)`:
+[IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments to the `IExecutionContext.EvaluateFunctionAsync()`:
 
 
 ```csharp
@@ -504,7 +504,7 @@ public Task FocusAsync(string selector)
 ```
 
 
-Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt; and focuses it.
+Fetches an element with `selector` and focuses it.
 
 **Parameters**
 
@@ -512,13 +512,13 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt; and f
 | --- | --- | --- |
 | `selector` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A selector to search for element to focus. If there are multiple elements satisfying the selector, the first will be focused. |
 
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching &lt;code class="paramref"&gt;selector&lt;/code&gt; is successfully focused.
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching `selector` is successfully focused.
 
 **Exceptions**
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L390)
 
@@ -618,7 +618,7 @@ Navigates to an url.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-`WaitUntilNavigation%5b%5d)` will throw an error if:
+`IFrame.GoToAsync()` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
 - target URL is invalid.
 - the `timeout` is exceeded during navigation.
@@ -626,10 +626,10 @@ Navigates to an url.
 - the main resource failed to load.
 - the URL is blocked by blocklist/allowlist rules.
 
-`WaitUntilNavigation%5b%5d)` will not throw an error when any valid HTTP status code is returned by the remote server,
+`IFrame.GoToAsync()` will not throw an error when any valid HTTP status code is returned by the remote server,
 including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [Status](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_Status)
 
-&gt; **NOTE** `WaitUntilNavigation%5b%5d)` either throws an error or returns a main resource response.
+&gt; **NOTE** `IFrame.GoToAsync()` either throws an error or returns a main resource response.
 The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
 &gt; **NOTE** Headless mode doesn't support navigation to a PDF document. See the &lt;see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295"&gt;upstream issue&lt;/see&gt;.
@@ -654,7 +654,7 @@ Navigates to an url.
 | --- | --- | --- |
 | `url` | [string](https://learn.microsoft.com/dotnet/api/system.string) | URL to navigate page to. The url should include scheme, e.g. https://. |
 | `timeout` | [int?](https://learn.microsoft.com/dotnet/api/system.int32) | maximum navigation time in milliseconds. Defaults to 30 seconds. Pass 0 to disable timeout. The default value can be changed by using the [DefaultNavigationTimeout](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_DefaultNavigationTimeout) property. |
-| `waitUntil` | `WaitUntilNavigation\[\]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
+| `waitUntil` | `WaitUntilNavigation[]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
@@ -671,7 +671,7 @@ public Task HoverAsync(string selector)
 ```
 
 
-Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scrolls it into view if needed, and then uses [Mouse](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Mouse) to hover over the center of the element.
+Fetches an element with `selector`, scrolls it into view if needed, and then uses [Mouse](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_Mouse) to hover over the center of the element.
 
 **Parameters**
 
@@ -679,13 +679,13 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- | --- |
 | `selector` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered. |
 
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching &lt;code class="paramref"&gt;selector&lt;/code&gt; is successfully hovered.
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching `selector` is successfully hovered.
 
 **Exceptions**
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L377)
 
@@ -763,7 +763,7 @@ public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
 ```
 
 
-Queries frame for the selector. If no elements match the selector, the return value resolve to `Empty%60%601`.
+Queries frame for the selector. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -785,7 +785,7 @@ public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOption
 ```
 
 
-Queries frame for the selector. If no elements match the selector, the return value resolve to `Empty%60%601`.
+Queries frame for the selector. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -809,7 +809,7 @@ public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
 ```
 
 
-A utility function to be used with `Object%5b%5d)`.
+A utility function to be used with `PuppeteerHandleExtensions.EvaluateFunctionAsync<T>()`.
 
 **Parameters**
 
@@ -871,7 +871,7 @@ If there's no &lt;select&gt; element matching selector, the method throws an err
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L190)
 
@@ -938,7 +938,7 @@ public Task TapAsync(string selector)
 ```
 
 
-Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scrolls it into view if needed, and then uses [Touchscreen](/api/PuppeteerSharp.Input/Touchscreen/) to tap in the center of the element.
+Fetches an element with `selector`, scrolls it into view if needed, and then uses [Touchscreen](/api/PuppeteerSharp.Input/Touchscreen/) to tap in the center of the element.
 
 **Parameters**
 
@@ -946,13 +946,13 @@ Fetches an element with &lt;code class="paramref"&gt;selector&lt;/code&gt;, scro
 | --- | --- | --- |
 | `selector` | [string](https://learn.microsoft.com/dotnet/api/system.string) | A selector to search for element to tap. If there are multiple elements satisfying the selector, the first will be clicked. |
 
-**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching &lt;code class="paramref"&gt;selector&lt;/code&gt; is successfully tapped.
+**Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element matching `selector` is successfully tapped.
 
 **Exceptions**
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Frame.cs#L403)
 
@@ -983,9 +983,9 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching &lt;code class="paramref"&gt;selector&lt;/code&gt;. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
-To press a special key, like `Control` or `ArrowDown` use `PressOptions)`.
+To press a special key, like `Control` or `ArrowDown` use `IKeyboard.PressAsync()`.
 
 **Example**
 
@@ -1116,7 +1116,7 @@ It is useful for when you run code which will indirectly cause the frame to navi
     In case of multiple redirects, the navigation will resolve with the response of the last redirect.
     In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
-Usage of the `History API` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/History_API&lt;/a&gt; to change the URL is considered a navigation.
+Usage of the `History API` [https://developer.mozilla.org/en-US/docs/Web/API/History_API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 **Example**
 
@@ -1224,7 +1224,7 @@ Evaluates the XPath expression.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate&lt;/a&gt;. |
+| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate [https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate). |
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/).
 

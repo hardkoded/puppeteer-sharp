@@ -1,6 +1,6 @@
 ---
 title: "WebWorker"
-description: "The Worker class represents a WebWorker (<a href=\"https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI\">https://developer.mozilla.org/en-US/docs/We..."
+description: "The Worker class represents a WebWorker (https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI). The events WorkerCreated and WorkerDestroyed are em..."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public abstract class WebWorker
 ```
 
 
-The Worker class represents a WebWorker (&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API&lt;/a&gt;).
+The Worker class represents a WebWorker ([https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)).
 The events [WorkerCreated](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WorkerCreated) and [WorkerDestroyed](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WorkerDestroyed) are emitted on the page object to signal the worker lifecycle.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
@@ -128,19 +128,25 @@ Emitted when the worker issues a request. Contains a [IRequest](/api/PuppeteerSh
 
 Only supported with CDP. With WebDriver BiDi these events are never emitted.
 
-&lt;p&gt;
+
+
 For service workers and shared workers, network events are only delivered once a [WebWorker](./)
 instance exists, i.e. after [WorkerAsync()](/api/PuppeteerSharp/ITarget/#PuppeteerSharp_ITarget_WorkerAsync) has been called. Requests issued before that,
 such as requests made while a service worker starts up, are not reported.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Listeners are bound to this worker instance: if the worker is terminated and restarted (e.g. an idle
 extension service worker), a new [WebWorker](./) is created and listeners must be re-attached.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Requests issued by service workers and shared workers cannot be intercepted:
 `ContinueAsync`, `AbortAsync` and `RespondAsync` throw.
-&lt;/p&gt;
+
+
 
 This API is experimental.
 
@@ -363,7 +369,7 @@ public virtual Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFuncti
 ```
 
 
-Waits for the provided function, &lt;code class="paramref"&gt;script&lt;/code&gt;, to return a truthy value when
+Waits for the provided function, `script`, to return a truthy value when
 evaluated in the worker's context.
 
 **Parameters**
@@ -372,7 +378,7 @@ evaluated in the worker's context.
 | --- | --- | --- |
 | `script` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Function to be evaluated in the worker context until it returns a truthy value. |
 | `options` | [WaitForFunctionOptions](/api/PuppeteerSharp/WaitForFunctionOptions/) | Options for configuring waiting behavior. |
-| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to &lt;code class="paramref"&gt;script&lt;/code&gt;. |
+| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `script`. |
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of the truthy value returned by the function.
 

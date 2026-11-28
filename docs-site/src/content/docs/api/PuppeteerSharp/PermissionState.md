@@ -1,6 +1,6 @@
 ---
 title: "PermissionState"
-description: "Permission state for PermissionEntry%5b%5d)."
+description: "Permission state for IBrowserContext.SetPermissionAsync()."
 editUrl: false
 prev: false
 next: false
@@ -20,7 +20,7 @@ public enum PermissionState
 ```
 
 
-Permission state for `PermissionEntry%5b%5d)`.
+Permission state for `IBrowserContext.SetPermissionAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PermissionState.cs#L10)
 

@@ -1,6 +1,6 @@
 ---
 title: "PermissionEntry"
-description: "Represents a permission entry to set via PermissionEntry%5b%5d)."
+description: "Represents a permission entry to set via IBrowserContext.SetPermissionAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class PermissionEntry
 ```
 
 
-Represents a permission entry to set via `PermissionEntry%5b%5d)`.
+Represents a permission entry to set via `IBrowserContext.SetPermissionAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

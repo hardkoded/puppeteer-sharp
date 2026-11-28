@@ -168,7 +168,7 @@ Executes a function in the isolated context.
 
 | Type | Condition |
 | --- | --- |
-| [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception) | Thrown if &lt;code class="paramref"&gt;action&lt;/code&gt; is `null`. |
+| [ArgumentNullException](https://learn.microsoft.com/dotnet/api/system.argumentnullexception) | Thrown if `action` is `null`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L919)
 
@@ -472,7 +472,7 @@ public Task FocusAsync()
 ```
 
 
-Calls `focus` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"&gt;https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus&lt;/a&gt; on the element.
+Calls `focus` [https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus) on the element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -489,9 +489,9 @@ public override Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
 ```
 
 
-Returns a `Dictionary%602` with property names as keys and [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances for the property values.
+Returns a `Dictionary<T1, T2>` with property names as keys and [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances for the property values.
 
-**Returns:** [Task&lt;Dictionary&lt;string, IJSHandle&gt;&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a `Dictionary%602`.
+**Returns:** [Task&lt;Dictionary&lt;string, IJSHandle&gt;&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a `Dictionary<T1, T2>`.
 
 **Example**
 
@@ -556,7 +556,7 @@ public Task<bool> IsHiddenAsync()
 ```
 
 
-Checks if an element is hidden using the same mechanism as `WaitForSelectorOptions)`.
+Checks if an element is hidden using the same mechanism as `IElementHandle.WaitForSelectorAsync()`.
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to true if the element is hidden.
 
@@ -596,7 +596,7 @@ public Task<bool> IsVisibleAsync()
 ```
 
 
-Checks if an element is visible using the same mechanism as `WaitForSelectorOptions)`.
+Checks if an element is visible using the same mechanism as `IElementHandle.WaitForSelectorAsync()`.
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to true if the element is visible.
 
@@ -638,7 +638,7 @@ public Task PressAsync(string key, PressOptions options = null)
 ```
 
 
-Focuses the element, and then uses `DownOptions)` and [UpAsync(string)](/api/PuppeteerSharp.Input/IKeyboard/#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
+Focuses the element, and then uses `IKeyboard.DownAsync()` and [UpAsync(string)](/api/PuppeteerSharp.Input/IKeyboard/#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
 
 **Parameters**
 
@@ -664,7 +664,7 @@ public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
 ```
 
 
-Runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty%60%601`.
+Runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -686,7 +686,7 @@ public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOption
 ```
 
 
-Runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty%60%601`.
+Runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -710,7 +710,7 @@ public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
 ```
 
 
-A utility function to be used with `Object%5b%5d)`.
+A utility function to be used with `PuppeteerHandleExtensions.EvaluateFunctionAsync<T>()`.
 
 **Parameters**
 
@@ -975,7 +975,7 @@ public Task TapAsync()
 ```
 
 
-Scrolls element into view if needed, and then uses `Decimal)` to tap in the center of the element.
+Scrolls element into view if needed, and then uses `Touchscreen.TapAsync()` to tap in the center of the element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element is successfully tapped.
 
@@ -1083,7 +1083,7 @@ Focuses the element, and sends a `keydown`, `keypress`/`input`, and `keyup` even
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-To press a special key, like `Control` or `ArrowDown` use `PressOptions)`.
+To press a special key, like `Control` or `ArrowDown` use `IElementHandle.PressAsync()`.
 
 **Example**
 
@@ -1126,7 +1126,7 @@ Uploads files.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-This method expects `elementHandle` to point to an `input element` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"&gt;https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input&lt;/a&gt;.
+This method expects `elementHandle` to point to an `input element` [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L186)
 
@@ -1150,7 +1150,7 @@ Uploads files.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-This method expects `elementHandle` to point to an `input element` &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"&gt;https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input&lt;/a&gt;.
+This method expects `elementHandle` to point to an `input element` [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ElementHandle.cs#L183)
 
@@ -1196,7 +1196,7 @@ Evaluates the XPath expression relative to the elementHandle. If there's no such
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate &lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"&gt;https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate&lt;/a&gt;. |
+| `expression` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Expression to evaluate [https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate). |
 
 **Returns:** [Task&lt;IElementHandle\[\]&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/).
 

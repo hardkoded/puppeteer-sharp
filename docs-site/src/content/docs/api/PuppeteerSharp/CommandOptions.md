@@ -1,6 +1,6 @@
 ---
 title: "CommandOptions"
-description: "Command options. See CommandOptions)."
+description: "Command options. See ICDPConnection.SendAsync<T>()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class CommandOptions
 ```
 
 
-Command options. See `CommandOptions)`.
+Command options. See `ICDPConnection.SendAsync<T>()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

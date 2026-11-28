@@ -1,6 +1,6 @@
 ---
 title: "ScreenshotOptions"
-description: "Options to be used in ScreenshotOptions), ScreenshotStreamAsync(ScreenshotOptions) and ScreenshotDataAsync(ScreenshotOptions)."
+description: "Options to be used in IPage.ScreenshotAsync(), ScreenshotStreamAsync(ScreenshotOptions) and ScreenshotDataAsync(ScreenshotOptions)."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class ScreenshotOptions
 ```
 
 
-Options to be used in `ScreenshotOptions)`, [ScreenshotStreamAsync(ScreenshotOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_) and [ScreenshotDataAsync(ScreenshotOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_).
+Options to be used in `IPage.ScreenshotAsync()`, [ScreenshotStreamAsync(ScreenshotOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_) and [ScreenshotDataAsync(ScreenshotOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_).
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

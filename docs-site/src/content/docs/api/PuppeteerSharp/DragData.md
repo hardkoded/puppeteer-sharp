@@ -57,6 +57,6 @@ public DragDataItem[] Items { get; set; }
 
 Drag items.
 
-**Value:** `DragDataItem\[\]`
+**Value:** `DragDataItem[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/DragData.cs#L11)

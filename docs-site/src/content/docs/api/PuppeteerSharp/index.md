@@ -32,7 +32,7 @@ Browser, page, frame, element, network, and launch APIs.
 | [CallFrame](/api/PuppeteerSharp/CallFrame/) | Represents a call frame in a stack trace. |
 | [CDPSession](/api/PuppeteerSharp/CDPSession/) | Supports all classes in the .NET class hierarchy and provides low-level services to derived classes. This is the ultimate base class of all .NET classes; it is the root of the type hierarchy. |
 | [ChromeLauncher](/api/PuppeteerSharp/ChromeLauncher/) | Represents a Chromium process and any associated temporary user data directory that have created by Puppeteer and therefore must be cleaned up when no longer needed. |
-| [CommandOptions](/api/PuppeteerSharp/CommandOptions/) | Command options. See CommandOptions). |
+| [CommandOptions](/api/PuppeteerSharp/CommandOptions/) | Command options. See ICDPConnection.SendAsync&lt;T&gt;(). |
 | [ConnectOptions](/api/PuppeteerSharp/ConnectOptions/) | Options for connecting to an existing browser. |
 | [ConsoleEventArgs](/api/PuppeteerSharp/ConsoleEventArgs/) | Console data. |
 | [ConsoleMessage](/api/PuppeteerSharp/ConsoleMessage/) | ConsoleMessage is part of ConsoleEventArgs used by Console. |
@@ -55,14 +55,14 @@ Browser, page, frame, element, network, and launch APIs.
 | [DragData](/api/PuppeteerSharp/DragData/) | Data returned by the drag methods. |
 | [DragDataItem](/api/PuppeteerSharp/DragDataItem/) | Item returned by drag methods. |
 | [ElementHandle](/api/PuppeteerSharp/ElementHandle/) | Inherits from IJSHandle. It represents an in-page DOM element. ElementHandles can be created by QuerySelectorAsync(string) or QuerySelectorAllAsync(string). |
-| [ElementScreenshotOptions](/api/PuppeteerSharp/ElementScreenshotOptions/) | Options to be used in ElementScreenshotOptions), ScreenshotStreamAsync(ElementScreenshotOptions) and ScreenshotDataAsync(ElementScreenshotOptions). |
+| [ElementScreenshotOptions](/api/PuppeteerSharp/ElementScreenshotOptions/) | Options to be used in IElementHandle.ScreenshotAsync(), ScreenshotStreamAsync(ElementScreenshotOptions) and ScreenshotDataAsync(ElementScreenshotOptions). |
 | [EmulateIdleOverrides](/api/PuppeteerSharp/EmulateIdleOverrides/) | Options for EmulateIdleStateAsync(EmulateIdleOverrides). |
 | [EnableExtensionsOption](/api/PuppeteerSharp/EnableExtensionsOption/) | Represents the value for the EnableExtensions launch option. Can be implicitly converted from a bool or a string array. |
 | [ErrorEventArgs](/api/PuppeteerSharp/ErrorEventArgs/) | Error arguments. |
-| [EvaluationFailedException](/api/PuppeteerSharp/EvaluationFailedException/) | Exception thrown by Object). |
+| [EvaluationFailedException](/api/PuppeteerSharp/EvaluationFailedException/) | Exception thrown by ExecutionContext.ExecuteEvaluationAsync(). |
 | [ExecutionContext](/api/PuppeteerSharp/ExecutionContext/) | The class represents a context for JavaScript execution. Examples of JavaScript contexts are: Each Frame has a separate IExecutionContext All kind of web workers have their own contexts. |
 | [Extension](/api/PuppeteerSharp/Extension/) | Represents an Extension instance installed in the browser. |
-| [ExtensionInstallOptions](/api/PuppeteerSharp/ExtensionInstallOptions/) | Options for ExtensionInstallOptions). |
+| [ExtensionInstallOptions](/api/PuppeteerSharp/ExtensionInstallOptions/) | Options for IBrowser.InstallExtensionAsync(). |
 | [FileChooser](/api/PuppeteerSharp/FileChooser/) | FileChooser objects are returned via the WaitForFileChooserAsync(WaitForOptions) method. File choosers let you react to the page requesting for a file. |
 | [FirefoxLauncher](/api/PuppeteerSharp/FirefoxLauncher/) | Represents a Firefox process and any associated temporary user data directory that have created by Puppeteer and therefore must be cleaned up when no longer needed. |
 | [Frame](/api/PuppeteerSharp/Frame/) | Provides methods to interact with a single page frame in Chromium. One IPage instance might have multiple IFrame instances. At every point of time, page exposes its current frame tree via the MainFrame and ChildFrames properties. IFrame object's lifecycle is controlled by three events, dispatched on the page object - FrameAttached - fires when the frame gets attached to the page. A Frame can be attached to the page only once - FrameNavigated - fired when the frame commits navigation to a different URL - FrameDetached - fired when the frame gets detached from the page. A Frame can be detached from the page only once. |
@@ -83,12 +83,12 @@ Browser, page, frame, element, network, and launch APIs.
 | [LauncherBase](/api/PuppeteerSharp/LauncherBase/) | Represents a Base process and any associated temporary user data directory that have created by Puppeteer and therefore must be cleaned up when no longer needed. |
 | [LaunchOptions](/api/PuppeteerSharp/LaunchOptions/) | Options for launching the Chrome/ium browser. |
 | [LaunchPWAOptions](/api/PuppeteerSharp/LaunchPWAOptions/) | Options for LaunchPWAAsync(LaunchPWAOptions). |
-| [MediaFeatureValue](/api/PuppeteerSharp/MediaFeatureValue/) | Media Feature. MediaFeatureValue%7d). |
+| [MediaFeatureValue](/api/PuppeteerSharp/MediaFeatureValue/) | Media Feature. IPage.EmulateMediaFeaturesAsync(). |
 | [MessageEventArgs](/api/PuppeteerSharp/MessageEventArgs/) | MessageReceived arguments. |
-| [MessageException](/api/PuppeteerSharp/MessageException/) | Exception thrown by. CommandOptions) |
+| [MessageException](/api/PuppeteerSharp/MessageException/) | Exception thrown by. CDPSession.SendAsync&lt;T&gt;() |
 | [MetricEventArgs](/api/PuppeteerSharp/MetricEventArgs/) | Metrics arguments. |
 | [NavigationException](/api/PuppeteerSharp/NavigationException/) | Exception thrown when a IPage fails to navigate an URL. |
-| [NavigationOptions](/api/PuppeteerSharp/NavigationOptions/) | Navigation options used by WaitForNavigationAsync(NavigationOptions) and NavigationOptions). |
+| [NavigationOptions](/api/PuppeteerSharp/NavigationOptions/) | Navigation options used by WaitForNavigationAsync(NavigationOptions) and IPage.SetContentAsync(). |
 | [NetworkConditions](/api/PuppeteerSharp/NetworkConditions/) | Options to be used in EmulateNetworkConditionsAsync(NetworkConditions). |
 | [NetworkRestrictions](/api/PuppeteerSharp/NetworkRestrictions/) | Network restrictions that can be applied to a browser at runtime using RestrictNetworkAsync(NetworkRestrictions). |
 | [NewDocumentScriptEvaluation](/api/PuppeteerSharp/NewDocumentScriptEvaluation/) | New document information. |
@@ -96,9 +96,9 @@ Browser, page, frame, element, network, and launch APIs.
 | [PageCloseOptions](/api/PuppeteerSharp/PageCloseOptions/) | Page close options. |
 | [PageErrorEventArgs](/api/PuppeteerSharp/PageErrorEventArgs/) | Page error event arguments. |
 | [Payload](/api/PuppeteerSharp/Payload/) | Payload information. |
-| [PdfOptions](/api/PuppeteerSharp/PdfOptions/) | Options to be used in PdfOptions), PdfStreamAsync(PdfOptions) and PdfDataAsync(PdfOptions). |
-| [PermissionDescriptor](/api/PuppeteerSharp/PermissionDescriptor/) | Describes a permission to set via PermissionEntry%5b%5d). |
-| [PermissionEntry](/api/PuppeteerSharp/PermissionEntry/) | Represents a permission entry to set via PermissionEntry%5b%5d). |
+| [PdfOptions](/api/PuppeteerSharp/PdfOptions/) | Options to be used in IPage.PdfAsync(), PdfStreamAsync(PdfOptions) and PdfDataAsync(PdfOptions). |
+| [PermissionDescriptor](/api/PuppeteerSharp/PermissionDescriptor/) | Describes a permission to set via IBrowserContext.SetPermissionAsync(). |
+| [PermissionEntry](/api/PuppeteerSharp/PermissionEntry/) | Represents a permission entry to set via IBrowserContext.SetPermissionAsync(). |
 | [PopupEventArgs](/api/PuppeteerSharp/PopupEventArgs/) | Popup event arguments. Popup. |
 | [PreconnectedPeripheral](/api/PuppeteerSharp/PreconnectedPeripheral/) | A bluetooth peripheral to be simulated. |
 | [PredefinedNetworkConditions](/api/PuppeteerSharp/PredefinedNetworkConditions/) | Predefined network conditions. |
@@ -109,7 +109,7 @@ Browser, page, frame, element, network, and launch APIs.
 | [PWAFileHandler](/api/PuppeteerSharp/PWAFileHandler/) | A file handler registered by a Progressive Web App (PWA) with the OS. |
 | [PWAFileHandlerAccept](/api/PuppeteerSharp/PWAFileHandlerAccept/) | A media type and its associated file extensions accepted by a PWAFileHandler. |
 | [PWAState](/api/PuppeteerSharp/PWAState/) | The OS-integration state of an installed web app, returned by GetPWAStateAsync(GetPWAStateOptions). |
-| [QueryOptions](/api/PuppeteerSharp/QueryOptions/) | Options for query operations like QueryOptions). |
+| [QueryOptions](/api/PuppeteerSharp/QueryOptions/) | Options for query operations like IPage.QuerySelectorAllAsync(). |
 | [Realm](/api/PuppeteerSharp/Realm/) | Represents an execution context (realm) within a frame or worker. |
 | [RecordOptions](/api/PuppeteerSharp/RecordOptions/) | Options for RecordAsync(RecordOptions). |
 | [ReloadOptions](/api/PuppeteerSharp/ReloadOptions/) | Options for ReloadAsync(ReloadOptions). |
@@ -127,11 +127,11 @@ Browser, page, frame, element, network, and launch APIs.
 | [ScreenOrientationInfo](/api/PuppeteerSharp/ScreenOrientationInfo/) | Represents screen orientation information. |
 | [ScreenRecorder](/api/PuppeteerSharp/ScreenRecorder/) | Represents a screen recording session. |
 | [ScreenRecording](/api/PuppeteerSharp/ScreenRecording/) | Represents a video stream-based screen recording session. |
-| [ScreenshotOptions](/api/PuppeteerSharp/ScreenshotOptions/) | Options to be used in ScreenshotOptions), ScreenshotStreamAsync(ScreenshotOptions) and ScreenshotDataAsync(ScreenshotOptions). |
+| [ScreenshotOptions](/api/PuppeteerSharp/ScreenshotOptions/) | Options to be used in IPage.ScreenshotAsync(), ScreenshotStreamAsync(ScreenshotOptions) and ScreenshotDataAsync(ScreenshotOptions). |
 | [SecurityDetails](/api/PuppeteerSharp/SecurityDetails/) | Represents the security details when response was received over the secure connection. |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | Exception thrown when an element selector returns null. |
 | [SessionEventArgs](/api/PuppeteerSharp/SessionEventArgs/) | Session event arguments. |
-| [SetContentOptions](/api/PuppeteerSharp/SetContentOptions/) | Options used by SetContentOptions) and SetContentOptions). |
+| [SetContentOptions](/api/PuppeteerSharp/SetContentOptions/) | Options used by IPage.SetContentAsync() and IFrame.SetContentAsync(). |
 | [SetUserAgentOptions](/api/PuppeteerSharp/SetUserAgentOptions/) | Options for SetUserAgentAsync(SetUserAgentOptions). |
 | [TabInfo](/api/PuppeteerSharp/TabInfo/) | Information about the browser tab of a page. See TabInfoAsync(). |
 | [Target](/api/PuppeteerSharp/Target/) | Target. |
@@ -150,7 +150,7 @@ Browser, page, frame, element, network, and launch APIs.
 | [WaitForOptions](/api/PuppeteerSharp/WaitForOptions/) | Timeout options. |
 | [WaitForSelectorOptions](/api/PuppeteerSharp/WaitForSelectorOptions/) | Optional waiting parameters. |
 | [WaitTaskTimeoutException](/api/PuppeteerSharp/WaitTaskTimeoutException/) | Timeout exception that might be thrown by WaitFor methods in Frame. |
-| [WebWorker](/api/PuppeteerSharp/WebWorker/) | The Worker class represents a WebWorker (<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI">https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI</a>). The events WorkerCreated and WorkerDestroyed are emitted on the page object to signal the worker lifecycle. |
+| [WebWorker](/api/PuppeteerSharp/WebWorker/) | The Worker class represents a WebWorker (https://developer.mozilla.org/en-US/docs/Web/API/WebWorkersAPI). The events WorkerCreated and WorkerDestroyed are emitted on the page object to signal the worker lifecycle. |
 | [WindowBounds](/api/PuppeteerSharp/WindowBounds/) | Bounds for a browser window. |
 | [WorkAreaInsets](/api/PuppeteerSharp/WorkAreaInsets/) | Represents work area insets for a screen. |
 | [WorkerEventArgs](/api/PuppeteerSharp/WorkerEventArgs/) | Workder created event arguments. |
@@ -160,7 +160,7 @@ Browser, page, frame, element, network, and launch APIs.
 
 | Type | Summary |
 | --- | --- |
-| [Offset](/api/PuppeteerSharp/Offset/) | Offset used in conjunction with Offset%7d). |
+| [Offset](/api/PuppeteerSharp/Offset/) | Offset used in conjunction with ElementHandle.ClickablePointAsync(). |
 | [Point](/api/PuppeteerSharp/Point/) | Represents a Point. |
 
 ## Interfaces
@@ -173,12 +173,12 @@ Browser, page, frame, element, network, and launch APIs.
 | [IBrowserFetcher](/api/PuppeteerSharp/IBrowserFetcher/) | BrowserFetcher can download and manage different versions of Chromium. |
 | [IBrowserOptions](/api/PuppeteerSharp/IBrowserOptions/) | Browser options. |
 | [ICDPConnection](/api/PuppeteerSharp/ICDPConnection/) | An ICDPConnection is an object able to send and receive messages from the browser. |
-| [ICDPSession](/api/PuppeteerSharp/ICDPSession/) | The CDPSession instances are used to talk raw Chrome Devtools Protocol: Protocol methods can be called with CommandOptions) method. Protocol events, using the MessageReceived event. Documentation on DevTools Protocol can be found here: <a href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>. csharp var client = await Page.Target.CreateCDPSessionAsync(); await client.SendAsync("Animation.enable"); client.MessageReceived += (sender, e) => { if (e.MessageID == "Animation.animationCreated") { Console.WriteLine("Animation created!"); } }; JObject response = await client.SendAsync("Animation.getPlaybackRate"); Console.WriteLine("playback rate is " + response.playbackRate); await client.SendAsync("Animation.setPlaybackRate", new { playbackRate = Convert.ToInt32(response.playbackRate / 2) }); |
+| [ICDPSession](/api/PuppeteerSharp/ICDPSession/) | The CDPSession instances are used to talk raw Chrome Devtools Protocol: Protocol methods can be called with ICDPConnection.SendAsync() method. Protocol events, using the MessageReceived event. Documentation on DevTools Protocol can be found here: https://chromedevtools.github.io/devtools-protocol/. csharp var client = await Page.Target.CreateCDPSessionAsync(); await client.SendAsync("Animation.enable"); client.MessageReceived += (sender, e) =&gt; { if (e.MessageID == "Animation.animationCreated") { Console.WriteLine("Animation created!"); } }; JObject response = await client.SendAsync("Animation.getPlaybackRate"); Console.WriteLine("playback rate is " + response.playbackRate); await client.SendAsync("Animation.setPlaybackRate", new { playbackRate = Convert.ToInt32(response.playbackRate / 2) }); |
 | [IConnectionOptions](/api/PuppeteerSharp/IConnectionOptions/) | Options for Connection creation. |
 | [IElementHandle](/api/PuppeteerSharp/IElementHandle/) | Inherits from IJSHandle. It represents an in-page DOM element. ElementHandles can be created by QuerySelectorAsync(string) or QuerySelectorAllAsync(string). |
 | [IExecutionContext](/api/PuppeteerSharp/IExecutionContext/) | The class represents a context for JavaScript execution. Examples of JavaScript contexts are: Each Frame has a separate IExecutionContext All kind of web workers have their own contexts. |
 | [IFrame](/api/PuppeteerSharp/IFrame/) | Provides methods to interact with a single page frame in Chromium. One IPage instance might have multiple IFrame instances. At every point of time, page exposes its current frame tree via the MainFrame and ChildFrames properties. IFrame object's lifecycle is controlled by three events, dispatched on the page object - FrameAttached - fires when the frame gets attached to the page. A Frame can be attached to the page only once - FrameNavigated - fired when the frame commits navigation to a different URL - FrameDetached - fired when the frame gets detached from the page. A Frame can be detached from the page only once. |
-| [IJSHandle](/api/PuppeteerSharp/IJSHandle/) | IJSHandle represents an in-page JavaScript object. JSHandles can be created with the EvaluateExpressionHandleAsync(string) and Object%5b%5d) methods. |
+| [IJSHandle](/api/PuppeteerSharp/IJSHandle/) | IJSHandle represents an in-page JavaScript object. JSHandles can be created with the EvaluateExpressionHandleAsync(string) and IPage.EvaluateFunctionHandleAsync() methods. |
 | [IPage](/api/PuppeteerSharp/IPage/) | Provides methods to interact with a single tab in Chromium. One IBrowser instance might have multiple IPage instances. |
 | [IPuppeteerUtilWrapper](/api/PuppeteerSharp/IPuppeteerUtilWrapper/) | A class that contains a method to get the PuppeteerUtil handle. |
 | [IRequest](/api/PuppeteerSharp/IRequest/) | Whenever the page sends a request, the following events are emitted by puppeteer's page: Request emitted when the request is issued by the page. Response emitted when/if the response is received for the request. RequestFinished emitted when the response body is downloaded and the request is complete. If request fails at some point, then instead of RequestFinished event (and possibly instead of Response event), the RequestFailed event is emitted. If request gets a 'redirect' response, the request is successfully finished with the RequestFinished event, and a new request is issued to a redirected url. |
@@ -203,13 +203,13 @@ Browser, page, frame, element, network, and launch APIs.
 | [HeadlessMode](/api/PuppeteerSharp/HeadlessMode/) | Headless mode. |
 | [InitiatorType](/api/PuppeteerSharp/InitiatorType/) | Type of the Initiator. |
 | [InterceptResolutionAction](/api/PuppeteerSharp/InterceptResolutionAction/) | Represents the action taken for an intercepted request. |
-| [MediaFeature](/api/PuppeteerSharp/MediaFeature/) | Media Feature. See MediaFeatureValue%7d). |
+| [MediaFeature](/api/PuppeteerSharp/MediaFeature/) | Media Feature. See IPage.EmulateMediaFeaturesAsync(). |
 | [OverridePermission](/api/PuppeteerSharp/OverridePermission/) | Override permission. |
-| [PermissionState](/api/PuppeteerSharp/PermissionState/) | Permission state for PermissionEntry%5b%5d). |
+| [PermissionState](/api/PuppeteerSharp/PermissionState/) | Permission state for IBrowserContext.SetPermissionAsync(). |
 | [Platform](/api/PuppeteerSharp/Platform/) | Platform used by a BrowserFetcher. |
 | [ProtocolType](/api/PuppeteerSharp/ProtocolType/) | Protocol used to communicate with the browser. |
 | [PWADisplayMode](/api/PuppeteerSharp/PWADisplayMode/) | If the user prefers opening an installed web app in a standalone window or in a browser tab. |
-| [RequestAbortErrorCode](/api/PuppeteerSharp/RequestAbortErrorCode/) | Abort error codes. used by Int32%7d). |
+| [RequestAbortErrorCode](/api/PuppeteerSharp/RequestAbortErrorCode/) | Abort error codes. used by IRequest.AbortAsync(). |
 | [ResourceType](/api/PuppeteerSharp/ResourceType/) | Resource type. |
 | [SameSite](/api/PuppeteerSharp/SameSite/) | SameSite values in cookies. |
 | [ScreenshotType](/api/PuppeteerSharp/ScreenshotType/) | Screenshot file type. |

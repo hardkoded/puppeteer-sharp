@@ -121,19 +121,21 @@ Closes the target. This API is experimental.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — A task that completes when the target is closed.
 
-&lt;p&gt;
 It does not create a [IPage](/api/PuppeteerSharp/IPage/) for the target, so it also closes a page target whose page
 could not be created. It does not run `beforeunload` handlers.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Throws if the target does not support closing, for example the browser target, the target of a frame
 or a dedicated worker.
-&lt;/p&gt;
-&lt;p&gt;
+
+
+
+
 Chrome destroys a service worker only after all CDP sessions attached to it detach. While a different
 session, for example one from [CreateCDPSessionAsync()](/api/PuppeteerSharp/ITarget/#PuppeteerSharp_ITarget_CreateCDPSessionAsync), stays attached to a service worker,
 the returned task might not complete.
-&lt;/p&gt;
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs#L55)
 

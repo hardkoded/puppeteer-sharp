@@ -93,7 +93,7 @@ public override IFrame[] Frames { get; }
 
 Gets all frames attached to the page.
 
-**Value:** `IFrame\[\]` — An array of all frames attached to the page.
+**Value:** `IFrame[]` — An array of all frames attached to the page.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L102)
 
@@ -163,7 +163,7 @@ public override WebWorker[] Workers { get; }
 
 Gets all workers in the page.
 
-**Value:** `WebWorker\[\]`
+**Value:** `WebWorker[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L117)
 
@@ -180,7 +180,7 @@ public override Task AuthenticateAsync(Credentials credentials)
 ```
 
 
-Provide credentials for http authentication &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"&gt;https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication&lt;/a&gt;.
+Provide credentials for http authentication [https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
 
 **Parameters**
 
@@ -297,7 +297,7 @@ Deletes cookies from the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieParam\[\]` | Cookies to delete. |
+| `cookies` | `CookieParam[]` | Cookies to delete. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -567,7 +567,7 @@ Changes the timezone of the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `timezoneId` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Timezone to set. See &lt;a href="https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1"&gt;ICU’s `metaZones.txt`&lt;/a&gt; for a list of supported timezone IDs. Passing `null` disables timezone emulation. |
+| `timezoneId` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Timezone to set. See [ICU’s `metaZones.txt`](https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1) for a list of supported timezone IDs. Passing `null` disables timezone emulation. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The viewport task.
 
@@ -804,7 +804,7 @@ public override Task<bool> HasDevToolsAsync()
 Returns true if DevTools is attached to the current page.
 Use [OpenDevToolsAsync()](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_OpenDevToolsAsync) to get the DevTools page.
 
-**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with true if DevTools is attached.
+**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task<T>` that completes with true if DevTools is attached.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L863)
 
@@ -841,7 +841,7 @@ public override Task<IPage> OpenDevToolsAsync()
 Opens DevTools for this page if not already open and returns the DevTools page.
 This method is only available in Chrome.
 
-**Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with the DevTools page.
+**Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task<T>` that completes with the DevTools page.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L860)
 
@@ -951,7 +951,7 @@ public override Task RemoveExposedFunctionAsync(string name)
 ```
 
 
-Removes a previously added function via `Action)`.
+Removes a previously added function via `IPage.ExposeFunctionAsync()`.
 
 **Parameters**
 
@@ -1118,7 +1118,7 @@ Clears all of the current cookies and then sets the cookies for the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieParam\[\]` | Cookies to set. |
+| `cookies` | `CookieParam[]` | Cookies to set. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -1195,7 +1195,7 @@ Sets the page's geolocation.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-Consider using `OverridePermission%7d)` to grant permissions for the page to read its geolocation.
+Consider using `IBrowserContext.OverridePermissionsAsync()` to grant permissions for the page to read its geolocation.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L408)
 
@@ -1256,8 +1256,8 @@ public override Task SetRequestInterceptionAsync(bool value)
 ```
 
 
-Activating request interception enables `AbortAsync`,
-`ContinueAsync` and `RespondAsync` methods.
+Activating request interception enables `IRequest.AbortAsync()`,
+`IRequest.ContinueAsync()` and `IRequest.RespondAsync()` methods.
 
 **Parameters**
 

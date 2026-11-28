@@ -12,7 +12,7 @@ namespace PuppeteerSharp
     {
         /// <summary>
         /// Raised when JavaScript within any page or worker in the browser context calls one of the console API methods, e.g. <c>console.log</c> or <c>console.dir</c>.
-        /// Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via <c>Targets()</c>.
+        /// Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via <c>PageAsync()</c> or <c>PagesAsync()</c>. <c>Targets()</c> only lists targets and does not attach to them.
         /// Service and shared workers are not attached automatically: their messages are only delivered after <c>WorkerAsync()</c> has been called for their target.
         /// With WebDriver BiDi, service and shared worker console messages are not reported.
         /// </summary>

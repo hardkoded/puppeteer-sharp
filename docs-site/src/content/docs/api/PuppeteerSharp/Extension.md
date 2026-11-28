@@ -23,7 +23,7 @@ Represents an Extension instance installed in the browser.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
-&lt;p&gt;This API is experimental.&lt;/p&gt;
+This API is experimental.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Extension.cs#L12)
 

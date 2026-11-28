@@ -38,13 +38,13 @@ public static Task EvaluateFunctionAsync(this Task<IElementHandle> elementHandle
 ```
 
 
-Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and passes it the outcome of &lt;code class="paramref"&gt;elementHandleTask&lt;/code&gt; as the first argument.
+Runs `pageFunction` within the frame and passes it the outcome of `elementHandleTask` as the first argument.
 
 **Parameters**
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `elementHandleTask` | [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) | A task that returns an [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in &lt;code class="paramref"&gt;pageFunction&lt;/code&gt;. |
+| `elementHandleTask` | [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) | A task that returns an [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in `pageFunction`. |
 | `pageFunction` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Function to be evaluated in browser context. |
 | `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `pageFunction`. |
 
@@ -54,7 +54,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If &lt;code class="paramref"&gt;elementHandleTask&lt;/code&gt; resolves to `null`. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If `elementHandleTask` resolves to `null`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L23)
 
@@ -68,13 +68,13 @@ public static Task EvaluateFunctionAsync(this Task<IJSHandle> arrayHandleTask, s
 ```
 
 
-Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and passes it the outcome of &lt;code class="paramref"&gt;arrayHandleTask&lt;/code&gt; as the first argument. Use only after [QuerySelectorAllHandleAsync(string)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_QuerySelectorAllHandleAsync_System_String_).
+Runs `pageFunction` within the frame and passes it the outcome of `arrayHandleTask` as the first argument. Use only after [QuerySelectorAllHandleAsync(string)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_QuerySelectorAllHandleAsync_System_String_).
 
 **Parameters**
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `arrayHandleTask` | [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) | A task that returns an [IJSHandle](/api/PuppeteerSharp/IJSHandle/) that represents an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in &lt;code class="paramref"&gt;pageFunction&lt;/code&gt;. |
+| `arrayHandleTask` | [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) | A task that returns an [IJSHandle](/api/PuppeteerSharp/IJSHandle/) that represents an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in `pageFunction`. |
 | `pageFunction` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Function to be evaluated in browser context. |
 | `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `pageFunction`. |
 
@@ -92,7 +92,7 @@ public static Task<T> EvaluateFunctionAsync<T>(this IElementHandle elementHandle
 ```
 
 
-Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and passes it the outcome the &lt;code class="paramref"&gt;elementHandle&lt;/code&gt; as the first argument.
+Runs `pageFunction` within the frame and passes it the outcome the `elementHandle` as the first argument.
 
 **Type parameters**
 
@@ -104,7 +104,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `elementHandle` | [IElementHandle](/api/PuppeteerSharp/IElementHandle/) | An [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in &lt;code class="paramref"&gt;pageFunction&lt;/code&gt;. |
+| `elementHandle` | [IElementHandle](/api/PuppeteerSharp/IElementHandle/) | An [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in `pageFunction`. |
 | `pageFunction` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Function to be evaluated in browser context. |
 | `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `pageFunction`. |
 
@@ -114,7 +114,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If &lt;code class="paramref"&gt;elementHandle&lt;/code&gt; is `null`. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If `elementHandle` is `null`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L69)
 
@@ -128,7 +128,7 @@ public static Task<T> EvaluateFunctionAsync<T>(this IJSHandle arrayHandle, strin
 ```
 
 
-Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and passes it the outcome of &lt;code class="paramref"&gt;arrayHandle&lt;/code&gt; as the first argument. Use only after [QuerySelectorAllHandleAsync(string)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_QuerySelectorAllHandleAsync_System_String_).
+Runs `pageFunction` within the frame and passes it the outcome of `arrayHandle` as the first argument. Use only after [QuerySelectorAllHandleAsync(string)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_QuerySelectorAllHandleAsync_System_String_).
 
 **Type parameters**
 
@@ -140,7 +140,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `arrayHandle` | [IJSHandle](/api/PuppeteerSharp/IJSHandle/) | An [IJSHandle](/api/PuppeteerSharp/IJSHandle/) that represents an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in &lt;code class="paramref"&gt;pageFunction&lt;/code&gt;. |
+| `arrayHandle` | [IJSHandle](/api/PuppeteerSharp/IJSHandle/) | An [IJSHandle](/api/PuppeteerSharp/IJSHandle/) that represents an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in `pageFunction`. |
 | `pageFunction` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Function to be evaluated in browser context. |
 | `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `pageFunction`. |
 
@@ -158,7 +158,7 @@ public static Task<T> EvaluateFunctionAsync<T>(this Task<IElementHandle> element
 ```
 
 
-Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and passes it the outcome of &lt;code class="paramref"&gt;elementHandleTask&lt;/code&gt; as the first argument.
+Runs `pageFunction` within the frame and passes it the outcome of `elementHandleTask` as the first argument.
 
 **Type parameters**
 
@@ -170,7 +170,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `elementHandleTask` | [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) | A task that returns an [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in &lt;code class="paramref"&gt;pageFunction&lt;/code&gt;. |
+| `elementHandleTask` | [Task&lt;IElementHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) | A task that returns an [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in `pageFunction`. |
 | `pageFunction` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Function to be evaluated in browser context. |
 | `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `pageFunction`. |
 
@@ -180,7 +180,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 | Type | Condition |
 | --- | --- |
-| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If &lt;code class="paramref"&gt;elementHandleTask&lt;/code&gt; resolves to `null`. |
+| [SelectorException](/api/PuppeteerSharp/SelectorException/) | If `elementHandleTask` resolves to `null`. |
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PuppeteerHandleExtensions.cs#L38)
 
@@ -194,7 +194,7 @@ public static Task<T> EvaluateFunctionAsync<T>(this Task<IJSHandle> arrayHandleT
 ```
 
 
-Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and passes it the outcome of &lt;code class="paramref"&gt;arrayHandleTask&lt;/code&gt; as the first argument. Use only after [QuerySelectorAllHandleAsync(string)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_QuerySelectorAllHandleAsync_System_String_).
+Runs `pageFunction` within the frame and passes it the outcome of `arrayHandleTask` as the first argument. Use only after [QuerySelectorAllHandleAsync(string)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_QuerySelectorAllHandleAsync_System_String_).
 
 **Type parameters**
 
@@ -206,7 +206,7 @@ Runs &lt;code class="paramref"&gt;pageFunction&lt;/code&gt; within the frame and
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `arrayHandleTask` | [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) | A task that returns an [IJSHandle](/api/PuppeteerSharp/IJSHandle/) that represents an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in &lt;code class="paramref"&gt;pageFunction&lt;/code&gt;. |
+| `arrayHandleTask` | [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) | A task that returns an [IJSHandle](/api/PuppeteerSharp/IJSHandle/) that represents an array of [IElementHandle](/api/PuppeteerSharp/IElementHandle/) that will be used as the first argument in `pageFunction`. |
 | `pageFunction` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Function to be evaluated in browser context. |
 | `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `pageFunction`. |
 

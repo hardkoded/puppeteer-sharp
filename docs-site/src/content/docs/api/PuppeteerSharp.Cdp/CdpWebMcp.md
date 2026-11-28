@@ -108,6 +108,6 @@ public WebMcpTool[] Tools()
 
 Gets all WebMCP tools registered on the page.
 
-**Returns:** `WebMcpTool\[\]` — Array of registered tools.
+**Returns:** `WebMcpTool[]` — Array of registered tools.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpWebMcp.cs#L77)

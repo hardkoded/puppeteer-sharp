@@ -42,7 +42,7 @@ public FunctionCoverage[] Functions { get; set; }
 
 Functions contained in the script that has coverage data.
 
-**Value:** `FunctionCoverage\[\]`
+**Value:** `FunctionCoverage[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageCoverage/ScriptCoverage.cs#L21)
 
