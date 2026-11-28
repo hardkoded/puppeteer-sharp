@@ -11,10 +11,22 @@ namespace PuppeteerSharp.Helpers
 {
     internal static class ProtocolStreamReader
     {
+        /// <summary>
+        /// Reads a protocol stream as a string, writing it to <paramref name="outputStream"/> if provided.
+        /// </summary>
+        /// <param name="client">Session that owns the stream.</param>
+        /// <param name="handle">Stream handle.</param>
+        /// <param name="outputStream">Optional destination stream.</param>
+        /// <param name="abortSignal">
+        /// When this task completes, pending protocol calls are abandoned. Writes are always finished,
+        /// so <paramref name="outputStream"/> is no longer in use once the returned task completes.
+        /// </param>
+        /// <returns>The content of the stream.</returns>
         internal static async Task<string> ReadProtocolStreamStringAsync(
             CDPSession client,
             string handle,
-            Stream outputStream
+            Stream outputStream,
+            Task abortSignal
         )
         {
             var result = new StringBuilder();
@@ -23,8 +35,13 @@ namespace PuppeteerSharp.Helpers
 
             while (!eof)
             {
-                var response = await client
-                    .SendAsync<IOReadResponse>("IO.read", new IOReadRequest { Handle = handle })
+                var response = await UnlessAbortedAsync(
+                        client.SendAsync<IOReadResponse>(
+                            "IO.read",
+                            new IOReadRequest { Handle = handle }
+                        ),
+                        abortSignal
+                    )
                     .ConfigureAwait(false);
 
                 eof = response.Eof;
@@ -43,8 +60,10 @@ namespace PuppeteerSharp.Helpers
                 }
             }
 
-            await client
-                .SendAsync("IO.close", new IOCloseRequest { Handle = handle })
+            await UnlessAbortedAsync(
+                    client.SendAsync("IO.close", new IOCloseRequest { Handle = handle }),
+                    abortSignal
+                )
                 .ConfigureAwait(false);
 
             return result.ToString();
@@ -165,6 +184,16 @@ namespace PuppeteerSharp.Helpers
                 ArrayPool<byte>.Shared.Return(utf8Buffer);
                 ArrayPool<byte>.Shared.Return(decodeBuffer);
             }
+        }
+
+        private static async Task<T> UnlessAbortedAsync<T>(Task<T> call, Task abortSignal)
+        {
+            if (await Task.WhenAny(call, abortSignal).ConfigureAwait(false) != call)
+            {
+                throw new TargetClosedException("Protocol stream read aborted: Target closed.");
+            }
+
+            return await call.ConfigureAwait(false);
         }
 
 #if NET10_0_OR_GREATER
