@@ -1,6 +1,6 @@
 ---
 title: "MediaFeature"
-description: "Media Feature. See MediaFeatureValue%7d)."
+description: "Media Feature. See EmulateMediaFeaturesAsync()."
 editUrl: false
 prev: false
 next: false
@@ -20,7 +20,7 @@ public enum MediaFeature
 ```
 
 
-Media Feature. See `MediaFeatureValue%7d)`.
+Media Feature. See `EmulateMediaFeaturesAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/MediaFeature.cs#L10)
 

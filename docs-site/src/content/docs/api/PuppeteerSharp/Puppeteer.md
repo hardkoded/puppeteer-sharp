@@ -215,9 +215,9 @@ for a description of the differences between Chromium and Chrome.
 
 Environment Variables
 Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable)() to aid its operations.
-- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See `ILoggerFactory)` on how executable path is inferred.
+- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See `LaunchAsync()` on how executable path is inferred.
   **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
-- `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `ILoggerFactory)`.
+- `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `LaunchAsync()`.
   **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Puppeteer.cs#L104)

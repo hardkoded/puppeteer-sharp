@@ -369,7 +369,7 @@ public virtual Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFuncti
 ```
 
 
-Waits for the provided function, &lt;code class="paramref"&gt;script&lt;/code&gt;, to return a truthy value when
+Waits for the provided function, `script`, to return a truthy value when
 evaluated in the worker's context.
 
 **Parameters**
@@ -378,7 +378,7 @@ evaluated in the worker's context.
 | --- | --- | --- |
 | `script` | [string](https://learn.microsoft.com/dotnet/api/system.string) | Function to be evaluated in the worker context until it returns a truthy value. |
 | `options` | [WaitForFunctionOptions](/api/PuppeteerSharp/WaitForFunctionOptions/) | Options for configuring waiting behavior. |
-| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to &lt;code class="paramref"&gt;script&lt;/code&gt;. |
+| `args` | [object\[\]](https://learn.microsoft.com/dotnet/api/system.object) | Arguments to pass to `script`. |
 
 **Returns:** [Task&lt;IJSHandle&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) that resolves to a [IJSHandle](/api/PuppeteerSharp/IJSHandle/) of the truthy value returned by the function.
 

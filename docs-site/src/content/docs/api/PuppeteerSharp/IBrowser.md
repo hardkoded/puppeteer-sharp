@@ -166,7 +166,7 @@ Process Process { get; }
 ```
 
 
-Gets the spawned browser process. Returns `null` if the browser instance was created with `ILoggerFactory)` method.
+Gets the spawned browser process. Returns `null` if the browser instance was created with `ConnectAsync()` method.
 
 **Value:** [Process](https://learn.microsoft.com/dotnet/api/system.diagnostics.process)
 
@@ -204,7 +204,7 @@ Gets the Browser websocket url.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-Browser websocket endpoint which can be used as an argument to `ILoggerFactory)`.
+Browser websocket endpoint which can be used as an argument to `ConnectAsync()`.
 The format is `ws://${host}:${port}/devtools/browser/[id]`
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`.
 Learn more about the devtools protocol [https://chromedevtools.github.io/devtools-protocol](https://chromedevtools.github.io/devtools-protocol)
@@ -683,7 +683,7 @@ Gets the browser's original user agent.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the browser's original user agent.
 
-Pages can override browser user agent with `UserAgentMetadata)`.
+Pages can override browser user agent with `SetUserAgentAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs#L207)
 

@@ -38,7 +38,7 @@ bool EnqueueAsyncMessages { get; set; }
 ```
 
 
-Affects how responses to `CommandOptions)` are returned to the caller.
+Affects how responses to `SendAsync()` are returned to the caller.
 
 **Value:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean)
 

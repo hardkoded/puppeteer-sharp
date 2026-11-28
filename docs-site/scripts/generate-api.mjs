@@ -383,8 +383,16 @@ function labelFor(uid) {
     if (ref?.name) return ref.name;
     const item = byUid.get(uid);
     if (item) return displayName(item);
-    const short = uid.split(".").pop() || uid;
-    return short.replace(/`(\d+)/g, "<T>");
+    let decoded = uid;
+    try {
+        decoded = decodeURIComponent(uid);
+    } catch {
+        // Keep the raw uid when it is not valid percent-encoding.
+    }
+    const parenthesis = decoded.indexOf("(");
+    const name = parenthesis >= 0 ? decoded.slice(0, parenthesis) : decoded;
+    const short = name.split(".").pop() || name;
+    return `${short.replace(/`+(\d+)/g, "<T>")}${parenthesis >= 0 ? "()" : ""}`;
 }
 
 function displayName(item) {
@@ -481,10 +489,14 @@ function renderComment(value, fromId) {
     text = text.replace(/<xref href="([^"]+)"[^>]*\/>/gi, (_, href) => linkToUid(fromId, decode(href)));
     text = text.replace(/<see(?:also)?\s+cref="([^"]+)"\s*\/>/gi, (_, cref) => linkToUid(fromId, cref));
     text = text.replace(/<para>([\s\S]*?)<\/para>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`);
-    text = text.replace(/<p>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`);
-    text = text.replace(/<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, inner) => `[${inner.trim()}](${decode(href)})`);
+    text = text
+        .split(/(```[\s\S]*?```)/g)
+        .map((part, index) => index % 2 === 1 ? part : part
+            .replace(/<p>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`)
+            .replace(/<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, inner) => `[${inner.trim()}](${decode(href)})`))
+        .join("");
     text = text.replace(/<br\s*\/?>/gi, "\n");
-    text = text.replace(/<(c|code)>([\s\S]*?)<\/\1>/gi, (_, _tag, code) => `\`${decode(code).replace(/`/g, "")}\``);
+    text = text.replace(/<(c|code)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/gi, (_, _tag, code) => `\`${decode(code).replace(/`/g, "")}\``);
     text = text.replace(/<paramref\s+name="([^"]+)"\s*\/>/gi, "`$1`");
     text = text.replace(/<typeparamref\s+name="([^"]+)"\s*\/>/gi, "`$1`");
     text = text.replace(/<(strong|b)>([\s\S]*?)<\/\1>/gi, "**$2**");

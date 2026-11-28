@@ -1,6 +1,6 @@
 ---
 title: "NavigationOptions"
-description: "Navigation options used by WaitForNavigationAsync(NavigationOptions) and NavigationOptions)."
+description: "Navigation options used by WaitForNavigationAsync(NavigationOptions) and SetContentAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public record NavigationOptions : IEquatable<NavigationOptions>
 ```
 
 
-Navigation options used by [WaitForNavigationAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_) and `NavigationOptions)`.
+Navigation options used by [WaitForNavigationAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_) and `SetContentAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
@@ -59,7 +59,7 @@ public string Referer { get; set; }
 ```
 
 
-Referer header value. If provided it will take prefrence over the referer header value set by `String%7d)`.
+Referer header value. If provided it will take prefrence over the referer header value set by `SetExtraHttpHeadersAsync()`.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The referer.
 
@@ -76,7 +76,7 @@ public string ReferrerPolicy { get; set; }
 ```
 
 
-Referrer policy. If provided it will take preference over the referer-policy header value set by `String%7d)`.
+Referrer policy. If provided it will take preference over the referer-policy header value set by `SetExtraHttpHeadersAsync()`.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 

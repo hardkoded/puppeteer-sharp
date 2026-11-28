@@ -276,7 +276,7 @@ Waits for Base process exit within a given timeout.
 | --- | --- | --- |
 | `timeout` | [TimeSpan?](https://learn.microsoft.com/dotnet/api/system.timespan) | The maximum wait period. |
 
-**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — `true` if Base process has exited within the given &lt;code class="paramref"&gt;timeout&lt;/code&gt;,
+**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — `true` if Base process has exited within the given `timeout`,
     or `false` otherwise.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/LauncherBase.cs#L151)

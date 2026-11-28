@@ -1,6 +1,6 @@
 ---
 title: "SetContentOptions"
-description: "Options used by SetContentOptions) and SetContentOptions)."
+description: "Options used by SetContentAsync() and SetContentAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,8 +19,8 @@ public record SetContentOptions : IEquatable<SetContentOptions>
 ```
 
 
-Options used by `SetContentOptions)` and
-`SetContentOptions)`.
+Options used by `SetContentAsync()` and
+`SetContentAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

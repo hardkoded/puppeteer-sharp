@@ -328,7 +328,7 @@ Task<T> JsonAsync<T>(JsonSerializerOptions options = null)
 ```
 
 
-Returns a Task which resolves to a &lt;code class="typeparamref"&gt;T&lt;/code&gt; representation of response body.
+Returns a Task which resolves to a `T` representation of response body.
 
 **Type parameters**
 
@@ -342,7 +342,7 @@ Returns a Task which resolves to a &lt;code class="typeparamref"&gt;T&lt;/code&g
 | --- | --- | --- |
 | `options` | [JsonSerializerOptions](https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions) | Parsing options. |
 
-**Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a &lt;code class="typeparamref"&gt;T&lt;/code&gt; representation of response body.
+**Returns:** [Task&lt;T&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A Task which resolves to a `T` representation of response body.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IResponse.cs#L138)
 

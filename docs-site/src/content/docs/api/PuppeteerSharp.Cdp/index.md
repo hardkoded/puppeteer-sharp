@@ -39,7 +39,7 @@ Chrome DevTools Protocol browser and page implementation.
 | [WebMcpTool](/api/PuppeteerSharp.Cdp/WebMcpTool/) | Represents a registered WebMCP tool available on the page. |
 | [WebMcpToolCall](/api/PuppeteerSharp.Cdp/WebMcpToolCall/) | Represents a pending or completed WebMCP tool invocation call. |
 | [WebMcpToolCallResult](/api/PuppeteerSharp.Cdp/WebMcpToolCallResult/) | Result of a WebMCP tool invocation. |
-| [WebMcpToolExecuteOptions](/api/PuppeteerSharp.Cdp/WebMcpToolExecuteOptions/) | Options for WebMcpToolExecuteOptions). |
+| [WebMcpToolExecuteOptions](/api/PuppeteerSharp.Cdp/WebMcpToolExecuteOptions/) | Options for ExecuteAsync(). |
 | [WebMcpToolsAddedEventArgs](/api/PuppeteerSharp.Cdp/WebMcpToolsAddedEventArgs/) | Event args for when WebMCP tools are added. |
 | [WebMcpToolsRemovedEventArgs](/api/PuppeteerSharp.Cdp/WebMcpToolsRemovedEventArgs/) | Event args for when WebMCP tools are removed. |
 

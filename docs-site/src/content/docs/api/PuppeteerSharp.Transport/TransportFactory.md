@@ -29,6 +29,6 @@ Delegate for creation of [IConnectionTransport](/api/PuppeteerSharp.Transport/IC
 | `options` | [IConnectionOptions](/api/PuppeteerSharp/IConnectionOptions/) | Connection options. |
 | `cancellationToken` | [CancellationToken](https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken) | A cancellation token. |
 
-**Returns:** [Task&lt;IConnectionTransport&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` instance for the asynchronous socket create and connect operation.
+**Returns:** [Task&lt;IConnectionTransport&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task&lt;T&gt;` instance for the asynchronous socket create and connect operation.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Transport/TransportFactory.cs#L14)

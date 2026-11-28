@@ -1,6 +1,6 @@
 ---
 title: "WebMcpToolExecuteOptions"
-description: "Options for WebMcpToolExecuteOptions)."
+description: "Options for ExecuteAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class WebMcpToolExecuteOptions
 ```
 
 
-Options for `WebMcpToolExecuteOptions)`.
+Options for `ExecuteAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

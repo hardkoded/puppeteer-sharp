@@ -58,7 +58,7 @@ public static Task WhenAllFailFast(this Task[] tasks)
 
 
 Awaits all tasks, but fails immediately if any task fails (like JavaScript's Promise.all).
-Unlike `Task%5b%5d)` which waits for all tasks to complete before throwing,
+Unlike `WhenAll()` which waits for all tasks to complete before throwing,
 this method throws immediately when any task fails or is canceled.
 
 **Parameters**
@@ -82,7 +82,7 @@ public static Task WithTimeout(this Task task, Func<Task> timeoutAction, int mil
 ```
 
 
-Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after &lt;code class="paramref"&gt;milliseconds&lt;/code&gt; milliseconds.
+Cancels the `task` after `milliseconds` milliseconds.
 
 **Parameters**
 
@@ -107,7 +107,7 @@ public static Task WithTimeout(this Task task, Func<Task> timeoutAction, TimeSpa
 ```
 
 
-Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after a given &lt;code class="paramref"&gt;timeout&lt;/code&gt; period.
+Cancels the `task` after a given `timeout` period.
 
 **Parameters**
 
@@ -132,7 +132,7 @@ public static Task WithTimeout(this Task task, int? milliseconds = null, Func<Ti
 ```
 
 
-Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after &lt;code class="paramref"&gt;milliseconds&lt;/code&gt; milliseconds.
+Cancels the `task` after `milliseconds` milliseconds.
 
 **Parameters**
 
@@ -157,7 +157,7 @@ public static Task WithTimeout(this Task task, TimeSpan timeout, Func<TimeSpan, 
 ```
 
 
-Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after a given &lt;code class="paramref"&gt;timeout&lt;/code&gt; period.
+Cancels the `task` after a given `timeout` period.
 
 **Parameters**
 
@@ -182,7 +182,7 @@ public static Task<T> WithTimeout<T>(this Task<T> task, Action timeoutAction, in
 ```
 
 
-Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after &lt;code class="paramref"&gt;milliseconds&lt;/code&gt; milliseconds.
+Cancels the `task` after `milliseconds` milliseconds.
 
 **Type parameters**
 
@@ -212,7 +212,7 @@ public static Task<T> WithTimeout<T>(this Task<T> task, Action timeoutAction, Ti
 ```
 
 
-Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after a given &lt;code class="paramref"&gt;timeout&lt;/code&gt; period.
+Cancels the `task` after a given `timeout` period.
 
 **Type parameters**
 
@@ -242,7 +242,7 @@ public static Task<T> WithTimeout<T>(this Task<T> task, int? milliseconds = null
 ```
 
 
-Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after &lt;code class="paramref"&gt;milliseconds&lt;/code&gt; milliseconds.
+Cancels the `task` after `milliseconds` milliseconds.
 
 **Type parameters**
 
@@ -272,7 +272,7 @@ public static Task<T> WithTimeout<T>(this Task<T> task, TimeSpan timeout, Func<T
 ```
 
 
-Cancels the &lt;code class="paramref"&gt;task&lt;/code&gt; after a given &lt;code class="paramref"&gt;timeout&lt;/code&gt; period.
+Cancels the `task` after a given `timeout` period.
 
 **Type parameters**
 

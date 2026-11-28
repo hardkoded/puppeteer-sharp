@@ -237,7 +237,7 @@ Gets the browser's original user agent.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the browser's original user agent.
 
-Pages can override browser user agent with `UserAgentMetadata)`.
+Pages can override browser user agent with `SetUserAgentAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowser.cs#L160)
 

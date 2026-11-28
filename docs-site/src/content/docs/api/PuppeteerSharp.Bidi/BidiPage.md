@@ -804,7 +804,7 @@ public override Task<bool> HasDevToolsAsync()
 Returns true if DevTools is attached to the current page.
 Use [OpenDevToolsAsync()](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_OpenDevToolsAsync) to get the DevTools page.
 
-**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with true if DevTools is attached.
+**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task&lt;T&gt;` that completes with true if DevTools is attached.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L863)
 
@@ -841,7 +841,7 @@ public override Task<IPage> OpenDevToolsAsync()
 Opens DevTools for this page if not already open and returns the DevTools page.
 This method is only available in Chrome.
 
-**Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task%601` that completes with the DevTools page.
+**Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task&lt;T&gt;` that completes with the DevTools page.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L860)
 
@@ -951,7 +951,7 @@ public override Task RemoveExposedFunctionAsync(string name)
 ```
 
 
-Removes a previously added function via `Action)`.
+Removes a previously added function via `ExposeFunctionAsync()`.
 
 **Parameters**
 
@@ -1195,7 +1195,7 @@ Sets the page's geolocation.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-Consider using `OverridePermission%7d)` to grant permissions for the page to read its geolocation.
+Consider using `OverridePermissionsAsync()` to grant permissions for the page to read its geolocation.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiPage.cs#L408)
 
@@ -1256,8 +1256,8 @@ public override Task SetRequestInterceptionAsync(bool value)
 ```
 
 
-Activating request interception enables `AbortAsync`,
-`ContinueAsync` and `RespondAsync` methods.
+Activating request interception enables `AbortAsync()`,
+`ContinueAsync()` and `RespondAsync()` methods.
 
 **Parameters**
 

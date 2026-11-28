@@ -665,7 +665,7 @@ Indicates whether the current object is equal to another object of the same type
 | --- | --- | --- |
 | `other` | [SerializedAXNode](./) | An object to compare with this object. |
 
-**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — [true](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) if the current object is equal to the &lt;code class="paramref"&gt;other&lt;/code&gt; parameter; otherwise, [false](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
+**Returns:** [bool](https://learn.microsoft.com/dotnet/api/system.boolean) — [true](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool) if the current object is equal to the `other` parameter; otherwise, [false](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L201)
 

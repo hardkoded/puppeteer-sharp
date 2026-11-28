@@ -1,6 +1,6 @@
 ---
 title: "QueryOptions"
-description: "Options for query operations like QueryOptions)."
+description: "Options for query operations like QuerySelectorAllAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class QueryOptions
 ```
 
 
-Options for query operations like `QueryOptions)`.
+Options for query operations like `QuerySelectorAllAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
@@ -39,7 +39,7 @@ public bool Isolate { get; set; }
 
 
 Whether to run the query in isolation. When returning many elements
-from `QueryOptions)` or similar methods,
+from `QuerySelectorAllAsync()` or similar methods,
 it might be useful to turn off the isolation to improve performance.
 By default, the querying code will be executed in a separate sandbox realm.
 

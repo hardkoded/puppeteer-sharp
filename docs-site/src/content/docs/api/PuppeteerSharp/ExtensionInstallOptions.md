@@ -1,6 +1,6 @@
 ---
 title: "ExtensionInstallOptions"
-description: "Options for ExtensionInstallOptions)."
+description: "Options for InstallExtensionAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class ExtensionInstallOptions
 ```
 
 
-Options for `ExtensionInstallOptions)`.
+Options for `InstallExtensionAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

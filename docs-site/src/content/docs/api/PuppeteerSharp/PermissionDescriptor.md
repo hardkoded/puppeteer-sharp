@@ -1,6 +1,6 @@
 ---
 title: "PermissionDescriptor"
-description: "Describes a permission to set via PermissionEntry%5b%5d)."
+description: "Describes a permission to set via SetPermissionAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class PermissionDescriptor
 ```
 
 
-Describes a permission to set via `PermissionEntry%5b%5d)`.
+Describes a permission to set via `SetPermissionAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

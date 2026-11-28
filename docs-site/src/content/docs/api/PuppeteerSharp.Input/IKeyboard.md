@@ -1,6 +1,6 @@
 ---
 title: "IKeyboard"
-description: "Keyboard provides an api for managing a virtual keyboard. The high level api is TypeOptions), which takes raw characters and generates proper keydown, keypre..."
+description: "Keyboard provides an api for managing a virtual keyboard. The high level api is TypeAsync(), which takes raw characters and generates proper keydown, keypres..."
 editUrl: false
 prev: false
 next: false
@@ -19,9 +19,9 @@ public interface IKeyboard
 ```
 
 
-Keyboard provides an api for managing a virtual keyboard. The high level api is `TypeOptions)`, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+Keyboard provides an api for managing a virtual keyboard. The high level api is `TypeAsync()`, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
 
-For finer control, you can use `DownOptions)`, [UpAsync(string)](#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_), and [SendCharacterAsync(string)](#PuppeteerSharp_Input_IKeyboard_SendCharacterAsync_System_String_) to manually fire events as if they were generated from a real keyboard.
+For finer control, you can use `DownAsync()`, [UpAsync(string)](#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_), and [SendCharacterAsync(string)](#PuppeteerSharp_Input_IKeyboard_SendCharacterAsync_System_String_) to manually fire events as if they were generated from a real keyboard.
 
 **Derived:** [CdpKeyboard](/api/PuppeteerSharp.Cdp/CdpKeyboard/), [Keyboard](/api/PuppeteerSharp.Input/Keyboard/)
 
@@ -53,7 +53,7 @@ Dispatches a `keydown` event.
 
 If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [UpAsync(string)](#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_)
-After the key is pressed once, subsequent calls to `DownOptions)` will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to `true`. To release the key, use [UpAsync(string)](#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
+After the key is pressed once, subsequent calls to `DownAsync()` will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to `true`. To release the key, use [UpAsync(string)](#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs#L23)
 
@@ -68,7 +68,7 @@ Task PressAsync(string key, PressOptions options = null)
 ```
 
 
-Shortcut for `DownOptions)` and [UpAsync(string)](#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
+Shortcut for `DownAsync()` and [UpAsync(string)](#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
 
 **Parameters**
 
@@ -79,8 +79,8 @@ Shortcut for `DownOptions)` and [UpAsync(string)](#PuppeteerSharp_Input_IKeyboar
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-If &lt;code class="paramref"&gt;key&lt;/code&gt; is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The [Text](/api/PuppeteerSharp.Input/DownOptions/#PuppeteerSharp_Input_DownOptions_Text) option can be specified to force an input event to be generated.
-Modifier keys DO effect `PressOptions)`. Holding down `Shift` will type the text in upper case.
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The [Text](/api/PuppeteerSharp.Input/DownOptions/#PuppeteerSharp_Input_DownOptions_Text) option can be specified to force an input event to be generated.
+Modifier keys DO effect `PressAsync()`. Holding down `Shift` will type the text in upper case.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs#L35)
 
@@ -129,7 +129,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-To press a special key, like `Control` or `ArrowDown`, use `PressOptions)`.
+To press a special key, like `Control` or `ArrowDown`, use `PressAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs#L53)
 

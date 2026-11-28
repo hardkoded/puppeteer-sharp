@@ -1,6 +1,6 @@
 ---
 title: "MessageException"
-description: "Exception thrown by. CommandOptions)"
+description: "Exception thrown by. SendAsync<T>()"
 editUrl: false
 prev: false
 next: false
@@ -20,7 +20,7 @@ public class MessageException : PuppeteerException, ISerializable
 ```
 
 
-Exception thrown by. `CommandOptions)`
+Exception thrown by. `SendAsync&lt;T&gt;()`
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → [Exception](https://learn.microsoft.com/dotnet/api/system.exception) → [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/)
 

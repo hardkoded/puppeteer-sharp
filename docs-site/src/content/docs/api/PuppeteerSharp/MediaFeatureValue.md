@@ -1,6 +1,6 @@
 ---
 title: "MediaFeatureValue"
-description: "Media Feature. MediaFeatureValue%7d)."
+description: "Media Feature. EmulateMediaFeaturesAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class MediaFeatureValue
 ```
 
 
-Media Feature. `MediaFeatureValue%7d)`.
+Media Feature. `EmulateMediaFeaturesAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

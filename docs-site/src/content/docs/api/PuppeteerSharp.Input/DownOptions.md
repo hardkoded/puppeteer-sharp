@@ -1,6 +1,6 @@
 ---
 title: "DownOptions"
-description: "options to use with DownOptions)."
+description: "options to use with DownAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class DownOptions
 ```
 
 
-options to use with `DownOptions)`.
+options to use with `DownAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
