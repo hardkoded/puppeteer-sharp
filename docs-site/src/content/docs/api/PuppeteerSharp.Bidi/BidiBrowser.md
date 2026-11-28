@@ -131,7 +131,7 @@ Gets the Browser websocket url.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-Browser websocket endpoint which can be used as an argument to `ConnectAsync()`.
+Browser websocket endpoint which can be used as an argument to `Puppeteer.ConnectAsync()`.
 The format is `ws://${host}:${port}/devtools/browser/[id]`
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`.
 Learn more about the devtools protocol [https://chromedevtools.github.io/devtools-protocol](https://chromedevtools.github.io/devtools-protocol)
@@ -179,7 +179,7 @@ public override IBrowserContext[] BrowserContexts()
 
 Returns an array of all open [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/). In a newly created browser, this will return a single instance of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/).
 
-**Returns:** `IBrowserContext\[\]` — An array of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) objects.
+**Returns:** `IBrowserContext[]` — An array of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) objects.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L295)
 
@@ -311,7 +311,7 @@ Gets the browser's original user agent.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the browser's original user agent.
 
-Pages can override browser user agent with `SetUserAgentAsync()`.
+Pages can override browser user agent with `IPage.SetUserAgentAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L131)
 
@@ -542,7 +542,7 @@ public override ITarget[] Targets()
 
 Returns An Array of all active targets.
 
-**Returns:** `ITarget\[\]` — An Array of all active targets.
+**Returns:** `ITarget[]` — An Array of all active targets.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Bidi/BidiBrowser.cs#L275)
 

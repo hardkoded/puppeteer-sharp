@@ -105,7 +105,7 @@ public override IBrowserContext[] BrowserContexts()
 
 Returns an array of all open [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/). In a newly created browser, this will return a single instance of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/).
 
-**Returns:** `IBrowserContext\[\]` — An array of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) objects.
+**Returns:** `IBrowserContext[]` — An array of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) objects.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowser.cs#L203)
 
@@ -237,7 +237,7 @@ Gets the browser's original user agent.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the browser's original user agent.
 
-Pages can override browser user agent with `SetUserAgentAsync()`.
+Pages can override browser user agent with `IPage.SetUserAgentAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowser.cs#L160)
 
@@ -502,7 +502,7 @@ public override ITarget[] Targets()
 
 Returns An Array of all active targets.
 
-**Returns:** `ITarget\[\]` — An Array of all active targets.
+**Returns:** `ITarget[]` — An Array of all active targets.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/CdpBrowser.cs#L152)
 

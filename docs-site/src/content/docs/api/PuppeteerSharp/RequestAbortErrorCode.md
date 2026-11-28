@@ -1,6 +1,6 @@
 ---
 title: "RequestAbortErrorCode"
-description: "Abort error codes. used by AbortAsync()."
+description: "Abort error codes. used by IRequest.AbortAsync()."
 editUrl: false
 prev: false
 next: false
@@ -20,7 +20,7 @@ public enum RequestAbortErrorCode
 ```
 
 
-Abort error codes. used by `AbortAsync()`.
+Abort error codes. used by `IRequest.AbortAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/RequestAbortErrorCode.cs#L9)
 

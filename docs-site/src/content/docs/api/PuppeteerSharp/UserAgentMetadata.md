@@ -75,7 +75,7 @@ public UserAgentBrandVersion[] Brands { get; set; }
 
 Brands.
 
-**Value:** `UserAgentBrandVersion\[\]`
+**Value:** `UserAgentBrandVersion[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/UserAgentMetadata.cs#L12)
 

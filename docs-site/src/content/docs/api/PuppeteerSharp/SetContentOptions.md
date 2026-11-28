@@ -1,6 +1,6 @@
 ---
 title: "SetContentOptions"
-description: "Options used by SetContentAsync() and SetContentAsync()."
+description: "Options used by IPage.SetContentAsync() and IFrame.SetContentAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,8 +19,8 @@ public record SetContentOptions : IEquatable<SetContentOptions>
 ```
 
 
-Options used by `SetContentAsync()` and
-`SetContentAsync()`.
+Options used by `IPage.SetContentAsync()` and
+`IFrame.SetContentAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
@@ -87,7 +87,7 @@ When to consider the operation succeeded, defaults to [Load](/api/PuppeteerSharp
 Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), the operation is considered to be successful
 after all events have been fired.
 
-**Value:** `WaitUntilNavigation\[\]`
+**Value:** `WaitUntilNavigation[]`
 
 [Networkidle0](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Networkidle0) and [Networkidle2](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Networkidle2)
 are not supported here.

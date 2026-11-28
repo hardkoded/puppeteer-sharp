@@ -1,6 +1,6 @@
 ---
 title: "IJSHandle"
-description: "IJSHandle represents an in-page JavaScript object. JSHandles can be created with the EvaluateExpressionHandleAsync(string) and EvaluateFunctionHandleAsync()..."
+description: "IJSHandle represents an in-page JavaScript object. JSHandles can be created with the EvaluateExpressionHandleAsync(string) and IPage.EvaluateFunctionHandleAs..."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public interface IJSHandle : IAsyncDisposable
 ```
 
 
-IJSHandle represents an in-page JavaScript object. JSHandles can be created with the [EvaluateExpressionHandleAsync(string)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_EvaluateExpressionHandleAsync_System_String_) and `EvaluateFunctionHandleAsync()` methods.
+IJSHandle represents an in-page JavaScript object. JSHandles can be created with the [EvaluateExpressionHandleAsync(string)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_EvaluateExpressionHandleAsync_System_String_) and `IPage.EvaluateFunctionHandleAsync()` methods.
 
 **Derived:** [CdpElementHandle](/api/PuppeteerSharp.Cdp/CdpElementHandle/), [CdpJSHandle](/api/PuppeteerSharp.Cdp/CdpJSHandle/), [ElementHandle](/api/PuppeteerSharp/ElementHandle/), [JSHandle](/api/PuppeteerSharp/JSHandle/)
 
@@ -143,9 +143,9 @@ Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
 ```
 
 
-Returns a `Dictionary&lt;T&gt;` with property names as keys and [IJSHandle](./) instances for the property values.
+Returns a `Dictionary<T>` with property names as keys and [IJSHandle](./) instances for the property values.
 
-**Returns:** [Task&lt;Dictionary&lt;string, IJSHandle&gt;&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a `Dictionary&lt;T&gt;`.
+**Returns:** [Task&lt;Dictionary&lt;string, IJSHandle&gt;&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a `Dictionary<T>`.
 
 **Example**
 

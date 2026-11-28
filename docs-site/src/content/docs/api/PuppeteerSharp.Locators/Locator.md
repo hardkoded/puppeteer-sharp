@@ -335,7 +335,7 @@ Creates a new locator that races multiple locators, returning the first one to r
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `locators` | `Locator\[\]` | The locators to race. |
+| `locators` | `Locator[]` | The locators to race. |
 
 **Returns:** [Locator](./) — A new locator that resolves to the first matching locator's result.
 

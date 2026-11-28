@@ -21,7 +21,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>, IRequest
 
 Supports all classes in the .NET class hierarchy and provides low-level services to derived classes. This is the ultimate base class of all .NET classes; it is the root of the type hierarchy.
 
-**Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → `Request&lt;BidiHttpResponse&gt;`
+**Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → `Request<BidiHttpResponse>`
 
 **Implements:** [IRequest](/api/PuppeteerSharp/IRequest/)
 

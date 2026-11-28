@@ -183,9 +183,9 @@ public virtual Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
 ```
 
 
-Returns a `Dictionary&lt;T&gt;` with property names as keys and [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances for the property values.
+Returns a `Dictionary<T>` with property names as keys and [IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances for the property values.
 
-**Returns:** [Task&lt;Dictionary&lt;string, IJSHandle&gt;&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a `Dictionary&lt;T&gt;`.
+**Returns:** [Task&lt;Dictionary&lt;string, IJSHandle&gt;&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to a `Dictionary<T>`.
 
 **Example**
 

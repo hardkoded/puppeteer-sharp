@@ -1,6 +1,6 @@
 ---
 title: "MoveOptions"
-description: "options to use MoveAsync()."
+description: "options to use Mouse.MoveAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class MoveOptions
 ```
 
 
-options to use `MoveAsync()`.
+options to use `Mouse.MoveAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

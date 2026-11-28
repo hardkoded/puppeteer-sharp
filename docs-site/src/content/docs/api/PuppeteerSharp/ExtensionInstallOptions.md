@@ -1,6 +1,6 @@
 ---
 title: "ExtensionInstallOptions"
-description: "Options for InstallExtensionAsync()."
+description: "Options for IBrowser.InstallExtensionAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class ExtensionInstallOptions
 ```
 
 
-Options for `InstallExtensionAsync()`.
+Options for `IBrowser.InstallExtensionAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

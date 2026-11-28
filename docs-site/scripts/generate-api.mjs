@@ -192,7 +192,7 @@ function renderNamespace(ns) {
         lines.push(`## ${kindHeading[kind]}`, "");
         lines.push("| Type | Summary |", "| --- | --- |");
         for (const type of group) {
-            const summary = tableCell(plain(type.summary) || "");
+            const summary = tableCell((plain(type.summary) || "").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
             lines.push(`| ${linkToUid(pageId, type.uid, displayName(type))} | ${summary} |`);
         }
         lines.push("");
@@ -361,7 +361,7 @@ function linkToUid(fromId, uid, text) {
     }
     const ref = refs.get(id);
     if (ref?.href && /^https?:\/\//.test(ref.href)) return `[${label}](${ref.href})`;
-    return `\`${label.replace(/`/g, "")}\``;
+    return `\`${String(text || labelFor(id)).replace(/`/g, "")}\``;
 }
 
 function locate(uid) {
@@ -391,7 +391,8 @@ function labelFor(uid) {
     }
     const parenthesis = decoded.indexOf("(");
     const name = parenthesis >= 0 ? decoded.slice(0, parenthesis) : decoded;
-    const short = name.split(".").pop() || name;
+    const segments = name.split(".");
+    const short = (parenthesis >= 0 ? segments.slice(-2).join(".") : segments.pop()) || name;
     return `${short.replace(/`+(\d+)/g, "<T>")}${parenthesis >= 0 ? "()" : ""}`;
 }
 
@@ -489,14 +490,11 @@ function renderComment(value, fromId) {
     text = text.replace(/<xref href="([^"]+)"[^>]*\/>/gi, (_, href) => linkToUid(fromId, decode(href)));
     text = text.replace(/<see(?:also)?\s+cref="([^"]+)"\s*\/>/gi, (_, cref) => linkToUid(fromId, cref));
     text = text.replace(/<para>([\s\S]*?)<\/para>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`);
-    text = text
-        .split(/(```[\s\S]*?```)/g)
-        .map((part, index) => index % 2 === 1 ? part : part
-            .replace(/<p>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`)
-            .replace(/<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, inner) => `[${inner.trim()}](${decode(href)})`))
-        .join("");
+    text = outsideFences(text, (part) => part
+        .replace(/<p>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${inner.trim()}\n\n`)
+        .replace(/<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, inner) => `[${inner.trim()}](${decode(href)})`));
     text = text.replace(/<br\s*\/?>/gi, "\n");
-    text = text.replace(/<(c|code)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/gi, (_, _tag, code) => `\`${decode(code).replace(/`/g, "")}\``);
+    text = outsideFences(text, (part) => part.replace(/<(c|code)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/gi, (_, _tag, code) => `\`${decode(code).replace(/`/g, "")}\``));
     text = text.replace(/<paramref\s+name="([^"]+)"\s*\/>/gi, "`$1`");
     text = text.replace(/<typeparamref\s+name="([^"]+)"\s*\/>/gi, "`$1`");
     text = text.replace(/<(strong|b)>([\s\S]*?)<\/\1>/gi, "**$2**");
@@ -513,6 +511,35 @@ function listToMarkdown(inner, numbered) {
         const body = match[1].replace(/<\/?(description|term|para)>/gi, " ").replace(/\s+/g, " ").trim();
         return `${numbered ? `${index + 1}.` : "-"} ${body}`;
     }).join("\n")}\n`;
+}
+
+function outsideFences(text, transform) {
+    const lines = text.split("\n");
+    const out = [];
+    let prose = [];
+    let fenceMarker = null;
+    const flush = () => {
+        if (prose.length > 0) out.push(transform(prose.join("\n")));
+        prose = [];
+    };
+    for (const line of lines) {
+        if (fenceMarker) {
+            out.push(line);
+            const closing = /^\s*(`{3,})\s*$/.exec(line);
+            if (closing && closing[1].length >= fenceMarker.length) fenceMarker = null;
+            continue;
+        }
+        const opening = /^\s*(`{3,})[^`]*$/.exec(line);
+        if (opening) {
+            flush();
+            fenceMarker = opening[1];
+            out.push(line);
+            continue;
+        }
+        prose.push(line);
+    }
+    flush();
+    return out.join("\n");
 }
 
 function escapeAnglesOutsideCode(markdown) {

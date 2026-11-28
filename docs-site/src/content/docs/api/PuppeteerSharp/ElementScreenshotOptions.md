@@ -1,6 +1,6 @@
 ---
 title: "ElementScreenshotOptions"
-description: "Options to be used in ScreenshotAsync(), ScreenshotStreamAsync(ElementScreenshotOptions) and ScreenshotDataAsync(ElementScreenshotOptions)."
+description: "Options to be used in IElementHandle.ScreenshotAsync(), ScreenshotStreamAsync(ElementScreenshotOptions) and ScreenshotDataAsync(ElementScreenshotOptions)."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class ElementScreenshotOptions : ScreenshotOptions
 ```
 
 
-Options to be used in `ScreenshotAsync()`, [ScreenshotStreamAsync(ElementScreenshotOptions)](/api/PuppeteerSharp/IElementHandle/#PuppeteerSharp_IElementHandle_ScreenshotStreamAsync_PuppeteerSharp_ElementScreenshotOptions_) and [ScreenshotDataAsync(ElementScreenshotOptions)](/api/PuppeteerSharp/IElementHandle/#PuppeteerSharp_IElementHandle_ScreenshotDataAsync_PuppeteerSharp_ElementScreenshotOptions_).
+Options to be used in `IElementHandle.ScreenshotAsync()`, [ScreenshotStreamAsync(ElementScreenshotOptions)](/api/PuppeteerSharp/IElementHandle/#PuppeteerSharp_IElementHandle_ScreenshotStreamAsync_PuppeteerSharp_ElementScreenshotOptions_) and [ScreenshotDataAsync(ElementScreenshotOptions)](/api/PuppeteerSharp/IElementHandle/#PuppeteerSharp_IElementHandle_ScreenshotDataAsync_PuppeteerSharp_ElementScreenshotOptions_).
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → [ScreenshotOptions](/api/PuppeteerSharp/ScreenshotOptions/)
 

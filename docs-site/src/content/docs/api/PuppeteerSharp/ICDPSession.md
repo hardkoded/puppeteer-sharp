@@ -1,6 +1,6 @@
 ---
 title: "ICDPSession"
-description: "The CDPSession instances are used to talk raw Chrome Devtools Protocol: Protocol methods can be called with SendAsync() method. Protocol events, using the Me..."
+description: "The CDPSession instances are used to talk raw Chrome Devtools Protocol: Protocol methods can be called with ICDPConnection.SendAsync() method. Protocol event..."
 editUrl: false
 prev: false
 next: false
@@ -20,7 +20,7 @@ public interface ICDPSession : ICDPConnection
 
 
 The CDPSession instances are used to talk raw Chrome Devtools Protocol:
- * Protocol methods can be called with `SendAsync()` method.
+ * Protocol methods can be called with `ICDPConnection.SendAsync()` method.
  * Protocol events, using the [MessageReceived](/api/PuppeteerSharp/ICDPConnection/#PuppeteerSharp_ICDPConnection_MessageReceived) event.
 
 Documentation on DevTools Protocol can be found here: [https://chromedevtools.github.io/devtools-protocol/](https://chromedevtools.github.io/devtools-protocol/).

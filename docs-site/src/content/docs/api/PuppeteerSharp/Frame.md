@@ -446,7 +446,7 @@ public Task<IJSHandle> EvaluateFunctionHandleAsync(string function, params objec
 ```
 
 
-Passes a function to the `EvaluateFunctionAsync()`, returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), then `EvaluateFunctionHandleAsync()` would wait for the [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) to resolve and return its value.
+Passes a function to the `IExecutionContext.EvaluateFunctionAsync()`, returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), then `ExecutionContext.EvaluateFunctionHandleAsync()` would wait for the [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) to resolve and return its value.
 
 **Parameters**
 
@@ -465,7 +465,7 @@ return handle; // Handle for the global object.
 ```
 
 
-[IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments to the `EvaluateFunctionAsync()`:
+[IJSHandle](/api/PuppeteerSharp/IJSHandle/) instances can be passed as arguments to the `IExecutionContext.EvaluateFunctionAsync()`:
 
 
 ```csharp
@@ -618,7 +618,7 @@ Navigates to an url.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-`GoToAsync()` will throw an error if:
+`IFrame.GoToAsync()` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
 - target URL is invalid.
 - the `timeout` is exceeded during navigation.
@@ -626,10 +626,10 @@ Navigates to an url.
 - the main resource failed to load.
 - the URL is blocked by blocklist/allowlist rules.
 
-`GoToAsync()` will not throw an error when any valid HTTP status code is returned by the remote server,
+`IFrame.GoToAsync()` will not throw an error when any valid HTTP status code is returned by the remote server,
 including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [Status](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_Status)
 
-&gt; **NOTE** `GoToAsync()` either throws an error or returns a main resource response.
+&gt; **NOTE** `IFrame.GoToAsync()` either throws an error or returns a main resource response.
 The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
 &gt; **NOTE** Headless mode doesn't support navigation to a PDF document. See the &lt;see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295"&gt;upstream issue&lt;/see&gt;.
@@ -654,7 +654,7 @@ Navigates to an url.
 | --- | --- | --- |
 | `url` | [string](https://learn.microsoft.com/dotnet/api/system.string) | URL to navigate page to. The url should include scheme, e.g. https://. |
 | `timeout` | [int?](https://learn.microsoft.com/dotnet/api/system.int32) | maximum navigation time in milliseconds. Defaults to 30 seconds. Pass 0 to disable timeout. The default value can be changed by using the [DefaultNavigationTimeout](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_DefaultNavigationTimeout) property. |
-| `waitUntil` | `WaitUntilNavigation\[\]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
+| `waitUntil` | `WaitUntilNavigation[]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
@@ -763,7 +763,7 @@ public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
 ```
 
 
-Queries frame for the selector. If no elements match the selector, the return value resolve to `Empty&lt;T&gt;`.
+Queries frame for the selector. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -785,7 +785,7 @@ public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOption
 ```
 
 
-Queries frame for the selector. If no elements match the selector, the return value resolve to `Empty&lt;T&gt;`.
+Queries frame for the selector. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -809,7 +809,7 @@ public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
 ```
 
 
-A utility function to be used with `EvaluateFunctionAsync&lt;T&gt;()`.
+A utility function to be used with `PuppeteerHandleExtensions.EvaluateFunctionAsync<T>()`.
 
 **Parameters**
 
@@ -985,7 +985,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
-To press a special key, like `Control` or `ArrowDown` use `PressAsync()`.
+To press a special key, like `Control` or `ArrowDown` use `IKeyboard.PressAsync()`.
 
 **Example**
 

@@ -74,7 +74,7 @@ public BluetoothManufacturerData[] ManufacturerData { get; set; }
 
 Gets or sets the manufacturer data.
 
-**Value:** `BluetoothManufacturerData\[\]`
+**Value:** `BluetoothManufacturerData[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PreconnectedPeripheral.cs#L21)
 

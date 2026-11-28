@@ -40,7 +40,7 @@ public PWAFileHandlerAccept[] Accepts { get; set; }
 
 Gets or sets the media types and file extensions accepted by this file handler.
 
-**Value:** `PWAFileHandlerAccept\[\]`
+**Value:** `PWAFileHandlerAccept[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PWAFileHandler.cs#L16)
 

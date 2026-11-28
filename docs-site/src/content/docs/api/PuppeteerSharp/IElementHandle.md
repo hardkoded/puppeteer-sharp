@@ -445,7 +445,7 @@ Task<bool> IsHiddenAsync()
 ```
 
 
-Checks if an element is hidden using the same mechanism as `WaitForSelectorAsync()`.
+Checks if an element is hidden using the same mechanism as `IElementHandle.WaitForSelectorAsync()`.
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to true if the element is hidden.
 
@@ -485,7 +485,7 @@ Task<bool> IsVisibleAsync()
 ```
 
 
-Checks if an element is visible using the same mechanism as `WaitForSelectorAsync()`.
+Checks if an element is visible using the same mechanism as `IElementHandle.WaitForSelectorAsync()`.
 
 **Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to true if the element is visible.
 
@@ -502,7 +502,7 @@ Task PressAsync(string key, PressOptions options = null)
 ```
 
 
-Focuses the element, and then uses `DownAsync()` and [UpAsync(string)](/api/PuppeteerSharp.Input/IKeyboard/#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
+Focuses the element, and then uses `IKeyboard.DownAsync()` and [UpAsync(string)](/api/PuppeteerSharp.Input/IKeyboard/#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_).
 
 **Parameters**
 
@@ -528,7 +528,7 @@ Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
 ```
 
 
-Runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty&lt;T&gt;`.
+Runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -550,7 +550,7 @@ Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions optio
 ```
 
 
-Runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty&lt;T&gt;`.
+Runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -574,7 +574,7 @@ Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
 ```
 
 
-A utility function to be used with `EvaluateFunctionAsync&lt;T&gt;()`.
+A utility function to be used with `PuppeteerHandleExtensions.EvaluateFunctionAsync<T>()`.
 
 **Parameters**
 
@@ -839,7 +839,7 @@ Task TapAsync()
 ```
 
 
-Scrolls element into view if needed, and then uses `TapAsync()` to tap in the center of the element.
+Scrolls element into view if needed, and then uses `Touchscreen.TapAsync()` to tap in the center of the element.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task which resolves when the element is successfully tapped.
 
@@ -930,7 +930,7 @@ Focuses the element, and sends a `keydown`, `keypress`/`input`, and `keyup` even
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
-To press a special key, like `Control` or `ArrowDown` use `PressAsync()`.
+To press a special key, like `Control` or `ArrowDown` use `IElementHandle.PressAsync()`.
 
 **Example**
 

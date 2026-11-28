@@ -298,7 +298,7 @@ public bool EnqueueAsyncMessages { get; set; }
 ```
 
 
-Affects how responses to `SendAsync()` are returned to the caller. If `true` (default), the
+Affects how responses to `CDPSession.SendAsync()` are returned to the caller. If `true` (default), the
 response is delivered to the caller on its own thread; otherwise, the response is delivered the same way [MessageReceived](/api/PuppeteerSharp/CDPSession/#PuppeteerSharp_CDPSession_MessageReceived)
 events are raised.
 

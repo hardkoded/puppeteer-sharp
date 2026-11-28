@@ -1,6 +1,6 @@
 ---
 title: "Offset"
-description: "Offset used in conjunction with ClickablePointAsync()."
+description: "Offset used in conjunction with ElementHandle.ClickablePointAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public struct Offset
 ```
 
 
-Offset used in conjunction with `ClickablePointAsync()`.
+Offset used in conjunction with `ElementHandle.ClickablePointAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Offset.cs#L6)
 

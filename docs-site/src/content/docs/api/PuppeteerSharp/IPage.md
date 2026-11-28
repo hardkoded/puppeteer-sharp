@@ -154,11 +154,11 @@ int DefaultNavigationTimeout { get; set; }
 
 
 This setting will change the default maximum time for the following methods:
-- `GoToAsync()`
+- `IPage.GoToAsync()`
 - [GoBackAsync(NavigationOptions)](#PuppeteerSharp_IPage_GoBackAsync_PuppeteerSharp_NavigationOptions_)
 - [GoForwardAsync(NavigationOptions)](#PuppeteerSharp_IPage_GoForwardAsync_PuppeteerSharp_NavigationOptions_)
 - [ReloadAsync(ReloadOptions)](#PuppeteerSharp_IPage_ReloadAsync_PuppeteerSharp_ReloadOptions_)
-- `SetContentAsync()`
+- `IPage.SetContentAsync()`
 - [WaitForNavigationAsync(NavigationOptions)](#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_)
 **NOTE** [DefaultNavigationTimeout](#PuppeteerSharp_IPage_DefaultNavigationTimeout) takes priority over. [DefaultTimeout](#PuppeteerSharp_IPage_DefaultTimeout)
 
@@ -180,15 +180,15 @@ int DefaultTimeout { get; set; }
 This setting will change the default maximum times for the following methods:
 - [GoBackAsync(NavigationOptions)](#PuppeteerSharp_IPage_GoBackAsync_PuppeteerSharp_NavigationOptions_)
 - [GoForwardAsync(NavigationOptions)](#PuppeteerSharp_IPage_GoForwardAsync_PuppeteerSharp_NavigationOptions_)
-- `GoToAsync()`
+- `IPage.GoToAsync()`
 - [ReloadAsync(ReloadOptions)](#PuppeteerSharp_IPage_ReloadAsync_PuppeteerSharp_ReloadOptions_)
-- `SetContentAsync()`
-- `WaitForFunctionAsync()`
+- `IPage.SetContentAsync()`
+- `IPage.WaitForFunctionAsync()`
 - [WaitForNavigationAsync(NavigationOptions)](#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_)
-- `WaitForRequestAsync()`
-- `WaitForResponseAsync()`
-- `WaitForSelectorAsync()`
-- `WaitForExpressionAsync()`.
+- `IPage.WaitForRequestAsync()`
+- `IPage.WaitForResponseAsync()`
+- `IPage.WaitForSelectorAsync()`
+- `IPage.WaitForExpressionAsync()`.
 
 **Value:** [int](https://learn.microsoft.com/dotnet/api/system.int32)
 
@@ -207,7 +207,7 @@ IFrame[] Frames { get; }
 
 Gets all frames attached to the page.
 
-**Value:** `IFrame\[\]` — An array of all frames attached to the page.
+**Value:** `IFrame[]` — An array of all frames attached to the page.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L250)
 
@@ -440,7 +440,7 @@ WebWorker[] Workers { get; }
 
 Gets all workers in the page.
 
-**Value:** `WebWorker\[\]`
+**Value:** `WebWorker[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L319)
 
@@ -874,7 +874,7 @@ void AddRequestInterceptor(Func<IRequest, Task> interceptionTask)
 ```
 
 
-`RespondAsync()`, `AbortAsync()`, and `ContinueAsync()` can accept an optional `priority` to activate Cooperative Intercept Mode.
+`IRequest.RespondAsync()`, `IRequest.AbortAsync()`, and `IRequest.ContinueAsync()` can accept an optional `priority` to activate Cooperative Intercept Mode.
 In Cooperative Mode, all interception tasks are guaranteed to run and all async handlers are awaited.
 The interception is resolved to the highest-priority resolution.
 In the event of a tie, `abort` &gt; `respond` &gt; `continue`.
@@ -1138,7 +1138,7 @@ Deletes cookies from the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieParam\[\]` | Cookies to delete. |
+| `cookies` | `CookieParam[]` | Cookies to delete. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -1167,7 +1167,7 @@ Emulates given device metrics and user agent.
 
 This method is a shortcut for calling two methods:
 [SetViewportAsync(ViewPortOptions)](#PuppeteerSharp_IPage_SetViewportAsync_PuppeteerSharp_ViewPortOptions_)
-`SetUserAgentAsync()`
+`IPage.SetUserAgentAsync()`
 To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the [Devices](/api/PuppeteerSharp/Puppeteer/#PuppeteerSharp_Puppeteer_Devices).
 [EmulateAsync(DeviceDescriptor)](#PuppeteerSharp_IPage_EmulateAsync_PuppeteerSharp_Mobile_DeviceDescriptor_) will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
@@ -1740,7 +1740,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `ExposeFunctionAsync()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L723)
 
@@ -1773,7 +1773,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `ExposeFunctionAsync&lt;T&gt;()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L819)
 
@@ -1807,7 +1807,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `ExposeFunctionAsync&lt;T&gt;()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L745)
 
@@ -1842,7 +1842,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `ExposeFunctionAsync&lt;T&gt;()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L802)
 
@@ -1878,7 +1878,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `ExposeFunctionAsync&lt;T&gt;()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L783)
 
@@ -1915,7 +1915,7 @@ When called, the function executes `puppeteerFunction` in C# and returns a [Task
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
 If the `puppeteerFunction` returns a [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task), it will be awaited.
-Functions installed via `ExposeFunctionAsync&lt;T&gt;()` survive navigations.
+Functions installed via `IPage.ExposeFunctionAsync<T>()` survive navigations.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L763)
 
@@ -2101,22 +2101,22 @@ Navigates to an url.
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-`GoToAsync()` will throw an error if:
+`IPage.GoToAsync()` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
 - target URL is invalid.
 - the `timeout` is exceeded during navigation.
 - the remote server does not respond or is unreachable.
 - the main resource failed to load.
 
-`GoToAsync()` will not throw an error when any valid HTTP status code is returned by the remote server,
+`IPage.GoToAsync()` will not throw an error when any valid HTTP status code is returned by the remote server,
 including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [Status](/api/PuppeteerSharp/IResponse/#PuppeteerSharp_IResponse_Status)
 
-&gt; **NOTE** `GoToAsync()` either throws an error or returns a main resource response.
+&gt; **NOTE** `IPage.GoToAsync()` either throws an error or returns a main resource response.
 The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
 &gt; **NOTE** Headless mode doesn't support navigation to a PDF document. See the &lt;see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295"&gt;upstream issue&lt;/see&gt;.
 
-Shortcut for. `GoToAsync()`
+Shortcut for. `IFrame.GoToAsync()`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L910)
 
@@ -2161,7 +2161,7 @@ Navigates to an url.
 | --- | --- | --- |
 | `url` | [string](https://learn.microsoft.com/dotnet/api/system.string) | URL to navigate page to. The url should include scheme, e.g. https://. |
 | `timeout` | [int?](https://learn.microsoft.com/dotnet/api/system.int32) | Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. |
-| `waitUntil` | `WaitUntilNavigation\[\]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
+| `waitUntil` | `WaitUntilNavigation[]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
@@ -2181,7 +2181,7 @@ Task<bool> HasDevToolsAsync()
 Returns true if DevTools is attached to the current page.
 Use [OpenDevToolsAsync()](#PuppeteerSharp_IPage_OpenDevToolsAsync) to get the DevTools page.
 
-**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task&lt;T&gt;` that completes with true if DevTools is attached.
+**Returns:** [Task&lt;bool&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task<T>` that completes with true if DevTools is attached.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L417)
 
@@ -2295,7 +2295,7 @@ Task<IPage> OpenDevToolsAsync()
 Opens DevTools for this page if not already open and returns the DevTools page.
 This method is only available in Chrome.
 
-**Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task&lt;T&gt;` that completes with the DevTools page.
+**Returns:** [Task&lt;IPage&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — A `Task<T>` that completes with the DevTools page.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L410)
 
@@ -2476,7 +2476,7 @@ Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
 ```
 
 
-Runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty&lt;T&gt;`.
+Runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -2498,7 +2498,7 @@ Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions optio
 ```
 
 
-Runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty&lt;T&gt;`.
+Runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `Empty<T>`.
 
 **Parameters**
 
@@ -2522,7 +2522,7 @@ Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
 ```
 
 
-A utility function to be used with `EvaluateFunctionAsync&lt;T&gt;()`.
+A utility function to be used with `PuppeteerHandleExtensions.EvaluateFunctionAsync<T>()`.
 
 **Parameters**
 
@@ -2625,7 +2625,7 @@ Reloads the page.
 | Name | Type | Description |
 | --- | --- | --- |
 | `timeout` | [int?](https://learn.microsoft.com/dotnet/api/system.int32) | Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. |
-| `waitUntil` | `WaitUntilNavigation\[\]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
+| `waitUntil` | `WaitUntilNavigation[]` | When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired. |
 
 **Returns:** [Task&lt;IResponse&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
@@ -2642,7 +2642,7 @@ Task RemoveExposedFunctionAsync(string name)
 ```
 
 
-Removes a previously added function via `ExposeFunctionAsync()`.
+Removes a previously added function via `IPage.ExposeFunctionAsync()`.
 
 **Parameters**
 
@@ -3131,7 +3131,7 @@ Clears all of the current cookies and then sets the cookies for the page.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieParam\[\]` | Cookies to set. |
+| `cookies` | `CookieParam[]` | Cookies to set. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -3213,7 +3213,7 @@ Sets the page's geolocation.
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
-Consider using `OverridePermissionsAsync()` to grant permissions for the page to read its geolocation.
+Consider using `IBrowserContext.OverridePermissionsAsync()` to grant permissions for the page to read its geolocation.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IPage.cs#L1274)
 
@@ -3274,8 +3274,8 @@ Task SetRequestInterceptionAsync(bool value)
 ```
 
 
-Activating request interception enables `AbortAsync()`,
-`ContinueAsync()` and `RespondAsync()` methods.
+Activating request interception enables `IRequest.AbortAsync()`,
+`IRequest.ContinueAsync()` and `IRequest.RespondAsync()` methods.
 
 **Parameters**
 
@@ -3471,7 +3471,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 | --- | --- |
 | [SelectorException](/api/PuppeteerSharp/SelectorException/) | If there's no element matching `selector`. |
 
-To press a special key, like `Control` or `ArrowDown` use `PressAsync()`.
+To press a special key, like `Control` or `ArrowDown` use `IKeyboard.PressAsync()`.
 
 **Example**
 

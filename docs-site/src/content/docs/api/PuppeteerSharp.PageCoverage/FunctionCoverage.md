@@ -76,6 +76,6 @@ public CoverageRange[] Ranges { get; set; }
 
 Source ranges inside the function with coverage data.
 
-**Value:** `CoverageRange\[\]`
+**Value:** `CoverageRange[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageCoverage/FunctionCoverage.cs#L16)

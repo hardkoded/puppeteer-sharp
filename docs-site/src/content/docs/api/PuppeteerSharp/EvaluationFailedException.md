@@ -1,6 +1,6 @@
 ---
 title: "EvaluationFailedException"
-description: "Exception thrown by ExecuteEvaluationAsync()."
+description: "Exception thrown by ExecutionContext.ExecuteEvaluationAsync()."
 editUrl: false
 prev: false
 next: false
@@ -20,7 +20,7 @@ public class EvaluationFailedException : PuppeteerException, ISerializable
 ```
 
 
-Exception thrown by `ExecuteEvaluationAsync()`.
+Exception thrown by `ExecutionContext.ExecuteEvaluationAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → [Exception](https://learn.microsoft.com/dotnet/api/system.exception) → [PuppeteerException](/api/PuppeteerSharp/PuppeteerException/)
 

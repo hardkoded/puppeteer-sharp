@@ -21,7 +21,7 @@ public class CdpHttpResponse : Response<CdpHttpRequest>, IResponse
 
 Supports all classes in the .NET class hierarchy and provides low-level services to derived classes. This is the ultimate base class of all .NET classes; it is the root of the type hierarchy.
 
-**Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → `Response&lt;CdpHttpRequest&gt;`
+**Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object) → `Response<CdpHttpRequest>`
 
 **Implements:** [IResponse](/api/PuppeteerSharp/IResponse/)
 

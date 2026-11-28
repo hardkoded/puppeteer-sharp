@@ -1,6 +1,6 @@
 ---
 title: "MouseButton"
-description: "The type of button click to use with DownAsync(ClickOptions), UpAsync(ClickOptions) and ClickAsync()."
+description: "The type of button click to use with DownAsync(ClickOptions), UpAsync(ClickOptions) and IMouse.ClickAsync()."
 editUrl: false
 prev: false
 next: false
@@ -21,7 +21,7 @@ public enum MouseButton
 ```
 
 
-The type of button click to use with [DownAsync(ClickOptions)](/api/PuppeteerSharp.Input/IMouse/#PuppeteerSharp_Input_IMouse_DownAsync_PuppeteerSharp_Input_ClickOptions_), [UpAsync(ClickOptions)](/api/PuppeteerSharp.Input/IMouse/#PuppeteerSharp_Input_IMouse_UpAsync_PuppeteerSharp_Input_ClickOptions_) and `ClickAsync()`.
+The type of button click to use with [DownAsync(ClickOptions)](/api/PuppeteerSharp.Input/IMouse/#PuppeteerSharp_Input_IMouse_DownAsync_PuppeteerSharp_Input_ClickOptions_), [UpAsync(ClickOptions)](/api/PuppeteerSharp.Input/IMouse/#PuppeteerSharp_Input_IMouse_UpAsync_PuppeteerSharp_Input_ClickOptions_) and `IMouse.ClickAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/MouseButton.cs#L11)
 

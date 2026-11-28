@@ -1,6 +1,6 @@
 ---
 title: "NavigationOptions"
-description: "Navigation options used by WaitForNavigationAsync(NavigationOptions) and SetContentAsync()."
+description: "Navigation options used by WaitForNavigationAsync(NavigationOptions) and IPage.SetContentAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public record NavigationOptions : IEquatable<NavigationOptions>
 ```
 
 
-Navigation options used by [WaitForNavigationAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_) and `SetContentAsync()`.
+Navigation options used by [WaitForNavigationAsync(NavigationOptions)](/api/PuppeteerSharp/IPage/#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_) and `IPage.SetContentAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 
@@ -59,7 +59,7 @@ public string Referer { get; set; }
 ```
 
 
-Referer header value. If provided it will take prefrence over the referer header value set by `SetExtraHttpHeadersAsync()`.
+Referer header value. If provided it will take prefrence over the referer header value set by `IPage.SetExtraHttpHeadersAsync()`.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string) — The referer.
 
@@ -76,7 +76,7 @@ public string ReferrerPolicy { get; set; }
 ```
 
 
-Referrer policy. If provided it will take preference over the referer-policy header value set by `SetExtraHttpHeadersAsync()`.
+Referrer policy. If provided it will take preference over the referer-policy header value set by `IPage.SetExtraHttpHeadersAsync()`.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
@@ -114,6 +114,6 @@ public WaitUntilNavigation[] WaitUntil { get; set; }
 
 When to consider navigation succeeded, defaults to [Load](/api/PuppeteerSharp/WaitUntilNavigation/#PuppeteerSharp_WaitUntilNavigation_Load). Given an array of [WaitUntilNavigation](/api/PuppeteerSharp/WaitUntilNavigation/), navigation is considered to be successful after all events have been fired.
 
-**Value:** `WaitUntilNavigation\[\]`
+**Value:** `WaitUntilNavigation[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/NavigationOptions.cs#L19)

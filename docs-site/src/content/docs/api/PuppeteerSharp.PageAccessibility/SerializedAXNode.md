@@ -127,7 +127,7 @@ public SerializedAXNode[] Children { get; set; }
 
 Child nodes of this node, if any.
 
-**Value:** `SerializedAXNode\[\]`
+**Value:** `SerializedAXNode[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/PageAccessibility/SerializedAXNode.cs#L185)
 

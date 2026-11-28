@@ -58,7 +58,7 @@ public static Task WhenAllFailFast(this Task[] tasks)
 
 
 Awaits all tasks, but fails immediately if any task fails (like JavaScript's Promise.all).
-Unlike `WhenAll()` which waits for all tasks to complete before throwing,
+Unlike `Task.WhenAll()` which waits for all tasks to complete before throwing,
 this method throws immediately when any task fails or is canceled.
 
 **Parameters**

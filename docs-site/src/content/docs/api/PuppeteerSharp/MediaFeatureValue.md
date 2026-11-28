@@ -1,6 +1,6 @@
 ---
 title: "MediaFeatureValue"
-description: "Media Feature. EmulateMediaFeaturesAsync()."
+description: "Media Feature. IPage.EmulateMediaFeaturesAsync()."
 editUrl: false
 prev: false
 next: false
@@ -19,7 +19,7 @@ public class MediaFeatureValue
 ```
 
 
-Media Feature. `EmulateMediaFeaturesAsync()`.
+Media Feature. `IPage.EmulateMediaFeaturesAsync()`.
 
 **Inheritance:** [object](https://learn.microsoft.com/dotnet/api/system.object)
 

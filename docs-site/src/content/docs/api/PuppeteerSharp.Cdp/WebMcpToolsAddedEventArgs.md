@@ -40,6 +40,6 @@ public WebMcpTool[] Tools { get; init; }
 
 Array of tools that were added.
 
-**Value:** `WebMcpTool\[\]`
+**Value:** `WebMcpTool[]`
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Cdp/WebMcpToolsAddedEventArgs.cs#L35)

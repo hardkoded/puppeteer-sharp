@@ -146,7 +146,7 @@ public Process Process { get; }
 ```
 
 
-Gets the spawned browser process. Returns `null` if the browser instance was created with `ConnectAsync()` method.
+Gets the spawned browser process. Returns `null` if the browser instance was created with `Puppeteer.ConnectAsync()` method.
 
 **Value:** [Process](https://learn.microsoft.com/dotnet/api/system.diagnostics.process)
 
@@ -184,7 +184,7 @@ Gets the Browser websocket url.
 
 **Value:** [string](https://learn.microsoft.com/dotnet/api/system.string)
 
-Browser websocket endpoint which can be used as an argument to `ConnectAsync()`.
+Browser websocket endpoint which can be used as an argument to `Puppeteer.ConnectAsync()`.
 The format is `ws://${host}:${port}/devtools/browser/[id]`
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`.
 Learn more about the devtools protocol [https://chromedevtools.github.io/devtools-protocol](https://chromedevtools.github.io/devtools-protocol)
@@ -436,7 +436,7 @@ public abstract IBrowserContext[] BrowserContexts()
 
 Returns an array of all open [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/). In a newly created browser, this will return a single instance of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/).
 
-**Returns:** `IBrowserContext\[\]` — An array of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) objects.
+**Returns:** `IBrowserContext[]` — An array of [IBrowserContext](/api/PuppeteerSharp/IBrowserContext/) objects.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs#L119)
 
@@ -543,7 +543,7 @@ Removes cookies from the default browser context.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieParam\[\]` | Complete [CookieParam](/api/PuppeteerSharp/CookieParam/) objects to be removed. |
+| `cookies` | `CookieParam[]` | Complete [CookieParam](/api/PuppeteerSharp/CookieParam/) objects to be removed. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -566,7 +566,7 @@ Deletes cookies matching the provided filters from the default [IBrowserContext]
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `filters` | `DeleteCookiesRequest\[\]` | Filters to match cookies against. |
+| `filters` | `DeleteCookiesRequest[]` | Filters to match cookies against. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -717,7 +717,7 @@ Gets the browser's original user agent.
 
 **Returns:** [Task&lt;string&gt;](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1) — Task which resolves to the browser's original user agent.
 
-Pages can override browser user agent with `SetUserAgentAsync()`.
+Pages can override browser user agent with `IPage.SetUserAgentAsync()`.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs#L173)
 
@@ -1131,7 +1131,7 @@ Sets cookies in the default browser context.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `cookies` | `CookieData\[\]` | Cookies to set. |
+| `cookies` | `CookieData[]` | Cookies to set. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — Task.
 
@@ -1155,7 +1155,7 @@ Sets the permission for a specific origin on the default browser context.
 | Name | Type | Description |
 | --- | --- | --- |
 | `origin` | [string](https://learn.microsoft.com/dotnet/api/system.string) | The origin to set the permission for, e.g. "https://example.com". Use "*" for all origins (CDP only). |
-| `permissions` | `PermissionEntry\[\]` | The permissions to set. |
+| `permissions` | `PermissionEntry[]` | The permissions to set. |
 
 **Returns:** [Task](https://learn.microsoft.com/dotnet/api/system.threading.tasks.task) — The task.
 
@@ -1198,7 +1198,7 @@ public abstract ITarget[] Targets()
 
 Returns An Array of all active targets.
 
-**Returns:** `ITarget\[\]` — An Array of all active targets.
+**Returns:** `ITarget[]` — An Array of all active targets.
 
 [View source](https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Browser.cs#L111)
 
