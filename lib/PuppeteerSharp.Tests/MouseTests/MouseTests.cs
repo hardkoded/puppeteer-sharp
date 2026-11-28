@@ -529,6 +529,39 @@ namespace PuppeteerSharp.Tests.MouseTests
             PuppeteerTest(
                 "mouse.spec",
                 "Mouse",
+                "should keep the position of the last step of a failed stepped move"
+            )
+        ]
+        public async Task ShouldKeepThePositionOfTheLastStepOfAFailedSteppedMove()
+        {
+            if (PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.Ignore("CDP accepts moves outside of the viewport.");
+            }
+
+            await Page.Mouse.MoveAsync(100, 100);
+            Assert.CatchAsync(() => Page.Mouse.MoveAsync(-100, 100, new MoveOptions { Steps = 4 }));
+            await Page.EvaluateFunctionAsync(
+                @"() => {
+                globalThis.position = new Promise(resolve => {
+                    window.addEventListener('wheel', event => {
+                        resolve([event.clientX, event.clientY]);
+                    }, { once: true });
+                });
+            }"
+            );
+            await Page.Mouse.WheelAsync(0, 100);
+            Assert.That(
+                await Page.EvaluateExpressionAsync<int[]>("position"),
+                Is.EqualTo(new[] { 0, 100 })
+            );
+        }
+
+        [
+            Test,
+            PuppeteerTest(
+                "mouse.spec",
+                "Mouse",
                 "should work with mobile viewports and cross process navigations"
             )
         ]

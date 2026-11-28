@@ -124,10 +124,7 @@ public class CdpMouse : Mouse
                 options ??= new ClickOptions();
 
                 updateState(
-                    new MouseTransaction.TransactionData
-                    {
-                        Buttons = _state.Buttons | options.Button,
-                    }
+                    new MouseTransaction.TransactionData { PressedButtons = options.Button }
                 );
 
                 var state = _state.State;
@@ -157,10 +154,7 @@ public class CdpMouse : Mouse
                 options ??= new ClickOptions();
 
                 updateState(
-                    new MouseTransaction.TransactionData
-                    {
-                        Buttons = _state.Buttons & ~options.Button,
-                    }
+                    new MouseTransaction.TransactionData { ReleasedButtons = options.Button }
                 );
 
                 var state = _state.State;

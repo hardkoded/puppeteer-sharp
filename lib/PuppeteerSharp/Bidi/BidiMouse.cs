@@ -82,26 +82,21 @@ internal class BidiMouse(BidiPage page) : Mouse
 
             var steps = options?.Steps ?? 0;
 
+            // Each step is sent on its own. The browser stops at the first action it rejects, and
+            // the tracked position has to be the one of the last step that reached it.
             for (var i = 0; i < steps; ++i)
             {
-                _mouseSource.Actions.Add(
-                    new PointerMoveAction
-                    {
-                        X = (long)(from.X + ((to.X - from.X) * (i / (decimal)steps))),
-                        Y = (long)(from.Y + ((to.Y - from.Y) * (i / (decimal)steps))),
-                    }
-                );
+                await MovePointerAsync(
+                        new Point
+                        {
+                            X = (long)(from.X + ((to.X - from.X) * (i / (decimal)steps))),
+                            Y = (long)(from.Y + ((to.Y - from.Y) * (i / (decimal)steps))),
+                        }
+                    )
+                    .ConfigureAwait(false);
             }
 
-            _mouseSource.Actions.Add(new PointerMoveAction { X = (long)to.X, Y = (long)to.Y });
-
-            await _state
-                .WithTransactionAsync(updateState =>
-                {
-                    updateState(new MouseTransaction.TransactionData { Position = to });
-                    return PerformActionsAsync(_mouseSource, _mouseSource.Actions.Clear);
-                })
-                .ConfigureAwait(false);
+            await MovePointerAsync(to).ConfigureAwait(false);
         });
     }
 
@@ -211,6 +206,19 @@ internal class BidiMouse(BidiPage page) : Mouse
         {
             _actionsQueue.Dispose();
         }
+    }
+
+    private Task MovePointerAsync(Point position)
+    {
+        _mouseSource.Actions.Add(
+            new PointerMoveAction { X = (long)position.X, Y = (long)position.Y }
+        );
+
+        return _state.WithTransactionAsync(updateState =>
+        {
+            updateState(new MouseTransaction.TransactionData { Position = position });
+            return PerformActionsAsync(_mouseSource, _mouseSource.Actions.Clear);
+        });
     }
 
     private async Task PerformActionsAsync(SourceActions source, Action clearActions)
